@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.navinfo.collect.library">
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT" />
+            <data android:mimeType="*/*"/>
+        </intent>
+    </queries>
+
+<!--    <application-->
+<!--        android:allowBackup="true"-->
+<!--        >-->
+<!--        <activity-->
+<!--            android:name="com.navinfo.ocr.CameraActivity"-->
+<!--            android:exported="true"/>-->
+<!--    </application>-->
+
+</manifest>
