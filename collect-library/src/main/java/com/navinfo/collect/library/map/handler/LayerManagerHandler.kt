@@ -3,7 +3,6 @@ package com.navinfo.collect.library.map.handler
 import android.content.Context
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.map.NIMapView.LAYER_GROUPS
-import com.navinfo.collect.library.map.flutter.FlutterMapConversion
 import org.oscim.layers.Layer
 
 /**
@@ -33,14 +32,4 @@ open class LayerManagerHandler(context: Context, mapView: NIMapView) :
     fun removeRasterTileLayer(url: String) {
 
     }
-
-    fun getBaseRasterTileLayerList(callback: (baseMapJson: String) -> Unit) {
-        val strJson = FlutterMapConversion.baseMapTypeToJson(NIMapView.BASE_MAP_TYPE.values())
-        callback.invoke(strJson)
-    }
-
-    fun editLineOrPolygon(geometry: String,type: Int){
-        mMapView.layerManager.showEditMapGraphical(geometry,type)
-    }
-
 }
