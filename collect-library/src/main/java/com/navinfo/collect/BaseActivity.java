@@ -16,9 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.PermissionChecker;
 
-import com.baidu.ai.edge.core.base.Consts;
-
-
 /**
  * Created by linyiran on 6/16/22.
  */
@@ -87,9 +84,6 @@ public abstract class BaseActivity extends AppCompatActivity {
      * Android 11 跳转到设置获取SD卡根目录写入权限
      */
     private void requestAllFilesAccess() {
-        if (!Consts.AUTH_REQUIRE_SDCARD) {
-            return;
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
             allPermissionsGranted = false;
 

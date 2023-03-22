@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase.CONFLICT_NONE
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.navinfo.collect.library.data.DataConversion
 import com.navinfo.collect.library.data.dao.impl.MapLifeDataBase
 import com.navinfo.collect.library.data.entity.*
 import com.navinfo.collect.library.data.entity.DataLayerItemType.*
