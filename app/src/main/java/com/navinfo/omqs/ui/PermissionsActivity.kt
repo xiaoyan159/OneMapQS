@@ -11,7 +11,7 @@ import com.hjq.permissions.XXPermissions
 /**
  * 权限申请Activity
  */
-abstract class PermissionsActivity : AppCompatActivity() {
+abstract class PermissionsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
 
