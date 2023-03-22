@@ -27,7 +27,7 @@ class NavinfoPbfFileUtils: GisFileUtils {
     * */
     override fun parserGisFile(file: File): List<GeometryFeatureEntity> {
         val geometryEntityList = ArrayList<GeometryFeatureEntity>()
-        if (!file?.isFile || !file.exists()) {
+        if (!file.isFile || !file.exists()) {
             return geometryEntityList;
         }
         // 解析pbf文件
@@ -63,7 +63,7 @@ class NavinfoPbfFileUtils: GisFileUtils {
      * */
     private fun parserRoadLink(roadLinkList: List<Roadlink.RoadLink>, file: File, layerName: String= "道路线", layerTableName: String = "ROAD_LINK"): List<GeometryFeatureEntity> {
         val featureEntityList = ArrayList<GeometryFeatureEntity>()
-        if (roadLinkList?.isEmpty()) {
+        if (roadLinkList.isEmpty()) {
             return featureEntityList
         }
         for (roadLink in roadLinkList) {
@@ -81,7 +81,7 @@ class NavinfoPbfFileUtils: GisFileUtils {
      * */
     private fun parserHadLaneLink(hadLaneLinkList: List<Hadlanelink.HadLaneLink>, file: File, layerName: String= "车道中心线", layerTableName: String = "HAD_LANE_LINK"): List<GeometryFeatureEntity> {
         val featureEntityList = ArrayList<GeometryFeatureEntity>()
-        if (hadLaneLinkList?.isEmpty()) {
+        if (hadLaneLinkList.isEmpty()) {
             return featureEntityList
         }
         for (hadLaneLink in hadLaneLinkList) {
@@ -98,7 +98,7 @@ class NavinfoPbfFileUtils: GisFileUtils {
      * */
     private fun parserSpeedLimitGen(speedLimitGenList: List<Rdspeedlimitgen.RdSpeedlimitGen>, file: File, layerName: String= "固定限速", layerTableName: String = "SPEED_LIMIT_GEN"): List<GeometryFeatureEntity> {
         val featureEntityList = ArrayList<GeometryFeatureEntity>()
-        if (speedLimitGenList?.isEmpty()) {
+        if (speedLimitGenList.isEmpty()) {
             return featureEntityList
         }
         for (speedLimitGen in speedLimitGenList) {
@@ -116,7 +116,7 @@ class NavinfoPbfFileUtils: GisFileUtils {
      * */
     private fun parserSpeedLimitDepend(speedLimitDenpendList: List<Rdspeedlimitdepend.RdSpeedlimitDepend>, file: File, layerName: String= "条件限速", layerTableName: String = "SPEED_LIMIT_DEPEND"): List<GeometryFeatureEntity> {
         val featureEntityList = ArrayList<GeometryFeatureEntity>()
-        if (speedLimitDenpendList?.isEmpty()) {
+        if (speedLimitDenpendList.isEmpty()) {
             return featureEntityList
         }
         for (speedLimitDepend in speedLimitDenpendList) {
@@ -135,7 +135,7 @@ class NavinfoPbfFileUtils: GisFileUtils {
     private fun parserSpeedLimitVar(speedLimitVarList: List<Rdspeedlimitvar.RdSpeedlimitVar>, file: File,
                                     layerName: String= "可变限速", layerTableName: String = "SPEED_LIMIT_VAR"): List<GeometryFeatureEntity> {
         val featureEntityList = ArrayList<GeometryFeatureEntity>()
-        if (speedLimitVarList?.isEmpty()) {
+        if (speedLimitVarList.isEmpty()) {
             return featureEntityList
         }
         for (speedLimitVar in speedLimitVarList) {
@@ -154,7 +154,7 @@ class NavinfoPbfFileUtils: GisFileUtils {
     private fun parserHadLaneMarkLink(hadLaneMarkLinkList: List<Hadlanemarklink.HadLaneMarkLink>, file: File,
                                       layerName: String= "车道边线", layerTableName: String = "HAD_LANE_MARK_LINK"): List<GeometryFeatureEntity> {
         val featureEntityList = ArrayList<GeometryFeatureEntity>()
-        if (hadLaneMarkLinkList?.isEmpty()) {
+        if (hadLaneMarkLinkList.isEmpty()) {
             return featureEntityList
         }
         for (hadLaneMarkLink in hadLaneMarkLinkList) {
@@ -172,7 +172,7 @@ class NavinfoPbfFileUtils: GisFileUtils {
     private fun parserHadLaneMarkLinkTraversal(hadLaneMarkLinkList: List<Hadlanemarklink.HadLaneMarkLink>, file: File,
                                       layerName: String= "车道边线可跨越性", layerTableName: String = "HAD_LANE_MARK_LINK_TRAVERSAL"): List<GeometryFeatureEntity> {
         val featureEntityList = ArrayList<GeometryFeatureEntity>()
-        if (hadLaneMarkLinkList?.isEmpty()) {
+        if (hadLaneMarkLinkList.isEmpty()) {
             return featureEntityList
         }
         // 解析道路边线可跨越性
@@ -206,7 +206,7 @@ class NavinfoPbfFileUtils: GisFileUtils {
     private fun parserHadLaneMarkLinkBoundary(hadLaneMarkLinkList: List<Hadlanemarklink.HadLaneMarkLink>, file: File,
                                       layerName: String= "车道边线非标线类型", layerTableName: String = "HAD_LANE_MARK_LINK_BOUNDARY"): List<GeometryFeatureEntity> {
         val featureEntityList = ArrayList<GeometryFeatureEntity>()
-        if (hadLaneMarkLinkList?.isEmpty()) {
+        if (hadLaneMarkLinkList.isEmpty()) {
             return featureEntityList
         }
         // 解析道路边线可跨越性
@@ -253,7 +253,7 @@ class NavinfoPbfFileUtils: GisFileUtils {
     private fun parserRoadDirect(roadLinkList: List<Roadlink.RoadLink>, file: File,
                                  layerName: String= "道路方向", layerTableName: String = "ROAD_LINK_DIRECT"): List<GeometryFeatureEntity> {
         val featureEntityList = ArrayList<GeometryFeatureEntity>()
-        if (roadLinkList?.isEmpty()) {
+        if (roadLinkList.isEmpty()) {
             return featureEntityList
         }
         for (roadLink in roadLinkList) {
@@ -279,7 +279,7 @@ class NavinfoPbfFileUtils: GisFileUtils {
     private fun parserRoadBrunnel(roadLinkList: List<Roadlink.RoadLink>, file: File,
                                   layerName: String= "桥隧道", layerTableName: String = "ROAD_LINK_BRUNNEL"): List<GeometryFeatureEntity> {
         val featureEntityList = ArrayList<GeometryFeatureEntity>()
-        if (roadLinkList?.isEmpty()) {
+        if (roadLinkList.isEmpty()) {
             return featureEntityList
         }
         for (roadLink in roadLinkList) {
@@ -303,7 +303,7 @@ class NavinfoPbfFileUtils: GisFileUtils {
     private fun parserRoadMovBrg(roadLinkList: List<Roadlink.RoadLink>, file: File,
                                  layerName: String= "移动式桥", layerTableName: String = "ROAD_LINK_MOVBRG"): List<GeometryFeatureEntity> {
         val featureEntityList = ArrayList<GeometryFeatureEntity>()
-        if (roadLinkList?.isEmpty()) {
+        if (roadLinkList.isEmpty()) {
             return featureEntityList
         }
         for (roadLink in roadLinkList) {
