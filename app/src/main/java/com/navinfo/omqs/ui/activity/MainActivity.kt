@@ -23,10 +23,23 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        //关联生命周期
         binding.lifecycleOwner = this
-        viewModel.initMap(this, binding.mainActivityMap)
+        //给xml转递对象
+        binding.mainActivity = this
+        //给xml传递viewModel对象
+        binding.viewModel = viewModel
+        //初始化地图
+        viewModel.initMap(this, binding.mapView.mainActivityMap)
+        //让viewModel监听activity生命周期
         lifecycle.addObserver(viewModel)
-//        val navController = findNavController(R.id.nav_host_fragment_content_main)
+    }
+
+    /**
+     * 打开个人中菜单
+     */
+    fun openMenu() {
+        binding.mainActivityDrawer.open()
     }
 
 }

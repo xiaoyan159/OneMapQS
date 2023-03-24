@@ -16,12 +16,14 @@ class LocationLayerHandler(context: Context, mapView: NIMapView) :
     BaseHandler(context, mapView) {
 
     private var mCurrentLocation: BDLocation? = null
-
+    private var bFirst = true
     private val mLocationLayer: LocationLayer = LocationLayer(mMapView.vtmMap)
     private lateinit var locationClient: LocationClient
 
     init {
+        ///添加定位图层到地图，[NIMapView.LAYER_GROUPS.NAVIGATION] 是最上层layer组
         addLayer(mLocationLayer, NIMapView.LAYER_GROUPS.NAVIGATION)
+        //初始化定位
         initLocationOption()
     }
 
@@ -57,6 +59,10 @@ class LocationLayerHandler(context: Context, mapView: NIMapView) :
                     it.longitude,
                     it.radius
                 )
+                //第一次定位成功显示当前位置
+                if (this.bFirst) {
+                    animateToCurrentPosition()
+                }
 
             }
             //注册监听函数
@@ -102,7 +108,9 @@ class LocationLayerHandler(context: Context, mapView: NIMapView) :
         }
     }
 
-
+    /**
+     * 开启定位
+     */
     fun startLocation() {
         //开始定位
         if (!locationClient.isStarted) {
@@ -110,9 +118,24 @@ class LocationLayerHandler(context: Context, mapView: NIMapView) :
         }
     }
 
+    /**
+     * 停止定位
+     */
     fun stopLocation() {
         if (locationClient.isStarted) {
             locationClient.stop()
+        }
+    }
+
+    /**
+     * 回到当前位置
+     */
+    fun animateToCurrentPosition()
+    {
+        mCurrentLocation?.run {
+            val mapPosition = mMapView.vtmMap.mapPosition;
+            mapPosition.setPosition(this.latitude, this.longitude);
+            mMapView.vtmMap.animator().animateTo(300, mapPosition);
         }
     }
 }
