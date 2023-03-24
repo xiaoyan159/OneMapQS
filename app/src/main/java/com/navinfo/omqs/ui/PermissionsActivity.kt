@@ -12,13 +12,17 @@ import com.hjq.permissions.XXPermissions
  * 权限申请Activity
  */
 abstract class PermissionsActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         XXPermissions.with(this)
             // 申请单个权限
-            .permission(Permission.WRITE_EXTERNAL_STORAGE)
-            .permission(Permission.READ_EXTERNAL_STORAGE)
+//            .permission(Permission.WRITE_EXTERNAL_STORAGE)
+//            .permission(Permission.READ_EXTERNAL_STORAGE)
+//            .permission(Permission.READ_MEDIA_IMAGES)
+//            .permission(Permission.READ_MEDIA_AUDIO)
+//            .permission(Permission.READ_MEDIA_VIDEO)
+            .permission(Permission.MANAGE_EXTERNAL_STORAGE)
             // 设置权限请求拦截器（局部设置）
             //.interceptor(new PermissionInterceptor())
             // 设置不触发错误检测机制（局部设置）
