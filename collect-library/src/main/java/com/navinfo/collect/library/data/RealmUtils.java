@@ -6,7 +6,6 @@ import android.util.Log;
 import com.google.protobuf.GeneratedMessageV3;
 import com.navinfo.collect.library.data.entity.GeometryFeatureEntity;
 import com.navinfo.collect.library.data.entity.LayerEntity;
-import com.navinfo.collect.library.map.NILayerManager;
 import com.navinfo.collect.library.utils.GeometryTools;
 import com.navinfo.onemap.det.sdkpbf.proto.crowdsource.Hadlanelink;
 import com.navinfo.onemap.det.sdkpbf.proto.crowdsource.Hadlanemarklink;
@@ -48,7 +47,7 @@ public class RealmUtils {
     private static RealmUtils instance;
     private Realm realm;
     private RealmConfiguration realmConfiguration;
-    private String defaultDir = NILayerManager.defaultDir;
+    private String defaultDir = "";//NILayerManager.defaultDir;
     private String realmName;
 
     private final String NAME = "name";

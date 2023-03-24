@@ -1,5 +1,7 @@
 package com.navinfo.collect.library.map.source;
 
+import android.util.Log;
+
 import org.oscim.backend.CanvasAdapter;
 import org.oscim.backend.canvas.Bitmap;
 import org.oscim.core.Tile;
@@ -32,6 +34,7 @@ public class NavinfoMapRastorTileSource extends UrlTileSource {
 
     public static class Builder<T extends Builder<T>> extends UrlTileSource.Builder<T> {
         private boolean isTMSProtocol = true;
+
         public Builder(String url) {
             super(url, DEFAULT_PATH);
             overZoom(2);

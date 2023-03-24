@@ -5,12 +5,10 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import android.widget.Toast
 import com.navinfo.collect.library.R
-import com.navinfo.collect.library.map.NILayerManager
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.map.layers.NIPolygonLayer
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.StringUtil
-import com.navinfo.collect.library.utils.StringUtil.Companion.createUUID
 import org.oscim.android.canvas.AndroidBitmap
 import org.oscim.backend.canvas.Bitmap
 import org.oscim.core.GeoPoint
@@ -41,13 +39,13 @@ open class PolygonHandler(context: Context, mapView: NIMapView) :
     private val editTempStyle: Style
 
     //新增线数据引线
-    private var mPathLayerTemp: PathLayer
+    private lateinit var mPathLayerTemp: PathLayer
 
     //线路端点图标
     private var mPathMarkerBitmap: Bitmap
 
     //线路端点marker
-    private val mEndpointLayer: ItemizedLayer
+    private lateinit var mEndpointLayer: ItemizedLayer
 
     private var bDrawPolygon = false
 
@@ -92,22 +90,22 @@ open class PolygonHandler(context: Context, mapView: NIMapView) :
             mMapView.vtmMap,
             lineStyle
         )
-        mMapView.layerManager.addLayer(
-            "defaultPolygonLayer",
-            mPolygonLayer,
-            NIMapView.LAYER_GROUPS.VECTOR.ordinal
-        )
-
-        mPathLayerTemp = if (mMapView.layerManager.containsLayer("guideLineLayer")) {
-            mMapView.layerManager.getLayer("guideLineLayer") as PathLayer
-        } else {
-            PathLayer(mMapView.vtmMap, newTempStyle)
-        }
-        mMapView.layerManager.addLayer(
-            "guideLineLayer",
-            mPathLayerTemp,
-            NIMapView.LAYER_GROUPS.VECTOR.ordinal
-        )
+//        mMapView.layerManager.addLayer(
+//            "defaultPolygonLayer",
+//            mPolygonLayer,
+//            NIMapView.LAYER_GROUPS.VECTOR.ordinal
+//        )
+//
+//        mPathLayerTemp = if (mMapView.layerManager.containsLayer("guideLineLayer")) {
+//            mMapView.layerManager.getLayer("guideLineLayer") as PathLayer
+//        } else {
+//            PathLayer(mMapView.vtmMap, newTempStyle)
+//        }
+//        mMapView.layerManager.addLayer(
+//            "guideLineLayer",
+//            mPathLayerTemp,
+//            NIMapView.LAYER_GROUPS.VECTOR.ordinal
+//        )
 
         mPathMarkerBitmap = AndroidBitmap(
             BitmapFactory.decodeResource(
@@ -118,57 +116,57 @@ open class PolygonHandler(context: Context, mapView: NIMapView) :
 
         val markerSymbol = MarkerSymbol(mPathMarkerBitmap, MarkerSymbol.HotspotPlace.CENTER)
 
-        mEndpointLayer = if (mMapView.layerManager.containsLayer("endpointLayer")) {
-            mMapView.layerManager.getLayer("endpointLayer") as ItemizedLayer
-        } else
-        //新增marker图层
-            ItemizedLayer(
-                mMapView.vtmMap,
-                java.util.ArrayList<MarkerInterface>(),
-                markerSymbol,
-                null
-            )
-        mMapView.layerManager.addLayer(
-            "endpointLayer",
-            mEndpointLayer,
-            NIMapView.LAYER_GROUPS.VECTOR.ordinal
-        )
+//        mEndpointLayer = if (mMapView.layerManager.containsLayer("endpointLayer")) {
+//            mMapView.layerManager.getLayer("endpointLayer") as ItemizedLayer
+//        } else
+//        //新增marker图层
+//            ItemizedLayer(
+//                mMapView.vtmMap,
+//                java.util.ArrayList<MarkerInterface>(),
+//                markerSymbol,
+//                null
+//            )
+//        mMapView.layerManager.addLayer(
+//            "endpointLayer",
+//            mEndpointLayer,
+//            NIMapView.LAYER_GROUPS.VECTOR.ordinal
+//        )
 
-        mEndpointLayer.setOnItemGestureListener(object : OnItemGestureListener<MarkerInterface> {
-            override fun onItemSingleTapUp(index: Int, item: MarkerInterface): Boolean {
-                if (bDrawPolygon) {
-                    for (i in mPathMakers.indices) {
-                        val item1 = mPathMakers[i]
-                        if (item === item1) {
-                            mMapView.vtmMap.animator().animateTo(
-                                GeoPoint(
-                                    item.getPoint().latitude,
-                                    item.getPoint().longitude
-                                )
-                            )
-                            editIndex = i
-                            mPathLayerTemp.setStyle(editTempStyle)
-                            val list: MutableList<GeoPoint> = mutableListOf()
-                            if (editIndex == 0 || editIndex == mPathMakers.size - 1) {
-                                list.add(item.getPoint())
-                                list.add(item.getPoint())
-                            } else {
-                                list.add(mPathMakers[editIndex - 1].geoPoint)
-                                list.add(item.getPoint())
-                                list.add(mPathMakers[editIndex + 1].geoPoint)
-                            }
-                            mPathLayerTemp.setPoints(list)
-                            return false
-                        }
-                    }
-                }
-                return false
-            }
-
-            override fun onItemLongPress(index: Int, item: MarkerInterface): Boolean {
-                return false
-            }
-        })
+//        mEndpointLayer.setOnItemGestureListener(object : OnItemGestureListener<MarkerInterface> {
+//            override fun onItemSingleTapUp(index: Int, item: MarkerInterface): Boolean {
+//                if (bDrawPolygon) {
+//                    for (i in mPathMakers.indices) {
+//                        val item1 = mPathMakers[i]
+//                        if (item === item1) {
+//                            mMapView.vtmMap.animator().animateTo(
+//                                GeoPoint(
+//                                    item.getPoint().latitude,
+//                                    item.getPoint().longitude
+//                                )
+//                            )
+//                            editIndex = i
+//                            mPathLayerTemp.setStyle(editTempStyle)
+//                            val list: MutableList<GeoPoint> = mutableListOf()
+//                            if (editIndex == 0 || editIndex == mPathMakers.size - 1) {
+//                                list.add(item.getPoint())
+//                                list.add(item.getPoint())
+//                            } else {
+//                                list.add(mPathMakers[editIndex - 1].geoPoint)
+//                                list.add(item.getPoint())
+//                                list.add(mPathMakers[editIndex + 1].geoPoint)
+//                            }
+//                            mPathLayerTemp.setPoints(list)
+//                            return false
+//                        }
+//                    }
+//                }
+//                return false
+//            }
+//
+//            override fun onItemLongPress(index: Int, item: MarkerInterface): Boolean {
+//                return false
+//            }
+//        })
     }
 
     fun addDrawPolygonPoint(geoPoint: GeoPoint): List<GeoPoint> {

@@ -84,22 +84,10 @@ open class LineHandler(context: Context, mapView: NIMapView) :
             .build()
 
         mPathLayer = PathLayer(mMapView.vtmMap, lineStyle)
-        mMapView.layerManager.addLayer(
-            "defaultLineLayer",
-            mPathLayer,
-            NIMapView.LAYER_GROUPS.VECTOR.ordinal
-        )
+//        addLayer(mPathLayer, NIMapView.LAYER_GROUPS.OPERATE)
 
-        mPathLayerTemp = if (mMapView.layerManager.containsLayer("guideLineLayer")) {
-            mMapView.layerManager.getLayer("guideLineLayer") as PathLayer
-        } else {
-            PathLayer(mMapView.vtmMap, newTempStyle)
-        }
-        mMapView.layerManager.addLayer(
-            "guideLineLayer",
-            mPathLayerTemp,
-            NIMapView.LAYER_GROUPS.VECTOR.ordinal
-        )
+        mPathLayerTemp = PathLayer(mMapView.vtmMap, newTempStyle)
+        //        addLayer(mPathLayerTemp, NIMapView.LAYER_GROUPS.OPERATE)
 
         mPathMarkerBitmap = AndroidBitmap(
             BitmapFactory.decodeResource(
@@ -109,21 +97,10 @@ open class LineHandler(context: Context, mapView: NIMapView) :
         )
         val markerSymbol = MarkerSymbol(mPathMarkerBitmap, MarkerSymbol.HotspotPlace.CENTER)
         //新增marker图层
-        mEndpointLayer = if (mMapView.layerManager.containsLayer("endpointLayer")) {
-            mMapView.layerManager.getLayer("endpointLayer") as ItemizedLayer
-        } else
-        //新增marker图层
-            ItemizedLayer(
-                mMapView.vtmMap,
-                java.util.ArrayList<MarkerInterface>(),
-                markerSymbol,
-                null
-            )
-        mMapView.layerManager.addLayer(
-            "endpointLayer",
-            mEndpointLayer,
-            NIMapView.LAYER_GROUPS.VECTOR.ordinal
+        mEndpointLayer = ItemizedLayer(
+            mMapView.vtmMap, ArrayList<MarkerInterface>(), markerSymbol, null
         )
+        //        addLayer(mEndpointLayer, NIMapView.LAYER_GROUPS.OPERATE)
         mEndpointLayer.setOnItemGestureListener(object : OnItemGestureListener<MarkerInterface> {
             override fun onItemSingleTapUp(index: Int, item: MarkerInterface): Boolean {
                 if (bDrawLine) {
@@ -283,7 +260,7 @@ open class LineHandler(context: Context, mapView: NIMapView) :
     }
 
     fun addDrawLine(list: List<GeoPoint>) {
-        for(item in list){
+        for (item in list) {
             addDrawLinePoint(item)
         }
     }

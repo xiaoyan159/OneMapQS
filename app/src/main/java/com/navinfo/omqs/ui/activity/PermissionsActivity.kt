@@ -1,9 +1,8 @@
-package com.navinfo.omqs.ui
+package com.navinfo.omqs.ui.activity
 
+import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
@@ -11,14 +10,30 @@ import com.hjq.permissions.XXPermissions
 /**
  * 权限申请Activity
  */
-abstract class PermissionsActivity : BaseActivity() {
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-
+open class PermissionsActivity : BaseActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val permissionList = mutableListOf<String>()
+        if (applicationInfo.targetSdkVersion >= Build.VERSION_CODES.TIRAMISU) {
+            //文件读写
+            permissionList.add(Permission.READ_MEDIA_IMAGES)
+            permissionList.add(Permission.READ_MEDIA_AUDIO)
+            permissionList.add(Permission.READ_MEDIA_VIDEO)
+        } else {
+            //文件读写
+            permissionList.add(Permission.WRITE_EXTERNAL_STORAGE)
+            permissionList.add(Permission.READ_EXTERNAL_STORAGE)
+            permissionList.add(Permission.READ_MEDIA_VIDEO)
+        }
+        //定位权限
+        permissionList.add(Permission.ACCESS_FINE_LOCATION)
+        permissionList.add(Permission.ACCESS_COARSE_LOCATION)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            permissionList.add(Permission.ACCESS_BACKGROUND_LOCATION)
+        }
         XXPermissions.with(this)
             // 申请单个权限
-            .permission(Permission.WRITE_EXTERNAL_STORAGE)
-            .permission(Permission.READ_EXTERNAL_STORAGE)
+            .permission(permissionList)
             // 设置权限请求拦截器（局部设置）
             //.interceptor(new PermissionInterceptor())
             // 设置不触发错误检测机制（局部设置）
@@ -35,6 +50,8 @@ abstract class PermissionsActivity : BaseActivity() {
                             .show()
                         onPermissionsGranted()
                         return
+                    } else {
+                        onPermissionsDenied()
                     }
                     // 在SD卡创建项目目录
                 }
@@ -51,11 +68,23 @@ abstract class PermissionsActivity : BaseActivity() {
                         XXPermissions.startPermissionActivity(this@PermissionsActivity, permissions)
                         onPermissionsDenied()
                     } else {
+                        onPermissionsDenied()
                     }
                 }
             })
     }
 
-    abstract fun onPermissionsGranted()
-    abstract fun onPermissionsDenied()
+    /**
+     * 权限全部同意
+     */
+    open fun onPermissionsGranted() {
+
+    }
+
+    /**
+     * 权限
+     */
+    open fun onPermissionsDenied() {
+
+    }
 }

@@ -47,6 +47,8 @@ import org.oscim.tiling.source.mapfile.MultiMapFileTileSource;
 
 import java.io.File;
 
+
+
 /**
  * 一个显示地图的视图（View）。它负责从服务端获取地图数据。它将会捕捉屏幕触控手势事件
  */
@@ -93,13 +95,81 @@ public final class NIMapView extends RelativeLayout {
     /**
      * 地图图层管理器
      */
-    private NILayerManager mLayerManager;
-    private Layer baseRasterLayer, defaultVectorTileLayer, defaultVectorLabelLayer, gridLayer;
+//    private NILayerManager mLayerManager;
+//    private Layer baseRasterLayer, defaultVectorTileLayer, defaultVectorLabelLayer, gridLayer;
+    /**
+     * 地图网格图层
+     */
+//    private Layer gridLayer;
+
     protected Context mContext;
 
+    /**
+     * 地图状态信息
+     */
     private MapPreferences mPrefs;
-    protected String mapFilePath = Constant.ROOT_PATH+"/map";
+    //    protected String mapFilePath = Constant.ROOT_PATH + "/map";
     protected GroupLayer baseGroupLayer; // 用于盛放所有基础底图的图层组，便于统一管理
+
+
+    /**
+     * 地图单击事件监听接口
+     */
+    public  interface OnMapClickListener {
+        /**
+         * 地图单击事件回调函数
+         *
+         * @param point
+         */
+        void onMapClick(GeoPoint point);
+
+        /**
+         * 地图内 Poi 单击事件回调函数
+         *
+         * @param poi
+         */
+        void onMapPoiClick(GeoPoint poi);
+    }
+
+    /**
+     * 地图双击事件监听接口
+     */
+    public  interface OnMapDoubleClickListener {
+
+        /**
+         * 地图双击事件监听回调函数
+         *
+         * @param point
+         */
+        void onMapDoubleClick(GeoPoint point);
+
+    }
+
+    /**
+     * 地图长按事件监听接口
+     */
+    public  interface OnMapLongClickListener {
+        /**
+         * 地图长按事件监听回调函数
+         *
+         * @param point
+         */
+        void onMapLongClick(GeoPoint point);
+    }
+
+    /**
+     * 用户触摸地图时回调接口
+     */
+    public  interface OnMapTouchListener {
+        /**
+         * 当用户触摸地图时回调函数
+         *
+         * @param event
+         */
+        void onTouch(MotionEvent event);
+    }
+
+
 
     public NIMapView(Context context, NIMapOptions options) {
         this(context, null, 0);
@@ -110,22 +180,22 @@ public final class NIMapView extends RelativeLayout {
     /**
      * 地图的单击事件监听
      */
-    private NIMap.OnMapClickListener mapClickListener;
+    private OnMapClickListener mapClickListener;
 
     /**
      * 地图的双击事件监听
      */
-    private NIMap.OnMapDoubleClickListener mapDoubleClickListener;
+    private OnMapDoubleClickListener mapDoubleClickListener;
 
     /**
      * 地图的长按事件监听
      */
-    private NIMap.OnMapLongClickListener mapLongClickListener;
+    private OnMapLongClickListener mapLongClickListener;
 
     /**
      * 地图的触摸事件
      */
-    private NIMap.OnMapTouchListener touchListener;
+    private OnMapTouchListener touchListener;
 
     public NIMapView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -148,8 +218,7 @@ public final class NIMapView extends RelativeLayout {
 //        map = new NIMap(this);
         compassImage = rootView.findViewById(R.id.navinfo_map_compass);
         initMapGroup(); // 初始化图层组
-
-        mLayerManager = new NILayerManager(context, getVtmMap());
+//        mLayerManager = new NILayerManager(context, getVtmMap());
 
         logoImage = rootView.findViewById(R.id.navinfo_map_logo);
         mRotateAnimation = new NIRotateAnimation(compassImage);
@@ -183,11 +252,11 @@ public final class NIMapView extends RelativeLayout {
         NaviMapScaleBar naviMapScaleBar = new NaviMapScaleBar(getVtmMap());
         naviMapScaleBar.initScaleBarLayer(GLViewport.Position.BOTTOM_LEFT, 25, 60);
 
-        if (gridLayer == null) {
-            gridLayer = new TileGridLayer(getVtmMap());
-            getVtmMap().layers().add(gridLayer, LAYER_GROUPS.ALLWAYS_SHOW_GROUP.groupIndex);
-            gridLayer.setEnabled(false);
-        }
+//        if (gridLayer == null) {
+//            gridLayer = new TileGridLayer(getVtmMap());
+//            getVtmMap().layers().add(gridLayer, LAYER_GROUPS.NAVIGATION.groupIndex);
+////            gridLayer.setEnabled(true);
+//        }
 
         compassImage.setOnClickListener(new OnClickListener() {
             @Override
@@ -229,8 +298,52 @@ public final class NIMapView extends RelativeLayout {
         });
 
         zoomLayout = rootView.findViewById(R.id.navinfo_map_zoom_layer);
-        initMap();
+        switchTileVectorLayerTheme(MAP_THEME.DEFAULT);
     }
+
+
+    /**
+     * 切换 矢量图层 style
+     */
+
+    public void switchTileVectorLayerTheme(MAP_THEME styleId) {
+        // 如果不包含vectorlayer，则设置theme无效
+        boolean bHis = false;
+        for (Layer layer : getVtmMap().layers()) {
+            if (layer instanceof VectorTileLayer) {
+                bHis = true;
+                break;
+            }
+        }
+        if (!bHis) {
+            updateMap(true);
+            return;
+        }
+
+        if (styleId == null) {
+            getVtmMap().setTheme(new AssetsRenderTheme(mContext.getAssets(), "", "navdefault.xml"), true);
+        } else {
+            switch (styleId) {
+                case NEWTRON:
+                    getVtmMap().setTheme(VtmThemes.NEWTRON, true);
+                    break;
+                case OSMAGRAY:
+                    getVtmMap().setTheme(VtmThemes.OSMAGRAY, true);
+                    break;
+                case OSMARENDER:
+                    getVtmMap().setTheme(VtmThemes.OSMARENDER, true);
+                    break;
+                case TRONRENDER:
+                    getVtmMap().setTheme(VtmThemes.TRONRENDER, true);
+                    break;
+                default:
+                    getVtmMap().setTheme(new AssetsRenderTheme(mContext.getAssets(), "", "editormarker.xml"), true);
+                    break;
+            }
+        }
+        updateMap();
+    }
+
 
     /**
      * 地图初始化参数
@@ -250,197 +363,177 @@ public final class NIMapView extends RelativeLayout {
     }
 
 
-    /**
-     * 初始化地图
-     */
-    private void initMap() {
-        switchBaseMapType(BASE_MAP_TYPE.CYCLE_MAP);
-        switchTileVectorLayerTheme(MAP_THEME.DEFAULT);
-        initVectorTileLayer();
-        initMapLifeSource();
-    }
+//    /**
+//     * 增加作业渲染
+//     */
+//    LabelLayer labelLayer;
+//    /**
+//     * 作业数据图层
+//     */
+//    VectorTileLayer vectorTileLayer;
+//    /**
+//     * 作业数据渲染图层
+//     */
+//    MapLifeDBTileSource mapLifeDBTileSource;
+//    /**
+//     * 轨迹渲染图层
+//     */
+//    MapLifeNiLocationTileSource mapLifeNiLocationTileSource;
+//    /**
+//     * 轨迹数据图层
+//     */
+//    VectorTileLayer vectorNiLocationTileLayer;
+//    /**
+//     * 增加作业渲染
+//     */
+//    LabelLayer labelNiLocationLayer;
+
+//    public void initMapLifeSource() {
+//        mapLifeDBTileSource = new MapLifeDBTileSource(this.mContext, Constant.ROOT_PATH + "/coremap.db");
+//        mapLifeNiLocationTileSource = new MapLifeNiLocationTileSource(this.mContext, Constant.ROOT_PATH + "/coremap.db");
+//        vectorTileLayer = new VectorTileLayer(mapView.map(), mapLifeDBTileSource);
+//        vectorNiLocationTileLayer = new VectorTileLayer(mapView.map(), mapLifeNiLocationTileSource);
+//        mapView.map().layers().add(vectorNiLocationTileLayer, LAYER_GROUPS.VECTOR_TILE.groupIndex);
+//        mapView.map().layers().add(vectorTileLayer, LAYER_GROUPS.VECTOR_TILE.groupIndex);
+//        labelLayer = new LabelLayer(mapView.map(), vectorTileLayer, new LabelTileLoaderHook(), 15);
+//        mapView.map().layers().add(labelLayer, LAYER_GROUPS.VECTOR_TILE.groupIndex);
+//        labelNiLocationLayer = new LabelLayer(mapView.map(), vectorNiLocationTileLayer, new LabelTileLoaderHook(), 15);
+//        mapView.map().layers().add(labelNiLocationLayer, LAYER_GROUPS.VECTOR_TILE.groupIndex);
+//
+//        switchTileVectorLayerTheme(null);
+//        mapView.map().updateMap(true);
+//        MapPosition mapPosition = new MapPosition();
+//        mapPosition.setZoomLevel(18);
+//        mapPosition.setPosition(40.091692296269144, 116.26712172082546);
+//        //116.26712172082546 40.091692296269144
+//        mapView.map().animator().animateTo(mapPosition);
+//    }
+//
+//    public void dataLayerUpdate() {
+//        switchTileVectorLayerTheme(null);
+//    }
 
     /**
-     * 增加作业渲染
+     * 初始化地图图层分组
      */
-    LabelLayer labelLayer;
-    /**
-     * 作业数据图层
-     */
-    VectorTileLayer vectorTileLayer;
-    /**
-     * 作业数据渲染图层
-     */
-    MapLifeDBTileSource mapLifeDBTileSource;
-    /**
-     * 轨迹渲染图层
-     */
-    MapLifeNiLocationTileSource mapLifeNiLocationTileSource;
-    /**
-     * 轨迹数据图层
-     */
-    VectorTileLayer vectorNiLocationTileLayer;
-    /**
-     * 增加作业渲染
-     */
-    LabelLayer labelNiLocationLayer;
-
-    public void initMapLifeSource() {
-        mapLifeDBTileSource = new MapLifeDBTileSource(this.mContext, Constant.ROOT_PATH + "/coremap.db");
-        mapLifeNiLocationTileSource = new MapLifeNiLocationTileSource(this.mContext,Constant.ROOT_PATH + "/coremap.db");
-        vectorTileLayer = new VectorTileLayer(mapView.map(), mapLifeDBTileSource);
-        vectorNiLocationTileLayer = new VectorTileLayer(mapView.map(),mapLifeNiLocationTileSource);
-        mapView.map().layers().add(vectorNiLocationTileLayer,LAYER_GROUPS.VECTOR_TILE.groupIndex);
-        mapView.map().layers().add(vectorTileLayer,LAYER_GROUPS.VECTOR_TILE.groupIndex);
-        labelLayer = new LabelLayer(mapView.map(), vectorTileLayer, new LabelTileLoaderHook(), 15);
-        mapView.map().layers().add(labelLayer,LAYER_GROUPS.VECTOR_TILE.groupIndex);
-        labelNiLocationLayer = new LabelLayer(mapView.map(), vectorNiLocationTileLayer, new LabelTileLoaderHook(), 15);
-        mapView.map().layers().add(labelNiLocationLayer,LAYER_GROUPS.VECTOR_TILE.groupIndex);
-
-        switchTileVectorLayerTheme(null);
-        mapView.map().updateMap(true);
-        MapPosition mapPosition = new MapPosition();
-        mapPosition.setZoomLevel(18);
-        mapPosition.setPosition(40.091692296269144, 116.26712172082546);
-        //116.26712172082546 40.091692296269144
-        mapView.map().animator().animateTo(mapPosition);
-    }
-
-    public void dataLayerUpdate() {
-        switchTileVectorLayerTheme(null);
-    }
-
     private void initMapGroup() {
         for (LAYER_GROUPS groups : LAYER_GROUPS.values()) {
             getVtmMap().layers().addGroup(groups.groupIndex);
         }
     }
 
-    /**
-     * 切换基础底图样式
-     */
-    public void switchBaseMapType(BASE_MAP_TYPE type) {
-        if (baseRasterLayer != null) {
-            getVtmMap().layers().remove(baseRasterLayer);
-            baseRasterLayer = null;
-            getVtmMap().updateMap();
-        }
-        baseRasterLayer = mLayerManager.getRasterTileLayer(mContext, type.url, type.tilePath, true);
-        getVtmMap().layers().add(baseRasterLayer, LAYER_GROUPS.BASE_RASTER.groupIndex);
-        getVtmMap().updateMap();
-    }
 
-    /**
-     * 移除基础底图样式
-     */
-    public void removeBaseMap() {
-        if (baseRasterLayer != null) {
-            getVtmMap().layers().remove(baseRasterLayer);
-            baseRasterLayer = null;
-            getVtmMap().updateMap();
-        }
-    }
+//    /**
+//     * 移除基础底图样式
+//     */
+//    public void removeBaseMap() {
+//        if (baseRasterLayer != null) {
+//            getVtmMap().layers().remove(baseRasterLayer);
+//            baseRasterLayer = null;
+//            getVtmMap().updateMap();
+//        }
+//    }
 
-    public void initVectorTileLayer(){
-        if (baseGroupLayer == null) {
-            baseGroupLayer = new GroupLayer(getVtmMap());
-        }
-        for (Layer layer : baseGroupLayer.layers) {
-            getVtmMap().layers().remove(layer);
-        }
-        baseGroupLayer.layers.clear();
+//    private void initVectorTileLayer() {
+//        if (baseGroupLayer == null) {
+//            baseGroupLayer = new GroupLayer(getVtmMap());
+//        }
+//        for (Layer layer : baseGroupLayer.layers) {
+//            getVtmMap().layers().remove(layer);
+//        }
+//        baseGroupLayer.layers.clear();
+//
+//        File baseMapFolder = new File(mapFilePath);
+//        if (!baseMapFolder.exists()) {
+//            return;
+//        }
+//
+//        File[] mapFileList = baseMapFolder.listFiles();
+//
+//        if (mapFileList != null && mapFileList.length > 0) {
+//
+//            MultiMapFileTileSource multiMapFileTileSource = new MultiMapFileTileSource();
+//
+//            for (File mapFile : mapFileList) {
+//
+//                if (!mapFile.exists() || !mapFile.getName().endsWith(".map")) {
+//                    continue;
+//                }
+//
+//                MapFileTileSource mTileSource = new MapFileTileSource();
+//
+//                mTileSource.setPreferredLanguage("zh");
+//
+//                if (mTileSource.setMapFile(mapFile.getAbsolutePath())) {
+//                    multiMapFileTileSource.add(mTileSource);
+//                }
+//
+//            }
+//
+//            VectorTileLayer baseMapLayer = new OsmTileLayer(getVtmMap());
+//            baseMapLayer.setTileSource(multiMapFileTileSource);
+//
+//            baseGroupLayer.layers.add(baseMapLayer);
+//
+//            if (getTheme(null) != null)
+//                baseMapLayer.setTheme(getTheme(null));
+//
+//            baseGroupLayer.layers.add(new BuildingLayer(getVtmMap(), baseMapLayer));
+//            baseGroupLayer.layers.add(new LabelLayer(getVtmMap(), baseMapLayer));
+//
+//            for (Layer layer : baseGroupLayer.layers) {
+//                if (layer instanceof LabelLayer) {
+//                    getVtmMap().layers().add(layer, LAYER_GROUPS.VECTOR.groupIndex);
+//                } else {
+//                    getVtmMap().layers().add(layer, LAYER_GROUPS.BASE_VECTOR.groupIndex);
+//                }
+//            }
+//        }
+//    }
 
-        File baseMapFolder = new File(mapFilePath);
-        if (!baseMapFolder.exists()) {
-            return;
-        }
+//    //获取渲染资源
+//    public IRenderTheme getTheme(final String styleId) {
+//        AssetsRenderTheme theme = new AssetsRenderTheme(mContext.getAssets(), null, "default.xml");
+//        if (styleId == null || "".equals(styleId.trim())) {
+//            switch (2) {
+//                case 0:
+//                    theme = new AssetsRenderTheme(mContext.getAssets(), null, "default.xml");
+//                    break;
+//                case 1:
+//                    theme = new AssetsRenderTheme(mContext.getAssets(), null, "osmarender.xml");
+//                    break;
+//                case 2:
+//                    theme = new AssetsRenderTheme(mContext.getAssets(), null, "tronrender.xml");
+//                    break;
+//            }
+//
+//        }
+//
+//        return ThemeLoader.load(theme);
+//    }
 
-        File[] mapFileList = baseMapFolder.listFiles();
+//    public void addDefaultVectorTileLayer(MAP_THEME theme) {
+//        if (defaultVectorTileLayer != null) {
+//            getVtmMap().layers().remove(defaultVectorTileLayer);
+//            defaultVectorTileLayer = null;
+//            getVtmMap().updateMap();
+//        }
+//        defaultVectorTileLayer = mLayerManager.getDefaultVectorLayer(true);
+//        getVtmMap().layers().add(defaultVectorTileLayer, LAYER_GROUPS.VECTOR_TILE.groupIndex);
+//        defaultVectorLabelLayer = new LabelLayer(getVtmMap(), (VectorTileLayer) defaultVectorTileLayer);
+//        getVtmMap().layers().add(defaultVectorLabelLayer, LAYER_GROUPS.VECTOR_TILE.groupIndex);
+//        if (theme != null) {
+////            switchTileVectorLayerTheme(theme);
+//        }
+//        getVtmMap().updateMap();
+//    }
 
-        if (mapFileList != null && mapFileList.length > 0) {
-
-            MultiMapFileTileSource multiMapFileTileSource = new MultiMapFileTileSource();
-
-            for (File mapFile : mapFileList) {
-
-                if (!mapFile.exists() || !mapFile.getName().endsWith(".map")) {
-                    continue;
-                }
-
-                MapFileTileSource mTileSource = new MapFileTileSource();
-
-                mTileSource.setPreferredLanguage("zh");
-
-                if (mTileSource.setMapFile(mapFile.getAbsolutePath())) {
-                    multiMapFileTileSource.add(mTileSource);
-                }
-
-            }
-
-            VectorTileLayer baseMapLayer = new OsmTileLayer(getVtmMap());
-            baseMapLayer.setTileSource(multiMapFileTileSource);
-
-            baseGroupLayer.layers.add(baseMapLayer);
-
-            if (getTheme(null) != null)
-                baseMapLayer.setTheme(getTheme(null));
-
-            baseGroupLayer.layers.add(new BuildingLayer(getVtmMap(), baseMapLayer));
-            baseGroupLayer.layers.add(new LabelLayer(getVtmMap(), baseMapLayer));
-
-            for (Layer layer : baseGroupLayer.layers) {
-                if (layer instanceof LabelLayer) {
-                    getVtmMap().layers().add(layer, LAYER_GROUPS.VECTOR.groupIndex);
-                } else {
-                    getVtmMap().layers().add(layer, LAYER_GROUPS.BASE_VECTOR.groupIndex);
-                }
-            }
-        }
-    }
-
-    //获取渲染资源
-    public IRenderTheme getTheme(final String styleId) {
-        AssetsRenderTheme theme = new AssetsRenderTheme(mContext.getAssets(), null, "default.xml");
-        if (styleId == null || "".equals(styleId.trim())) {
-            switch (2) {
-                case 0:
-                    theme = new AssetsRenderTheme(mContext.getAssets(), null, "default.xml");
-                    break;
-                case 1:
-                    theme = new AssetsRenderTheme(mContext.getAssets(), null, "osmarender.xml");
-                    break;
-                case 2:
-                    theme = new AssetsRenderTheme(mContext.getAssets(), null, "tronrender.xml");
-                    break;
-            }
-
-        }
-
-        return ThemeLoader.load(theme);
-    }
-
-    public void addDefaultVectorTileLayer(MAP_THEME theme) {
-        if (defaultVectorTileLayer != null) {
-            getVtmMap().layers().remove(defaultVectorTileLayer);
-            defaultVectorTileLayer = null;
-            getVtmMap().updateMap();
-        }
-        defaultVectorTileLayer = mLayerManager.getDefaultVectorLayer(true);
-        getVtmMap().layers().add(defaultVectorTileLayer, LAYER_GROUPS.VECTOR_TILE.groupIndex);
-        defaultVectorLabelLayer = new LabelLayer(getVtmMap(), (VectorTileLayer) defaultVectorTileLayer);
-        getVtmMap().layers().add(defaultVectorLabelLayer, LAYER_GROUPS.VECTOR_TILE.groupIndex);
-        if (theme != null) {
-            switchTileVectorLayerTheme(theme);
-        }
-        getVtmMap().updateMap();
-    }
-
-    public void setBaseRasterVisiable(boolean visiable) {
-        if (baseRasterLayer != null) {
-            baseRasterLayer.setEnabled(visiable);
-            getVtmMap().updateMap();
-        }
-    }
+//    public void setBaseRasterVisiable(boolean visiable) {
+//        if (baseRasterLayer != null) {
+//            baseRasterLayer.setEnabled(visiable);
+//            getVtmMap().updateMap();
+//        }
+//    }
 
     /**
      * 基础
@@ -473,24 +566,26 @@ public final class NIMapView extends RelativeLayout {
         }
     }
 
-    /**
-     * 网格图层是否显示
-     */
-    public void setGridLayerVisiable(boolean visiable) {
-        if (gridLayer != null) {
-            gridLayer.setEnabled(visiable);
-            getVtmMap().updateMap();
-        }
-    }
+//    /**
+//     * 网格图层是否显示
+//     */
+//    public void setGridLayerVisiable(boolean visiable) {
+//        if (gridLayer != null) {
+//            gridLayer.setEnabled(visiable);
+//            updateMap();
+//        }
+//    }
 
     /**
      * 图层组定义
      */
     public enum LAYER_GROUPS {
-        BASE_RASTER(0)/*栅格底图*/, BASE_VECTOR(1)/*矢量底图*/,
-        RASTER_TILE(2)/*栅格网格*/, VECTOR_TILE(3)/*矢量网格*/,
-        VECTOR(4)/*矢量图层组*/, OTHER(5)/*其他图层*/,
-        ALLWAYS_SHOW_GROUP(6), OPERATE(7)/*操作图层组*/;
+        BASE(0)/*底图图层组*/,
+        VECTOR_TILE(1)/*矢量瓦片组*/,
+        VECTOR(2)/*高亮组*/,
+        OPERATE(3)/*操作图层组*/,
+        NAVIGATION(4)/*定位导航组*/;
+
         int groupIndex;
 
         LAYER_GROUPS(int groupIndex) {
@@ -552,7 +647,7 @@ public final class NIMapView extends RelativeLayout {
      * @param bundle
      */
     public void onSaveInstanceState(Bundle bundle) {
-
+        super.onSaveInstanceState();
     }
 
 
@@ -560,11 +655,11 @@ public final class NIMapView extends RelativeLayout {
      * 当Activity销毁时调用地图的销毁
      */
     public void onDestroy() {
-        try{
+        try {
             if (mapView != null) {
                 mapView.onDestroy();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -627,9 +722,9 @@ public final class NIMapView extends RelativeLayout {
     public void zoomIn(View view) {
         if (view != null) {
             if (view.isEnabled()) {
-                MapPosition mapPosition = mapView.map().getMapPosition();
+                MapPosition mapPosition = getVtmMap().getMapPosition();
                 mapPosition.setZoom(mapPosition.getZoom() + 1);
-                mapView.map().animator().animateTo(mapPosition);
+                getVtmMap().animator().animateTo(mapPosition);
 //                map.zoomIn(true);
             }
             view.setEnabled(false);
@@ -648,9 +743,9 @@ public final class NIMapView extends RelativeLayout {
     public void zoomOut(View view) {
         if (view != null) {
             if (view.isEnabled()) {
-                MapPosition mapPosition = mapView.map().getMapPosition();
+                MapPosition mapPosition = getVtmMap().getMapPosition();
                 mapPosition.setZoom(mapPosition.getZoom() - 1);
-                mapView.map().animator().animateTo(mapPosition);
+                getVtmMap().animator().animateTo(mapPosition);
 
 //                map.zoomOut(true);
             }
@@ -809,47 +904,9 @@ public final class NIMapView extends RelativeLayout {
         }
     }
 
-    public void switchTileVectorLayerTheme(MAP_THEME styleId) {
-        // 如果不包含vectorlayer，则设置theme无效
-        boolean bHis = false;
-        for (Layer layer : getVtmMap().layers()) {
-            if (layer instanceof VectorTileLayer) {
-                bHis = true;
-                break;
-            }
-        }
-        if (!bHis) {
-            getVtmMap().updateMap(true);
-            return;
-        }
-
-        if (styleId == null) {
-            getVtmMap().setTheme(new AssetsRenderTheme(mContext.getAssets(), "", "navdefault.xml"), true);
-        } else {
-            switch (styleId) {
-                case NEWTRON:
-                    getVtmMap().setTheme(VtmThemes.NEWTRON, true);
-                    break;
-                case OSMAGRAY:
-                    getVtmMap().setTheme(VtmThemes.OSMAGRAY, true);
-                    break;
-                case OSMARENDER:
-                    getVtmMap().setTheme(VtmThemes.OSMARENDER, true);
-                    break;
-                case TRONRENDER:
-                    getVtmMap().setTheme(VtmThemes.TRONRENDER, true);
-                    break;
-                default:
-                    getVtmMap().setTheme(new AssetsRenderTheme(mContext.getAssets(), "", "editormarker.xml"), true);
-                    break;
-            }
-        }
-        getVtmMap().updateMap();
-    }
-
-    public NILayerManager getLayerManager() {
-        return mLayerManager;
-    }
+//    public NILayerManager getLayerManager() {
+//        return mLayerManager;
+//    }
 
     // 地图点击事件对应的图层
     private class MapEventsReceiver extends Layer implements GestureListener {
@@ -874,7 +931,7 @@ public final class NIMapView extends RelativeLayout {
                     mapLongClickListener.onMapLongClick(geoPoint);
                 }
             }
-            setOnMapClickListener(new NIMap.OnMapClickListener() {
+            setOnMapClickListener(new OnMapClickListener() {
                 @Override
                 public void onMapClick(GeoPoint point) {
 
@@ -892,7 +949,7 @@ public final class NIMapView extends RelativeLayout {
     /**
      * 设置地图的点击事件
      */
-    public void setOnMapClickListener(@Nullable NIMap.OnMapClickListener listener) {
+    public void setOnMapClickListener(@Nullable OnMapClickListener listener) {
         this.mapClickListener = listener;
     }
 
@@ -900,7 +957,7 @@ public final class NIMapView extends RelativeLayout {
      * 设置地图的双击事件
      * 注：默认情况下，双击会自动放大地图
      */
-    public void setOnMapDoubleClickListener(@Nullable NIMap.OnMapDoubleClickListener listener) {
+    public void setOnMapDoubleClickListener(@Nullable OnMapDoubleClickListener listener) {
         this.mapDoubleClickListener = listener;
     }
 
@@ -909,7 +966,7 @@ public final class NIMapView extends RelativeLayout {
      *
      * @param listener
      */
-    public void setOnMapLongClickListener(@Nullable NIMap.OnMapLongClickListener listener) {
+    public void setOnMapLongClickListener(@Nullable OnMapLongClickListener listener) {
         this.mapLongClickListener = listener;
     }
 
@@ -918,7 +975,21 @@ public final class NIMapView extends RelativeLayout {
      *
      * @param listener
      */
-    public void setOnMapTouchListener(@Nullable NIMap.OnMapTouchListener listener) {
+    public void setOnMapTouchListener(@Nullable OnMapTouchListener listener) {
         this.touchListener = listener;
+    }
+
+    /**
+     * 刷新地图
+     */
+    public void updateMap() {
+        mapView.map().updateMap();
+    }
+
+    /**
+     * 刷新地图
+     */
+    public void updateMap(boolean redraw) {
+        mapView.map().updateMap(redraw);
     }
 }

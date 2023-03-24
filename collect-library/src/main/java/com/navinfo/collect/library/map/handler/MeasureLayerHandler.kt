@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.text.TextPaint
 import android.widget.Toast
 import com.navinfo.collect.library.R
-import com.navinfo.collect.library.map.NILayerManager
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.map.handler.BaseHandler
 import com.navinfo.collect.library.map.layers.NIPolygonLayer
@@ -39,6 +38,7 @@ open class MeasureLayerHandler(context: Context, mapView: NIMapView) :
     private val bDrawPoint = false
 
     private var mAreaLayer: ItemizedLayer
+
     //绘制线 样式
     private val lineStyle: Style
 
@@ -49,8 +49,10 @@ open class MeasureLayerHandler(context: Context, mapView: NIMapView) :
 
     //新增线数据引线
     private var mPathLayerTemp: PathLayer
+
     //新增线数据
     private var mPathLayer: PathLayer
+
     //线路端点图标
     private var mPathMarkerBitmap: Bitmap
 
@@ -67,7 +69,7 @@ open class MeasureLayerHandler(context: Context, mapView: NIMapView) :
             .fillColor(context.resources.getColor(R.color.draw_line_blue2_color, null))
             .fillAlpha(0.5f)
             .strokeColor(context.resources.getColor(R.color.draw_line_blue2_color, null))
-            .fillColor(context.resources.getColor(R.color.draw_line_red_color,null))
+            .fillColor(context.resources.getColor(R.color.draw_line_red_color, null))
             .stippleWidth(4f)
             .fixed(true)
             .build()
@@ -96,22 +98,10 @@ open class MeasureLayerHandler(context: Context, mapView: NIMapView) :
             mMapView.vtmMap,
             lineStyle
         )
-        mMapView.layerManager.addLayer(
-            "meatureLayer",
-            mPolygonLayer,
-            NIMapView.LAYER_GROUPS.VECTOR.ordinal
-        )
+//        addLayer(mPolygonLayer, NIMapView.LAYER_GROUPS.OPERATE)
 
-        mPathLayerTemp = if (mMapView.layerManager.containsLayer("meatureLineLayer")) {
-            mMapView.layerManager.getLayer("meatureLineLayer") as PathLayer
-        } else {
-            PathLayer(mMapView.vtmMap, newTempStyle)
-        }
-        mMapView.layerManager.addLayer(
-            "meatureLineLayer",
-            mPathLayerTemp,
-            NIMapView.LAYER_GROUPS.VECTOR.ordinal
-        )
+        mPathLayerTemp = PathLayer(mMapView.vtmMap, newTempStyle)
+        //        addLayer(mPathLayerTemp, NIMapView.LAYER_GROUPS.OPERATE)
 
         mPathMarkerBitmap = AndroidBitmap(
             BitmapFactory.decodeResource(
@@ -126,175 +116,181 @@ open class MeasureLayerHandler(context: Context, mapView: NIMapView) :
 
         mPathLayer = PathLayer(mMapView.vtmMap, lineStyle)
 
-        mMapView.vtmMap.layers().add(mPathLayer, NIMapView.LAYER_GROUPS.OTHER.ordinal)
+        addLayer(mPathLayer, NIMapView.LAYER_GROUPS.OPERATE)
 
     }
 
     open fun drawLineOrPolygon(type: Int) {
         bDrawLine = true
 
-        //画面
-        if (type == 3) {
-            if (mPolygonLayer == null) {
-                mPolygonLayer = NIPolygonLayer(mMapView.vtmMap, lineStyle)
-                mMapView.vtmMap.layers().add(mPolygonLayer, NIMapView.LAYER_GROUPS.OTHER.ordinal)
-            } else if (!mPolygonLayer.isEnabled) {
-                mPolygonLayer.isEnabled = true
-            }
-        } else {
-            if (mPathLayer == null) {
-                mPathLayer = PathLayer(mMapView.vtmMap, lineStyle)
-                mMapView.vtmMap.layers().add(mPathLayer, NIMapView.LAYER_GROUPS.OTHER.ordinal)
-            } else if (!mPathLayer.isEnabled()) {
-                mPathLayer.setEnabled(true)
-            }
-        }
-        //上一个点的引线
-        if (mPathLayerTemp == null) {
-            mPathLayerTemp = PathLayer(mMapView.vtmMap, newTempStyle)
-            mMapView.vtmMap.layers().add(mPathLayerTemp, NIMapView.LAYER_GROUPS.OTHER.ordinal)
-        } else if (!mPathLayerTemp.isEnabled) {
-            mPathLayerTemp.isEnabled = true
-        }
-        val geoPoint: GeoPoint =
-            GeoPoint(mMapView.vtmMap.getMapPosition().getLatitude(), mMapView.vtmMap.getMapPosition().getLongitude())
-
-        //编辑点
-        if (editIndex > -1) {
-            if (mPathMakers.size > editIndex) {
-                mMapView.layerManager.removeMarker(mPathMakers[editIndex], NILayerManager.MARQUEE_MARKER_LAYER)
-                mPathMakers.removeAt(editIndex)
-                if (mPathMarkerBitmap == null) {
-                    mPathMarkerBitmap = AndroidBitmap(
-                        BitmapFactory.decodeResource(
-                            mContext.getResources(),
-                            R.mipmap.icon_path_maker
-                        )
-                    )
-                }
-                val markerItem = MarkerItem(createUUID(), "", "", geoPoint)
-                val markerSymbol = MarkerSymbol(mPathMarkerBitmap, MarkerSymbol.HotspotPlace.CENTER)
-                markerItem.marker = markerSymbol
-                mMapView.layerManager.addMarker2MarkerLayer(
-                    markerItem,
-                    mPathMarkerBitmap,
-                    NILayerManager.MARQUEE_MARKER_LAYER,
-                    NIMapView.LAYER_GROUPS.OTHER.ordinal,
-                    itemGestureListener
-                )
-                mPathMakers.add(editIndex, markerItem)
-                if (mPathLayer != null && mPathLayer.getPoints().size > 0) {
-                    val list: MutableList<GeoPoint> = mPathLayer.getPoints()
-                    if (editIndex < list.size) {
-                        list.removeAt(editIndex)
-                        val list2: MutableList<GeoPoint> = java.util.ArrayList(list)
-                        list2.add(editIndex, geoPoint)
-                        mPathLayer.setPoints(list2)
-                    }
-                } else if (mPolygonLayer != null && mPolygonLayer.points.size > 0) {
-                    val list = mPolygonLayer.points
-                    if (editIndex < list.size) {
-                        list.removeAt(editIndex)
-                        val list2: MutableList<GeoPoint> = java.util.ArrayList(list)
-                        list2.add(editIndex, geoPoint)
-                        mPolygonLayer.setPoints(list2)
-                    }
-                }
-                if (mPathLayerTemp != null) {
-                    mPathLayerTemp.setStyle(newTempStyle)
-                    val list: MutableList<GeoPoint> = java.util.ArrayList<GeoPoint>()
-                    if (type == 3 && mPathMakers.size > 1) {
-                        list.add(mPathMakers[0].geoPoint)
-                        list.add(geoPoint)
-                        list.add(mPathMakers[mPathMakers.size - 1].geoPoint)
-                    } else {
-                        list.add(mPathMakers[mPathMakers.size - 1].geoPoint)
-                        list.add(geoPoint)
-                    }
-                    mPathLayerTemp.setPoints(list)
-                }
-            }
-            editIndex = -1
-        } else { //新增点
-            if (type == 3) {
-                val points: MutableList<GeoPoint> = java.util.ArrayList(mPolygonLayer.points)
-                if (points.size > 2) {
-                    val list: MutableList<GeoPoint> = java.util.ArrayList()
-                    points.add(points[0])
-                    list.add(points[0])
-                    list.add(geoPoint)
-                    list.add(mPolygonLayer.points[mPolygonLayer.points.size - 1])
-                    val bCross = GeometryTools.isPolygonCrosses(points, list)
-                    if (bCross == true) {
-                        Toast.makeText(mContext, "不能交叉", Toast.LENGTH_SHORT).show()
-                        return
-                    }
-                }
-                mPolygonLayer.addPoint(geoPoint)
-            } else {
-                val points: List<GeoPoint> = mPathLayer.getPoints()
-                if (points.size > 2) {
-                    val list: MutableList<GeoPoint> = java.util.ArrayList()
-                    list.add(geoPoint)
-                    list.add(points[points.size - 1])
-                    val bCross = GeometryTools.isLineStringCrosses(points, list)
-                    if (bCross == true) {
-                        Toast.makeText(mContext, "不能交叉", Toast.LENGTH_SHORT).show()
-                        return
-                    }
-                }
-                mPathLayer.addPoint(geoPoint)
-            }
-            if (mPathMarkerBitmap == null) {
-                mPathMarkerBitmap = AndroidBitmap(
-                    BitmapFactory.decodeResource(
-                        mContext.getResources(),
-                        R.mipmap.icon_path_maker
-                    )
-                )
-            }
-            val markerItem = MarkerItem(createUUID(), "", "", geoPoint)
-            val markerSymbol = MarkerSymbol(mPathMarkerBitmap, MarkerSymbol.HotspotPlace.CENTER)
-            markerItem.marker = markerSymbol
-            mMapView.layerManager.addMarker2MarkerLayer(
-                markerItem,
-                mPathMarkerBitmap,
-                NILayerManager.MARQUEE_MARKER_LAYER,
-                NIMapView.LAYER_GROUPS.OTHER.ordinal,
-                itemGestureListener
-            )
-            mPathMakers.add(markerItem)
-        }
+//        //画面
+//        if (type == 3) {
+//            if (mPolygonLayer == null) {
+//                mPolygonLayer = NIPolygonLayer(mMapView.vtmMap, lineStyle)
+//                addLayer(mPolygonLayer, NIMapView.LAYER_GROUPS.OPERATE)
+//            } else if (!mPolygonLayer.isEnabled) {
+//                mPolygonLayer.isEnabled = true
+//            }
+//        } else {
+//            if (mPathLayer == null) {
+//                mPathLayer = PathLayer(mMapView.vtmMap, lineStyle)
+//                addLayer(mPathLayer, NIMapView.LAYER_GROUPS.OPERATE)
+//            } else if (!mPathLayer.isEnabled()) {
+//                mPathLayer.setEnabled(true)
+//            }
+//        }
+//        //上一个点的引线
+//        if (mPathLayerTemp == null) {
+//            mPathLayerTemp = PathLayer(mMapView.vtmMap, newTempStyle)
+//            addLayer(mPathLayerTemp, NIMapView.LAYER_GROUPS.OPERATE)
+//        } else if (!mPathLayerTemp.isEnabled) {
+//            mPathLayerTemp.isEnabled = true
+//        }
+//        val geoPoint: GeoPoint =
+//            GeoPoint(
+//                mMapView.vtmMap.getMapPosition().getLatitude(),
+//                mMapView.vtmMap.getMapPosition().getLongitude()
+//            )
+//
+//        //编辑点
+//        if (editIndex > -1) {
+//            if (mPathMakers.size > editIndex) {
+//                mMapView.layerManager.removeMarker(
+//                    mPathMakers[editIndex],
+//                    NILayerManager.MARQUEE_MARKER_LAYER
+//                )
+//                mPathMakers.removeAt(editIndex)
+//                if (mPathMarkerBitmap == null) {
+//                    mPathMarkerBitmap = AndroidBitmap(
+//                        BitmapFactory.decodeResource(
+//                            mContext.getResources(),
+//                            R.mipmap.icon_path_maker
+//                        )
+//                    )
+//                }
+//                val markerItem = MarkerItem(createUUID(), "", "", geoPoint)
+//                val markerSymbol = MarkerSymbol(mPathMarkerBitmap, MarkerSymbol.HotspotPlace.CENTER)
+//                markerItem.marker = markerSymbol
+//                mMapView.layerManager.addMarker2MarkerLayer(
+//                    markerItem,
+//                    mPathMarkerBitmap,
+//                    NILayerManager.MARQUEE_MARKER_LAYER,
+//                    NIMapView.LAYER_GROUPS.OTHER.ordinal,
+//                    itemGestureListener
+//                )
+//                mPathMakers.add(editIndex, markerItem)
+//                if (mPathLayer != null && mPathLayer.getPoints().size > 0) {
+//                    val list: MutableList<GeoPoint> = mPathLayer.getPoints()
+//                    if (editIndex < list.size) {
+//                        list.removeAt(editIndex)
+//                        val list2: MutableList<GeoPoint> = java.util.ArrayList(list)
+//                        list2.add(editIndex, geoPoint)
+//                        mPathLayer.setPoints(list2)
+//                    }
+//                } else if (mPolygonLayer != null && mPolygonLayer.points.size > 0) {
+//                    val list = mPolygonLayer.points
+//                    if (editIndex < list.size) {
+//                        list.removeAt(editIndex)
+//                        val list2: MutableList<GeoPoint> = java.util.ArrayList(list)
+//                        list2.add(editIndex, geoPoint)
+//                        mPolygonLayer.setPoints(list2)
+//                    }
+//                }
+//                if (mPathLayerTemp != null) {
+//                    mPathLayerTemp.setStyle(newTempStyle)
+//                    val list: MutableList<GeoPoint> = java.util.ArrayList<GeoPoint>()
+//                    if (type == 3 && mPathMakers.size > 1) {
+//                        list.add(mPathMakers[0].geoPoint)
+//                        list.add(geoPoint)
+//                        list.add(mPathMakers[mPathMakers.size - 1].geoPoint)
+//                    } else {
+//                        list.add(mPathMakers[mPathMakers.size - 1].geoPoint)
+//                        list.add(geoPoint)
+//                    }
+//                    mPathLayerTemp.setPoints(list)
+//                }
+//            }
+//            editIndex = -1
+//        } else { //新增点
+//            if (type == 3) {
+//                val points: MutableList<GeoPoint> = java.util.ArrayList(mPolygonLayer.points)
+//                if (points.size > 2) {
+//                    val list: MutableList<GeoPoint> = java.util.ArrayList()
+//                    points.add(points[0])
+//                    list.add(points[0])
+//                    list.add(geoPoint)
+//                    list.add(mPolygonLayer.points[mPolygonLayer.points.size - 1])
+//                    val bCross = GeometryTools.isPolygonCrosses(points, list)
+//                    if (bCross == true) {
+//                        Toast.makeText(mContext, "不能交叉", Toast.LENGTH_SHORT).show()
+//                        return
+//                    }
+//                }
+//                mPolygonLayer.addPoint(geoPoint)
+//            } else {
+//                val points: List<GeoPoint> = mPathLayer.getPoints()
+//                if (points.size > 2) {
+//                    val list: MutableList<GeoPoint> = java.util.ArrayList()
+//                    list.add(geoPoint)
+//                    list.add(points[points.size - 1])
+//                    val bCross = GeometryTools.isLineStringCrosses(points, list)
+//                    if (bCross == true) {
+//                        Toast.makeText(mContext, "不能交叉", Toast.LENGTH_SHORT).show()
+//                        return
+//                    }
+//                }
+//                mPathLayer.addPoint(geoPoint)
+//            }
+//            if (mPathMarkerBitmap == null) {
+//                mPathMarkerBitmap = AndroidBitmap(
+//                    BitmapFactory.decodeResource(
+//                        mContext.getResources(),
+//                        R.mipmap.icon_path_maker
+//                    )
+//                )
+//            }
+//            val markerItem = MarkerItem(createUUID(), "", "", geoPoint)
+//            val markerSymbol = MarkerSymbol(mPathMarkerBitmap, MarkerSymbol.HotspotPlace.CENTER)
+//            markerItem.marker = markerSymbol
+//            mMapView.layerManager.addMarker2MarkerLayer(
+//                markerItem,
+//                mPathMarkerBitmap,
+//                NILayerManager.MARQUEE_MARKER_LAYER,
+//                NIMapView.LAYER_GROUPS.OTHER.ordinal,
+//                itemGestureListener
+//            )
+//            mPathMakers.add(markerItem)
+//        }
         showAreaLayer()
     }
 
     open fun drawLineBackspace() {
-        if (mPathLayer != null && mPathLayer.getPoints().size > 0) {
-            val list: MutableList<GeoPoint> = java.util.ArrayList<GeoPoint>(mPathLayer.getPoints())
-            val point = list[mPathLayer.getPoints().size - 1]
-            list.remove(point)
-            mPathLayer.setPoints(list)
-            mMapView.layerManager.jumpToPosition(point.longitude, point.latitude, 0)
-        } else if (mPolygonLayer != null && mPolygonLayer.points.size > 0) {
-            val list: MutableList<GeoPoint> = java.util.ArrayList<GeoPoint>(mPolygonLayer.points)
-            val point = list[mPolygonLayer.points.size - 1]
-            list.remove(point)
-            mPolygonLayer.setPoints(list)
-            mMapView.layerManager.jumpToPosition(point!!.longitude, point.latitude, 0)
-        }
-        if (mPathMakers.size > 0) {
-            var item: MarkerItem? = mPathMakers[mPathMakers.size - 1]
-            mMapView.layerManager.removeMarker(item, NILayerManager.MARQUEE_MARKER_LAYER)
-            mPathMakers.remove(item)
-            item = null
-        }
-        if (mPathMakers.size == 0 && mPathLayerTemp != null) {
-            mPathLayerTemp.clearPath()
-        }
-        editIndex = -1
-        if (mPathLayerTemp != null) {
-            mPathLayerTemp.setStyle(newTempStyle)
-        }
+//        if (mPathLayer != null && mPathLayer.getPoints().size > 0) {
+//            val list: MutableList<GeoPoint> = java.util.ArrayList<GeoPoint>(mPathLayer.getPoints())
+//            val point = list[mPathLayer.getPoints().size - 1]
+//            list.remove(point)
+//            mPathLayer.setPoints(list)
+//            mMapView.layerManager.jumpToPosition(point.longitude, point.latitude, 0)
+//        } else if (mPolygonLayer != null && mPolygonLayer.points.size > 0) {
+//            val list: MutableList<GeoPoint> = java.util.ArrayList<GeoPoint>(mPolygonLayer.points)
+//            val point = list[mPolygonLayer.points.size - 1]
+//            list.remove(point)
+//            mPolygonLayer.setPoints(list)
+//            mMapView.layerManager.jumpToPosition(point!!.longitude, point.latitude, 0)
+//        }
+//        if (mPathMakers.size > 0) {
+//            var item: MarkerItem? = mPathMakers[mPathMakers.size - 1]
+//            mMapView.layerManager.removeMarker(item, NILayerManager.MARQUEE_MARKER_LAYER)
+//            mPathMakers.remove(item)
+//            item = null
+//        }
+//        if (mPathMakers.size == 0 && mPathLayerTemp != null) {
+//            mPathLayerTemp.clearPath()
+//        }
+//        editIndex = -1
+//        if (mPathLayerTemp != null) {
+//            mPathLayerTemp.setStyle(newTempStyle)
+//        }
     }
 
 
@@ -322,8 +318,8 @@ open class MeasureLayerHandler(context: Context, mapView: NIMapView) :
             val area = DistanceUtil.planarPolygonAreaMeters2(list)
             var areaString: String
             if (area < 1000000) {
-                areaString =  area.toString()+"平方米"
-            } else if (area < 10000000000.0){
+                areaString = area.toString() + "平方米"
+            } else if (area < 10000000000.0) {
                 val d = area / 1000000.0
                 val bg = BigDecimal(d)
                 val f1 = bg.setScale(1, BigDecimal.ROUND_HALF_UP).toDouble()
@@ -364,25 +360,25 @@ open class MeasureLayerHandler(context: Context, mapView: NIMapView) :
     }
 
     open fun removeLine() {
-        bDrawLine = false
-        editIndex = -1
-        for (item in mPathMakers) {
-            mMapView.layerManager.removeMarker(item, NILayerManager.MARQUEE_MARKER_LAYER)
-        }
-        mPathMakers.clear()
-        if (mPathLayer != null) {
-            mPathLayer.clearPath()
-            mPathLayer.isEnabled = false
-        }
-        if (mPolygonLayer != null) {
-            mPolygonLayer.clearPath()
-            mPolygonLayer.isEnabled = false
-        }
-        if (mPathLayerTemp != null) {
-            mPathLayerTemp.clearPath()
-            mPathLayerTemp.isEnabled = false
-            mPathLayerTemp.setStyle(newTempStyle)
-        }
+//        bDrawLine = false
+//        editIndex = -1
+//        for (item in mPathMakers) {
+//            mMapView.layerManager.removeMarker(item, NILayerManager.MARQUEE_MARKER_LAYER)
+//        }
+//        mPathMakers.clear()
+//        if (mPathLayer != null) {
+//            mPathLayer.clearPath()
+//            mPathLayer.isEnabled = false
+//        }
+//        if (mPolygonLayer != null) {
+//            mPolygonLayer.clearPath()
+//            mPolygonLayer.isEnabled = false
+//        }
+//        if (mPathLayerTemp != null) {
+//            mPathLayerTemp.clearPath()
+//            mPathLayerTemp.isEnabled = false
+//            mPathLayerTemp.setStyle(newTempStyle)
+//        }
         hideAreaLayer()
     }
 
@@ -399,27 +395,31 @@ open class MeasureLayerHandler(context: Context, mapView: NIMapView) :
         object : OnItemGestureListener<MarkerInterface> {
             override fun onItemSingleTapUp(index: Int, item: MarkerInterface): Boolean {
                 if (bDrawLine) {
-                    for (i in mPathMakers.indices) {
-                        val item1 = mPathMakers[i]
-                        if (item === item1) {
-                            mMapView.layerManager.jumpToPosition(item.getPoint().longitude, item.getPoint().latitude, 0)
-                            editIndex = i
-                            if (mPathLayerTemp != null) {
-                                mPathLayerTemp.setStyle(editTempStyle)
-                                val list: MutableList<GeoPoint> = java.util.ArrayList<GeoPoint>()
-                                if (editIndex == 0 || editIndex == mPathMakers.size - 1) {
-                                    list.add(item.geoPoint as Nothing)
-                                    list.add(item.geoPoint as Nothing)
-                                } else {
-                                    list.add(mPathMakers[editIndex - 1].geoPoint as Nothing)
-                                    list.add(item.geoPoint as Nothing)
-                                    list.add(mPathMakers[editIndex + 1].geoPoint as Nothing)
-                                }
-                                mPathLayerTemp.setPoints(list)
-                            }
-                            return true
-                        }
-                    }
+//                    for (i in mPathMakers.indices) {
+//                        val item1 = mPathMakers[i]
+//                        if (item === item1) {
+//                            mMapView.layerManager.jumpToPosition(
+//                                item.getPoint().longitude,
+//                                item.getPoint().latitude,
+//                                0
+//                            )
+//                            editIndex = i
+//                            if (mPathLayerTemp != null) {
+//                                mPathLayerTemp.setStyle(editTempStyle)
+//                                val list: MutableList<GeoPoint> = java.util.ArrayList<GeoPoint>()
+//                                if (editIndex == 0 || editIndex == mPathMakers.size - 1) {
+//                                    list.add(item.geoPoint as Nothing)
+//                                    list.add(item.geoPoint as Nothing)
+//                                } else {
+//                                    list.add(mPathMakers[editIndex - 1].geoPoint as Nothing)
+//                                    list.add(item.geoPoint as Nothing)
+//                                    list.add(mPathMakers[editIndex + 1].geoPoint as Nothing)
+//                                }
+//                                mPathLayerTemp.setPoints(list)
+//                            }
+//                            return true
+//                        }
+//                    }
                 }
                 return false
             }
