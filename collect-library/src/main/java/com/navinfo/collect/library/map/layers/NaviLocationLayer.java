@@ -61,7 +61,7 @@ public class NaviLocationLayer extends LocationTextureLayer {
         this.locationRenderer.setColor(0xffa1dbf5);
         this.locationRenderer.setShowAccuracyZoom(4);
         this.setEnabled(true); // 默认开启当前位置显示
-        mMap.layers().add(this, NIMapView.LAYER_GROUPS.ALLWAYS_SHOW_GROUP.getGroupIndex());
+        mMap.layers().add(this, NIMapView.LAYER_GROUPS.NAVIGATION.getGroupIndex());
         return this;
     }
 }

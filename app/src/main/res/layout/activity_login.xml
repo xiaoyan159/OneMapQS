@@ -1,9 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".ui.LoginActivity">
+    tools:context=".ui.activity.LoginActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <data>
+
+        <variable
+            name="activity"
+            type="com.navinfo.omqs.ui.activity.LoginActivity" />
+
+        <variable
+            name="loginUserModel"
+            type="com.navinfo.omqs.ui.activity.LoginViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <ImageView
+            android:id="@+id/login_fragment_logo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:contentDescription="@string/imagedescription"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_launcher"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.1"
+            app:roundPercent="0.2" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_fragment_user_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:scrollbarAlwaysDrawHorizontalTrack="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.4">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/login_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/input_user_name"
+                android:text="@{loginUserModel.loginUser.username}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            app:layout_constraintTop_toBottomOf="@id/login_fragment_user_layout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/login_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/input_password"
+                android:inputType="textPassword"
+                android:text="@{loginUserModel.loginUser.password}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/login_fragment_register_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{(view)->loginUserModel.onClick(view)}"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/logon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/login_activity_login_button"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.8" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/login_activity_login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->activity.onClickLoginButton()}"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/login"
+            app:layout_constraintBaseline_toBaselineOf="@id/login_fragment_register_button"
+            app:layout_constraintLeft_toRightOf="@id/login_fragment_register_button"
+            app:layout_constraintRight_toRightOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

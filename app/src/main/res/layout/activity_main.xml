@@ -1,34 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".ui.MainActivity">
+    tools:context=".ui.activity.MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <data>
+
+        <variable
+            name="mainActivity"
+            type="com.navinfo.omqs.ui.activity.MainActivity" />
+
+        <variable
+            name="viewModel"
+            type="com.navinfo.omqs.ui.activity.MainViewModel" />
+    </data>
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/main_activity_drawer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+        <include
+            android:id="@+id/map_view"
+            layout="@layout/map_view"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize" />
+            android:layout_height="match_parent"
+            app:mainActivity="@{mainActivity}"
+            app:viewModel="@{viewModel}"/>
 
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <include layout="@layout/content_main" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="16dp"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:fitsSystemWindows="true"
+            app:headerLayout="@layout/nav_header_main"
+            app:menu="@menu/activity_main_drawer" />
+    </androidx.drawerlayout.widget.DrawerLayout>
+</layout>

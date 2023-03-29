@@ -1,64 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <org.oscim.android.MapView
         android:id="@+id/base_map_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></org.oscim.android.MapView>
+        android:layout_height="match_parent" />
+
     <ImageView
         android:id="@+id/navinfo_map_compass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/nimap_defalut_padding"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_marginTop="50dp"
-        android:src="@mipmap/compass"></ImageView>
+        android:padding="@dimen/nimap_defalut_padding"
+        android:src="@mipmap/compass" />
 
     <ImageView
         android:id="@+id/navinfo_map_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:src="@mipmap/logo"
-        android:padding="@dimen/nimap_defalut_padding"></ImageView>
+        android:padding="@dimen/nimap_defalut_padding"
+        android:src="@mipmap/logo" />
 
     <LinearLayout
         android:id="@+id/navinfo_map_zoom_layer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/nimap_defalut_padding"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:orientation="vertical">
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:padding="@dimen/nimap_defalut_padding">
+
         <ImageView
             android:id="@+id/navinfo_map_zoom_in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_map_zoom_in"
+            android:background="@drawable/bg_nimap_default_button"
             android:clickable="true"
             android:focusable="true"
-            android:background="@drawable/bg_nimap_default_button"></ImageView>
+            android:src="@drawable/icon_map_zoom_in" />
+
         <Space
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/nimap_defalut_padding"></Space>
+            android:layout_height="@dimen/nimap_defalut_padding" />
+
         <ImageView
             android:id="@+id/navinfo_map_zoom_out"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_map_zoom_out"
+            android:background="@drawable/bg_nimap_default_button"
             android:clickable="true"
             android:focusable="true"
-            android:background="@drawable/bg_nimap_default_button"></ImageView>
+            android:src="@drawable/icon_map_zoom_out" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:layout_centerInParent="true"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/main_tracking_cross"

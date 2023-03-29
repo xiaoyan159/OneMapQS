@@ -73,7 +73,7 @@ public class NaviMapScaleBar extends MapScaleBar {
         BitmapRenderer renderer = mapScaleBarLayer.getRenderer();
         renderer.setPosition(position); // 设置scaleBar在地图上的位置
         renderer.setOffset(xOffset * CanvasAdapter.getScale(), yOffset* CanvasAdapter.getScale());
-        this.map.layers().add(mapScaleBarLayer, NIMapView.LAYER_GROUPS.ALLWAYS_SHOW_GROUP.ordinal());
+        this.map.layers().add(mapScaleBarLayer, NIMapView.LAYER_GROUPS.NAVIGATION.ordinal());
         return mapScaleBarLayer;
     }
 
