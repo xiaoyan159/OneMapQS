@@ -5,6 +5,7 @@ import android.util.Log
 import com.navinfo.collect.library.map.handler.*
 import com.navinfo.collect.library.map.maphandler.MeasureLayerHandler
 import com.navinfo.collect.library.map.handler.ViewportHandler
+import com.navinfo.collect.library.system.Constant
 
 /**
  *  地图控制器
@@ -22,7 +23,8 @@ class NIMapController {
     lateinit var measureLayerHandler: MeasureLayerHandler
 
 
-    fun init(context: Context, mapView: NIMapView, options: NIMapOptions? = null) {
+    fun init(context: Context, mapView: NIMapView, options: NIMapOptions? = null, mapPath: String) {
+        Constant.MAP_PATH = mapPath
         layerManagerHandler = LayerManagerHandler(context, mapView)
         locationLayerHandler = LocationLayerHandler(context, mapView)
         animationHandler = AnimationHandler(context, mapView)

@@ -1,12 +1,14 @@
 package com.navinfo.omqs.ui.activity.map
 
 import android.os.Bundle
+import android.provider.ContactsContract.Contacts
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.ui.activity.BaseActivity
@@ -32,7 +34,12 @@ class MainActivity : BaseActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         //初始化地图
-        mapController.init(this, binding.mapView.mainActivityMap)
+        mapController.init(
+            this,
+            binding.mapView.mainActivityMap,
+            null,
+            Constant.ROOT_PATH + "/map/"
+        )
         //关联生命周期
         binding.lifecycleOwner = this
         //给xml转递对象
@@ -59,7 +66,7 @@ class MainActivity : BaseActivity() {
         super.onDestroy()
         mapController.mMapView.onDestroy()
         mapController.locationLayerHandler.stopLocation()
-        Log.e("jingo","MainActivity 销毁")
+        Log.e("jingo", "MainActivity 销毁")
     }
 
     override fun onResume() {

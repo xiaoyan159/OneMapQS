@@ -11,14 +11,7 @@ import java.util.Map;
 
 public class Constant {
 
-    public static String SD_PATH = Environment.getExternalStorageDirectory() + "";
-    public static String ROOT_PATH = SD_PATH + "/NavinfoCollect";
-
-    public static String PHOTO_PATH = ROOT_PATH + "/image";
-
-
-    public static double CONVERSION_FACTOR = 1000000d;
-
+    public static String MAP_PATH = Environment.getExternalStorageDirectory() + "/map/";
 
     public static void setVisibleTypeMap(Map<String, Boolean> visibleTypeMap) {
         Map<String, Boolean> HD_LAYER_VISIABLE_MAP= new HashMap<>();

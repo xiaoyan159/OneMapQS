@@ -25,11 +25,11 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class GlobalModule {
 
-    @Singleton
-    @Provides
-    fun provideApplication(application: Application): OMQSApplication {
-        return application as OMQSApplication
-    }
+//    @Singleton
+//    @Provides
+//    fun provideApplication(application: Application): OMQSApplication {
+//        return application as OMQSApplication
+//    }
 
     /**
      * 注入 网络OKHttp 对象

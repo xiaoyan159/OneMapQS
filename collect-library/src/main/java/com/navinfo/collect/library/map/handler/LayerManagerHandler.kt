@@ -5,6 +5,7 @@ import android.os.Environment
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.map.NIMapView.LAYER_GROUPS
 import com.navinfo.collect.library.map.source.NavinfoMapRastorTileSource
+import com.navinfo.collect.library.system.Constant
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import org.oscim.layers.Layer
@@ -18,7 +19,6 @@ import java.io.File
  */
 class LayerManagerHandler(context: Context, mapView: NIMapView) :
     BaseHandler(context, mapView) {
-    lateinit var mLocationLayer: LocationLayer
     private var baseRasterLayer: Layer? = null
 
     init {
@@ -62,7 +62,7 @@ class LayerManagerHandler(context: Context, mapView: NIMapView) :
         // 如果使用缓存
         if (useCache) {
             val cacheDirectory: File =
-                File(Environment.getExternalStorageState() + "/" + "lalalal", "tiles-raster")
+                File(Constant.MAP_PATH, "tiles-raster")
             val cacheSize = 300 * 1024 * 1024 // 300 MB
             val cache = Cache(cacheDirectory, cacheSize.toLong())
             builder.cache(cache)
