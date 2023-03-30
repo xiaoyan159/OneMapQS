@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group
+        android:id="@+id/group1"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/personal_center_menu_offline_map"
+            android:icon="@drawable/baseline_map_24"
+            android:title="离线地图" />
+        <item
+            android:id="@+id/personal_center_menu_import_data"
+            android:icon="@drawable/ic_baseline_import_export_24"
+            android:title="导入数据" />
+        <item
+            android:id="@+id/personal_center_menu_offline_map2"
+            android:icon="@drawable/baseline_person_24"
+            android:title="menu_slideshow" />
+    </group>
+    <group
+        android:id="@+id/group2"
+        android:checkableBehavior="single">
+        <item android:title="小标题">
+            <menu>
+                <item
+                    android:id="@+id/personal_center_menu_offline_map3"
+                    android:icon="@drawable/baseline_person_24"
+                    android:title="menu_home" />
+                <item
+                    android:id="@+id/personal_center_menu_offline_map4"
+                    android:icon="@drawable/baseline_person_24"
+                    android:title="menu_gallery" />
+                <item
+                    android:id="@+id/personal_center_menu_offline_map5"
+                    android:icon="@drawable/baseline_person_24"
+                    android:title="menu_slideshow" />
+            </menu>
+        </item>
+    </group>
+</menu>

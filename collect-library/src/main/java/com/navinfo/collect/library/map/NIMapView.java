@@ -48,7 +48,6 @@ import org.oscim.tiling.source.mapfile.MultiMapFileTileSource;
 import java.io.File;
 
 
-
 /**
  * 一个显示地图的视图（View）。它负责从服务端获取地图数据。它将会捕捉屏幕触控手势事件
  */
@@ -111,11 +110,16 @@ public final class NIMapView extends RelativeLayout {
     //    protected String mapFilePath = Constant.ROOT_PATH + "/map";
     protected GroupLayer baseGroupLayer; // 用于盛放所有基础底图的图层组，便于统一管理
 
+    public void setOptions(NIMapOptions option) {
+        this.options = option;
+        initOptions();
+    }
+
 
     /**
      * 地图单击事件监听接口
      */
-    public  interface OnMapClickListener {
+    public interface OnMapClickListener {
         /**
          * 地图单击事件回调函数
          *
@@ -134,7 +138,7 @@ public final class NIMapView extends RelativeLayout {
     /**
      * 地图双击事件监听接口
      */
-    public  interface OnMapDoubleClickListener {
+    public interface OnMapDoubleClickListener {
 
         /**
          * 地图双击事件监听回调函数
@@ -148,7 +152,7 @@ public final class NIMapView extends RelativeLayout {
     /**
      * 地图长按事件监听接口
      */
-    public  interface OnMapLongClickListener {
+    public interface OnMapLongClickListener {
         /**
          * 地图长按事件监听回调函数
          *
@@ -160,7 +164,7 @@ public final class NIMapView extends RelativeLayout {
     /**
      * 用户触摸地图时回调接口
      */
-    public  interface OnMapTouchListener {
+    public interface OnMapTouchListener {
         /**
          * 当用户触摸地图时回调函数
          *
@@ -170,12 +174,11 @@ public final class NIMapView extends RelativeLayout {
     }
 
 
-
-    public NIMapView(Context context, NIMapOptions options) {
-        this(context, null, 0);
-        this.options = options;
-        initOptions();
-    }
+//    public NIMapView(Context context, NIMapOptions options) {
+//        this(context, null, 0);
+//        this.options = options;
+//        initOptions();
+//    }
 
     /**
      * 地图的单击事件监听

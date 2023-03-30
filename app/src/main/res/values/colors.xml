@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="cv_gray_153">#999999</color>
+    <color name="cvm_red">#FF3B30</color>
+    <color name="cv_bg_color">#553C3F41</color>
+    <color name="btn_blue_solid">#108ee9</color>
 </resources>

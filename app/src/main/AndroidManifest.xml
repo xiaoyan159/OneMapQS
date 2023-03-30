@@ -27,6 +27,7 @@
     <!-- 读取缓存数据 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <application
+        android:name=".OMQSApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -36,10 +37,11 @@
         android:theme="@style/Theme.OMQualityInspection"
         android:requestLegacyExternalStorage="true">
         <activity
-            android:name=".ui.activity.LoginActivity"
+            android:name=".ui.activity.login.LoginActivity"
             android:exported="true"
-            android:screenOrientation="landscape"
             android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.OMQualityInspection">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -48,15 +50,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.MainActivity"
+            android:name=".ui.activity.map.MainActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="landscape"
-            android:exported="true"
-            android:theme="@style/Theme.OMQualityInspection"></activity>
-        <activity
-            android:name=".ui.activity.MapTestActivity"
-            android:screenOrientation="landscape"
-            android:exported="true"
-            android:theme="@style/Theme.OMQualityInspection"></activity>
+            android:theme="@style/Theme.OMQualityInspection" />
     </application>
 
 </manifest>

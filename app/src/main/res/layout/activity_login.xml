@@ -2,17 +2,17 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.activity.LoginActivity">
+    tools:context=".ui.activity.login.LoginActivity">
 
     <data>
 
         <variable
             name="activity"
-            type="com.navinfo.omqs.ui.activity.LoginActivity" />
+            type="com.navinfo.omqs.ui.activity.login.LoginActivity" />
 
         <variable
             name="loginUserModel"
-            type="com.navinfo.omqs.ui.activity.LoginViewModel" />
+            type="com.navinfo.omqs.ui.activity.login.LoginViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
