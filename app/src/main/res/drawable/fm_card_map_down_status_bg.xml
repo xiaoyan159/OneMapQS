@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false">
+        <shape>
+            <stroke android:width="1.1dp" android:color="@color/cv_gray_153" />
+            <solid android:color="@color/cv_gray_153" />
+            <padding android:bottom="@dimen/default_widget_padding" android:left="@dimen/default_widget_padding" android:right="@dimen/default_widget_padding" android:top="@dimen/default_widget_padding"></padding>
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape>
+            <stroke android:width="1.1dp" android:color="@color/white" />
+            <solid android:color="@color/white" />
+            <padding android:bottom="@dimen/default_widget_padding" android:left="@dimen/default_widget_padding" android:right="@dimen/default_widget_padding" android:top="@dimen/default_widget_padding"></padding>
+        </shape>
+    </item>
+    <item android:state_selected="true">
+        <shape>
+            <stroke android:width="1.1dp" android:color="@color/cvm_red" />
+            <solid android:color="@color/cvm_red" />
+            <padding android:bottom="@dimen/default_widget_padding" android:left="@dimen/default_widget_padding" android:right="@dimen/default_widget_padding" android:top="@dimen/default_widget_padding"></padding>
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <stroke android:width="1.1dp" android:color="@color/btn_blue_solid" />
+            <solid android:color="@color/transp" />
+            <padding android:bottom="@dimen/default_widget_padding" android:left="@dimen/default_widget_padding" android:right="@dimen/default_widget_padding" android:top="@dimen/default_widget_padding"></padding>
+        </shape>
+    </item>
+
+</selector>

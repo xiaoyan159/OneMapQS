@@ -2,17 +2,17 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.activity.MainActivity">
+    tools:context=".ui.activity.map.MainActivity">
 
     <data>
 
         <variable
             name="mainActivity"
-            type="com.navinfo.omqs.ui.activity.MainActivity" />
+            type="com.navinfo.omqs.ui.activity.map.MainActivity" />
 
         <variable
             name="viewModel"
-            type="com.navinfo.omqs.ui.activity.MainViewModel" />
+            type="com.navinfo.omqs.ui.activity.map.MainViewModel" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -27,15 +27,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:mainActivity="@{mainActivity}"
-            app:viewModel="@{viewModel}"/>
+            app:viewModel="@{viewModel}" />
 
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/nav_view"
-            android:layout_width="wrap_content"
+        <fragment
+            android:id="@+id/main_activity_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="300dp"
             android:layout_height="match_parent"
             android:layout_gravity="left"
-            android:fitsSystemWindows="true"
-            app:headerLayout="@layout/nav_header_main"
-            app:menu="@menu/activity_main_drawer" />
+            app:navGraph="@navigation/nav_graph" />
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

@@ -6,17 +6,17 @@
     <data>
         <variable
             name="mainActivity"
-            type="com.navinfo.omqs.ui.activity.MainActivity" />
+            type="com.navinfo.omqs.ui.activity.map.MainActivity" />
 
         <variable
             name="viewModel"
-            type="com.navinfo.omqs.ui.activity.MainViewModel" />
+            type="com.navinfo.omqs.ui.activity.map.MainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.activity.MainActivity">
+        tools:context=".ui.activity.map.MainActivity">
 
         <com.navinfo.collect.library.map.NIMapView
             android:id="@+id/main_activity_map"
