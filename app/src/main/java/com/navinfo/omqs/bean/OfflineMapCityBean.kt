@@ -1,28 +1,37 @@
 package com.navinfo.omqs.bean
 
-import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.PrimaryKey
+import io.realm.RealmObject
 
-data class OfflineMapCityBean(
-    @PrimaryKey
-    val id: String,
-    val fileName: String,
-    val name: String,
-    val url: String,
-    val version: Long,
-    val fileSize: Long,
-    var currentSize:Long = 0,
-    var status:Int = NONE
-): RealmObject {
-    companion object Status{
-        const val NONE = 0 //无状态
-        const val WAITING = 1 //等待中
-        const val LOADING = 2 //下载中
-        const val PAUSE = 3 //暂停
-        const val ERROR = 4 //错误
-        const val DONE = 5 //完成
-        const val UPDATE = 6 //有新版本要更新
-    }
+enum class StatusEnum(val status: Int) {
+    NONE(0), WAITING(1), LOADING(2), PAUSE(3),
+    ERROR(4), DONE(5), UPDATE(6)
+}
+
+open class OfflineMapCityBean : RealmObject{
+    var id: String = ""
+    var fileName: String = ""
+    var name: String = ""
+    var url: String = ""
+    var version: Long = 0L
+    var fileSize: Long = 0L
+    var currentSize:Long = 0L
+    var status: Int = StatusEnum.NONE.status
+
+    // status的转换对象
+    var statusEnum:StatusEnum
+        get() {
+            return try {
+                StatusEnum.values().find { it.status == status }!!
+            } catch (e: IllegalArgumentException) {
+                StatusEnum.NONE
+            }
+        }
+        set(value) {
+            status = value.status
+        }
+
+    constructor() : super()
+
     fun getFileSizeText(): String {
         return if (fileSize < 1024.0)
             "$fileSize B"

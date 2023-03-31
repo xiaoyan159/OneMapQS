@@ -3,9 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
-    id 'io.realm.kotlin'
 }
-
+apply plugin: "realm-android"
 android {
     namespace 'com.navinfo.omqs'
     compileSdk 33
@@ -27,8 +26,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -67,10 +66,6 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
-
-    // Realm相关依赖
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
-    implementation 'io.realm.kotlin:library-base:1.7.0'
 }
 //允许引用生成的代码
 kapt {
