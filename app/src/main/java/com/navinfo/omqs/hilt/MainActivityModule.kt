@@ -2,6 +2,7 @@ package com.navinfo.omqs.hilt
 
 import android.content.Context
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import dagger.Module
 import dagger.Provides
@@ -26,8 +27,10 @@ class MainActivityModule {
      */
     @ActivityRetainedScoped
     @Provides
-    fun providesOfflineMapDownloadManager(@ActivityContext context: Context): OfflineMapDownloadManager =
-        OfflineMapDownloadManager(context)
+    fun providesOfflineMapDownloadManager(
+        networkServiceAPI: RetrofitNetworkServiceAPI
+    ): OfflineMapDownloadManager =
+        OfflineMapDownloadManager( networkServiceAPI)
 
     /**
      * 实验失败，这样创建，viewmodel不会在activity销毁的时候同时销毁
@@ -35,7 +38,6 @@ class MainActivityModule {
 //    @ActivityRetainedScoped
 //    @Provides
 //    fun providesMainViewModel(mapController: NIMapController): MainViewModel {
-//        Log.e("jingo", "MainViewModel 被创建")
 //        return MainViewModel(mapController)
 //    }
 

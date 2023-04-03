@@ -2,11 +2,17 @@ package com.navinfo.omqs.bean
 
 data class OfflineMapCityBean(
     val id: String,
+    /**
+     * 文件名称
+     */
     val fileName: String,
+    /**
+     * 城市名称
+     */
     val name: String,
     val url: String,
     val version: Long,
-    val fileSize: Long,
+    var fileSize: Long,
     var currentSize:Long = 0,
     var status:Int = NONE
 ) {

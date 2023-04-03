@@ -7,7 +7,7 @@ class Constant {
          */
         lateinit var ROOT_PATH: String
         lateinit var MAP_PATH: String
-
+        lateinit var OFFLINE_MAP_PATH: String
         /**
          * 服务器地址
          */

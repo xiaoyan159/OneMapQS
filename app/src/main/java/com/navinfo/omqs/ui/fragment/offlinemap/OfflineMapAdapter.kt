@@ -3,6 +3,7 @@ package com.navinfo.omqs.ui.fragment.offlinemap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import dagger.hilt.EntryPoint
 
 /**
  * 离线地图主页面，viewpage适配器

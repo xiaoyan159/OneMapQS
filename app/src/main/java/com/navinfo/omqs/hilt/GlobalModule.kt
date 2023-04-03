@@ -54,7 +54,8 @@ class GlobalModule {
             }
         }.apply {
             level = if (Constant.DEBUG) {
-                HttpLoggingInterceptor.Level.BODY
+                //坑 ！！！！ 下载文件时打印log 内存不足
+                HttpLoggingInterceptor.Level.HEADERS
             } else {
                 HttpLoggingInterceptor.Level.NONE
             }

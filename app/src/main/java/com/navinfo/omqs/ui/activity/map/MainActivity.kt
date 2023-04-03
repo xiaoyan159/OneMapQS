@@ -11,6 +11,7 @@ import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityMainBinding
+import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.ui.activity.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -27,6 +28,8 @@ class MainActivity : BaseActivity() {
     //注入地图控制器
     @Inject
     lateinit var mapController: NIMapController
+    @Inject
+    lateinit var offlineMapDownloadManager: OfflineMapDownloadManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)

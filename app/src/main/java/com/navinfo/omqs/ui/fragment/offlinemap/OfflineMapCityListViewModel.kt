@@ -32,7 +32,7 @@ class OfflineMapCityListViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = networkService.getOfflineMapCityList()) {
                 is NetResult.Success -> {
-                    cityListLiveData.postValue(result.data!!)
+                    cityListLiveData.postValue(result.data?.sortedBy { bean -> bean.id })
                 }
                 is NetResult.Error -> {
                     Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)

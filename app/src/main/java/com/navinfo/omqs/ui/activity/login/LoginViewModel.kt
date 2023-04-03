@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.omqs.Constant
@@ -65,7 +66,7 @@ class LoginViewModel(
      */
     fun onClick(view: View) {
         loginUser.value!!.username = "admin2"
-        loginUser.postValue(loginUser.value)
+        loginUser.value = loginUser.value
     }
 
     /**
@@ -81,7 +82,6 @@ class LoginViewModel(
         //不指定IO，会在主线程里运行
         jobLogin = viewModelScope.launch(Dispatchers.IO) {
             loginCheck(context, userName, password)
-            Log.e("jingo", "运行完了1？${Thread.currentThread().name}")
         }
     }
 
@@ -90,14 +90,12 @@ class LoginViewModel(
      */
 
     private suspend fun loginCheck(context: Context, userName: String, password: String) {
-        Log.e("jingo", "我在哪个线程里？${Thread.currentThread().name}")
         //上面调用了线程切换，这里不用调用，即使调用了还是在同一个线程中，除非自定义协程域？（待验证）
 //        withContext(Dispatchers.IO) {
-        Log.e("jingo", "delay之前？${Thread.currentThread().name}")
         //网络访问
         loginStatus.postValue(LoginStatus.LOGIN_STATUS_NET_LOADING)
-        //假装网络访问，等待3秒
-        delay(3000)
+        //假装网络访问，等待2秒
+        delay(1000)
         //文件夹初始化
         try {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_INIT)
@@ -108,7 +106,6 @@ class LoginViewModel(
         //假装解压文件等
         delay(1000)
         loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
-        Log.e("jingo", "delay之后？${Thread.currentThread().name}")
 
 //        }
     }
@@ -121,6 +118,7 @@ class LoginViewModel(
         sdCardPath?.let {
             Constant.ROOT_PATH = sdCardPath.absolutePath
             Constant.MAP_PATH = Constant.ROOT_PATH + "/map/"
+            Constant.OFFLINE_MAP_PATH = Constant.MAP_PATH + "offline/"
             val file = File(Constant.MAP_PATH)
             if (!file.exists()) {
                 file.mkdirs()
@@ -135,7 +133,7 @@ class LoginViewModel(
         Log.e("jingo", "取消了？${Thread.currentThread().name}")
         jobLogin?.let {
             it.cancel()
-            loginStatus.postValue(LoginStatus.LOGIN_STATUS_CANCEL)
+            loginStatus.value = LoginStatus.LOGIN_STATUS_CANCEL
         }
     }
 
