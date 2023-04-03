@@ -1,22 +1,21 @@
-package com.navinfo.omqs.bean
+package com.navinfo.collect.library.data.entity
 
 import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
 
 enum class StatusEnum(val status: Int) {
     NONE(0), WAITING(1), LOADING(2), PAUSE(3),
     ERROR(4), DONE(5), UPDATE(6)
 }
 
-open class OfflineMapCityBean{
-    var id: String = ""
-    var fileName: String = ""
-    var name: String = ""
-    var url: String = ""
-    var version: Long = 0L
-    var fileSize: Long = 0L
-    var currentSize:Long = 0L
-    var status: Int = StatusEnum.NONE.status
-
+open class OfflineMapCityBean @JvmOverloads constructor(@PrimaryKey var id: String = "",
+                                                        var fileName: String = "",
+                                                        var name: String = "",
+                                                        var url: String = "",
+                                                        var version: Long = 0L,
+                                                        var fileSize: Long = 0L,
+                                                        var currentSize: Long = 0L,
+                                                        var status: Int =0) : RealmObject(){
     // status的转换对象
     var statusEnum:StatusEnum
         get() {
@@ -30,8 +29,6 @@ open class OfflineMapCityBean{
             status = value.status
         }
 
-    constructor() : super()
-
     fun getFileSizeText(): String {
         return if (fileSize < 1024.0)
             "$fileSize B"
@@ -42,4 +39,10 @@ open class OfflineMapCityBean{
         else
             "%.2f M".format(fileSize / 1073741824.0)
     }
+
+//    constructor(){
+//
+//    }
+//
+
 }

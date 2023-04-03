@@ -10,9 +10,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.LoginUserBean
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import kotlinx.coroutines.*
 import okio.IOException
 import java.io.File
+import java.math.BigInteger
 
 enum class LoginStatus {
     /**
@@ -60,6 +63,17 @@ class LoginViewModel(
         loginUser.value = LoginUserBean(username = "admin", password = "123456")
     }
 
+    private fun initRealm() {
+        val password = "password".encodeToByteArray().copyInto(ByteArray(64))
+        // 1110000011000010111001101110011011101110110111101110010011001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        Log.d("", "密码是： ${BigInteger(1, password).toString(2).padStart(64, '0')}")
+        val config = RealmConfiguration.Builder()
+            .directory(File(Constant.DATA_PATH))
+            .name("HDData")
+//            .encryptionKey(password)
+            .build()
+        Constant.realm = Realm.getInstance(config)
+    }
 
     /**
      * 处理注册按钮
@@ -100,6 +114,8 @@ class LoginViewModel(
         try {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_INIT)
             createRootFolder(context)
+            // 初始化Realm
+            initRealm()
         } catch (e: IOException) {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_FAILURE)
         }
@@ -122,6 +138,12 @@ class LoginViewModel(
             val file = File(Constant.MAP_PATH)
             if (!file.exists()) {
                 file.mkdirs()
+            Constant.DATA_PATH = Constant.ROOT_PATH + "/data/"
+            with(File(Constant.MAP_PATH)) {
+                if(!this.exists()) this.mkdirs()
+            }
+            with(File(Constant.DATA_PATH)) {
+                if(!this.exists()) this.mkdirs()
             }
         }
     }

@@ -1,5 +1,7 @@
 package com.navinfo.omqs
 
+import io.realm.Realm
+
 class Constant {
     companion object {
         /**
@@ -7,7 +9,9 @@ class Constant {
          */
         lateinit var ROOT_PATH: String
         lateinit var MAP_PATH: String
+        lateinit var DATA_PATH: String
         lateinit var OFFLINE_MAP_PATH: String
+
         /**
          * 服务器地址
          */
@@ -20,7 +24,7 @@ class Constant {
         const val message_version_right_off = "1" //立即发送
 
         const val MESSAGE_PAGE_SIZE = 30 //消息列表一页最多数量
-
+        lateinit var realm: Realm
     }
 
 }
