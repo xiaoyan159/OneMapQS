@@ -9,11 +9,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.LoginUserBean
-import com.navinfo.omqs.bean.OfflineMapCityRealmObject
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.coroutines.*
-import okio.ByteString.Companion.toByteString
 import okio.IOException
 import java.io.File
 import java.math.BigInteger
@@ -64,7 +62,7 @@ class LoginViewModel(
         loginUser.value = LoginUserBean(username = "admin", password = "123456")
     }
 
-    fun initRealm() {
+    private fun initRealm() {
         val password = "password".encodeToByteArray().copyInto(ByteArray(64))
         // 1110000011000010111001101110011011101110110111101110010011001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
         Log.d("", "密码是： ${BigInteger(1, password).toString(2).padStart(64, '0')}")

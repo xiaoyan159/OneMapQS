@@ -4,7 +4,7 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
 
-open class OfflineMapCityRealmObject(): RealmObject() {
+open class OfflineMapCityRealmObject(){
     @PrimaryKey
     var id: String = ""
     var fileName: String=""

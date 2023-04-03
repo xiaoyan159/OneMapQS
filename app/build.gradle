@@ -3,8 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
+    id 'realm-android'
 }
-apply plugin: "realm-android"
 android {
     namespace 'com.navinfo.omqs'
     compileSdk 33

@@ -10,7 +10,7 @@
 
         <variable
             name="cityBean"
-            type="com.navinfo.omqs.bean.OfflineMapCityBean" />
+            type="com.navinfo.collect.library.data.entity.OfflineMapCityBean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
