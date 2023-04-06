@@ -1,6 +1,7 @@
 package com.navinfo.omqs.http
 
-import com.navinfo.omqs.bean.OfflineMapCityBean
+import com.navinfo.collect.library.data.entity.OfflineMapCityBean
+
 
 /**
  * 网络访问 业务接口

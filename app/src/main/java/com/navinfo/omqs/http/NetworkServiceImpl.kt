@@ -1,6 +1,6 @@
 package com.navinfo.omqs.http
 
-import com.navinfo.omqs.bean.OfflineMapCityBean
+import com.navinfo.collect.library.data.entity.OfflineMapCityBean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

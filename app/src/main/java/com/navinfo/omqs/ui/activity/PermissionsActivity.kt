@@ -16,9 +16,10 @@ open class PermissionsActivity : BaseActivity() {
         val permissionList = mutableListOf<String>()
         if (applicationInfo.targetSdkVersion >= Build.VERSION_CODES.TIRAMISU) {
             //文件读写
-            permissionList.add(Permission.READ_MEDIA_IMAGES)
-            permissionList.add(Permission.READ_MEDIA_AUDIO)
-            permissionList.add(Permission.READ_MEDIA_VIDEO)
+//            permissionList.add(Permission.READ_MEDIA_IMAGES)
+//            permissionList.add(Permission.READ_MEDIA_AUDIO)
+//            permissionList.add(Permission.READ_MEDIA_VIDEO)
+            permissionList.add(Permission.MANAGE_EXTERNAL_STORAGE)
         } else {
             //文件读写
             permissionList.add(Permission.WRITE_EXTERNAL_STORAGE)

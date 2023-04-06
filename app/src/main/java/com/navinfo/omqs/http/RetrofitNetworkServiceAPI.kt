@@ -1,13 +1,12 @@
 package com.navinfo.omqs.http
 
-import androidx.lifecycle.LiveData
-import com.navinfo.omqs.bean.OfflineMapCityBean
+import com.navinfo.collect.library.data.entity.OfflineMapCityBean
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Streaming
 import retrofit2.http.Url
-import java.util.concurrent.Flow
 
 /**
  * retrofit2 网络请求接口
@@ -47,7 +46,7 @@ interface RetrofitNetworkServiceAPI {
      */
     @Streaming
     @GET
-    suspend fun retrofitDownLoadFile(@Url url: String):Response<ResponseBody>
+    suspend fun retrofitDownLoadFile(@Header("RANGE") start: String? = "0", @Url url: String):Response<ResponseBody>
 
 
     /**

@@ -5,10 +5,13 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
-import android.opengl.ETC1.getHeight
-import android.opengl.ETC1.getWidth
 import android.util.AttributeSet
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.ProgressBar
+import com.navinfo.omqs.R
 
 
 /**
@@ -18,8 +21,13 @@ class MyProgressBar : ProgressBar {
     private lateinit var mPaint: Paint
     private var text: String = ""
     private var rate = 0f
+    private lateinit var bar: ProgressBar
 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+//        LayoutInflater.from(context).inflate(
+//            R.layout.my_projressbar, this,
+//            true
+//        );
         initView()
     }
 
@@ -33,6 +41,7 @@ class MyProgressBar : ProgressBar {
         mPaint.color = Color.BLUE
     }
 
+
     @Synchronized
     override fun setProgress(progress: Int) {
         setText(progress)
@@ -40,7 +49,7 @@ class MyProgressBar : ProgressBar {
     }
 
     private fun setText(progress: Int) {
-        rate = progress * 1.0f / this.getMax()
+        rate = progress * 1.0f / this.max
         val i = (rate * 100).toInt()
         text = "$i%"
     }
@@ -53,12 +62,14 @@ class MyProgressBar : ProgressBar {
         // int x = (getWidth()/2) - rect.centerX();
         // int y = (getHeight()/2) - rect.centerY();
         var x = (width * rate).toInt()
-        if (x == width) {
+        val dx = width - rect.right
+        if (x > dx) {
             // 如果为百分之百则在左边绘制。
-            x = width - rect.right
+            x = dx
         }
-        val y: Int = 0 - rect.top
-        mPaint.textSize = 22f
+        mPaint.textSize = 24f
+        val y: Int = 10 - rect.top
+
         canvas.drawText(text, x.toFloat(), y.toFloat(), mPaint)
     }
 }

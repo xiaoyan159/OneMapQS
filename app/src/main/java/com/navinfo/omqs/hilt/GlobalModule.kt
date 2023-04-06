@@ -6,11 +6,13 @@ import com.google.gson.Gson
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.OMQSApplication
 import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
+import com.navinfo.omqs.tools.RealmCoroutineScope
 import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -25,11 +27,11 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class GlobalModule {
 
-//    @Singleton
-//    @Provides
-//    fun provideApplication(application: Application): OMQSApplication {
-//        return application as OMQSApplication
-//    }
+    @Singleton
+    @Provides
+    fun provideApplication(application: Application): OMQSApplication {
+        return application as OMQSApplication
+    }
 
     /**
      * 注入 网络OKHttp 对象
@@ -54,7 +56,8 @@ class GlobalModule {
             }
         }.apply {
             level = if (Constant.DEBUG) {
-                HttpLoggingInterceptor.Level.BODY
+                //坑 ！！！！ 下载文件时打印log 内存不足
+                HttpLoggingInterceptor.Level.HEADERS
             } else {
                 HttpLoggingInterceptor.Level.NONE
             }
@@ -90,5 +93,14 @@ class GlobalModule {
     @Singleton
     fun provideNetworkService(retrofit: Retrofit): RetrofitNetworkServiceAPI {
         return retrofit.create(RetrofitNetworkServiceAPI::class.java)
+    }
+
+    /**
+     * realm 注册
+     */
+    @Provides
+    @Singleton
+    fun provideRealmService(context: Application): RealmCoroutineScope {
+        return RealmCoroutineScope(context)
     }
 }
