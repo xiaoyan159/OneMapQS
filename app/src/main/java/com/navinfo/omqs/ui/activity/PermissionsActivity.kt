@@ -28,7 +28,8 @@ open class PermissionsActivity : BaseActivity() {
         //定位权限
         permissionList.add(Permission.ACCESS_FINE_LOCATION)
         permissionList.add(Permission.ACCESS_COARSE_LOCATION)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        //android10
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
             permissionList.add(Permission.ACCESS_BACKGROUND_LOCATION)
         }
         XXPermissions.with(this)
