@@ -14,6 +14,7 @@ import androidx.viewbinding.ViewBinding
 open class BaseViewHolder(val viewBinding: ViewBinding) :
     RecyclerView.ViewHolder(viewBinding.root), LifecycleOwner {
     private val lifecycleRegistry = LifecycleRegistry(this)
+    var tag = ""
 
     init {
 //        dataBinding.lifecycleOwner = this

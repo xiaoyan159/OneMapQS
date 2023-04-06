@@ -57,6 +57,5 @@ class OfflineMapCityListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        Log.e("jingo", "OfflineMapCityListFragment onDestroyView")
     }
 }

@@ -8,8 +8,20 @@ class Constant {
          * sd卡根目录
          */
         lateinit var ROOT_PATH: String
+
+        /**
+         * 地图目录
+         */
         lateinit var MAP_PATH: String
+
+        /**
+         * 数据目录
+         */
         lateinit var DATA_PATH: String
+
+        /**
+         * 离线地图目录
+         */
         lateinit var OFFLINE_MAP_PATH: String
 
         /**

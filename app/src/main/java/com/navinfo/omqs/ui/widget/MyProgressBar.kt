@@ -62,9 +62,10 @@ class MyProgressBar : ProgressBar {
         // int x = (getWidth()/2) - rect.centerX();
         // int y = (getHeight()/2) - rect.centerY();
         var x = (width * rate).toInt()
-        if (x == width) {
+        val dx = width - rect.right
+        if (x > dx) {
             // 如果为百分之百则在左边绘制。
-            x = width - rect.right
+            x = dx
         }
         mPaint.textSize = 24f
         val y: Int = 10 - rect.top

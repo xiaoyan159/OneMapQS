@@ -1,23 +1,17 @@
 package com.navinfo.omqs.http.offlinemapdownload
 
-import android.content.Context
-import android.text.TextUtils
-import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import com.navinfo.omqs.Constant
-import com.navinfo.omqs.bean.OfflineMapCityBean
+import com.navinfo.collect.library.data.entity.OfflineMapCityBean
 import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
-import dagger.hilt.android.qualifiers.ActivityContext
-import kotlinx.coroutines.cancel
+import com.navinfo.omqs.tools.RealmCoroutineScope
 import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
 
 /**
  * 管理离线地图下载
  */
-class OfflineMapDownloadManager @Inject constructor(
-    private val netApi: RetrofitNetworkServiceAPI
+class OfflineMapDownloadManager(
+    val netApi: RetrofitNetworkServiceAPI, val realmManager: RealmCoroutineScope
 ) {
     /**
      * 最多同时下载数量
@@ -94,33 +88,27 @@ class OfflineMapDownloadManager @Inject constructor(
         scopeMap[id]?.start()
     }
 
-    fun cancel(id: String) {
-        taskScopeMap.remove(id)
-        scopeMap[id]?.cancelTask()
-    }
 
     fun addTask(cityBean: OfflineMapCityBean) {
-        if (scopeMap.containsKey(cityBean.id)) {
-            return
-        } else {
-            scopeMap[cityBean.id] = OfflineMapDownloadScope(this, netApi, cityBean)
+        if (!scopeMap.containsKey(cityBean.id)) {
+            scopeMap[cityBean.id] = OfflineMapDownloadScope(this, cityBean)
         }
     }
 
 
     fun observer(
-        id: String,
-        lifecycleOwner: LifecycleOwner,
-        observer: Observer<OfflineMapCityBean>
+        id: String, lifecycleOwner: LifecycleOwner, observer: Observer<OfflineMapCityBean>
     ) {
         if (scopeMap.containsKey(id)) {
-            val downloadScope = scopeMap[id]
-            downloadScope?.let {
-                downloadScope.observer(lifecycleOwner, observer)
-            }
+            scopeMap[id]!!.observer(lifecycleOwner, observer)
         }
     }
 
+    fun removeObserver(id: String) {
+        if (scopeMap.containsKey(id)) {
+            scopeMap[id]!!.removeObserver()
+        }
+    }
 
 
 }

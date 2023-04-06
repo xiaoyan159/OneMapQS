@@ -13,10 +13,13 @@ import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityLoginBinding
 import com.navinfo.omqs.ui.activity.PermissionsActivity
 import com.navinfo.omqs.ui.activity.map.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * 登陆页面
  */
+
+@AndroidEntryPoint
 class LoginActivity : PermissionsActivity() {
 
     private lateinit var binding: ActivityLoginBinding
@@ -64,6 +67,9 @@ class LoginActivity : PermissionsActivity() {
             LoginStatus.LOGIN_STATUS_CANCEL -> {
                 loginDialog?.dismiss()
                 loginDialog = null
+            }
+            LoginStatus.LOGIN_STATUS_NET_OFFLINE_MAP -> {
+                loginDialog("检查离线地图...")
             }
         }
     }

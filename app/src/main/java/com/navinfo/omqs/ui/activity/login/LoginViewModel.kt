@@ -5,23 +5,28 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.LoginUserBean
-import io.realm.Realm
-import io.realm.RealmConfiguration
+import com.navinfo.omqs.http.NetResult
+import com.navinfo.omqs.http.NetworkService
+import com.navinfo.omqs.tools.FileManager
+import com.navinfo.omqs.tools.RealmCoroutineScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import okio.IOException
-import java.io.File
-import java.math.BigInteger
+import javax.inject.Inject
 
 enum class LoginStatus {
     /**
      * 访问服务器登陆中
      */
     LOGIN_STATUS_NET_LOADING,
+
+    /**
+     * 访问离线地图列表
+     */
+    LOGIN_STATUS_NET_OFFLINE_MAP,
 
     /**
      * 初始化文件夹
@@ -49,7 +54,10 @@ enum class LoginStatus {
     LOGIN_STATUS_CANCEL,
 }
 
-class LoginViewModel(
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val networkService: NetworkService,
+    private val realmManager: RealmCoroutineScope
 ) : ViewModel() {
     //用户信息
     val loginUser: MutableLiveData<LoginUserBean> = MutableLiveData()
@@ -63,17 +71,6 @@ class LoginViewModel(
         loginUser.value = LoginUserBean(username = "admin", password = "123456")
     }
 
-    private fun initRealm() {
-        val password = "password".encodeToByteArray().copyInto(ByteArray(64))
-        // 1110000011000010111001101110011011101110110111101110010011001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-        Log.d("", "密码是： ${BigInteger(1, password).toString(2).padStart(64, '0')}")
-        val config = RealmConfiguration.Builder()
-            .directory(File(Constant.DATA_PATH))
-            .name("HDData")
-//            .encryptionKey(password)
-            .build()
-        Constant.realm = Realm.getInstance(config)
-    }
 
     /**
      * 处理注册按钮
@@ -113,46 +110,56 @@ class LoginViewModel(
         //文件夹初始化
         try {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_INIT)
-            createRootFolder(context)
+            createUserFolder(context)
             // 初始化Realm
-            initRealm()
         } catch (e: IOException) {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_FAILURE)
         }
+
         //假装解压文件等
         delay(1000)
-        loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
+        loginStatus.postValue(LoginStatus.LOGIN_STATUS_NET_OFFLINE_MAP)
+        when (val result = networkService.getOfflineMapCityList()) {
+            is NetResult.Success -> {
 
-//        }
+                if (result.data != null) {
+                    for (cityBean in result.data) {
+                        FileManager.checkOfflineMapFileInfo(cityBean)
+                    }
+                    realmManager.launch {
+                        realmManager.insertOrUpdate(result.data)
+                    }
+                }
+            }
+            is NetResult.Error -> {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+            is NetResult.Failure -> {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+            NetResult.Loading -> {}
+        }
+        loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
     }
 
-
+    /**
+     * 创建用户目录
+     */
     @Throws(IOException::class)
-    private fun createRootFolder(context: Context) {
-        // 在SD卡创建项目目录
-        val sdCardPath = context.getExternalFilesDir(null)
-        sdCardPath?.let {
-            Constant.ROOT_PATH = sdCardPath.absolutePath
-            Constant.MAP_PATH = Constant.ROOT_PATH + "/map/"
-            Constant.OFFLINE_MAP_PATH = Constant.MAP_PATH + "offline/"
-            val file = File(Constant.MAP_PATH)
-            if (!file.exists()) {
-                file.mkdirs()
-            Constant.DATA_PATH = Constant.ROOT_PATH + "/data/"
-            with(File(Constant.MAP_PATH)) {
-                if(!this.exists()) this.mkdirs()
-            }
-            with(File(Constant.DATA_PATH)) {
-                if(!this.exists()) this.mkdirs()
-            }
-        }
+    private fun createUserFolder(context: Context) {
+        // 在SD卡创建用户目录，解压资源等
     }
 
     /**
      * 取消登录
      */
     fun cancelLogin() {
-        Log.e("jingo", "取消了？${Thread.currentThread().name}")
         jobLogin?.let {
             it.cancel()
             loginStatus.value = LoginStatus.LOGIN_STATUS_CANCEL
@@ -163,6 +170,4 @@ class LoginViewModel(
         super.onCleared()
         cancelLogin()
     }
-
-
 }

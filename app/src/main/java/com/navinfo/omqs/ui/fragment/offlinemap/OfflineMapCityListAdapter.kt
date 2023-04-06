@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import com.navinfo.collect.library.data.entity.OfflineMapCityBean
 import com.navinfo.omqs.R
-import com.navinfo.omqs.bean.OfflineMapCityBean
 import com.navinfo.omqs.databinding.AdapterOfflineMapCityBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
@@ -32,14 +32,16 @@ class OfflineMapCityListAdapter @Inject constructor(
             val cityBean = data[it.tag as Int]
             when (cityBean.status) {
                 OfflineMapCityBean.NONE, OfflineMapCityBean.UPDATE, OfflineMapCityBean.PAUSE, OfflineMapCityBean.ERROR -> {
+                    Log.e("jingo", "开始下载 ${cityBean.status}")
                     downloadManager.start(cityBean.id)
                 }
                 OfflineMapCityBean.LOADING, OfflineMapCityBean.WAITING -> {
+                    Log.e("jingo", "暂停 ${cityBean.status}")
                     downloadManager.pause(cityBean.id)
                 }
-//                OfflineMapCityBean.WAITING->{
-//                    downloadManager.cancel(cityBean.id)
-//                }
+                else -> {
+                    Log.e("jingo", "暂停 ${cityBean.status}")
+                }
             }
         }
     }
@@ -50,23 +52,37 @@ class OfflineMapCityListAdapter @Inject constructor(
         return BaseViewHolder(viewBinding)
     }
 
+    override fun onViewRecycled(holder: BaseViewHolder) {
+        super.onViewRecycled(holder)
+        //页面滑动时会用holder重构页面，但是对进度条的监听回调会一直返回，扰乱UI，所以当当前holder去重构的时候，移除监听
+        downloadManager.removeObserver(holder.tag)
+    }
+
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         val binding: AdapterOfflineMapCityBinding =
             holder.viewBinding as AdapterOfflineMapCityBinding
         //牺牲性能立刻刷新UI，解决闪烁 这里不用
 //        binding.executePendingBindings()
         val cityBean = data[position]
+        //tag 方便onclick里拿到数据
+        holder.tag = cityBean.id
+        changeViews(binding, cityBean)
+        downloadManager.addTask(cityBean)
+        downloadManager.observer(cityBean.id, holder, DownloadObserver(cityBean.id, binding))
         binding.offlineMapDownloadBtn.tag = position
         binding.offlineMapDownloadBtn.setOnClickListener(downloadBtnClick)
         binding.offlineMapCityName.text = cityBean.name
         binding.offlineMapCitySize.text = cityBean.getFileSizeText()
-        downloadManager.addTask(cityBean)
-        changeViews(binding, cityBean)
-        downloadManager.observer(cityBean.id, holder) {
-            if (cityBean.id == it.id)
-                changeViews(binding, it)
+    }
+
+    inner class DownloadObserver(val id: String, val binding: AdapterOfflineMapCityBinding) :
+        Observer<OfflineMapCityBean> {
+        override fun onChanged(t: OfflineMapCityBean?) {
+            if (id == t?.id)
+                changeViews(binding, t)
         }
     }
+
 
     private fun changeViews(binding: AdapterOfflineMapCityBinding, cityBean: OfflineMapCityBean) {
         binding.offlineMapProgress.progress =

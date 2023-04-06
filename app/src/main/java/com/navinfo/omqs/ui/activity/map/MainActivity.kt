@@ -69,7 +69,6 @@ class MainActivity : BaseActivity() {
         super.onDestroy()
         mapController.mMapView.onDestroy()
         mapController.locationLayerHandler.stopLocation()
-        Log.e("jingo", "MainActivity 销毁")
     }
 
     override fun onResume() {

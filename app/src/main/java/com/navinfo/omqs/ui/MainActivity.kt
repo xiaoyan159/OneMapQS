@@ -3,15 +3,9 @@ package com.navinfo.omqs.ui
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.WindowCompat
-import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
 import com.github.k1rakishou.fsaf.FileChooser
 import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
-import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.ui.activity.PermissionsActivity
 

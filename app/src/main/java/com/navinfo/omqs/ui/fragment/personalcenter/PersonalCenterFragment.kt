@@ -3,21 +3,16 @@ package com.navinfo.omqs.ui.fragment.personalcenter
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
 import androidx.navigation.fragment.findNavController
 import com.blankj.utilcode.util.UriUtils
 import com.github.k1rakishou.fsaf.FileChooser
 import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
 import com.github.k1rakishou.fsaf.callback.FileChooserCallback
-import com.google.android.material.snackbar.Snackbar
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentPersonalCenterBinding
 
@@ -42,7 +37,6 @@ class PersonalCenterFragment : Fragment(), FSAFActivityCallbacks {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.e("jingo", "NIMapController PersonalCenterFragment onViewCreated")
         binding.root.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.personal_center_menu_offline_map ->
