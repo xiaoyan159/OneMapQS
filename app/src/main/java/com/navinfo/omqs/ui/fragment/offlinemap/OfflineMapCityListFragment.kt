@@ -10,17 +10,28 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.navinfo.omqs.databinding.FragmentOfflineMapCityListBinding
+import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
+import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * 离线地图城市列表
  */
 @AndroidEntryPoint
 class OfflineMapCityListFragment : Fragment() {
+    @Inject
+    lateinit var downloadManager: OfflineMapDownloadManager
     private var _binding: FragmentOfflineMapCityListBinding? = null
     private val viewModel by viewModels<OfflineMapCityListViewModel>()
     private val binding get() = _binding!!
-    private val adapter: OfflineMapCityListAdapter by lazy { OfflineMapCityListAdapter() }
+    private val adapter: OfflineMapCityListAdapter by lazy {
+        OfflineMapCityListAdapter(
+            downloadManager,
+            requireContext()
+        )
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,8 +44,10 @@ class OfflineMapCityListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val layoutManager = LinearLayoutManager(context)
-        _binding!!.offlineMapCityListRecyclerview.layoutManager = layoutManager
-        _binding!!.offlineMapCityListRecyclerview.adapter = adapter
+        //// 设置 RecyclerView 的固定大小，避免在滚动时重新计算视图大小和布局，提高性能
+        binding.offlineMapCityListRecyclerview.setHasFixedSize(true)
+        binding.offlineMapCityListRecyclerview.layoutManager = layoutManager
+        binding.offlineMapCityListRecyclerview.adapter = adapter
         viewModel.cityListLiveData.observe(viewLifecycleOwner) {
             adapter.refreshData(it)
         }
@@ -44,6 +57,5 @@ class OfflineMapCityListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        Log.e("jingo","OfflineMapCityListFragment onDestroyView")
     }
 }

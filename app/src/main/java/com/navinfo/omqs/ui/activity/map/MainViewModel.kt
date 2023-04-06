@@ -25,7 +25,6 @@ class MainViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        Log.e("jingo","MainViewModel 被释放了")
         super.onCleared()
     }
 }

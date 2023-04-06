@@ -91,7 +91,6 @@ DataNiLocationHandler(context: Context, dataBase: MapLifeDataBase) :
                 )
                 mDataBase.niLocationDao.delete(niLocation);
             } catch (e: Throwable) {
-                Log.e("jingo", "删除数据报错 ${e.message}");
                 Handler(Looper.getMainLooper()).post {
                     callback.invoke(false, "${e.message}")
                 }

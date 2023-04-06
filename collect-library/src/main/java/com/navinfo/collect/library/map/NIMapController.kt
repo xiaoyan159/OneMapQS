@@ -37,8 +37,5 @@ class NIMapController {
         mapView.setOptions(options)
     }
 
-    fun print() {
-        Log.e("jingo", "NIMapController 哈希code ${hashCode()}")
-    }
 }
 

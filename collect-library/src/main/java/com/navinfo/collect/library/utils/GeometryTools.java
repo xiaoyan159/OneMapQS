@@ -429,7 +429,6 @@ public class GeometryTools {
                     dList.add(lt + dis);
                     total += dis;
                 }
-                Log.e("jingo", "line lengh =" + total);
                 total = total / 2;
                 for (int i = 0; i < dList.size(); i++) {
                     double a = dList.get(i);
@@ -495,7 +494,6 @@ public class GeometryTools {
                     dList.add(lt + dis);
                     total += dis;
                 }
-                Log.e("jingo", "line lengh =" + total);
                 total = total / 2;
                 for (int i = 0; i < dList.size(); i++) {
                     double a = dList.get(i);
