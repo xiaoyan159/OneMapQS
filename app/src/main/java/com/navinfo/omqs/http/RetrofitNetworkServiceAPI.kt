@@ -1,6 +1,6 @@
 package com.navinfo.omqs.http
 
-import com.navinfo.collect.library.data.entity.OfflineMapCityBean
+import com.navinfo.omqs.bean.OfflineMapCityBean
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.GET

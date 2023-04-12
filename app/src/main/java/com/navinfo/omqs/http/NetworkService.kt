@@ -1,6 +1,6 @@
 package com.navinfo.omqs.http
 
-import com.navinfo.collect.library.data.entity.OfflineMapCityBean
+import com.navinfo.omqs.bean.OfflineMapCityBean
 
 
 /**

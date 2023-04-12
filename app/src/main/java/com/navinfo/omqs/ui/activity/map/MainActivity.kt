@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.findNavController
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
@@ -28,6 +29,7 @@ class MainActivity : BaseActivity() {
     //注入地图控制器
     @Inject
     lateinit var mapController: NIMapController
+
     @Inject
     lateinit var offlineMapDownloadManager: OfflineMapDownloadManager
 
@@ -39,9 +41,9 @@ class MainActivity : BaseActivity() {
         //初始化地图
         mapController.init(
             this,
-            binding.mapView.mainActivityMap,
+            binding.mainActivityMap,
             null,
-            Constant.ROOT_PATH + "/map/"
+            Constant.MAP_PATH
         )
         //关联生命周期
         binding.lifecycleOwner = this
@@ -83,4 +85,11 @@ class MainActivity : BaseActivity() {
         binding.mainActivityDrawer.open()
     }
 
+    /**
+     * 点击录音按钮
+     */
+    fun voiceOnclick() {
+        val naviController = findNavController(R.id.main_activity_right_fragment)
+        naviController.navigate(R.id.EvaluationResultFragment)
+    }
 }

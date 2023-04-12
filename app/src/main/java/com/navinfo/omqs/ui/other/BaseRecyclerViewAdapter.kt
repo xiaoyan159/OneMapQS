@@ -5,6 +5,7 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.navinfo.omqs.R
 
 /**
  * RecyclerView 适配器基础类
@@ -26,6 +27,11 @@ abstract class BaseRecyclerViewAdapter<T>(var data: List<T> = listOf()) :
 //        )
 //    }
 
+    abstract fun getItemViewRes(position: Int): Int
+
+    override fun getItemViewType(position: Int): Int {
+        return getItemViewRes(position)
+    }
 
     override fun getItemCount(): Int {
         return data.size

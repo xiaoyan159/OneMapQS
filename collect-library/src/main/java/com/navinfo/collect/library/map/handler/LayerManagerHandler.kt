@@ -1,17 +1,20 @@
 package com.navinfo.collect.library.map.handler
 
 import android.content.Context
-import android.os.Environment
 import com.navinfo.collect.library.map.NIMapView
-import com.navinfo.collect.library.map.NIMapView.LAYER_GROUPS
 import com.navinfo.collect.library.map.source.NavinfoMapRastorTileSource
+import com.navinfo.collect.library.map.source.NavinfoMultiMapFileTileSource
 import com.navinfo.collect.library.system.Constant
 import okhttp3.Cache
 import okhttp3.OkHttpClient
+import org.oscim.layers.GroupLayer
 import org.oscim.layers.Layer
-import org.oscim.layers.LocationLayer
 import org.oscim.layers.tile.bitmap.BitmapTileLayer
+import org.oscim.layers.tile.buildings.BuildingLayer
+import org.oscim.layers.tile.vector.VectorTileLayer
+import org.oscim.layers.tile.vector.labeling.LabelLayer
 import org.oscim.tiling.source.OkHttpEngine.OkHttpFactory
+import org.oscim.tiling.source.mapfile.MapFileTileSource
 import java.io.File
 
 /**
@@ -19,7 +22,8 @@ import java.io.File
  */
 class LayerManagerHandler(context: Context, mapView: NIMapView) :
     BaseHandler(context, mapView) {
-    private var baseRasterLayer: Layer? = null
+    private var baseGroupLayer // 用于盛放所有基础底图的图层组，便于统一管理
+            : GroupLayer? = null
 
     init {
         initMap()
@@ -29,8 +33,10 @@ class LayerManagerHandler(context: Context, mapView: NIMapView) :
      * 初始化地图
      */
     private fun initMap() {
-        switchBaseMapType(BASE_MAP_TYPE.CYCLE_MAP)
 
+        loadBaseMap()
+        mMapView.switchTileVectorLayerTheme(NIMapView.MAP_THEME.DEFAULT)
+        mMapView.vtmMap.updateMap()
 //        initVectorTileLayer()
 //        initMapLifeSource()
     }
@@ -39,15 +45,60 @@ class LayerManagerHandler(context: Context, mapView: NIMapView) :
     /**
      * 切换基础底图样式
      */
-    fun switchBaseMapType(type: BASE_MAP_TYPE) {
-        if (baseRasterLayer != null) {
-            mMapView.vtmMap.layers().remove(baseRasterLayer)
-            baseRasterLayer = null
-            mMapView.vtmMap.updateMap()
+    fun loadBaseMap() {
+
+        if (baseGroupLayer == null) {
+            baseGroupLayer = GroupLayer(mMapView.vtmMap)
+            addLayer(baseGroupLayer!!, NIMapView.LAYER_GROUPS.BASE)
         }
-        baseRasterLayer = getRasterTileLayer(type.url, type.tilePath, true)
-        addLayer(baseRasterLayer!!, LAYER_GROUPS.BASE)
-        mMapView.updateMap()
+        baseGroupLayer?.let {
+            for (layer in it.layers) {
+                removeLayer(layer)
+            }
+            it.layers.clear()
+            val builder = OkHttpClient.Builder()
+            val urlTileSource: NavinfoMultiMapFileTileSource =
+                NavinfoMultiMapFileTileSource.builder()
+                    .httpFactory(OkHttpFactory(builder)) //.locale("en")
+                    .build()
+
+            // Cache the tiles into file system
+            val cacheDirectory = File(Constant.MAP_PATH, "cache")
+            val cacheSize = 200 * 1024 * 1024 // 10 MB
+            val cache = Cache(cacheDirectory, cacheSize.toLong())
+            builder.cache(cache)
+
+//        val headerMap = HashMap<String, String>()
+//        headerMap["token"] = ""//Constant.TOKEN
+//        urlTileSource.setHttpRequestHeaders(headerMap)
+            val baseLayer = VectorTileLayer(mMapView.vtmMap, urlTileSource)
+
+            val baseMapFolder = File("${Constant.MAP_PATH}offline")
+
+            if (baseMapFolder.exists()) {
+                val dirFileList = baseMapFolder.listFiles()
+                if (dirFileList != null && dirFileList.isNotEmpty()) {
+                    for (mapFile in dirFileList) {
+                        if (!mapFile.isFile || !mapFile.name.endsWith(".map")) {
+                            continue
+                        }
+                        val mTileSource = MapFileTileSource()
+                        mTileSource.setPreferredLanguage("zh")
+                        if (mTileSource.setMapFile(mapFile.absolutePath)) {
+                            urlTileSource.add(mTileSource)
+                        }
+                    }
+                }
+                baseLayer.tileSource = urlTileSource
+                it.layers.add(baseLayer)
+                it.layers.add(BuildingLayer(mMapView.vtmMap, baseLayer))
+                it.layers.add(LabelLayer(mMapView.vtmMap, baseLayer))
+                for (layer in it.layers) {
+                    addLayer(layer, NIMapView.LAYER_GROUPS.BASE)
+                }
+                mMapView.updateMap()
+            }
+        }
     }
 
     private fun getRasterTileLayer(
@@ -61,16 +112,13 @@ class LayerManagerHandler(context: Context, mapView: NIMapView) :
                 .httpFactory(OkHttpFactory(builder)).build()
         // 如果使用缓存
         if (useCache) {
-            val cacheDirectory: File =
-                File(Constant.MAP_PATH, "tiles-raster")
+            val cacheDirectory =
+                File(Constant.MAP_PATH, "cache")
             val cacheSize = 300 * 1024 * 1024 // 300 MB
             val cache = Cache(cacheDirectory, cacheSize.toLong())
             builder.cache(cache)
         }
 
-//        mTileSource.setHttpEngine(new OkHttpEngine.OkHttpFactory(builder));
-//        mTileSource.setHttpRequestHeaders(Collections.singletonMap("User-Agent", "vtm-android-example"));
-//        mTileSource.setCache(new TileCache(mContext, defaultDir, url.substring(url.indexOf(":")+1)));
         return BitmapTileLayer(mMapView.vtmMap, mTileSource)
     }
 }

@@ -12,8 +12,7 @@ import com.navinfo.collect.library.map.NIMapView
 import org.oscim.layers.LocationLayer
 
 
-class LocationLayerHandler(context: Context, mapView: NIMapView) :
-    BaseHandler(context, mapView) {
+class LocationLayerHandler(context: Context, mapView: NIMapView) : BaseHandler(context, mapView) {
 
     private var mCurrentLocation: BDLocation? = null
     private var bFirst = true
@@ -55,13 +54,11 @@ class LocationLayerHandler(context: Context, mapView: NIMapView) :
                 val errorCode = it.locType
                 mCurrentLocation = it
                 mLocationLayer.setPosition(
-                    it.latitude,
-                    it.longitude,
-                    it.radius
+                    it.latitude, it.longitude, it.radius
                 )
                 //第一次定位成功显示当前位置
                 if (this.bFirst) {
-                    animateToCurrentPosition()
+                    animateToCurrentPosition(16.0)
                 }
 
             }
@@ -97,9 +94,7 @@ class LocationLayerHandler(context: Context, mapView: NIMapView) :
 //        locationOption.setOpenAutoNotifyMode()
             //设置打开自动回调位置模式，该开关打开后，期间只要定位SDK检测到位置变化就会主动回调给开发者
             locationOption.setOpenAutoNotifyMode(
-                1000,
-                1,
-                LocationClientOption.LOC_SENSITIVITY_HIGHT
+                1000, 1, LocationClientOption.LOC_SENSITIVITY_HIGHT
             )
             //需将配置好的LocationClientOption对象，通过setLocOption方法传递给LocationClient对象使用
             locationClient.locOption = locationOption
@@ -130,12 +125,21 @@ class LocationLayerHandler(context: Context, mapView: NIMapView) :
     /**
      * 回到当前位置
      */
-    fun animateToCurrentPosition()
-    {
+    fun animateToCurrentPosition(zoom: Double) {
+
         mCurrentLocation?.run {
-            val mapPosition = mMapView.vtmMap.mapPosition;
-            mapPosition.setPosition(this.latitude, this.longitude);
-            mMapView.vtmMap.animator().animateTo(300, mapPosition);
+            val mapPosition = mMapView.vtmMap.mapPosition
+            mapPosition.zoom = zoom
+            mapPosition.setPosition(this.latitude, this.longitude)
+            mMapView.vtmMap.animator().animateTo(300, mapPosition)
+        }
+    }
+
+    fun animateToCurrentPosition() {
+        mCurrentLocation?.run {
+            val mapPosition = mMapView.vtmMap.mapPosition
+            mapPosition.setPosition(this.latitude, this.longitude)
+            mMapView.vtmMap.animator().animateTo(300, mapPosition)
         }
     }
 }
@@ -143,8 +147,7 @@ class LocationLayerHandler(context: Context, mapView: NIMapView) :
 /**
  * 实现定位回调
  */
-private class MyLocationListener(callback: (BDLocation) -> Unit) :
-    BDAbstractLocationListener() {
+private class MyLocationListener(callback: (BDLocation) -> Unit) : BDAbstractLocationListener() {
     val call = callback;
     override fun onReceiveLocation(location: BDLocation) {
         call(location)
