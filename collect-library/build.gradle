@@ -55,7 +55,7 @@ android {
 
 
 dependencies {
-    api fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    compileOnly fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     api files('libs/BaiduLBS_AndroidSDK_Lib.aar')
     implementation "androidx.appcompat:appcompat:$appcompatVersion"
     implementation "com.google.android.material:material:$materialVersion"
