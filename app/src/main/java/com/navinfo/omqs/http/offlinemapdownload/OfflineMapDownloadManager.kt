@@ -2,16 +2,19 @@ package com.navinfo.omqs.http.offlinemapdownload
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import com.navinfo.collect.library.data.entity.OfflineMapCityBean
+import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.omqs.db.RoomAppDatabase
+import com.navinfo.omqs.bean.OfflineMapCityBean
 import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
-import com.navinfo.omqs.tools.RealmCoroutineScope
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 管理离线地图下载
  */
 class OfflineMapDownloadManager(
-    val netApi: RetrofitNetworkServiceAPI, val realmManager: RealmCoroutineScope
+    val netApi: RetrofitNetworkServiceAPI,
+    val roomDatabase: RoomAppDatabase,
+    val mapController: NIMapController
 ) {
     /**
      * 最多同时下载数量

@@ -15,10 +15,12 @@ import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
 import com.github.k1rakishou.fsaf.callback.FileChooserCallback
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentPersonalCenterBinding
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * 个人中心
  */
+@AndroidEntryPoint
 class PersonalCenterFragment : Fragment(), FSAFActivityCallbacks {
 
     private var _binding: FragmentPersonalCenterBinding? = null
@@ -51,6 +53,18 @@ class PersonalCenterFragment : Fragment(), FSAFActivityCallbacks {
                             val file = UriUtils.uri2File(uri)
                             // 开始导入数据
                             viewModel.importOmdbData(file)
+                        }
+                    })
+                }
+                R.id.personal_center_menu_import_yuan_data->{
+                    // 用户选中导入数据，打开文件选择器，用户选择导入的数据文件目录
+                    fileChooser.openChooseFileDialog(object: FileChooserCallback() {
+                        override fun onCancel(reason: String) {
+                        }
+
+                        override fun onResult(uri: Uri) {
+                            viewModel.importScProblemData(uri)
+
                         }
                     })
                 }

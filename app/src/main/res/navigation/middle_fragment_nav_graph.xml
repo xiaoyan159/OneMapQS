@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/middle_fragment_nav_graph"
+    app:startDestination="@id/EmptyFragment">
+
+    <fragment
+        android:id="@+id/EmptyFragment"
+        android:name="com.navinfo.omqs.ui.fragment.empty.EmptyFragment"
+        android:label="空页面"
+        tools:layout="@layout/fragment_empty"></fragment>
+
+    <fragment
+        android:id="@+id/PhenomenonFragment"
+        android:name="com.navinfo.omqs.ui.fragment.evaluationresult.PhenomenonFragment"
+        android:label="评测页面"
+        tools:layout="@layout/fragment_phenomenon"></fragment>
+    <fragment
+        android:id="@+id/ProblemLinkFragment"
+        android:name="com.navinfo.omqs.ui.fragment.evaluationresult.ProblemLinkFragment"
+        android:label="评测页面"
+        tools:layout="@layout/fragment_problem_link"></fragment>
+</navigation>

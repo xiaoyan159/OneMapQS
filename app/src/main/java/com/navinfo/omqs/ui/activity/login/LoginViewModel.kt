@@ -8,10 +8,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.omqs.bean.LoginUserBean
+import com.navinfo.omqs.db.RoomAppDatabase
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager
-import com.navinfo.omqs.tools.RealmCoroutineScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import okio.IOException
@@ -57,7 +57,7 @@ enum class LoginStatus {
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val networkService: NetworkService,
-    private val realmManager: RealmCoroutineScope
+    private val roomAppDatabase: RoomAppDatabase
 ) : ViewModel() {
     //用户信息
     val loginUser: MutableLiveData<LoginUserBean> = MutableLiveData()
@@ -126,9 +126,7 @@ class LoginViewModel @Inject constructor(
                     for (cityBean in result.data) {
                         FileManager.checkOfflineMapFileInfo(cityBean)
                     }
-                    realmManager.launch {
-                        realmManager.insertOrUpdate(result.data)
-                    }
+                    roomAppDatabase.getOfflineMapDao().insertOrUpdate(result.data)
                 }
             }
             is NetResult.Error -> {
@@ -143,7 +141,8 @@ class LoginViewModel @Inject constructor(
                         .show()
                 }
             }
-            NetResult.Loading -> {}
+            is NetResult.Loading -> {}
+            else -> {}
         }
         loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
     }
