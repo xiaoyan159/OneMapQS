@@ -36,6 +36,7 @@ class NIMapController {
         measureLayerHandler = MeasureLayerHandler(context, mapView)
         mMapView = mapView
         mapView.setOptions(options)
+        mMapView.vtmMap.viewport().maxZoomLevel = Constant.MAX_ZOOM // 设置地图的最大级别
     }
 
 
