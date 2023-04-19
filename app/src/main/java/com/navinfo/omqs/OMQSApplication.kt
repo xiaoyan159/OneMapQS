@@ -2,7 +2,6 @@ package com.navinfo.omqs
 
 import android.app.Application
 import android.util.Log
-import com.navinfo.omqs.db.MyRealmModule
 import com.navinfo.omqs.tools.FileManager
 import dagger.hilt.android.HiltAndroidApp
 import io.realm.Realm
@@ -25,7 +24,7 @@ class OMQSApplication : Application() {
             .directory(File(Constant.DATA_PATH))
             .name("OMQS.realm")
             .encryptionKey(password)
-            .modules(Realm.getDefaultModule(), MyRealmModule())
+//            .modules(Realm.getDefaultModule(), MyRealmModule())
             .schemaVersion(1)
             .build()
         Realm.setDefaultConfiguration(config)

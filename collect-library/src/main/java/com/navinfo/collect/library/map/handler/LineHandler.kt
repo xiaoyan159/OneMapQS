@@ -3,6 +3,7 @@ package com.navinfo.collect.library.map.handler
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.R
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.utils.GeometryTools
@@ -21,7 +22,7 @@ import org.oscim.layers.vector.PathLayer
 import org.oscim.layers.vector.geometries.Style
 import org.oscim.map.Map
 
-open class LineHandler(context: Context, mapView: NIMapView) :
+open class LineHandler(context: AppCompatActivity, mapView: NIMapView) :
     BaseHandler(context, mapView), Map.UpdateListener {
 
     private var editIndex: Int = -1;

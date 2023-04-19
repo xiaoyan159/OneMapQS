@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.text.TextPaint
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.R
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.map.handler.BaseHandler
@@ -29,7 +30,7 @@ import org.oscim.layers.vector.geometries.Style
 import org.oscim.map.Map
 import java.math.BigDecimal
 
-open class MeasureLayerHandler(context: Context, mapView: NIMapView) :
+open class MeasureLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
     BaseHandler(context, mapView), Map.UpdateListener {
 
     private var editIndex: Int = -1;//线修型的时候，用来表示是不是正在修型，修的第几个点
