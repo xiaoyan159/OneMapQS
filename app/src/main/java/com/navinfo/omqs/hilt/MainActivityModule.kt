@@ -1,9 +1,9 @@
 package com.navinfo.omqs.hilt
 
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.omqs.db.RoomAppDatabase
 import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
-import com.navinfo.omqs.tools.RealmCoroutineScope
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,12 +28,14 @@ class MainActivityModule {
     @Provides
     fun providesOfflineMapDownloadManager(
         networkServiceAPI: RetrofitNetworkServiceAPI,
-        realmManager: RealmCoroutineScope
+        roomAppDatabase: RoomAppDatabase,
+        mapController: NIMapController
     ): OfflineMapDownloadManager =
-        OfflineMapDownloadManager(networkServiceAPI, realmManager)
+        OfflineMapDownloadManager(networkServiceAPI, roomAppDatabase, mapController)
 
     /**
      * 实验失败，这样创建，viewmodel不会在activity销毁的时候同时销毁
+     * 4-14:因为没有传入activity的 owner,无法检测生命周期，
      */
 //    @ActivityRetainedScoped
 //    @Provides

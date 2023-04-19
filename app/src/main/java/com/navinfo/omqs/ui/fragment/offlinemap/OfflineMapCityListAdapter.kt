@@ -6,9 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import com.navinfo.collect.library.data.entity.OfflineMapCityBean
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.AdapterOfflineMapCityBinding
+import com.navinfo.omqs.bean.OfflineMapCityBean
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
@@ -22,7 +22,7 @@ import javax.inject.Inject
  *使用 LiveData 的 observeForever 然后在 ViewHolder 销毁前手动调用 removeObserver
  *使用 LifecycleRegistry 给 ViewHolder 分发生命周期(这里使用了这个)
  */
-class OfflineMapCityListAdapter @Inject constructor(
+class OfflineMapCityListAdapter(
     private val downloadManager: OfflineMapDownloadManager, private val context: Context
 ) : BaseRecyclerViewAdapter<OfflineMapCityBean>() {
 
@@ -126,7 +126,7 @@ class OfflineMapCityListAdapter @Inject constructor(
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
+    override fun getItemViewRes(position: Int): Int {
         return R.layout.adapter_offline_map_city
     }
 }

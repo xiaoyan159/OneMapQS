@@ -7,7 +7,6 @@ import org.oscim.core.GeoPoint
 import org.oscim.core.Point
 
 open class ViewportHandler(context: Context, mapView: NIMapView) : BaseHandler(context, mapView) {
-
     /**
      * Set pivot horizontal / vertical relative to view center in [-1, 1].
      * e.g. pivotY 0.5 is usually preferred for navigation, moving center to 25% of view height.
@@ -73,7 +72,7 @@ open class ViewportHandler(context: Context, mapView: NIMapView) : BaseHandler(c
         px: Float, py: Float
     ): Map<String, Any> {
 
-        val geo = mMapView.vtmMap.viewport().fromScreenPoint(px,py)
+        val geo = mMapView.vtmMap.viewport().fromScreenPoint(px, py)
 
         return mapOf(
             "latitude" to geo.latitude,

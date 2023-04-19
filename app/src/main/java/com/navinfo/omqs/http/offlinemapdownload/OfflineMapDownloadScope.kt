@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.navinfo.collect.library.data.entity.OfflineMapCityBean
 import com.navinfo.omqs.Constant
+import com.navinfo.omqs.bean.OfflineMapCityBean
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.IOException
@@ -32,8 +32,8 @@ class OfflineMapDownloadScope(
     /**
      * 管理观察者，同时只有一个就行了
      */
-//    private var observer: Observer<OfflineMapCityBean>? = null
-    private var lifecycleOwner: LifecycleOwner? = null
+    private val observer = Observer<Any> {}
+//    private var lifecycleOwner: LifecycleOwner? = null
 
     /**
      *通知UI更新
@@ -89,10 +89,10 @@ class OfflineMapDownloadScope(
         if (cityBean.status != status || status == OfflineMapCityBean.LOADING) {
             cityBean.status = status
             downloadData.postValue(cityBean)
-
-            downloadManager.realmManager.launch {
-                downloadManager.realmManager.insertOrUpdate(cityBean)
+            launch(Dispatchers.IO) {
+                downloadManager.roomDatabase.getOfflineMapDao().update(cityBean)
             }
+
         }
     }
 
@@ -101,7 +101,7 @@ class OfflineMapDownloadScope(
      */
     fun observer(owner: LifecycleOwner, ob: Observer<OfflineMapCityBean>) {
         removeObserver()
-        this.lifecycleOwner = owner
+//        this.lifecycleOwner = owner
         downloadData.observe(owner, ob)
     }
 
@@ -156,6 +156,9 @@ class OfflineMapDownloadScope(
                     fileTemp.renameTo(File("${Constant.OFFLINE_MAP_PATH}${cityBean.fileName}"))
                 Log.e("jingo", "文件下载完成 修改文件 $res")
                 change(OfflineMapCityBean.DONE)
+                withContext(Dispatchers.Main) {
+                    downloadManager.mapController.layerManagerHandler.loadBaseMap()
+                }
             } else {
                 change(OfflineMapCityBean.PAUSE)
             }
@@ -168,9 +171,10 @@ class OfflineMapDownloadScope(
     }
 
     fun removeObserver() {
-        lifecycleOwner?.let {
-            downloadData.removeObservers(it)
-            null
-        }
+        downloadData.observeForever(observer)
+//        lifecycleOwner?.let {
+        downloadData.removeObserver(observer)
+//            null
+//        }
     }
 }

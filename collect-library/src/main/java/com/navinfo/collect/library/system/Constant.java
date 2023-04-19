@@ -11,6 +11,9 @@ import java.util.Map;
 
 public class Constant {
 
+    //服务地址
+    public static String URL_BASE = "http://cmp-gateway-sp9-port.ayiqdpfs.cloud.app.ncloud.navinfo.com/";
+
     public static String MAP_PATH = Environment.getExternalStorageDirectory() + "/map/";
 
     public static void setVisibleTypeMap(Map<String, Boolean> visibleTypeMap) {

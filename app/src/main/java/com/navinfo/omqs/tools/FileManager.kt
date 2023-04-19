@@ -1,9 +1,8 @@
 package com.navinfo.omqs.tools
 
 import android.content.Context
-import android.util.Log
-import com.navinfo.collect.library.data.entity.OfflineMapCityBean
 import com.navinfo.omqs.Constant
+import com.navinfo.omqs.bean.OfflineMapCityBean
 import java.io.File
 
 class FileManager {

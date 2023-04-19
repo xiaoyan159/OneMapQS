@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/right_fragment_nav_graph"
+    app:startDestination="@id/EmptyFragment">
+
+    <fragment
+        android:id="@+id/EmptyFragment"
+        android:name="com.navinfo.omqs.ui.fragment.empty.EmptyFragment"
+        android:label="空页面"
+        tools:layout="@layout/fragment_empty"></fragment>
+
+    <fragment
+        android:id="@+id/EvaluationResultFragment"
+        android:name="com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultFragment"
+        android:label="评测页面"
+        tools:layout="@layout/fragment_evaluation_result"></fragment>
+</navigation>

@@ -58,11 +58,11 @@ class LoginActivity : PermissionsActivity() {
                 loginDialog = null
             }
             LoginStatus.LOGIN_STATUS_SUCCESS -> {
-                val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                startActivity(intent)
-//                    finish()
                 loginDialog?.dismiss()
                 loginDialog = null
+                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                startActivity(intent)
+                finish()
             }
             LoginStatus.LOGIN_STATUS_CANCEL -> {
                 loginDialog?.dismiss()

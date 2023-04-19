@@ -5,6 +5,7 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.navinfo.omqs.R
 
 /**
  * RecyclerView 适配器基础类
@@ -26,21 +27,21 @@ abstract class BaseRecyclerViewAdapter<T>(var data: List<T> = listOf()) :
 //        )
 //    }
 
+    abstract fun getItemViewRes(position: Int): Int
+
+    override fun getItemViewType(position: Int): Int {
+        return getItemViewRes(position)
+    }
 
     override fun getItemCount(): Int {
         return data.size
     }
 
-    fun refreshData(newData: List<T>) {
-        this.data = newData
-        this.notifyDataSetChanged()
-    }
-
-
     override fun onViewAttachedToWindow(holder: BaseViewHolder) {
         super.onViewAttachedToWindow(holder)
         holder.onStart()
     }
+
 
     override fun onViewDetachedFromWindow(holder: BaseViewHolder) {
         super.onViewDetachedFromWindow(holder)
@@ -48,10 +49,16 @@ abstract class BaseRecyclerViewAdapter<T>(var data: List<T> = listOf()) :
             onStop()
         }
     }
+
 //
-//    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+
+    //        this.recyclerView = recyclerView
 //        super.onAttachedToRecyclerView(recyclerView)
-//        this.recyclerView = recyclerView
+//    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+    open fun refreshData(newData: List<T>) {
+        this.data = newData
+        this.notifyDataSetChanged()
+    }
 //    }
 //
 //    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {

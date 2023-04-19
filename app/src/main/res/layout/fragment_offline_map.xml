@@ -26,20 +26,13 @@
             android:text="城市列表" />
     </com.google.android.material.tabs.TabLayout>
 
-    <EditText
-        android:id="@+id/offline_map_search"
-        style="@style/input_blue_type"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="搜索"
-        app:layout_constraintTop_toBottomOf="@id/offline_map_tab_layout" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/offline_map_viewpager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/offline_map_search" />
+        app:layout_constraintTop_toBottomOf="@id/offline_map_tab_layout" />
 
     <ImageView
         android:id="@+id/offline_map_back"
@@ -51,4 +44,6 @@
         app:layout_constraintBottom_toBottomOf="@id/offline_map_tab_layout"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="@id/offline_map_tab_layout" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
