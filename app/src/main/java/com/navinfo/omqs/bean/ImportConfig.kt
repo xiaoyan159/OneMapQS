@@ -1,5 +1,12 @@
 package com.navinfo.omqs.bean
 
+
 class ImportConfig {
-    var tables: MutableList<String> = mutableListOf()
+    var tables: MutableList<TableInfo> = mutableListOf()
+}
+
+class TableInfo {
+    val table: String = ""
+    val code: Int = 0
+    val name: String = ""
 }

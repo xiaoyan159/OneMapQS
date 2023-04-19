@@ -5,7 +5,10 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.UriUtils
+import com.google.gson.Gson
+import com.navinfo.collect.library.data.entity.HAD_LINK
 import com.navinfo.collect.library.data.entity.OMDBEntity
 import com.navinfo.omqs.bean.ScProblemTypeBean
 import com.navinfo.omqs.bean.ScRootCauseAnalysisBean
@@ -35,24 +38,43 @@ class PersonalCenterViewModel @Inject constructor(
     suspend fun importOMDBData(importOMDBHelper: ImportOMDBHelper) {
         Log.d("OMQSApplication", "开始导入数据")
 //        Realm.getDefaultInstance().beginTransaction()
-        for (table in importOMDBHelper.openConfigFile().tables/*listOf<String>("HAD_LINK")*/) {
-            importOMDBHelper.getOMDBTableData(table).collect {
+        val gson = Gson()
+        for (tableName in listOf<String>("HAD_LINK", "HAD_LINK_SPEEDLIMIT", "HAD_LINK_SPEEDLIMIT_COND", "HAD_LINK_SPEEDLIMIT_VAR")/*listOf<String>("HAD_LINK")*/) {
+            importOMDBHelper.getOMDBTableData(tableName).collect {
+                val hadLinkFile = File(importOMDBHelper.omdbFile, "HAD_LINK.txt")
                 for (map in it) {
+                    if ("HAD_LINK" == tableName) {
+                        // 根据HAD_Link生成json文件
+                        val hadLink = HAD_LINK()
+                        hadLink.LINK_PID = map["LINK_PID"].toString()
+                        hadLink.MESH = map["MESH"].toString()
+                        hadLink.S_NODE_PID = map["S_NODE_PID"].toString()
+                        hadLink.E_NODE_PID = map["E_NODE_PID"].toString()
+                        hadLink.GEOMETRY = map["GEOMETRY"].toString()
+                        // 将该数据写入到对应的txt文件
+                        FileIOUtils.writeFileFromString(hadLinkFile, gson.toJson(hadLink)+"\r", true)
+                    }
                     val properties = RealmDictionary<String?>()
                     for (entry in map.entries) {
                         properties.putIfAbsent(entry.key, entry.value.toString())
                     }
-                    // 将读取到的sqlite数据插入到Realm中
-                    Realm.getDefaultInstance().insert(OMDBEntity(table, properties))
-                    // 将读取到的数据写入到json中
-
+//                    // 将读取到的sqlite数据插入到Realm中
+//                    Realm.getDefaultInstance().insert(OMDBEntity(tableName, properties))
                 }
             }
         }
 //        Realm.getDefaultInstance().commitTransaction()
 
-        // 数据导入结束后，开始生成渲染表所需的json文件，并生成压缩包
-
+//        val gson = Gson()
+//        // 数据导入结束后，开始生成渲染表所需的json文件，并生成压缩包
+//        for (table in importOMDBHelper.openConfigFile().tables/*listOf<String>("HAD_LINK")*/) {
+//            val omdbList = Realm.getDefaultInstance().where(OMDBEntity::class.java).equalTo("table", table.table).findAll()
+//            val outputFile = File(importOMDBHelper.omdbFile, "${table.table}.txt")
+//            // 将读取到的数据转换为json数据文件
+//            for (omdb in omdbList) {
+//                FileIOUtils.writeFileFromString(outputFile, gson.toJson(omdb))
+//            }
+//        }
 
         Log.d("OMQSApplication", "导入数据完成")
     }
