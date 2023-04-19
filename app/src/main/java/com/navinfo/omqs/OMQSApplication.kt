@@ -1,18 +1,19 @@
 package com.navinfo.omqs
 
 import android.app.Application
-import android.util.Log
 import com.navinfo.omqs.tools.FileManager
+import com.navinfo.omqs.ui.manager.TakePhotoManager
+import com.navinfo.omqs.util.NetUtils
 import dagger.hilt.android.HiltAndroidApp
-import io.realm.Realm
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import java.io.File
+import org.videolan.vlc.Util
 
 @HiltAndroidApp
 class OMQSApplication : Application() {
     override fun onCreate() {
-        FileManager.initRootDir(this)
         super.onCreate()
+        FileManager.initRootDir(this)
+        Util.getInstance().init(applicationContext)
+        NetUtils.getInstance().init(this)
+        TakePhotoManager.getInstance().init(this, 1)
     }
 }

@@ -1,12 +1,10 @@
 package com.navinfo.omqs.ui.activity.map
 
 import android.os.Bundle
-import android.provider.ContactsContract.Contacts
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.viewModelScope
+import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
@@ -81,6 +79,13 @@ class MainActivity : BaseActivity() {
      */
     fun openMenu() {
         binding.mainActivityDrawer.open()
+    }
+
+    /**
+     * 打开相机预览
+     */
+    fun openCamera() {
+        binding!!.viewModel!!.onClickCameraButton(this)
     }
 
 }

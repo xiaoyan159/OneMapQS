@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/ll_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/dialog_bg"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ll_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tv_title"
+                style="@style/content_font_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:paddingBottom="@dimen/three"
+                android:paddingLeft="@dimen/eight"
+                android:paddingRight="@dimen/eight"
+                android:paddingTop="@dimen/eight"
+                android:text="title"
+                android:textColor="@color/black"
+                android:textSize="@dimen/card_title_font_2size" />
+
+            <View
+                android:id="@+id/title_divider"
+                android:layout_width="match_parent"
+                android:layout_height="0.6dp"
+                android:layout_marginBottom="@dimen/five"
+                android:layout_marginTop="@dimen/five"
+                android:background="@color/line_gray" />
+
+            <TextView
+                android:id="@+id/tv_title2"
+                style="@style/content_font_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:paddingBottom="@dimen/eight"
+                android:text="title"
+                android:textColor="@color/black"
+                android:textSize="@dimen/card_title_font_3size"
+                android:visibility="gone" />
+
+            <View
+                android:id="@+id/title_divider2"
+                android:layout_width="match_parent"
+                android:layout_height="0.6dp"
+                android:background="@color/line_gray"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_content_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_content"
+                style="@style/content_font_default"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:paddingBottom="@dimen/twenty_two"
+                android:paddingLeft="@dimen/twelve"
+                android:paddingRight="@dimen/twelve"
+                android:paddingTop="@dimen/twenty"
+                android:text="提示内容"
+                android:textColor="@color/black"
+                android:textSize="@dimen/card_title_font_3size" />
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:id="@+id/ll_bottom_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/v_divice"
+                android:layout_width="match_parent"
+                android:layout_height="0.6dp"
+                android:background="@color/line_gray"
+                android:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/ll_bottom_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/btn_fm_cancel"
+                    style="@style/btn_default_style"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/dialog_bg_cancel"
+                    android:gravity="center"
+                    android:padding="@dimen/twelve"
+                    android:text="取消"
+                    android:textColor="@color/common_dialog_cancel_text_selector" />
+
+                <View
+                    android:id="@+id/middle_view"
+                    android:layout_width="0.6dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/dialog_bg_cancel"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/btn_fm_middle"
+                    style="@style/btn_default_style"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/dialog_bg_ok"
+                    android:gravity="center"
+                    android:padding="@dimen/twelve"
+                    android:text="中间"
+                    android:textColor="@color/common_dialog_middle_text_selector"
+                    android:visibility="gone" />
+
+                <View
+                    android:id="@+id/view_dialog"
+                    android:layout_width="0.6dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/line_gray" />
+
+                <TextView
+                    android:id="@+id/btn_fm_confirm"
+                    style="@style/btn_default_style"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/dialog_bg_ok"
+                    android:gravity="center"
+                    android:padding="@dimen/twelve"
+                    android:text="确定"
+                    android:textColor="@color/common_dialog_confirm_text_selector" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

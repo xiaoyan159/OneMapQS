@@ -11,8 +11,8 @@ android {
 
     defaultConfig {
         applicationId "com.navinfo.omqs"
-        minSdk 24
-        targetSdk 33
+        minSdk 21
+        targetSdk 21
         versionCode 1
         versionName "1.0"
 
@@ -30,8 +30,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     sourceSets {
         main {
@@ -48,9 +48,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
     implementation project(':collect-library')
-    api files('libs/BaiduLBS_AndroidSDK_Lib.aar')
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.5.0'
