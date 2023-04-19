@@ -1,12 +1,13 @@
 package com.navinfo.collect.library.map.handler
 
 import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.utils.GeometryTools
 import org.oscim.core.GeoPoint
 import org.oscim.core.Point
 
-open class ViewportHandler(context: Context, mapView: NIMapView) : BaseHandler(context, mapView) {
+open class ViewportHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(context, mapView) {
     /**
      * Set pivot horizontal / vertical relative to view center in [-1, 1].
      * e.g. pivotY 0.5 is usually preferred for navigation, moving center to 25% of view height.

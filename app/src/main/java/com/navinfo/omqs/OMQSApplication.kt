@@ -1,14 +1,10 @@
 package com.navinfo.omqs
 
 import android.app.Application
-import android.util.Log
-import com.navinfo.omqs.db.MyRealmModule
 import com.navinfo.omqs.tools.FileManager
 import dagger.hilt.android.HiltAndroidApp
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.io.File
 
 @HiltAndroidApp
@@ -23,7 +19,7 @@ class OMQSApplication : Application() {
         val config = RealmConfiguration.Builder()
             .directory(File(Constant.DATA_PATH))
             .name("HDData")
-            .modules(Realm.getDefaultModule(), MyRealmModule())
+//            .modules(Realm.getDefaultModule(), MyRealmModule())
             .schemaVersion(1)
 //            .encryptionKey(password)
             .build()

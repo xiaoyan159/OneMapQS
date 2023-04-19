@@ -2,6 +2,7 @@ package com.navinfo.collect.library.map.handler
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.R
 import com.navinfo.collect.library.map.GeoPoint
 import com.navinfo.collect.library.map.NIMapView
@@ -16,7 +17,7 @@ import org.oscim.layers.marker.MarkerSymbol
 /**
  * marker 操作
  */
-class MarkHandler(context: Context, mapView: NIMapView) :
+class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     BaseHandler(context, mapView) {
 
     //    //默认marker图层

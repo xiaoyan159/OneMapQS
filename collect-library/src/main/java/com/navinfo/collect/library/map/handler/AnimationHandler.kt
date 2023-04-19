@@ -1,6 +1,7 @@
 package com.navinfo.collect.library.map.handler
 
 import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.map.NIMapView
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
@@ -8,7 +9,7 @@ import org.oscim.core.MapPosition
 /**
  * 控制地图状态相关操作
  */
-open class AnimationHandler(context: Context, mapView: NIMapView) :
+open class AnimationHandler(context: AppCompatActivity, mapView: NIMapView) :
     BaseHandler(context, mapView) {
 
 
