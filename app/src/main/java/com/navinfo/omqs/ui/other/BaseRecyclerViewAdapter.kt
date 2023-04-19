@@ -37,16 +37,11 @@ abstract class BaseRecyclerViewAdapter<T>(var data: List<T> = listOf()) :
         return data.size
     }
 
-    fun refreshData(newData: List<T>) {
-        this.data = newData
-        this.notifyDataSetChanged()
-    }
-
-
     override fun onViewAttachedToWindow(holder: BaseViewHolder) {
         super.onViewAttachedToWindow(holder)
         holder.onStart()
     }
+
 
     override fun onViewDetachedFromWindow(holder: BaseViewHolder) {
         super.onViewDetachedFromWindow(holder)
@@ -54,10 +49,16 @@ abstract class BaseRecyclerViewAdapter<T>(var data: List<T> = listOf()) :
             onStop()
         }
     }
+
 //
-//    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+
+    //        this.recyclerView = recyclerView
 //        super.onAttachedToRecyclerView(recyclerView)
-//        this.recyclerView = recyclerView
+//    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+    open fun refreshData(newData: List<T>) {
+        this.data = newData
+        this.notifyDataSetChanged()
+    }
 //    }
 //
 //    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {

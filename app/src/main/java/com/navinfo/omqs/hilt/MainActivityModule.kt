@@ -35,6 +35,7 @@ class MainActivityModule {
 
     /**
      * 实验失败，这样创建，viewmodel不会在activity销毁的时候同时销毁
+     * 4-14:因为没有传入activity的 owner,无法检测生命周期，
      */
 //    @ActivityRetainedScoped
 //    @Provides

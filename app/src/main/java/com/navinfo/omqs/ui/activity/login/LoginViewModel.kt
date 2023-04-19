@@ -141,7 +141,8 @@ class LoginViewModel @Inject constructor(
                         .show()
                 }
             }
-            NetResult.Loading -> {}
+            is NetResult.Loading -> {}
+            else -> {}
         }
         loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
     }

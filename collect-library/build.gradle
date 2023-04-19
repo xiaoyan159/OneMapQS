@@ -63,10 +63,19 @@ android {
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     api files('libs/BaiduLBS_Android.jar')
+
+    //
+    api 'androidx.core:core-ktx:1.9.0'
+    api 'androidx.appcompat:appcompat:1.6.1'
+    api 'com.google.android.material:material:1.8.0'
+    api 'androidx.constraintlayout:constraintlayout:2.1.4'
+    api 'androidx.navigation:navigation-fragment-ktx:2.5.3'
+    api 'androidx.navigation:navigation-ui-ktx:2.5.3'
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation 'com.yanzhenjie:kalle:0.1.7'
+//    implementation 'com.yanzhenjie:kalle:0.1.7'
 
     // VTM依赖
     implementation "net.sf.kxml:kxml2:2.3.0"

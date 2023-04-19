@@ -5,11 +5,11 @@
     android:layout_height="match_parent"
     android:gravity="right|center_vertical"
     android:orientation="horizontal"
-    android:paddingLeft="30dp"
-    tools:context="com.navinfo.omqs.ui.fragment.evaluationresult.PhenomenonFragment">
+    android:paddingLeft="100dp"
+    tools:context="com.navinfo.omqs.ui.fragment.evaluationresult.ProblemLinkFragment">
 
     <ImageView
-        android:id="@+id/phenomenon_drawer"
+        android:id="@+id/link_drawer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/progress_bg"
@@ -26,7 +26,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/phenomenon_title_bg"
+            android:id="@+id/link_title_bg"
             android:layout_width="match_parent"
             android:layout_height="65dp"
             android:background="@color/default_blue"
@@ -43,21 +43,14 @@
             android:orientation="horizontal">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/phenomenon_left_recyclerview"
+                android:id="@+id/link_middle_recyclerview"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
                 android:background="@color/white" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/phenomenon_middle_recyclerview"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@color/white" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/phenomenon_right_recyclerview"
+                android:id="@+id/link_right_recyclerview"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="4"

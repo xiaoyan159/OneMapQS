@@ -2,6 +2,7 @@ package com.navinfo.omqs
 
 import android.app.Application
 import android.util.Log
+import com.navinfo.omqs.db.MyRealmModule
 import com.navinfo.omqs.tools.FileManager
 import dagger.hilt.android.HiltAndroidApp
 import io.realm.Realm
@@ -22,6 +23,8 @@ class OMQSApplication : Application() {
         val config = RealmConfiguration.Builder()
             .directory(File(Constant.DATA_PATH))
             .name("HDData")
+            .modules(Realm.getDefaultModule(), MyRealmModule())
+            .schemaVersion(1)
 //            .encryptionKey(password)
             .build()
         Realm.setDefaultConfiguration(config)
