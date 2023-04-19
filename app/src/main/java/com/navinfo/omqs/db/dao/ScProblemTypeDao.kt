@@ -1,8 +1,6 @@
 package com.navinfo.omqs.db.dao
 
 import androidx.room.*
-import androidx.sqlite.db.SupportSQLiteDatabase
-import com.navinfo.collect.library.data.dao.impl.MapLifeDataBase.getDatabase
 import com.navinfo.omqs.bean.ScProblemTypeBean
 
 
@@ -38,13 +36,13 @@ interface ScProblemTypeDao {
     /**
      * 获取问题类型，并去重
      */
-    @Query("select DISTINCT TYPE from ScProblemType where CLASS_TYPE=:type order by TYPE")
-    suspend fun findProblemTypeList(type: String): List<String>
+    @Query("select * from ScProblemType where CLASS_TYPE=:type order by TYPE")
+    suspend fun findProblemTypeList(type: String): List<ScProblemTypeBean>?
 
-    /**
-     *
-     */
-    @Query("select PHENOMENON from ScProblemType where CLASS_TYPE=:classType and TYPE=:type order by PHENOMENON")
-    suspend fun getPhenomenonList(classType: String, type: String): List<String>
+//    /**
+//     *
+//     */
+//    @Query("select PHENOMENON from ScProblemType where CLASS_TYPE=:classType and TYPE=:type order by PHENOMENON")
+//    suspend fun getPhenomenonList(classType: String, type: String): List<String>
 
 }

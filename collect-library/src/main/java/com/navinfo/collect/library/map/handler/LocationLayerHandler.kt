@@ -8,6 +8,7 @@ import com.baidu.location.BDLocation
 import com.baidu.location.LocationClient
 import com.baidu.location.LocationClientOption
 import com.baidu.location.LocationClientOption.LocationMode
+import com.navinfo.collect.library.map.GeoPoint
 import com.navinfo.collect.library.map.NIMapView
 import org.oscim.layers.LocationLayer
 
@@ -141,6 +142,13 @@ class LocationLayerHandler(context: Context, mapView: NIMapView) : BaseHandler(c
             mapPosition.setPosition(this.latitude, this.longitude)
             mMapView.vtmMap.animator().animateTo(300, mapPosition)
         }
+    }
+
+    fun getCurrentGeoPoint(): GeoPoint? {
+        mCurrentLocation?.let {
+            return GeoPoint(it.latitude, it.longitude)
+        }
+        return null
     }
 }
 

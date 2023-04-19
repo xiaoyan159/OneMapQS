@@ -1,15 +1,21 @@
 package com.navinfo.collect.library.map.handler
 
-import android.content.Context
+import android.graphics.Color
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.map.NIMapView
-import com.navinfo.collect.library.map.source.NavinfoMapRastorTileSource
 import com.navinfo.collect.library.map.source.NavinfoMultiMapFileTileSource
 import com.navinfo.collect.library.system.Constant
+import io.realm.Realm
+import io.realm.kotlin.where
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import okhttp3.Cache
 import okhttp3.OkHttpClient
+import org.oscim.backend.CanvasAdapter
+import org.oscim.backend.canvas.Paint
 import org.oscim.layers.GroupLayer
-import org.oscim.layers.Layer
-import org.oscim.layers.tile.bitmap.BitmapTileLayer
 import org.oscim.layers.tile.buildings.BuildingLayer
 import org.oscim.layers.tile.vector.VectorTileLayer
 import org.oscim.layers.tile.vector.labeling.LabelLayer
@@ -20,10 +26,21 @@ import java.io.File
 /**
  * Layer 操作
  */
-class LayerManagerHandler(context: Context, mapView: NIMapView) :
+class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
     BaseHandler(context, mapView) {
     private var baseGroupLayer // 用于盛放所有基础底图的图层组，便于统一管理
             : GroupLayer? = null
+
+    /**
+     * 默认文字颜色
+     */
+    private val mDefaultTextColor = "#4E55AF"
+
+    /**
+     * 文字画笔
+     */
+
+    private lateinit var paint: Paint
 
     init {
         initMap()
@@ -36,8 +53,9 @@ class LayerManagerHandler(context: Context, mapView: NIMapView) :
 
         loadBaseMap()
         mMapView.switchTileVectorLayerTheme(NIMapView.MAP_THEME.DEFAULT)
+        //初始化之间数据图层
+        initQsRecordDataLayer()
         mMapView.vtmMap.updateMap()
-//        initVectorTileLayer()
 //        initMapLifeSource()
     }
 
@@ -46,7 +64,7 @@ class LayerManagerHandler(context: Context, mapView: NIMapView) :
      * 切换基础底图样式
      */
     fun loadBaseMap() {
-
+        //给地图layer分组
         if (baseGroupLayer == null) {
             baseGroupLayer = GroupLayer(mMapView.vtmMap)
             addLayer(baseGroupLayer!!, NIMapView.LAYER_GROUPS.BASE)
@@ -90,8 +108,11 @@ class LayerManagerHandler(context: Context, mapView: NIMapView) :
                     }
                 }
                 baseLayer.tileSource = urlTileSource
+                //增加基础路网图层
                 it.layers.add(baseLayer)
+                //增加建筑图层
                 it.layers.add(BuildingLayer(mMapView.vtmMap, baseLayer))
+                //增加文字图层
                 it.layers.add(LabelLayer(mMapView.vtmMap, baseLayer))
                 for (layer in it.layers) {
                     addLayer(layer, NIMapView.LAYER_GROUPS.BASE)
@@ -101,26 +122,45 @@ class LayerManagerHandler(context: Context, mapView: NIMapView) :
         }
     }
 
-    private fun getRasterTileLayer(
-        url: String?,
-        tilePath: String?,
-        useCache: Boolean
-    ): Layer {
-        val builder = OkHttpClient.Builder()
-        val mTileSource =
-            NavinfoMapRastorTileSource.builder(url).tilePath(tilePath)
-                .httpFactory(OkHttpFactory(builder)).build()
-        // 如果使用缓存
-        if (useCache) {
-            val cacheDirectory =
-                File(Constant.MAP_PATH, "cache")
-            val cacheSize = 300 * 1024 * 1024 // 300 MB
-            val cache = Cache(cacheDirectory, cacheSize.toLong())
-            builder.cache(cache)
-        }
+    private fun initQsRecordDataLayer() {
+        paint = CanvasAdapter.newPaint()
+        paint.setTypeface(Paint.FontFamily.DEFAULT, Paint.FontStyle.NORMAL)
+        paint.setTextSize(13 * CanvasAdapter.getScale())
+        paint.strokeWidth = 2 * CanvasAdapter.getScale()
+        paint.color = Color.parseColor(mDefaultTextColor)
 
-        return BitmapTileLayer(mMapView.vtmMap, mTileSource)
+        mContext.lifecycleScope.launch(Dispatchers.IO) {
+
+
+            val realm = Realm.getDefaultInstance()
+            realm.executeTransaction {
+                val list = realm.where<QsRecordBean>().findAll()
+                paint.setColor(Color.parseColor(mDefaultTextColor))
+            }
+            realm.close()
+        }
     }
+
+//    private fun getRasterTileLayer(
+//        url: String?,
+//        tilePath: String?,
+//        useCache: Boolean
+//    ): Layer {
+//        val builder = OkHttpClient.Builder()
+//        val mTileSource =
+//            NavinfoMapRastorTileSource.builder(url).tilePath(tilePath)
+//                .httpFactory(OkHttpFactory(builder)).build()
+//        // 如果使用缓存
+//        if (useCache) {
+//            val cacheDirectory =
+//                File(Constant.MAP_PATH, "cache")
+//            val cacheSize = 300 * 1024 * 1024 // 300 MB
+//            val cache = Cache(cacheDirectory, cacheSize.toLong())
+//            builder.cache(cache)
+//        }
+//
+//        return BitmapTileLayer(mMapView.vtmMap, mTileSource)
+//    }
 }
 
 /**

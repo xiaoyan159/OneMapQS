@@ -2,6 +2,7 @@ package com.navinfo.collect.library.map
 
 import android.content.Context
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.map.handler.*
 import com.navinfo.collect.library.map.maphandler.MeasureLayerHandler
 import com.navinfo.collect.library.map.handler.ViewportHandler
@@ -23,7 +24,7 @@ class NIMapController {
     lateinit var measureLayerHandler: MeasureLayerHandler
 
 
-    fun init(context: Context, mapView: NIMapView, options: NIMapOptions? = null, mapPath: String) {
+    fun init(context: AppCompatActivity, mapView: NIMapView, options: NIMapOptions? = null, mapPath: String) {
         Constant.MAP_PATH = mapPath
         layerManagerHandler = LayerManagerHandler(context, mapView)
         locationLayerHandler = LocationLayerHandler(context, mapView)
@@ -37,6 +38,7 @@ class NIMapController {
         mapView.setOptions(options)
         mMapView.vtmMap.viewport().maxZoomLevel = Constant.MAX_ZOOM // 设置地图的最大级别
     }
+
 
 }
 

@@ -3,7 +3,6 @@ package com.navinfo.collect.library.map;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,37 +14,21 @@ import androidx.annotation.Nullable;
 
 import com.navinfo.collect.library.R;
 import com.navinfo.collect.library.map.layers.NaviMapScaleBar;
-import com.navinfo.collect.library.map.source.MapLifeDBTileSource;
-import com.navinfo.collect.library.map.source.MapLifeNiLocationTileDataSource;
-import com.navinfo.collect.library.map.source.MapLifeNiLocationTileSource;
-import com.navinfo.collect.library.system.Constant;
 
 import org.oscim.android.MapPreferences;
 import org.oscim.android.MapView;
 import org.oscim.core.GeoPoint;
 import org.oscim.android.theme.AssetsRenderTheme;
 import org.oscim.core.MapPosition;
-import org.oscim.core.Tile;
 import org.oscim.event.Event;
 import org.oscim.event.Gesture;
 import org.oscim.event.GestureListener;
 import org.oscim.layers.GroupLayer;
 import org.oscim.layers.Layer;
-import org.oscim.layers.TileGridLayer;
-import org.oscim.layers.tile.buildings.BuildingLayer;
-import org.oscim.layers.tile.vector.OsmTileLayer;
 import org.oscim.layers.tile.vector.VectorTileLayer;
-import org.oscim.layers.tile.vector.labeling.LabelLayer;
-import org.oscim.layers.tile.vector.labeling.LabelTileLoaderHook;
 import org.oscim.map.Map;
 import org.oscim.renderer.GLViewport;
-import org.oscim.theme.IRenderTheme;
-import org.oscim.theme.ThemeLoader;
 import org.oscim.theme.VtmThemes;
-import org.oscim.tiling.source.mapfile.MapFileTileSource;
-import org.oscim.tiling.source.mapfile.MultiMapFileTileSource;
-
-import java.io.File;
 
 
 /**
@@ -125,14 +108,14 @@ public final class NIMapView extends RelativeLayout {
          *
          * @param point
          */
-        void onMapClick(GeoPoint point);
+        void onMapClick(com.navinfo.collect.library.map.GeoPoint point);
 
         /**
          * 地图内 Poi 单击事件回调函数
          *
          * @param poi
          */
-        void onMapPoiClick(GeoPoint poi);
+//        void onMapPoiClick(GeoPoint poi);
     }
 
     /**
@@ -218,10 +201,8 @@ public final class NIMapView extends RelativeLayout {
         this.mContext = context;
 
         mapView = rootView.findViewById(R.id.base_map_view);
-//        map = new NIMap(this);
         compassImage = rootView.findViewById(R.id.navinfo_map_compass);
         initMapGroup(); // 初始化图层组
-//        mLayerManager = new NILayerManager(context, getVtmMap());
 
         logoImage = rootView.findViewById(R.id.navinfo_map_logo);
         mRotateAnimation = new NIRotateAnimation(compassImage);
@@ -250,6 +231,7 @@ public final class NIMapView extends RelativeLayout {
 //                }
             }
         });
+
 
         // 增加比例尺图层
         NaviMapScaleBar naviMapScaleBar = new NaviMapScaleBar(getVtmMap());
@@ -302,6 +284,9 @@ public final class NIMapView extends RelativeLayout {
 
         zoomLayout = rootView.findViewById(R.id.navinfo_map_zoom_layer);
         switchTileVectorLayerTheme(MAP_THEME.DEFAULT);
+
+        MapEventsReceiver mapEventReceiver = new MapEventsReceiver(mapView.map());
+        getVtmMap().layers().add(mapEventReceiver);
     }
 
 
@@ -923,7 +908,7 @@ public final class NIMapView extends RelativeLayout {
             GeoPoint geoPoint = mMap.viewport().fromScreenPoint(e.getX(), e.getY());
             if (g instanceof Gesture.Tap) { // 单击事件
                 if (mapClickListener != null) {
-                    mapClickListener.onMapClick(geoPoint);
+                    mapClickListener.onMapClick(new com.navinfo.collect.library.map.GeoPoint(geoPoint.getLatitude(), geoPoint.getLongitude()));
                 }
             } else if (g instanceof Gesture.DoubleTap) { // 双击
                 if (mapDoubleClickListener != null) {
@@ -934,17 +919,6 @@ public final class NIMapView extends RelativeLayout {
                     mapLongClickListener.onMapLongClick(geoPoint);
                 }
             }
-            setOnMapClickListener(new OnMapClickListener() {
-                @Override
-                public void onMapClick(GeoPoint point) {
-
-                }
-
-                @Override
-                public void onMapPoiClick(GeoPoint poi) {
-
-                }
-            });
             return false;
         }
     }
@@ -952,7 +926,7 @@ public final class NIMapView extends RelativeLayout {
     /**
      * 设置地图的点击事件
      */
-    public void setOnMapClickListener(@Nullable OnMapClickListener listener) {
+    public void setOnMapClickListener(OnMapClickListener listener) {
         this.mapClickListener = listener;
     }
 

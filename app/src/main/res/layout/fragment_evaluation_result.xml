@@ -45,24 +45,52 @@
                 android:layout_height="wrap_content"
                 android:text="问题分类" />
 
-            <Spinner
+            <TextView
                 android:id="@+id/evaluation_class_type"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/fm_card_map_down_status_bg" />
 
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/evaluation_class_tab_layout"
+            <TextView
+                android:id="@+id/evaluation_problem_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp" />
+                android:layout_marginTop="5dp"
+                android:background="@drawable/fm_card_map_down_status_bg" />
 
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/evaluation_viewpager"
+            <TextView
+                android:id="@+id/evaluation_phenomenon"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="5dp" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/fm_card_map_down_status_bg" />
+
+            <TextView
+                android:id="@+id/evaluation_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/fm_card_map_down_status_bg" />
+
+            <TextView
+                android:id="@+id/evaluation_cause"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/fm_card_map_down_status_bg" />
+
+            <!--            <com.google.android.material.tabs.TabLayout-->
+            <!--                android:id="@+id/evaluation_class_tab_layout"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginTop="5dp" />-->
+
+            <!--            <androidx.viewpager2.widget.ViewPager2-->
+            <!--                android:id="@+id/evaluation_viewpager"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="match_parent"-->
+            <!--                android:layout_marginTop="5dp" />-->
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

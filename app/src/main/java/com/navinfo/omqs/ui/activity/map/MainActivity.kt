@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.navinfo.collect.library.map.NIMapController
@@ -52,7 +53,7 @@ class MainActivity : BaseActivity() {
         //给xml传递viewModel对象
         binding.viewModel = viewModel
 //        lifecycle.addObserver(viewModel)
-
+        lifecycleScope
     }
 
     override fun onStart() {
@@ -91,5 +92,9 @@ class MainActivity : BaseActivity() {
     fun voiceOnclick() {
         val naviController = findNavController(R.id.main_activity_right_fragment)
         naviController.navigate(R.id.EvaluationResultFragment)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
     }
 }

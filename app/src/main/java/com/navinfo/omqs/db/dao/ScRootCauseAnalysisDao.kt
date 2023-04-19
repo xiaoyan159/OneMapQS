@@ -22,4 +22,10 @@ interface ScRootCauseAnalysisDao {
         insertList(list)
     }
 
+    /**
+     * 获取问题环节数据
+     */
+    @Query("select * from ScRootCauseAnalysis order by PROBLEM_LINK")
+    suspend fun findAllData(): List<ScRootCauseAnalysisBean>?
+
 }
