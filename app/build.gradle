@@ -79,6 +79,9 @@ dependencies {
     implementation 'org.apache.poi:poi:5.2.3'
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
 
+    // 读取spatialite文件
+    implementation 'com.github.sevar83:android-spatialite:2.0.1'
+
 }
 //允许引用生成的代码
 kapt {

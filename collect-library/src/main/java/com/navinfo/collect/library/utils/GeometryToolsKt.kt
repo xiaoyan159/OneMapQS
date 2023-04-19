@@ -1,5 +1,6 @@
 package com.navinfo.collect.library.utils
 
+import com.navinfo.collect.library.system.Constant
 import io.realm.RealmSet
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.io.WKTReader
@@ -10,7 +11,7 @@ class GeometryToolsKt {
         /**
          * 根据给定的geometry计算其横跨的20级瓦片Y值
          */
-        fun getTileYByGeometry(wkt: String, tileYSet: MutableSet<Int?>): Set<Int?>? {
+        fun getTileYByGeometry(wkt: String, tileYSet: MutableSet<Int?>) {
 
             val reader = WKTReader()
             val geometry = reader.read(wkt);
@@ -20,6 +21,7 @@ class GeometryToolsKt {
             if (tileYSet == null) {
                 tileYSet = RealmSet()
             }
+            tileYSet.clear()
             val envelope = geometry.envelope
             if (envelope != null) {
                 val coordinates = envelope.coordinates
@@ -36,8 +38,8 @@ class GeometryToolsKt {
                         }
                     }
                     // 分别计算最大和最小x值对应的tile号
-                    val tileY0 = MercatorProjection.latitudeToTileY(minMaxY[0], 20.toByte())
-                    val tileY1 = MercatorProjection.latitudeToTileY(minMaxY[1], 20.toByte())
+                    val tileY0 = MercatorProjection.latitudeToTileY(minMaxY[0], Constant.OVER_ZOOM.toByte())
+                    val tileY1 = MercatorProjection.latitudeToTileY(minMaxY[1], Constant.OVER_ZOOM.toByte())
                     val minTileY = if (tileY0 <= tileY1) tileY0 else tileY1
                     val maxTileY = if (tileY0 <= tileY1) tileY1 else tileY0
                     println("getTileYByGeometry$envelope===$minTileY===$maxTileY")
@@ -48,13 +50,12 @@ class GeometryToolsKt {
                 }
             }
             println("YGeometry-time:" + (System.currentTimeMillis() - startTime))
-            return tileYSet
         }
 
         /**
          * 根据给定的geometry计算其横跨的20级瓦片X值
          */
-        fun getTileXByGeometry(wkt: String, tileXSet: MutableSet<Int?>): Set<Int?>? {
+        fun getTileXByGeometry(wkt: String, tileXSet: MutableSet<Int?>) {
             val reader = WKTReader()
             val geometry = reader.read(wkt);
 
@@ -63,6 +64,7 @@ class GeometryToolsKt {
             if (tileXSet == null) {
                 tileXSet = RealmSet()
             }
+            tileXSet.clear()
             if (geometry != null) {
                 val envelope = geometry.envelope
                 if (envelope != null) {
@@ -80,8 +82,8 @@ class GeometryToolsKt {
                             }
                         }
                         // 分别计算最大和最小x值对应的tile号
-                        val tileX0 = MercatorProjection.longitudeToTileX(minMaxX[0], 20.toByte())
-                        val tileX1 = MercatorProjection.longitudeToTileX(minMaxX[1], 20.toByte())
+                        val tileX0 = MercatorProjection.longitudeToTileX(minMaxX[0], Constant.OVER_ZOOM.toByte())
+                        val tileX1 = MercatorProjection.longitudeToTileX(minMaxX[1], Constant.OVER_ZOOM.toByte())
                         val minTileX = if (tileX0 <= tileX1) tileX0 else tileX1
                         val maxTileX = if (tileX0 <= tileX1) tileX1 else tileX0
                         println("getTileXByGeometry$envelope$minTileX===$maxTileX")
@@ -92,7 +94,6 @@ class GeometryToolsKt {
                 }
             }
             println("XGeometry-time:" + (System.currentTimeMillis() - startTime))
-            return tileXSet
         }
 
         fun getMasterPoint(wkt: String): String {
