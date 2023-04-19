@@ -1,5 +1,6 @@
 package com.navinfo.collect.library.map.handler
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.map.NIMapView
 import org.oscim.core.GeoPoint

@@ -3,6 +3,7 @@ package com.navinfo.collect.library.map.handler
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
 import com.baidu.location.LocationClient
@@ -13,7 +14,7 @@ import com.navinfo.collect.library.map.NIMapView
 import org.oscim.layers.LocationLayer
 
 
-class LocationLayerHandler(context: Context, mapView: NIMapView) : BaseHandler(context, mapView) {
+class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(context, mapView) {
 
     private var mCurrentLocation: BDLocation? = null
     private var bFirst = true

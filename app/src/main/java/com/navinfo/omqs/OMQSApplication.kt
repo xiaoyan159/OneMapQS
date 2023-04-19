@@ -2,7 +2,6 @@ package com.navinfo.omqs
 
 import android.app.Application
 import android.util.Log
-import com.navinfo.omqs.db.MyRealmModule
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import com.navinfo.omqs.util.NetUtils
@@ -33,7 +32,7 @@ class OMQSApplication : Application() {
             .directory(File(Constant.DATA_PATH))
             .name("OMQS.realm")
             .encryptionKey(password)
-            .modules(Realm.getDefaultModule(), MyRealmModule())
+//            .modules(Realm.getDefaultModule(), MyRealmModule())
             .schemaVersion(1)
             .build()
         Realm.setDefaultConfiguration(config)
