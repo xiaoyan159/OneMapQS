@@ -4,7 +4,6 @@ import com.navinfo.collect.library.utils.GeometryToolsKt
 import io.realm.RealmObject
 import io.realm.RealmSet
 import io.realm.annotations.PrimaryKey
-import io.realm.annotations.RealmClass
 
 
 /**
@@ -14,7 +13,7 @@ import io.realm.annotations.RealmClass
  * @Date 2016/1/12
  * @Description: ${TODO}(质检对象)
  */
-@RealmClass
+//@RealmClass
 open class QsRecordBean @JvmOverloads constructor(
     /**
      * id 主键
