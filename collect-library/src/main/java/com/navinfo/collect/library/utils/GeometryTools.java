@@ -173,7 +173,6 @@ public class GeometryTools {
         } catch (Exception e) {
 
         }
-
         return createMultiPoint;
     }
 

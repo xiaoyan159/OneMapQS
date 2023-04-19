@@ -1,38 +1,60 @@
 package com.navinfo.omqs.ui.fragment.personalcenter
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.UriUtils
+import com.navinfo.collect.library.data.entity.OMDBEntity
 import com.navinfo.omqs.bean.ScProblemTypeBean
 import com.navinfo.omqs.bean.ScRootCauseAnalysisBean
+import com.navinfo.omqs.db.ImportOMDBHelper
 import com.navinfo.omqs.db.RoomAppDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.realm.Realm
+import io.realm.RealmDictionary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
-import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class PersonalCenterViewModel @Inject constructor(
     private val roomAppDatabase: RoomAppDatabase
 ) : ViewModel() {
-    fun importOmdbData(omdbFile: File) {
-        // 检查File是否为sqlite数据库
-        if (omdbFile == null || !omdbFile.exists()) {
-            throw Exception("文件不存在")
+    /**
+     * 导入OMDB数据
+     * */
+    suspend fun importOMDBData(importOMDBHelper: ImportOMDBHelper) {
+        Log.d("OMQSApplication", "开始导入数据")
+//        Realm.getDefaultInstance().beginTransaction()
+        for (table in importOMDBHelper.openConfigFile().tables/*listOf<String>("HAD_LINK")*/) {
+            importOMDBHelper.getOMDBTableData(table).collect {
+                for (map in it) {
+                    val properties = RealmDictionary<String?>()
+                    for (entry in map.entries) {
+                        properties.putIfAbsent(entry.key, entry.value.toString())
+                    }
+                    // 将读取到的sqlite数据插入到Realm中
+                    Realm.getDefaultInstance().insert(OMDBEntity(table, properties))
+                    // 将读取到的数据写入到json中
+
+                }
+            }
         }
-        if (!omdbFile.name.endsWith(".sqlite") and !omdbFile.name.endsWith("db")) {
-            throw Exception("文件不存在")
-        }
+//        Realm.getDefaultInstance().commitTransaction()
+
+        // 数据导入结束后，开始生成渲染表所需的json文件，并生成压缩包
+
+
+        Log.d("OMQSApplication", "导入数据完成")
     }
 
     fun importScProblemData(uri: Uri) {
