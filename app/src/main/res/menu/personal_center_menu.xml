@@ -18,6 +18,10 @@
             android:id="@+id/personal_center_menu_import_yuan_data"
             android:icon="@drawable/ic_baseline_import_export_24"
             android:title="导入元数据" />
+        <item
+            android:id="@+id/personal_center_menu_realm_data_backup"
+            android:icon="@drawable/ic_baseline_import_export_24"
+            android:title="备份数据" />
     </group>
     <group
         android:id="@+id/group2"

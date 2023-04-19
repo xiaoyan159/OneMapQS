@@ -29,6 +29,7 @@ public class Constant {
         HAD_LAYER_INVISIABLE_ARRAY = HD_LAYER_VISIABLE_MAP.keySet().toArray(new String[HD_LAYER_VISIABLE_MAP.keySet().size()]);
     }
     public static String[] HAD_LAYER_INVISIABLE_ARRAY;
-    public static final int OVER_ZOOM = 23;
+    public static final int OVER_ZOOM = 21;
+    public static final int MAX_ZOOM = 25;
 }
 
