@@ -2,6 +2,7 @@ package com.navinfo.omqs.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.omqs.bean.OfflineMapCityBean
 import com.navinfo.omqs.bean.ScProblemTypeBean
 import com.navinfo.omqs.bean.ScRootCauseAnalysisBean

@@ -2,6 +2,8 @@ package com.navinfo.omqs
 
 import android.app.Application
 import android.util.Log
+import com.navinfo.collect.library.data.dao.impl.MapLifeDataBase
+import com.navinfo.omqs.db.TraceDataBase
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import com.navinfo.omqs.util.NetUtils

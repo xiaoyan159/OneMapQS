@@ -12,7 +12,9 @@ import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityMainBinding
+import com.navinfo.omqs.db.TraceDataBase
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
+import com.navinfo.omqs.system.SystemConstant
 import com.navinfo.omqs.ui.activity.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -53,6 +55,8 @@ class MainActivity : BaseActivity() {
         binding.viewModel = viewModel
 //        lifecycle.addObserver(viewModel)
         lifecycleScope
+        //初始化轨迹文件
+        TraceDataBase.getDatabase(this,Constant.DATA_PATH+SystemConstant.USER_ID+"/trace.sqlite")
     }
 
     override fun onStart() {

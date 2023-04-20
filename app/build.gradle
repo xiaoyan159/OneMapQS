@@ -18,10 +18,6 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        ndk {
-            abiFilters "armeabi", "armeabi-v7a"
-        }
     }
 
     buildTypes {
@@ -33,11 +29,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
-    }
-    sourceSets {
-        main {
-            jniLibs.srcDirs = ['libs']
-        }
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -52,7 +43,10 @@ android {
 
 
 dependencies {
+
     implementation project(':collect-library')
+
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -80,6 +74,9 @@ dependencies {
     //读取excel word等文件
     implementation 'org.apache.poi:poi:5.2.3'
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
+
+    // 读取spatialite文件
+    implementation 'com.github.sevar83:android-spatialite:2.0.1'
 
 }
 //允许引用生成的代码
