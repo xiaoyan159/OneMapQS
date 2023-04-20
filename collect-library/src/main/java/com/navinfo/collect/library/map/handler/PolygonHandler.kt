@@ -180,10 +180,10 @@ open class PolygonHandler(context: AppCompatActivity, mapView: NIMapView) :
         //编辑点
         if (editIndex > -1) {
             if (mPolygonLayer.points.size > 0) {
-                val list: MutableList<GeoPoint> = mutableListOf()
+                val list: MutableList<GeoPoint> = mutableListOf<Any>()
                 list.addAll(mPolygonLayer.points)
                 if (list.size > 3) {
-                    val newList: MutableList<GeoPoint> = mutableListOf()
+                    val newList: MutableList<GeoPoint> = mutableListOf<Any>()
                     if (editIndex == 0) {
                         newList.add(list[list.size - 1])
                         newList.add(geoPoint)
@@ -197,7 +197,7 @@ open class PolygonHandler(context: AppCompatActivity, mapView: NIMapView) :
                         newList.add(geoPoint)
                         newList.add(list[editIndex + 1])
                     }
-                    val newList2: MutableList<GeoPoint> = mutableListOf()
+                    val newList2: MutableList<GeoPoint> = mutableListOf<Any>()
                     for (i in editIndex + 1 until list.size) {
                         newList2.add(list[i])
                     }
@@ -211,7 +211,7 @@ open class PolygonHandler(context: AppCompatActivity, mapView: NIMapView) :
                 }
                 if (editIndex < list.size) {
                     list.removeAt(editIndex)
-                    val list2: MutableList<GeoPoint> = mutableListOf()
+                    val list2: MutableList<GeoPoint> = mutableListOf<Any>()
                     list2.addAll(list)
                     list2.add(editIndex, geoPoint)
                     mPolygonLayer.setPoints(list2)
@@ -224,7 +224,7 @@ open class PolygonHandler(context: AppCompatActivity, mapView: NIMapView) :
                 mEndpointLayer.addItem(markerItem)
                 mPathMakers.add(editIndex, markerItem)
                 mPathLayerTemp.setStyle(newTempStyle)
-                val list: MutableList<GeoPoint> = mutableListOf()
+                val list: MutableList<GeoPoint> = mutableListOf<Any>()
                 if (mPathMakers.size > 1) {
                     list.add(mPathMakers[0].geoPoint)
                     list.add(geoPoint)
@@ -237,10 +237,10 @@ open class PolygonHandler(context: AppCompatActivity, mapView: NIMapView) :
             }
             editIndex = -1
         } else { //新增点
-            val points: MutableList<GeoPoint> = mutableListOf()
+            val points: MutableList<GeoPoint> = mutableListOf<Any>()
             points.addAll(mPolygonLayer.points)
             if (points.size > 2) {
-                val list: MutableList<GeoPoint> = mutableListOf()
+                val list: MutableList<GeoPoint> = mutableListOf<Any>()
                 points.add(points[0])
                 list.add(points[0])
                 list.add(geoPoint)
@@ -280,7 +280,7 @@ open class PolygonHandler(context: AppCompatActivity, mapView: NIMapView) :
             if (mPolygonLayer.points.size > 0) {
                 if (editIndex > -1) {
                     val list: MutableList<GeoPoint> =
-                        mutableListOf()
+                        mutableListOf<Any>()
                     if (editIndex == 0 || editIndex == mPathMakers.size - 1) {
                         list.add(mPathMakers[editIndex].geoPoint)
                         list.add(
@@ -303,7 +303,7 @@ open class PolygonHandler(context: AppCompatActivity, mapView: NIMapView) :
 //                    crossText.setText("")
                 } else {
                     val list: MutableList<GeoPoint> =
-                        mutableListOf()
+                        mutableListOf<Any>()
                     if (mPolygonLayer.points.size > 1) {
                         list.add(mPolygonLayer.points[0])
                         list.add(
@@ -329,7 +329,7 @@ open class PolygonHandler(context: AppCompatActivity, mapView: NIMapView) :
                     mPathLayerTemp.setPoints(list)
                     if (mPolygonLayer.points.size > 1) {
                         val list1: MutableList<GeoPoint> =
-                            mutableListOf()
+                            mutableListOf<Any>()
                         list1.addAll(mPolygonLayer.points)
                         list1.add(
                             GeoPoint(

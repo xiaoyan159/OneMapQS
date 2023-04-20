@@ -3,7 +3,9 @@ package com.navinfo.collect.library.map.handler
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.map.NIMapView
+import org.oscim.core.GeoPoint
 import org.oscim.layers.Layer
+import org.oscim.layers.marker.MarkerItem
 
 abstract class BaseHandler(context: AppCompatActivity, mapView: NIMapView) {
     protected val mContext: AppCompatActivity = context
@@ -27,4 +29,6 @@ abstract class BaseHandler(context: AppCompatActivity, mapView: NIMapView) {
     fun removeOnMapClickListener() {
         mMapView.setOnMapClickListener(null)
     }
+
+    abstract fun <T> mutableListOf(): MutableList<GeoPoint>
 }

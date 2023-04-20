@@ -196,7 +196,7 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
             itemizedLayer =
                 MyItemizedLayer(
                     mMapView.vtmMap,
-                    mutableListOf(),
+                    mutableListOf<Any>(),
                     markerRendererFactory,
                     object : MyItemizedLayer.OnItemGestureListener {
                         override fun onItemSingleTapUp(
