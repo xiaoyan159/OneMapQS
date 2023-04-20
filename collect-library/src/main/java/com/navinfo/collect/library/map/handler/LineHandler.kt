@@ -1,5 +1,6 @@
 package com.navinfo.collect.library.map.handler
 
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
