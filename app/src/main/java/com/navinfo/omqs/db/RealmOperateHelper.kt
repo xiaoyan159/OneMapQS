@@ -26,9 +26,9 @@ class RealmOperateHelper() {
      * @param point 点位经纬度信息
      * @param buffer 点位的外扩距离
      * @param bufferType 点位外扩距离的单位： 米-Meter，像素-PIXEL
-     * @param order 是否需要排序
+     * @param sort 是否需要排序
      * */
-    suspend fun queryLink(point: Point, buffer: Double = DEFAULT_BUFFER, bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE, order: Boolean = false): MutableList<RenderEntity> {
+    suspend fun queryLink(point: Point, buffer: Double = DEFAULT_BUFFER, bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE, sort: Boolean = false): MutableList<RenderEntity> {
         val result = mutableListOf<RenderEntity>()
         withContext(Dispatchers.IO) {
             val polygon = getPolygonFromPoint(point, buffer, bufferType)
@@ -52,21 +52,100 @@ class RealmOperateHelper() {
                 .findAll()
             // 将获取到的数据和查询的polygon做相交，只返回相交的数据
             val queryResult = realmList?.stream()?.filter {
-                polygon.intersects(GeometryTools.createGeometry(it.geometry))
+                polygon.intersects(it.wkt)
             }?.toList()
             queryResult?.let {
                 result.addAll(queryResult)
+            }
+            if (sort) {
+                result.clear()
+                result.addAll(sortRenderEntity(point, result))
+            }
+        }
+        return result
+    }
+    /**
+     * 根据当前点位查询匹配的除Link外的其他要素数据
+     * @param point 点位经纬度信息
+     * @param buffer 点位的外扩距离
+     * @param bufferType 点位外扩距离的单位： 米-Meter，像素-PIXEL
+     * @param sort 是否需要排序
+     * */
+    suspend fun queryElement(point: Point, buffer: Double = DEFAULT_BUFFER, bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE, sort: Boolean = false): MutableList<RenderEntity> {
+        val result = mutableListOf<RenderEntity>()
+        withContext(Dispatchers.IO) {
+            val polygon = getPolygonFromPoint(point, buffer, bufferType)
+            // 根据polygon查询相交的tile号
+            val tileXSet = mutableSetOf<Int>()
+            tileXSet.toString()
+            GeometryToolsKt.getTileXByGeometry(polygon.toString(), tileXSet)
+            val tileYSet = mutableSetOf<Int>()
+            GeometryToolsKt.getTileYByGeometry(polygon.toString(), tileYSet)
+
+            // 对tileXSet和tileYSet查询最大最小值
+            val xStart = tileXSet.stream().min(Comparator.naturalOrder()).orElse(null)
+            val xEnd = tileXSet.stream().max(Comparator.naturalOrder()).orElse(null)
+            val yStart = tileYSet.stream().min(Comparator.naturalOrder()).orElse(null)
+            val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
+            // 查询realm中对应tile号的数据
+            val realmList = Realm.getDefaultInstance().where(RenderEntity::class.java)
+                .notEqualTo("table", "HAD_LINK")
+                .and()
+                .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd")
+                .findAll()
+            // 将获取到的数据和查询的polygon做相交，只返回相交的数据
+            val queryResult = realmList?.stream()?.filter {
+                polygon.intersects(it.wkt)
+            }?.toList()
+            queryResult?.let {
+                result.addAll(queryResult)
+            }
+            if (sort) {
+                result.clear()
+                result.addAll(sortRenderEntity(point, result))
             }
         }
         return result
     }
 
+    /**
+     * 根据linkPid查询关联的要素（除去Link数据）
+     * @param point 点位经纬度信息
+     * @param buffer 点位的外扩距离
+     * @param bufferType 点位外扩距离的单位： 米-Meter，像素-PIXEL
+     * @param sort 是否需要排序
+     * */
+    suspend fun queryLinkByLinkPid(linkPid: String): MutableList<RenderEntity> {
+        val result = mutableListOf<RenderEntity>()
+        withContext(Dispatchers.IO) {
+            val realmList = Realm.getDefaultInstance().where(RenderEntity::class.java)
+                .notEqualTo("table", "HAD_LINK")
+                .and()
+                .equalTo("properties['LINK_PID']", linkPid)
+                .findAll()
+            result.addAll(realmList)
+        }
+        return result
+    }
+
+    /**
+     * 根据给定的点位对数据排序
+     * @param point 点位经纬度信息
+     * @param unSortList 未排序的数据
+     * @return 排序后的数据
+     * */
+    fun sortRenderEntity(point: Point, unSortList: MutableList<RenderEntity>): List<RenderEntity> {
+        val sortList = unSortList.stream().sorted { renderEntity, renderEntity2 ->
+            val near = point.distance(renderEntity.wkt) - point.distance(renderEntity2.wkt)
+            if (near<0) -1 else 1
+        }.toList()
+        return sortList
+    }
+
     private fun getPolygonFromPoint(point: Point, buffer: Double = DEFAULT_BUFFER, bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE): Polygon {
         // 首先计算当前点位的buffer组成的geometry
         val wkt: Polygon = if (bufferType == BUFFER_TYPE.METER) { // 如果单位是米
-            // 计算米和地球角度之间的关系，在Spatial4J中，经度和纬度的单位是度，而不是米。因此，将距离从米转换为度需要使用一个转换因子，这个转换因子是由地球的周长和360度之间的比例计算得出的。
-            // 在这个例子中，使用的转换因子是111000.0，这是因为地球的周长约为40075公里，而每个经度的距离大约是地球周长的1/360，因此每个经度的距离约为111.32公里
-            val distanceDegrees = DistanceUtils.dist2Degrees(buffer, DistanceUtils.EARTH_MEAN_RADIUS_KM) * 111000.0
+            val distanceDegrees = GeometryTools.convertDistanceToDegree(buffer, point.y)
             // 计算外扩矩形
             BufferOp.bufferOp(point, distanceDegrees) as Polygon
         } else { // 如果单位是像素，需要根据当前屏幕像素计算出经纬度变化
