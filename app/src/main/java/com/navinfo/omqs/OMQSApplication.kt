@@ -2,8 +2,6 @@ package com.navinfo.omqs
 
 import android.app.Application
 import android.util.Log
-import com.navinfo.collect.library.data.dao.impl.MapLifeDataBase
-import com.navinfo.omqs.db.TraceDataBase
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import com.navinfo.omqs.util.NetUtils
@@ -11,9 +9,7 @@ import dagger.hilt.android.HiltAndroidApp
 import org.videolan.vlc.Util
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import kotlinx.coroutines.launch
 import java.io.File
-import java.math.BigInteger
 import java.security.MessageDigest
 
 @HiltAndroidApp

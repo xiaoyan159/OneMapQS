@@ -5,13 +5,13 @@ import android.content.DialogInterface
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.ToastUtils
+import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
-import com.navinfo.omqs.db.TraceDataBase
 import com.navinfo.omqs.system.SystemConstant
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager

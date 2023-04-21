@@ -10,7 +10,6 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.navinfo.collect.library.data.entity.CheckManager;
 import com.navinfo.collect.library.data.entity.Element;
 import com.navinfo.collect.library.data.entity.LayerManager;
-import com.navinfo.collect.library.data.entity.NiLocation;
 import com.navinfo.collect.library.data.entity.Project;
 import com.navinfo.collect.library.data.entity.TileElement;
 import com.tencent.wcdb.database.SQLiteCipherSpec;
@@ -25,7 +24,7 @@ import com.tencent.wcdb.room.db.WCDBDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-@Database(entities = {Element.class, TileElement.class, LayerManager.class, Project.class, NiLocation.class, CheckManager.class},version = 1, exportSchema = false)
+@Database(entities = {Element.class, TileElement.class, LayerManager.class, Project.class, CheckManager.class},version = 1, exportSchema = false)
 public abstract class MapLifeDataBase extends RoomDatabase {
     // marking the instance as volatile to ensure atomic access to the variable
     /**
@@ -37,11 +36,6 @@ public abstract class MapLifeDataBase extends RoomDatabase {
      * 要素数据库类
      */
     public abstract IElementDao getElementDao();
-
-    /**
-     * 地图坐标库类
-     */
-    public abstract INiLocationDao getNiLocationDao();
 
     /**
      * 图层要素数据库类

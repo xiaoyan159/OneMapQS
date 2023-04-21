@@ -10,7 +10,6 @@ import androidx.lifecycle.lifecycleScope
 import com.navinfo.collect.library.R
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.map.NIMapView
-import com.navinfo.collect.library.map.NIMapView.LAYER_GROUPS
 import com.navinfo.collect.library.map.cluster.ClusterMarkerItem
 import com.navinfo.collect.library.map.cluster.ClusterMarkerRenderer
 import com.navinfo.collect.library.map.layers.MyItemizedLayer
@@ -96,10 +95,6 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tr
     private fun initMap() {
 
         loadBaseMap()
-        mMapView.switchTileVectorLayerTheme(NIMapView.MAP_THEME.DEFAULT)
-        //初始化之间数据图层
-        initQsRecordDataLayer()
-        mMapView.vtmMap.updateMap()
 
         mapLifeNiLocationTileSource = MapLifeNiLocationTileSource(mContext, mTracePath)
 
@@ -107,7 +102,24 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tr
 
         labelNiLocationLayer = LabelLayer(mMapView.vtmMap, vectorNiLocationTileLayer, LabelTileLoaderHook(), 15)
 
-//        initMapLifeSource()
+        if(vectorNiLocationTileLayer!=null){
+            addLayer(vectorNiLocationTileLayer,NIMapView.LAYER_GROUPS.BASE)
+        }
+        if(labelNiLocationLayer!=null){
+            addLayer(labelNiLocationLayer, NIMapView.LAYER_GROUPS.BASE)
+        }
+
+        vectorNiLocationTileLayer.isEnabled = false
+        labelNiLocationLayer.isEnabled = false
+
+        mMapView.switchTileVectorLayerTheme(NIMapView.MAP_THEME.DEFAULT)
+
+        //初始化之间数据图层
+        initQsRecordDataLayer()
+
+        mMapView.vtmMap.updateMap()
+
+
     }
 
 
@@ -522,14 +534,14 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tr
 
     //显示轨迹图层
     fun showNiLocationLayer() {
-        if(labelNiLocationLayer!=null){
-            addLayer(labelNiLocationLayer, NIMapView.LAYER_GROUPS.VECTOR)
-        }
+        vectorNiLocationTileLayer.isEnabled = true
+        labelNiLocationLayer.isEnabled = true
     }
 
     //隐藏轨迹图层
     fun hideNiLocationLayer() {
-        removeLayer(labelNiLocationLayer)
+        vectorNiLocationTileLayer.isEnabled = false
+        labelNiLocationLayer.isEnabled = false
     }
 }
 

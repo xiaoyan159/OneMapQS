@@ -90,7 +90,7 @@ public class MapLifeNiLocationDecoder extends TileDecoder {
                     }
                     if(count==0){
                         properties.put("nav_style","symbol_object_line");
-                        parseGeometry(layerName, GeometryTools.createGeometry("LINESTRING (116.245567 40.073475, 116.245855 40.072811, 116.24706 40.073034)"), properties);
+                        parseGeometry(layerName, GeometryTools.createGeometry("LINESTRING (116.245859 40.073475, 116.245855 40.073477)"), properties);
                     }
 //                    if(count%55==0){
 //                        Log.e("qj","decode==geometry==symbol_track_point"+geometry.toString()+String.valueOf(anyNum));

@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import com.navinfo.collect.library.data.dao.impl.MapLifeDataBase;
+import com.navinfo.collect.library.data.dao.impl.TraceDataBase;
 import com.navinfo.collect.library.data.entity.Element;
 import com.navinfo.collect.library.data.entity.NiLocation;
 import org.oscim.core.MapElement;
@@ -43,16 +44,16 @@ public class MapLifeNiLocationTileDataSource implements ITileDataSource {
         // 获取tile对应的坐标范围
         if (tile.zoomLevel >= 10 && tile.zoomLevel <= 20) {
 
-            int m = 20 - tile.zoomLevel;
+            int m = 21 - tile.zoomLevel;
             int xStart = (int) tile.tileX << m;
             int xEnd = (int) ((tile.tileX + 1) << m);
             int yStart = (int) tile.tileY << m;
             int yEnd = (int) ((tile.tileY + 1) << m);
             List<NiLocation> list = null;
             if(mEndTime!=0){
-                list = MapLifeDataBase.getDatabase(mCon, dbName).getNiLocationDao().timeTofindList(xStart, xEnd, yStart, yEnd,mStartTime,mEndTime);
+                list = TraceDataBase.getDatabase(mCon, dbName).getNiLocationDao().timeTofindList(xStart, xEnd, yStart, yEnd,mStartTime,mEndTime);
             }else{
-                list = MapLifeDataBase.getDatabase(mCon, dbName).getNiLocationDao().findList(xStart, xEnd, yStart, yEnd);
+                list = TraceDataBase.getDatabase(mCon, dbName).getNiLocationDao().findList(xStart, xEnd, yStart, yEnd);
             }
 
             Log.e("qj","query"+(list==null?0:list.size())+"==="+xStart+"==="+xEnd+"==="+yStart+"==="+yEnd);

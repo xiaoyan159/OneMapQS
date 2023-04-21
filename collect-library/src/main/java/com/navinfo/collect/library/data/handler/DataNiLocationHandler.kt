@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.navinfo.collect.library.data.dao.impl.MapLifeDataBase
+import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.*
 import com.navinfo.collect.library.data.entity.DataLayerItemType.*
 import com.navinfo.collect.library.utils.GeometryTools
@@ -25,7 +26,7 @@ import kotlin.concurrent.thread
 
 
 open class
-DataNiLocationHandler(context: Context, dataBase: MapLifeDataBase) :
+DataNiLocationHandler(context: Context, dataBase: TraceDataBase) :
     BaseDataHandler(context, dataBase) {
 
     /**
@@ -58,11 +59,11 @@ DataNiLocationHandler(context: Context, dataBase: MapLifeDataBase) :
                     }
 
                 }
-                val niLocationLoad = mDataBase.niLocationDao.find(niLocation.id);
+                val niLocationLoad = (mDataBase as TraceDataBase).niLocationDao.find(niLocation.id);
                 if(niLocationLoad!=null){
-                    mDataBase.niLocationDao.update(niLocation)
+                    (mDataBase as TraceDataBase).niLocationDao.update(niLocation)
                 }else{
-                    mDataBase.niLocationDao.insert(niLocation)
+                    (mDataBase as TraceDataBase).niLocationDao.insert(niLocation)
                 }
                 Handler(Looper.getMainLooper()).post {
                     callback.invoke(true, "")
@@ -89,7 +90,7 @@ DataNiLocationHandler(context: Context, dataBase: MapLifeDataBase) :
                     "uuid=?",
                     arrayOf("'${niLocation.id}'")
                 )
-                mDataBase.niLocationDao.delete(niLocation);
+                (mDataBase as TraceDataBase).niLocationDao.delete(niLocation);
             } catch (e: Throwable) {
                 Handler(Looper.getMainLooper()).post {
                     callback.invoke(false, "${e.message}")

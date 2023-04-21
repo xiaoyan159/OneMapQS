@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import com.navinfo.collect.library.data.dao.impl.MapLifeDataBase
+import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.Project
 import kotlin.concurrent.thread
 
@@ -22,7 +23,7 @@ open class DataProjectHandler(context: Context, dataBase: MapLifeDataBase) :
     ) {
         thread(start = true) {
             try {
-                mDataBase.projectManagerDao.insert(project)
+                (mDataBase as MapLifeDataBase).projectManagerDao.insert(project)
                 Handler(Looper.getMainLooper()).post {
                     callback.invoke(true, "")
                 }
@@ -41,7 +42,7 @@ open class DataProjectHandler(context: Context, dataBase: MapLifeDataBase) :
      */
     fun getProjectList(callback: (list: List<Project>) -> Unit) {
         thread(start = true) {
-            val list = mDataBase.projectManagerDao.findList();
+            val list = (mDataBase as MapLifeDataBase).projectManagerDao.findList();
             Handler(Looper.getMainLooper()).post {
                 callback.invoke(list)
             }
