@@ -2,7 +2,6 @@ package com.navinfo.collect.library.utils;
 
 import android.graphics.Point;
 import android.util.Log;
-
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -15,7 +14,6 @@ import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.oscim.core.GeoPoint;
 import org.oscim.map.Map;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,6 +66,7 @@ public class GeometryTools {
         return null;
 
     }
+
 
     /**
      * 返回点几何
