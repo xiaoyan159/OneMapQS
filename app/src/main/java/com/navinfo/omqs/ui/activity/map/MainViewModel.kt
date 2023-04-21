@@ -5,7 +5,6 @@ import android.content.DialogInterface
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.navinfo.collect.library.data.entity.NiLocation
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.map.NIMapController
@@ -21,7 +20,6 @@ import com.navinfo.omqs.ui.manager.TakePhotoManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.RealmSet
 import org.videolan.libvlc.LibVlcUtil
-import java.util.*
 import javax.inject.Inject
 
 /**

@@ -85,8 +85,10 @@ class EvaluationResultViewModel @Inject constructor(
      *  //获取问题分类列表
      */
     fun getClassTypeList() {
+        Log.e("jingo", "getClassTypeList S")
         viewModelScope.launch(Dispatchers.IO) {
             val list = roomAppDatabase.getScProblemTypeDao().findClassTypeList()
+            Log.e("jingo", "getClassTypeList ${list?.size}")
             list?.let {
                 if (list.isNotEmpty()) {
                     //通知页面更新
@@ -94,13 +96,14 @@ class EvaluationResultViewModel @Inject constructor(
                     val classType = it[0]
                     //如果右侧栏没数据，给个默认值
                     if (liveDataQsRecordBean.value!!.classType.isEmpty()) {
+                        Log.e("jingo", "getClassTypeList $classType")
                         liveDataQsRecordBean.value!!.classType = classType
                     }
                     getProblemList(classType)
                 }
             }
         }
-
+        Log.e("jingo", "getClassTypeList E")
     }
 
     /**
