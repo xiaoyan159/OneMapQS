@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import com.navinfo.omqs.R
@@ -14,30 +15,26 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
-    private var _binding: FragmentEvaluationResultBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentEvaluationResultBinding
     private val viewModel by shareViewModels<EvaluationResultViewModel>("QsRecode")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEvaluationResultBinding.inflate(inflater, container, false)
+        binding =
+            DataBindingUtil.inflate(inflater, R.layout.fragment_evaluation_result, container, false)
+        binding.fragment = this
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        liveDataObserve()
-
-        /**
-         *  点击监听
-         */
-        binding.evaluationClassType.setOnClickListener(this)
-        binding.evaluationProblemType.setOnClickListener(this)
-        binding.evaluationPhenomenon.setOnClickListener(this)
-        binding.evaluationLink.setOnClickListener(this)
-        binding.evaluationCause.setOnClickListener(this)
-
+        //监听是否退出当前页面
+        viewModel.liveDataFinish.observe(viewLifecycleOwner) {
+            onBackPressed()
+        }
         //返回按钮点击
         binding.evaluationBar.setNavigationOnClickListener {
             onBackPressed()
@@ -59,7 +56,17 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         /**
          * 读取元数据
          */
-        viewModel.loadMetadata()
+        if (arguments != null) {
+            val id = requireArguments().getString("QsId")
+            if (id != null) {
+                viewModel.loadData(id)
+            } else {
+                viewModel.loadMetadata()
+            }
+        } else {
+            viewModel.loadMetadata()
+        }
+
 //        //监听大分类数据变化
 //        viewModel.liveDataClassTypeList.observe(viewLifecycleOwner) {
 //            if (it == null || it.isEmpty()) {
@@ -155,43 +162,12 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
 //
 //    }
 
-    /**
-     * 监听liveData
-     */
-    private fun liveDataObserve() {
-
-        //监听问题分类，更新UI
-        viewModel.liveDataCurrentClassType.observe(viewLifecycleOwner) {
-            binding.evaluationClassType.text = it
-        }
-        //监听问题类型，更新UI
-        viewModel.liveDataCurrentProblemType.observe(viewLifecycleOwner) {
-            binding.evaluationProblemType.text = it
-        }
-        //监听问题现象，更新UI
-        viewModel.liveDataCurrentPhenomenon.observe(viewLifecycleOwner) {
-            binding.evaluationPhenomenon.text = it
-        }
-        //监听问题环节，更新UI
-        viewModel.liveDataCurrentProblemLink.observe(viewLifecycleOwner) {
-            binding.evaluationLink.text = it
-        }
-        //监听问题初步原因，更新UI
-        viewModel.liveDataCurrentCause.observe(viewLifecycleOwner) {
-            binding.evaluationCause.text = it
-        }
-        //监听是否退出当前页面
-        viewModel.liveDataFinish.observe(viewLifecycleOwner) {
-            onBackPressed()
-        }
-    }
 
     override fun onDestroyView() {
         activity?.apply {
             findNavController(R.id.main_activity_middle_fragment).navigateUp()
         }
         super.onDestroyView()
-        _binding = null
     }
 
     /**

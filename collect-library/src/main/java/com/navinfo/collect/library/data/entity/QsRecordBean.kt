@@ -36,7 +36,7 @@ open class QsRecordBean @JvmOverloads constructor(
     /**
      * 问题类型
      */
-    var type: String = "",
+    var problemType: String = "",
 
     /**
      * 问题现象

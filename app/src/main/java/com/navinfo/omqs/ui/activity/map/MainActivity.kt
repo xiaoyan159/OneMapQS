@@ -52,8 +52,16 @@ class MainActivity : BaseActivity() {
         binding.mainActivity = this
         //给xml传递viewModel对象
         binding.viewModel = viewModel
-//        lifecycle.addObserver(viewModel)
-        lifecycleScope
+
+        viewModel.liveDataQsRecordIdList.observe(this) {
+            if (it.size == 1) {
+                val bundle = Bundle()
+                bundle.putString("QsId", it[0])
+                val naviController = findNavController(R.id.main_activity_right_fragment)
+                naviController.navigate(R.id.EvaluationResultFragment, bundle)
+            }
+        }
+
     }
 
     override fun onStart() {
@@ -94,7 +102,7 @@ class MainActivity : BaseActivity() {
         naviController.navigate(R.id.EvaluationResultFragment)
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-    }
+//    override fun onBackPressed() {
+//        super.onBackPressed()
+//    }
 }
