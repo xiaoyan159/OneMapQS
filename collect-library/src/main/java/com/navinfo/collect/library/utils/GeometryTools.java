@@ -327,6 +327,26 @@ public class GeometryTools {
         return point;
     }
 
+    /**
+     * 根据经纬度构建一个Point类型的数据
+     *
+     * @param lon 经度
+     * @param lat 纬度
+     * @return Point类型的数据
+     */
+    public static org.locationtech.jts.geom.Point createPoint(double lon, double lat) {
+        // 创建Coordinate对象
+        Coordinate coordinate = new Coordinate(lon, lat);
+
+        // 创建GeometryFactory对象
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        // 创建Point对象
+
+
+        return geometryFactory.createPoint(coordinate);
+    }
+
 
     /**
      * 点几何转换为GeoPoint

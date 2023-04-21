@@ -18,7 +18,7 @@ class OMQSApplication : Application() {
         FileManager.initRootDir(this)
         Realm.init(this)
         val password = "encryp".encodeToByteArray().copyInto(ByteArray(64))
-        // 70617373776f72640000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        // 656e6372797000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
         Log.d("OMQSApplication", "密码是： ${byteArrayToHexString(password)}")
         val config = RealmConfiguration.Builder()
             .directory(File(Constant.DATA_PATH))

@@ -11,6 +11,10 @@
             android:icon="@drawable/baseline_map_24"
             android:title="离线地图" />
         <item
+            android:id="@+id/personal_center_menu_obtain_data"
+            android:icon="@drawable/ic_baseline_import_export_24"
+            android:title="生成数据" />
+        <item
             android:id="@+id/personal_center_menu_import_data"
             android:icon="@drawable/ic_baseline_import_export_24"
             android:title="导入数据" />
@@ -40,6 +44,10 @@
                     android:id="@+id/personal_center_menu_offline_map5"
                     android:icon="@drawable/baseline_person_24"
                     android:title="menu_slideshow" />
+                <item
+                    android:id="@+id/personal_center_menu_test"
+                    android:icon="@drawable/baseline_person_24"
+                    android:title="测试" />
             </menu>
         </item>
     </group>

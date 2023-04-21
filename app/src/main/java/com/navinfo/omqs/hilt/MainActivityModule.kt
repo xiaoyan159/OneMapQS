@@ -1,6 +1,7 @@
 package com.navinfo.omqs.hilt
 
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.db.RoomAppDatabase
 import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
@@ -43,4 +44,9 @@ class MainActivityModule {
 //        return MainViewModel(mapController)
 //    }
 
+    @ActivityRetainedScoped
+    @Provides
+    fun providesRealmOperateHelper(): RealmOperateHelper {
+        return RealmOperateHelper()
+    }
 }
