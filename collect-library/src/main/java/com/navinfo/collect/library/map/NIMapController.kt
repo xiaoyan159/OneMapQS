@@ -3,6 +3,8 @@ package com.navinfo.collect.library.map
 import android.content.Context
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.navinfo.collect.library.data.entity.NiLocation
+import com.navinfo.collect.library.data.handler.DataNiLocationHandler
 import com.navinfo.collect.library.map.handler.*
 import com.navinfo.collect.library.map.maphandler.MeasureLayerHandler
 import com.navinfo.collect.library.map.handler.ViewportHandler
@@ -22,7 +24,6 @@ class NIMapController {
     lateinit var polygonHandler: PolygonHandler
     lateinit var viewportHandler: ViewportHandler
     lateinit var measureLayerHandler: MeasureLayerHandler
-
 
     fun init(context: AppCompatActivity, mapView: NIMapView, options: NIMapOptions? = null, mapPath: String) {
         Constant.MAP_PATH = mapPath

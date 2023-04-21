@@ -40,8 +40,6 @@ public class MapLifeNiLocationTileDataSource implements ITileDataSource {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void query(MapTile tile, ITileDataSink mapDataSink) {
-
-
         // 获取tile对应的坐标范围
         if (tile.zoomLevel >= 10 && tile.zoomLevel <= 20) {
 

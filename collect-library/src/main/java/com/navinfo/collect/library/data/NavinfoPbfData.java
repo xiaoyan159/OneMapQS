@@ -4,7 +4,6 @@ import com.google.protobuf.Descriptors;
 import com.google.protobuf.GeneratedMessageV3;
 import com.navinfo.collect.library.data.entity.GeometryFeatureEntity;
 import com.navinfo.onemap.det.sdkpbf.proto.crowdsource.Resultdata;
-
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateXYM;
 import org.locationtech.jts.geom.CoordinateXYZM;
