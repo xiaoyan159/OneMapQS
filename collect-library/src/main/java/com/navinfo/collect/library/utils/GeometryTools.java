@@ -1566,4 +1566,19 @@ public class GeometryTools {
         return earthRadiusMeters * acos; // 最终结果
 
     }
+
+    /**
+     * 将平面坐标系中的距离（以米为单位）转换为地理坐标系中的角度（以度为单位）
+     *
+     * @param distance 平面坐标系中的距离（单位：米）
+     * @param latitude 点的纬度（单位：度）
+     * @return 对应的地理坐标系中的距离（单位：度）
+     */
+    private static final double EARTH_RADIUS = 6371000.0;
+    public static double convertDistanceToDegree(double distance, double latitude) {
+        double radianDistance = distance / EARTH_RADIUS;
+        double radianLatitude = Math.toRadians(latitude);
+        double radianDegree = 2 * Math.asin(Math.sin(radianDistance / 2) / Math.cos(radianLatitude));
+        return Math.toDegrees(radianDegree);
+    }
 }

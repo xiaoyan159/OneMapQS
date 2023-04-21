@@ -6,6 +6,7 @@ import com.navinfo.collect.library.utils.GeometryToolsKt
 import io.realm.RealmDictionary
 import io.realm.RealmObject
 import io.realm.RealmSet
+import io.realm.annotations.Ignore
 import io.realm.annotations.PrimaryKey
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.Geometry
@@ -28,7 +29,15 @@ open class RenderEntity(): RealmObject() {
             // 根据geometry自动计算当前要素的x-tile和y-tile
             GeometryToolsKt.getTileXByGeometry(value, tileX)
             GeometryToolsKt.getTileYByGeometry(value, tileY)
+            // 根据传入的geometry文本，自动转换为Geometry对象
+            try {
+                wkt = GeometryTools.createGeometry(value)
+            } catch (e: Exception) {
+
+            }
         }
+    @Ignore
+    var wkt: Geometry? = null
     var properties: RealmDictionary<String?> = RealmDictionary()
     val tileX: RealmSet<Int> = RealmSet() // x方向的tile编码
     val tileY: RealmSet<Int> = RealmSet()  // y方向的tile编码

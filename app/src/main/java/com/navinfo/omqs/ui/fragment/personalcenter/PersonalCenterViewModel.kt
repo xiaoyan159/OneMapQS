@@ -224,7 +224,9 @@ class PersonalCenterViewModel @Inject constructor(
 
     fun readRealmData() {
         viewModelScope.launch(Dispatchers.IO) {
-            realmOperateHelper.queryLink(GeometryTools.createPoint(115.685817,28.62759))
+//            val result = realmOperateHelper.queryLink(GeometryTools.createPoint(115.685817,28.62759))
+            val result = realmOperateHelper.queryLinkByLinkPid("84206617008217069")
+            Log.d("xiaoyan", result.toString())
         }
     }
 }
