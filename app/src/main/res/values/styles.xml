@@ -6,7 +6,7 @@
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:layout_alignParentTop">true</item>
-        <item name="android:background">@color/default_blue</item>
+        <item name="android:background">@color/blue</item>
         <item name="android:paddingBottom">6dp</item>
         <item name="android:paddingLeft">14dp</item>
         <item name="android:paddingRight">14dp</item>
@@ -53,5 +53,34 @@
         <item name="android:gravity">center_horizontal</item>
         <item name="android:textColor">@color/btn_blue_white</item>
         <item name="android:textSize">15sp</item>
+    </style>
+
+    <!-- 默认按钮样式 -->
+    <style name="btn_default_style" parent="content_font_default">
+        <item name="android:textColor">@color/btn_select_color</item>
+        <item name="android:background">@drawable/btn_bg_default</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingBottom">1dp</item>
+    </style>
+
+    <style name="fm_btn_default_blue_white" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/selector_bg_blue_gray_bg_4_radius</item>
+        <item name="android:textColor">@color/selector_default_text_color_white_enable_gray</item>
+        <item name="android:padding">@dimen/five</item>
+    </style>
+
+    <style name="MyDialog" parent="Theme.AppCompat.DialogWhenLarge">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <!-- 连续拍照对话框 -->
+    <style name="MyCustomDialog" parent="@style/MyDialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 </resources>

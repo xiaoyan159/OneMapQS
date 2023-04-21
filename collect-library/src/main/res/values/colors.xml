@@ -9,6 +9,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="background_light">#ffffffff</color>
     <color name="draw_line_blue1_color" comment="线数据样式">#028FFF</color>
     <color name="draw_line_blue2_color" comment="线数据样式">#4E55AF</color>
     <color name="draw_line_red_color" comment="线数据样式">#FFF6565D</color>
