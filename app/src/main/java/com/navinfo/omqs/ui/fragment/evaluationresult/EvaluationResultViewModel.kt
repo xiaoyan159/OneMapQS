@@ -85,7 +85,6 @@ class EvaluationResultViewModel @Inject constructor(
      *  //获取问题分类列表
      */
     fun getClassTypeList() {
-        
         viewModelScope.launch(Dispatchers.IO) {
             val list = roomAppDatabase.getScProblemTypeDao().findClassTypeList()
             list?.let {
