@@ -17,6 +17,7 @@ import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.RealmSet
+import org.oscim.core.GeoPoint
 import org.videolan.libvlc.LibVlcUtil
 import java.util.*
 import javax.inject.Inject
@@ -84,10 +85,7 @@ class MainViewModel @Inject constructor(
                     if(niLocationList!=null&&niLocationList.size>0){
 
                         var niLocation = niLocationList[0]
-                        var doubleArray = doubleArrayOf()
-                        doubleArray[0] = niLocation.longitude
-                        doubleArray[1] = niLocation.latitude
-                        val geometry = GeometryTools.createGeometry(doubleArray)
+                        val geometry = GeometryTools.createGeometry(GeoPoint(niLocation.latitude,niLocation.longitude))
                         val tileX = RealmSet<Int>()
                         GeometryToolsKt.getTileXByGeometry(geometry.toString(), tileX)
                         val tileY = RealmSet<Int>()

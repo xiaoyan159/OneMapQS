@@ -47,7 +47,8 @@ class MainActivity : BaseActivity() {
             this,
             binding.mainActivityMap,
             null,
-            Constant.MAP_PATH
+            Constant.MAP_PATH,
+            Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite"
         )
         //关联生命周期
         binding.lifecycleOwner = this
@@ -69,8 +70,7 @@ class MainActivity : BaseActivity() {
             binding!!.viewModel!!.addSaveTrace(it)
             binding!!.viewModel!!.startSaveTraceThread(this)
         })
-        //显示轨迹图层
-        mapController.layerManagerHandler.showNiLocationLayer(Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite")
+        mapController.layerManagerHandler.showNiLocationLayer()
     }
 
     override fun onPause() {
@@ -100,7 +100,8 @@ class MainActivity : BaseActivity() {
      * 打开相机预览
      */
     fun openCamera() {
-        binding!!.viewModel!!.onClickCameraButton(this)
+        //显示轨迹图层
+        //binding!!.viewModel!!.onClickCameraButton(this)
     }
 
     /**

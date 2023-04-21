@@ -57,9 +57,7 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) : Bas
                 //获取定位类型、定位错误返回码，具体信息可参照类参考中BDLocation类中的说明
                 val errorCode = it.locType
                 mCurrentLocation = it
-                mLocationLayer.setPosition(
-                    it.latitude, it.longitude, it.radius
-                )
+                mLocationLayer.setPosition(it.latitude, it.longitude, it.radius)
                 Log.e("qj","location==${it.longitude}==errorCode===$errorCode===${it.locTypeDescription}")
                 if(niLocationListener!=null){
                     getCurrentNiLocation()?.let { it1 -> niLocationListener.call(it1) }
