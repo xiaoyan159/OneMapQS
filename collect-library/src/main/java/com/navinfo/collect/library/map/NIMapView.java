@@ -13,7 +13,9 @@ import android.widget.RelativeLayout;
 import androidx.annotation.Nullable;
 
 import com.navinfo.collect.library.R;
+import com.navinfo.collect.library.data.entity.NiLocation;
 import com.navinfo.collect.library.map.layers.NaviMapScaleBar;
+import com.navinfo.collect.library.map.source.MapLifeNiLocationTileSource;
 
 import org.oscim.android.MapPreferences;
 import org.oscim.android.MapView;
@@ -25,10 +27,22 @@ import org.oscim.event.Gesture;
 import org.oscim.event.GestureListener;
 import org.oscim.layers.GroupLayer;
 import org.oscim.layers.Layer;
+import org.oscim.layers.tile.buildings.BuildingLayer;
+import org.oscim.layers.tile.vector.OsmTileLayer;
 import org.oscim.layers.tile.vector.VectorTileLayer;
+import org.oscim.layers.tile.vector.labeling.LabelLayer;
+import org.oscim.layers.tile.vector.labeling.LabelTileLoaderHook;
 import org.oscim.map.Map;
 import org.oscim.renderer.GLViewport;
+import org.oscim.theme.IRenderTheme;
+import org.oscim.theme.ThemeLoader;
 import org.oscim.theme.VtmThemes;
+import org.oscim.tiling.source.mapfile.MapFileTileSource;
+import org.oscim.tiling.source.mapfile.MultiMapFileTileSource;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -85,12 +99,11 @@ public final class NIMapView extends RelativeLayout {
 //    private Layer gridLayer;
 
     protected Context mContext;
-
     /**
      * 地图状态信息
      */
     private MapPreferences mPrefs;
-    //    protected String mapFilePath = Constant.ROOT_PATH + "/map";
+    protected String mapFilePath = "/map";
     protected GroupLayer baseGroupLayer; // 用于盛放所有基础底图的图层组，便于统一管理
 
     public void setOptions(NIMapOptions option) {
@@ -348,6 +361,10 @@ public final class NIMapView extends RelativeLayout {
             mapPosition.setPosition(options.getCoordinate().getLatitude(), options.getCoordinate().getLongitude());
             getVtmMap().animator().animateTo(100, mapPosition);
         }
+
+        List<NiLocation> list = new ArrayList<NiLocation>();
+        list.add(new NiLocation());
+
     }
 
 
@@ -422,83 +439,84 @@ public final class NIMapView extends RelativeLayout {
 //        }
 //    }
 
-//    private void initVectorTileLayer() {
-//        if (baseGroupLayer == null) {
-//            baseGroupLayer = new GroupLayer(getVtmMap());
-//        }
-//        for (Layer layer : baseGroupLayer.layers) {
-//            getVtmMap().layers().remove(layer);
-//        }
-//        baseGroupLayer.layers.clear();
-//
-//        File baseMapFolder = new File(mapFilePath);
-//        if (!baseMapFolder.exists()) {
-//            return;
-//        }
-//
-//        File[] mapFileList = baseMapFolder.listFiles();
-//
-//        if (mapFileList != null && mapFileList.length > 0) {
-//
-//            MultiMapFileTileSource multiMapFileTileSource = new MultiMapFileTileSource();
-//
-//            for (File mapFile : mapFileList) {
-//
-//                if (!mapFile.exists() || !mapFile.getName().endsWith(".map")) {
-//                    continue;
-//                }
-//
-//                MapFileTileSource mTileSource = new MapFileTileSource();
-//
-//                mTileSource.setPreferredLanguage("zh");
-//
-//                if (mTileSource.setMapFile(mapFile.getAbsolutePath())) {
-//                    multiMapFileTileSource.add(mTileSource);
-//                }
-//
-//            }
-//
-//            VectorTileLayer baseMapLayer = new OsmTileLayer(getVtmMap());
-//            baseMapLayer.setTileSource(multiMapFileTileSource);
-//
-//            baseGroupLayer.layers.add(baseMapLayer);
-//
-//            if (getTheme(null) != null)
-//                baseMapLayer.setTheme(getTheme(null));
-//
-//            baseGroupLayer.layers.add(new BuildingLayer(getVtmMap(), baseMapLayer));
-//            baseGroupLayer.layers.add(new LabelLayer(getVtmMap(), baseMapLayer));
-//
-//            for (Layer layer : baseGroupLayer.layers) {
-//                if (layer instanceof LabelLayer) {
-//                    getVtmMap().layers().add(layer, LAYER_GROUPS.VECTOR.groupIndex);
-//                } else {
-//                    getVtmMap().layers().add(layer, LAYER_GROUPS.BASE_VECTOR.groupIndex);
-//                }
-//            }
-//        }
-//    }
+/*    public void initVectorTileLayer(){
+        if (baseGroupLayer == null) {
+            baseGroupLayer = new GroupLayer(getVtmMap());
+        }
+        for (Layer layer : baseGroupLayer.layers) {
+            getVtmMap().layers().remove(layer);
+        }
+        baseGroupLayer.layers.clear();
 
-//    //获取渲染资源
-//    public IRenderTheme getTheme(final String styleId) {
-//        AssetsRenderTheme theme = new AssetsRenderTheme(mContext.getAssets(), null, "default.xml");
-//        if (styleId == null || "".equals(styleId.trim())) {
-//            switch (2) {
-//                case 0:
-//                    theme = new AssetsRenderTheme(mContext.getAssets(), null, "default.xml");
-//                    break;
-//                case 1:
-//                    theme = new AssetsRenderTheme(mContext.getAssets(), null, "osmarender.xml");
-//                    break;
-//                case 2:
-//                    theme = new AssetsRenderTheme(mContext.getAssets(), null, "tronrender.xml");
-//                    break;
-//            }
-//
-//        }
-//
-//        return ThemeLoader.load(theme);
-//    }
+        File baseMapFolder = new File(mapFilePath);
+        if (!baseMapFolder.exists()) {
+            return;
+        }
+
+        File[] mapFileList = baseMapFolder.listFiles();
+
+        if (mapFileList != null && mapFileList.length > 0) {
+
+            MultiMapFileTileSource multiMapFileTileSource = new MultiMapFileTileSource();
+
+            for (File mapFile : mapFileList) {
+
+                if (!mapFile.exists() || !mapFile.getName().endsWith(".map")) {
+                    continue;
+                }
+
+                MapFileTileSource mTileSource = new MapFileTileSource();
+
+                mTileSource.setPreferredLanguage("zh");
+
+                if (mTileSource.setMapFile(mapFile.getAbsolutePath())) {
+                    multiMapFileTileSource.add(mTileSource);
+                }
+
+            }
+
+            VectorTileLayer baseMapLayer = new OsmTileLayer(getVtmMap());
+            baseMapLayer.setTileSource(multiMapFileTileSource);
+
+            baseGroupLayer.layers.add(baseMapLayer);
+
+            if (getTheme(null) != null)
+                baseMapLayer.setTheme(getTheme(null));
+
+            baseGroupLayer.layers.add(new BuildingLayer(getVtmMap(), baseMapLayer));
+            baseGroupLayer.layers.add(new LabelLayer(getVtmMap(), baseMapLayer));
+
+            for (Layer layer : baseGroupLayer.layers) {
+                if (layer instanceof LabelLayer) {
+                    getVtmMap().layers().add(layer, LAYER_GROUPS.VECTOR.groupIndex);
+                } else {
+                    getVtmMap().layers().add(layer, LAYER_GROUPS.BASE.groupIndex);
+                }
+            }
+        }
+    }*/
+
+    //获取渲染资源
+/*
+    public IRenderTheme getTheme(final String styleId) {
+        AssetsRenderTheme theme = new AssetsRenderTheme(mContext.getAssets(), null, "default.xml");
+        if (styleId == null || "".equals(styleId.trim())) {
+            switch (2) {
+                case 0:
+                    theme = new AssetsRenderTheme(mContext.getAssets(), null, "default.xml");
+                    break;
+                case 1:
+                    theme = new AssetsRenderTheme(mContext.getAssets(), null, "osmarender.xml");
+                    break;
+                case 2:
+                    theme = new AssetsRenderTheme(mContext.getAssets(), null, "tronrender.xml");
+                    break;
+            }
+
+        }
+        return ThemeLoader.load(theme);
+    }
+*/
 
 //    public void addDefaultVectorTileLayer(MAP_THEME theme) {
 //        if (defaultVectorTileLayer != null) {
@@ -969,4 +987,5 @@ public final class NIMapView extends RelativeLayout {
     public void updateMap(boolean redraw) {
         mapView.map().updateMap(redraw);
     }
+
 }

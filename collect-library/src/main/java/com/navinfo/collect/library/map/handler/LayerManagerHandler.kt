@@ -10,9 +10,11 @@ import androidx.lifecycle.lifecycleScope
 import com.navinfo.collect.library.R
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.map.NIMapView
+import com.navinfo.collect.library.map.NIMapView.LAYER_GROUPS
 import com.navinfo.collect.library.map.cluster.ClusterMarkerItem
 import com.navinfo.collect.library.map.cluster.ClusterMarkerRenderer
 import com.navinfo.collect.library.map.layers.MyItemizedLayer
+import com.navinfo.collect.library.map.source.MapLifeNiLocationTileSource
 import com.navinfo.collect.library.map.source.NavinfoMultiMapFileTileSource
 import com.navinfo.collect.library.system.Constant
 import com.navinfo.collect.library.utils.GeometryTools
@@ -34,6 +36,7 @@ import org.oscim.layers.marker.*
 import org.oscim.layers.tile.buildings.BuildingLayer
 import org.oscim.layers.tile.vector.VectorTileLayer
 import org.oscim.layers.tile.vector.labeling.LabelLayer
+import org.oscim.layers.tile.vector.labeling.LabelTileLoaderHook
 import org.oscim.tiling.source.OkHttpEngine.OkHttpFactory
 import org.oscim.tiling.source.mapfile.MapFileTileSource
 import java.io.File
@@ -63,6 +66,21 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
     private lateinit var itemizedLayer: MyItemizedLayer
     private lateinit var markerRendererFactory: MarkerRendererFactory
     private val markerItemsNames = mutableListOf<MarkerInterface>()
+
+    /**
+     * 轨迹渲染图层
+     */
+    private lateinit var mapLifeNiLocationTileSource: MapLifeNiLocationTileSource
+
+    /**
+     * 轨迹数据图层
+     */
+    private lateinit var vectorNiLocationTileLayer: VectorTileLayer
+
+    /**
+     * 增加作业渲染
+     */
+    private lateinit var labelNiLocationLayer: LabelLayer
 
     /**
      * 文字大小
@@ -496,6 +514,25 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
         }
     }
 
+    //显示轨迹图层
+    fun showNiLocationLayer(dbName: String?) {
+        if (mapLifeNiLocationTileSource == null) {
+            mapLifeNiLocationTileSource = MapLifeNiLocationTileSource(mContext, dbName)
+        }
+        if (vectorNiLocationTileLayer == null) {
+            vectorNiLocationTileLayer = VectorTileLayer(mMapView.vtmMap, mapLifeNiLocationTileSource)
+        }
+        if (labelNiLocationLayer == null) {
+            labelNiLocationLayer =
+                LabelLayer(mMapView.vtmMap, vectorNiLocationTileLayer, LabelTileLoaderHook(), 15)
+        }
+        addLayer(labelNiLocationLayer, NIMapView.LAYER_GROUPS.VECTOR)
+    }
+
+    //隐藏轨迹图层
+    fun hideNiLocationLayer() {
+        removeLayer(labelNiLocationLayer)
+    }
 }
 
 

@@ -94,10 +94,7 @@ public abstract class TraceDataBase extends RoomDatabase {
      */
     private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
 
-        private final ILayerManagerDao mLayerDao;
-
         PopulateDbAsync(TraceDataBase db) {
-            mLayerDao = db.getLayerManagerDao();
         }
 
         @Override

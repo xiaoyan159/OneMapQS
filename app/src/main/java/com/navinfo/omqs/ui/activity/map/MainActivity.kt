@@ -1,6 +1,7 @@
 package com.navinfo.omqs.ui.activity.map
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
@@ -9,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.collect.library.map.handler.NiLocationListener
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityMainBinding
@@ -55,8 +57,6 @@ class MainActivity : BaseActivity() {
         binding.viewModel = viewModel
 //        lifecycle.addObserver(viewModel)
         lifecycleScope
-        //初始化轨迹文件
-        TraceDataBase.getDatabase(this,Constant.DATA_PATH+SystemConstant.USER_ID+"/trace.sqlite")
     }
 
     override fun onStart() {
@@ -64,6 +64,13 @@ class MainActivity : BaseActivity() {
 
         //开启定位
         mapController.locationLayerHandler.startLocation()
+        //启动轨迹存储
+        mapController.locationLayerHandler.setNiLocationListener(NiLocationListener {
+            binding!!.viewModel!!.addSaveTrace(it)
+            binding!!.viewModel!!.startSaveTraceThread(this)
+        })
+        //显示轨迹图层
+        mapController.layerManagerHandler.showNiLocationLayer(Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite")
     }
 
     override fun onPause() {
