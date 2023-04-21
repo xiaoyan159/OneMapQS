@@ -45,11 +45,10 @@ import java.util.*
 /**
  * Layer 操作
  */
-open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
-    BaseHandler(context, mapView) {
+open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePath: String) : BaseHandler(context, mapView) {
     private var baseGroupLayer // 用于盛放所有基础底图的图层组，便于统一管理
             : GroupLayer? = null
-
+    protected val mTracePath:String = tracePath
     /**
      * 默认文字颜色
      */
@@ -101,6 +100,13 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
         //初始化之间数据图层
         initQsRecordDataLayer()
         mMapView.vtmMap.updateMap()
+
+        mapLifeNiLocationTileSource = MapLifeNiLocationTileSource(mContext, mTracePath)
+
+        vectorNiLocationTileLayer = VectorTileLayer(mMapView.vtmMap, mapLifeNiLocationTileSource)
+
+        labelNiLocationLayer = LabelLayer(mMapView.vtmMap, vectorNiLocationTileLayer, LabelTileLoaderHook(), 15)
+
 //        initMapLifeSource()
     }
 
@@ -206,7 +212,7 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
             var list = mutableListOf<QsRecordBean>()
             val realm = Realm.getDefaultInstance()
             realm.executeTransaction {
-                val objects =realm.where<QsRecordBean>().findAll()
+                val objects = realm.where<QsRecordBean>().findAll()
                 list = realm.copyFromRealm(objects)
             }
             realm.close()
@@ -515,18 +521,10 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
     }
 
     //显示轨迹图层
-    fun showNiLocationLayer(dbName: String?) {
-        if (mapLifeNiLocationTileSource == null) {
-            mapLifeNiLocationTileSource = MapLifeNiLocationTileSource(mContext, dbName)
+    fun showNiLocationLayer() {
+        if(labelNiLocationLayer!=null){
+            addLayer(labelNiLocationLayer, NIMapView.LAYER_GROUPS.VECTOR)
         }
-        if (vectorNiLocationTileLayer == null) {
-            vectorNiLocationTileLayer = VectorTileLayer(mMapView.vtmMap, mapLifeNiLocationTileSource)
-        }
-        if (labelNiLocationLayer == null) {
-            labelNiLocationLayer =
-                LabelLayer(mMapView.vtmMap, vectorNiLocationTileLayer, LabelTileLoaderHook(), 15)
-        }
-        addLayer(labelNiLocationLayer, NIMapView.LAYER_GROUPS.VECTOR)
     }
 
     //隐藏轨迹图层
