@@ -15,6 +15,7 @@ import org.locationtech.spatial4j.distance.DistanceUtils
 import org.oscim.core.GeoPoint
 import org.oscim.core.MercatorProjection
 import javax.inject.Inject
+import kotlin.streams.toList
 
 
 class RealmOperateHelper() {
@@ -28,18 +29,36 @@ class RealmOperateHelper() {
      * @param order 是否需要排序
      * */
     suspend fun queryLink(point: Point, buffer: Double = DEFAULT_BUFFER, bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE, order: Boolean = false): MutableList<RenderEntity> {
+        val result = mutableListOf<RenderEntity>()
         withContext(Dispatchers.IO) {
             val polygon = getPolygonFromPoint(point, buffer, bufferType)
             // 根据polygon查询相交的tile号
             val tileXSet = mutableSetOf<Int>()
+            tileXSet.toString()
             GeometryToolsKt.getTileXByGeometry(polygon.toString(), tileXSet)
             val tileYSet = mutableSetOf<Int>()
             GeometryToolsKt.getTileYByGeometry(polygon.toString(), tileYSet)
 
+            // 对tileXSet和tileYSet查询最大最小值
+            val xStart = tileXSet.stream().min(Comparator.naturalOrder()).orElse(null)
+            val xEnd = tileXSet.stream().max(Comparator.naturalOrder()).orElse(null)
+            val yStart = tileYSet.stream().min(Comparator.naturalOrder()).orElse(null)
+            val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
             // 查询realm中对应tile号的数据
-            Realm.getDefaultInstance().where(RenderEntity::class.java).equalTo("table", "HAD_LINK")
+            val realmList = Realm.getDefaultInstance().where(RenderEntity::class.java)
+                .equalTo("table", "HAD_LINK")
+                .and()
+                .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd")
+                .findAll()
+            // 将获取到的数据和查询的polygon做相交，只返回相交的数据
+            val queryResult = realmList?.stream()?.filter {
+                polygon.intersects(GeometryTools.createGeometry(it.geometry))
+            }?.toList()
+            queryResult?.let {
+                result.addAll(queryResult)
+            }
         }
-        return mutableListOf()
+        return result
     }
 
     private fun getPolygonFromPoint(point: Point, buffer: Double = DEFAULT_BUFFER, bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE): Polygon {
