@@ -16,6 +16,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.realm.Realm
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -136,4 +137,10 @@ class GlobalModule {
 //    fun provideRealmService(context: Application): RealmCoroutineScope {
 //        return RealmCoroutineScope(context)
 //    }
+
+    @Singleton
+    @Provides
+    fun provideRealmDefaultInstance(): Realm {
+        return Realm.getDefaultInstance()
+    }
 }

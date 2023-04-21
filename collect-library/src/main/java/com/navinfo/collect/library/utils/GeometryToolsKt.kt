@@ -11,12 +11,12 @@ class GeometryToolsKt {
         /**
          * 根据给定的geometry计算其横跨的20级瓦片Y值
          */
-        fun getTileYByGeometry(wkt: String, tileYSet: MutableSet<Int?>) {
+        fun getTileYByGeometry(wkt: String, tileYSet: MutableSet<Int>) {
 
             val reader = WKTReader()
             val geometry = reader.read(wkt);
 
-            var tileYSet: MutableSet<Int?>? = tileYSet
+            var tileYSet: MutableSet<Int>? = tileYSet
             val startTime = System.currentTimeMillis()
             if (tileYSet == null) {
                 tileYSet = RealmSet()
@@ -55,11 +55,11 @@ class GeometryToolsKt {
         /**
          * 根据给定的geometry计算其横跨的20级瓦片X值
          */
-        fun getTileXByGeometry(wkt: String, tileXSet: MutableSet<Int?>) {
+        fun getTileXByGeometry(wkt: String, tileXSet: MutableSet<Int>) {
             val reader = WKTReader()
             val geometry = reader.read(wkt);
 
-            var tileXSet: MutableSet<Int?>? = tileXSet
+            var tileXSet: MutableSet<Int>? = tileXSet
             val startTime = System.currentTimeMillis()
             if (tileXSet == null) {
                 tileXSet = RealmSet()

@@ -10,14 +10,16 @@ import io.realm.annotations.PrimaryKey
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.Geometry
 import org.oscim.core.MercatorProjection
+import java.util.*
 
 /**
  * 渲染要素对应的实体
  * */
 open class RenderEntity(): RealmObject() {
     @PrimaryKey
-    var id: Long = 0 // id
+    var id: String = UUID.randomUUID().toString() // id
     lateinit var name: String //要素名
+    lateinit var table: String //要素表名
     var code: Int = 0 // 要素编码
     var geometry: String = ""
         get() = field
@@ -27,7 +29,7 @@ open class RenderEntity(): RealmObject() {
             GeometryToolsKt.getTileXByGeometry(value, tileX)
             GeometryToolsKt.getTileYByGeometry(value, tileY)
         }
-    lateinit var properties: RealmDictionary<String?>
+    var properties: RealmDictionary<String?> = RealmDictionary()
     val tileX: RealmSet<Int> = RealmSet() // x方向的tile编码
     val tileY: RealmSet<Int> = RealmSet()  // y方向的tile编码
 
