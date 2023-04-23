@@ -27,7 +27,7 @@ class Constant {
         /**
          * 服务器地址
          */
-        const val SERVER_ADDRESS = "http://fastmap.navinfo.com/drdc/"
+        const val SERVER_ADDRESS = "http://fastmap.navinfo.com/"
 
         const val DEBUG = true
 

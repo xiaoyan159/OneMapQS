@@ -8,11 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import com.navinfo.omqs.databinding.FragmentOfflineMapBinding
+import com.navinfo.omqs.ui.fragment.BaseFragment
 
 /**
  * 离线地图总页面
  */
-class OfflineMapFragment : Fragment() {
+class OfflineMapFragment : BaseFragment() {
 
     private var _binding: FragmentOfflineMapBinding? = null
 

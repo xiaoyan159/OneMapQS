@@ -4,6 +4,7 @@ import com.navinfo.collect.library.utils.GeometryToolsKt
 import io.realm.RealmObject
 import io.realm.RealmSet
 import io.realm.annotations.PrimaryKey
+import io.realm.annotations.RealmClass
 
 
 /**
@@ -36,7 +37,7 @@ open class QsRecordBean @JvmOverloads constructor(
     /**
      * 问题类型
      */
-    var type: String = "",
+    var problemType: String = "",
 
     /**
      * 问题现象
@@ -87,6 +88,27 @@ open class QsRecordBean @JvmOverloads constructor(
     var guideGeometry: String = "",
 
     ) : RealmObject() {
+
+    fun copy(): QsRecordBean {
+        val qs = QsRecordBean(
+            id = id,
+            elementId = elementId,
+            linkId = linkId,
+            classType = classType,
+            problemType = problemType,
+            phenomenon = phenomenon,
+            description = description,
+            problemLink = problemLink,
+            cause = cause,
+            checkUserId = checkUserId,
+            checkTime = checkTime,
+            confirmUserId = confirmUserId,
+            t_lifecycle = t_lifecycle,
+            t_status = t_status,
+        )
+        qs.geometry = geometry
+        return qs
+    }
 
 
     private val tileX = RealmSet<Int>() // x方向的tile编码

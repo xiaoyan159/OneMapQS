@@ -5,6 +5,7 @@ import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.db.RoomAppDatabase
 import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
+import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,6 +34,16 @@ class MainActivityModule {
         mapController: NIMapController
     ): OfflineMapDownloadManager =
         OfflineMapDownloadManager(networkServiceAPI, roomAppDatabase, mapController)
+
+    /**
+     * 注入任务下载
+     */
+    @ActivityRetainedScoped
+    @Provides
+    fun providesTaskListDownloadManager(
+        networkServiceAPI: RetrofitNetworkServiceAPI,
+    ): TaskDownloadManager =
+        TaskDownloadManager(networkServiceAPI)
 
     /**
      * 实验失败，这样创建，viewmodel不会在activity销毁的时候同时销毁

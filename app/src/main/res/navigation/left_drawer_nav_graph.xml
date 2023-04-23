@@ -13,16 +13,20 @@
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            app:destination="@id/OfflineMapFragment" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
+        android:id="@+id/OfflineMapFragment"
         android:name="com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapFragment"
-        android:label="@string/second_fragment_label"
+        android:label="离线地图"
         tools:layout="@layout/fragment_offline_map">
 
-        <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/PersonalCenterFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/TaskListFragment"
+        android:name="com.navinfo.omqs.ui.fragment.tasklist.TaskListFragment"
+        android:label="任务列表"
+        tools:layout="@layout/fragment_task_list">
+
     </fragment>
 </navigation>

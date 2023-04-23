@@ -31,7 +31,7 @@ open class PermissionsActivity : BaseActivity() {
         permissionList.add(Permission.ACCESS_COARSE_LOCATION)
         //android10
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-            permissionList.add(Permission.ACCESS_BACKGROUND_LOCATION)
+//            permissionList.add(Permission.ACCESS_BACKGROUND_LOCATION)
         }
         XXPermissions.with(this)
             // 申请单个权限

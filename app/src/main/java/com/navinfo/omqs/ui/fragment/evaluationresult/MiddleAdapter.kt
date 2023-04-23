@@ -7,7 +7,7 @@ import com.navinfo.omqs.databinding.TextItemSelectBinding
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 
-class PhenomenonMiddleAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) :
+class MiddleAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) :
     BaseRecyclerViewAdapter<String>() {
     private var selectTitle = ""
 

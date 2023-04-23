@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 /**
  * 自定义装饰器（实现分组+吸顶效果）
  */
-class PhenomenonRightGroupHeaderDecoration(context: Context) : ItemDecoration() {
+class RightGroupHeaderDecoration(context: Context) : ItemDecoration() {
     //头部的高
     private val mItemHeaderHeight: Int
     private val mTextPaddingLeft: Int
@@ -48,8 +47,8 @@ class PhenomenonRightGroupHeaderDecoration(context: Context) : ItemDecoration() 
      * @param state
      */
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-        if (parent.adapter is PhenomenonRightGroupHeaderAdapter) {
-            val adapter = parent.adapter as PhenomenonRightGroupHeaderAdapter
+        if (parent.adapter is RightGroupHeaderAdapter) {
+            val adapter = parent.adapter as RightGroupHeaderAdapter
             val count = parent.childCount //获取可见范围内Item的总数
             for (i in 0 until count) {
                 val view: View = parent.getChildAt(i)
@@ -99,8 +98,8 @@ class PhenomenonRightGroupHeaderDecoration(context: Context) : ItemDecoration() 
      * @param state
      */
     override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-        if (parent.adapter is PhenomenonRightGroupHeaderAdapter) {
-            val adapter = parent.adapter as PhenomenonRightGroupHeaderAdapter
+        if (parent.adapter is RightGroupHeaderAdapter) {
+            val adapter = parent.adapter as RightGroupHeaderAdapter
             val position =
                 (parent.layoutManager as LinearLayoutManager?)!!.findFirstVisibleItemPosition()
             parent.findViewHolderForAdapterPosition(position)?.let {
@@ -169,8 +168,8 @@ class PhenomenonRightGroupHeaderDecoration(context: Context) : ItemDecoration() 
         parent: RecyclerView,
         state: RecyclerView.State
     ) {
-        if (parent.adapter is PhenomenonRightGroupHeaderAdapter) {
-            val adapter = parent.adapter as PhenomenonRightGroupHeaderAdapter
+        if (parent.adapter is RightGroupHeaderAdapter) {
+            val adapter = parent.adapter as RightGroupHeaderAdapter
             //获取当前view在整个列表中的位置
             val position = parent.getChildLayoutPosition(view)
             //是不是改组的第一个
@@ -180,7 +179,7 @@ class PhenomenonRightGroupHeaderDecoration(context: Context) : ItemDecoration() 
                 if (adapter.isLastGroupTitle(position)) {
                     lastGroupView = view
                 }
-            } else if (position == (parent.adapter as PhenomenonRightGroupHeaderAdapter).itemCount - 1) {
+            } else if (position == (parent.adapter as RightGroupHeaderAdapter).itemCount - 1) {
                 //判断这条是不是最后一条
                 //如果是最后一个，找到他所在组的第一个
                 lastGroupView?.let {

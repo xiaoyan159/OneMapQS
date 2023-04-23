@@ -15,5 +15,10 @@
         android:id="@+id/EvaluationResultFragment"
         android:name="com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultFragment"
         android:label="评测页面"
-        tools:layout="@layout/fragment_evaluation_result"></fragment>
+        tools:layout="@layout/fragment_evaluation_result">
+        <argument
+            android:name="QsId"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>

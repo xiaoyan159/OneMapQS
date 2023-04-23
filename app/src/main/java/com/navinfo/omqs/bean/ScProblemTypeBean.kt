@@ -12,19 +12,32 @@ data class ScProblemTypeBean(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
     /**
+     * elementType
+     * 要素类型
+     */
+    @ColumnInfo("ELEMENT_TYPE")
+    val elementType: String = "",
+    /**
+     * 要素代码
+     */
+    @ColumnInfo("ELEMENT_CODE")
+    val elementCode: String = "",
+    /**
      * 问题分类
      */
     @ColumnInfo("CLASS_TYPE")
-    var classType: String = "",
+    val classType: String = "",
+
     /**
      * 问题类型
      */
     @ColumnInfo("TYPE")
-    var problemType: String = "",
+    val problemType: String = "",
+
     /**
      * 问题现象
      */
     @ColumnInfo("PHENOMENON")
-    var phenomenon: String = ""
+    val phenomenon: String = ""
 
 ) : Parcelable

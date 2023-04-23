@@ -1,97 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".ui.fragment.evaluationresult.EvaluationResultFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/evaluation_appbar_layout"
+    <data>
+        <variable
+            name="fragment"
+            type="com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultFragment"
+            />
+        <variable
+            name="viewModel"
+            type="com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        tools:context=".ui.fragment.evaluationresult.EvaluationResultFragment">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/evaluation_bar"
-            style="@style/Widget.MaterialComponents.Toolbar.Surface"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/evaluation_appbar_layout"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/default_blue"
-            app:menu="@menu/evaluation_bar_mean"
-            app:navigationIcon="@drawable/btn_back_xml"
-            app:title="测评结果" />
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent">
 
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="10dp"
-        android:padding="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/evaluation_appbar_layout">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="问题分类" />
-
-            <TextView
-                android:id="@+id/evaluation_class_type"
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/evaluation_bar"
+                style="@style/Widget.MaterialComponents.Toolbar.Surface"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/fm_card_map_down_status_bg" />
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/default_blue"
+                app:menu="@menu/evaluation_bar_mean"
+                app:navigationIcon="@drawable/btn_back_xml"
+                app:title="测评结果" />
 
-            <TextView
-                android:id="@+id/evaluation_problem_type"
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/evaluation_appbar_layout">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/fm_card_map_down_status_bg" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/evaluation_phenomenon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/fm_card_map_down_status_bg" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="问题分类" />
 
-            <TextView
-                android:id="@+id/evaluation_link"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/fm_card_map_down_status_bg" />
+                <TextView
+                    android:id="@+id/evaluation_class_type"
+                    android:text="@{viewModel.liveDataQsRecordBean.classType}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:onClick="@{fragment.onClick}"
+                    android:background="@drawable/fm_card_map_down_status_bg" />
 
-            <TextView
-                android:id="@+id/evaluation_cause"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/fm_card_map_down_status_bg" />
+                <TextView
+                    android:id="@+id/evaluation_problem_type"
+                    android:text="@{viewModel.liveDataQsRecordBean.problemType}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:onClick="@{fragment.onClick}"
+                    android:background="@drawable/fm_card_map_down_status_bg" />
 
-            <!--            <com.google.android.material.tabs.TabLayout-->
-            <!--                android:id="@+id/evaluation_class_tab_layout"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_marginTop="5dp" />-->
+                <TextView
+                    android:id="@+id/evaluation_phenomenon"
+                    android:text="@{viewModel.liveDataQsRecordBean.phenomenon}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:onClick="@{fragment.onClick}"
+                    android:background="@drawable/fm_card_map_down_status_bg" />
 
-            <!--            <androidx.viewpager2.widget.ViewPager2-->
-            <!--                android:id="@+id/evaluation_viewpager"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="match_parent"-->
-            <!--                android:layout_marginTop="5dp" />-->
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+                <TextView
+                    android:id="@+id/evaluation_link"
+                    android:text="@{viewModel.liveDataQsRecordBean.problemLink}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:onClick="@{fragment.onClick}"
+                    android:background="@drawable/fm_card_map_down_status_bg" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/evaluation_cause"
+                    android:text="@{viewModel.liveDataQsRecordBean.cause}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:onClick="@{fragment.onClick}"
+                    android:background="@drawable/fm_card_map_down_status_bg" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="备注信息" />
+                <com.navinfo.omqs.ui.widget.MyEditeText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="请输入备注信息"
+                    android:gravity="start"
+                    android:maxLines="3"
+                    android:lines="3"
+                    android:text="@={viewModel.liveDataQsRecordBean.description}"
+                    android:inputType="textMultiLine"
+                    android:background="@drawable/fm_card_map_down_status_bg"
+                    />
+                <!--            <com.google.android.material.tabs.TabLayout-->
+                <!--                android:id="@+id/evaluation_class_tab_layout"-->
+                <!--                android:layout_width="match_parent"-->
+                <!--                android:layout_height="wrap_content"-->
+                <!--                android:layout_marginTop="5dp" />-->
+
+                <!--            <androidx.viewpager2.widget.ViewPager2-->
+                <!--                android:id="@+id/evaluation_viewpager"-->
+                <!--                android:layout_width="match_parent"-->
+                <!--                android:layout_height="match_parent"-->
+                <!--                android:layout_marginTop="5dp" />-->
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

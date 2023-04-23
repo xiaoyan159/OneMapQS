@@ -50,7 +50,7 @@ public class MyItemizedLayer extends ItemizedLayer {
 
         public boolean run(List list1, int nearest) {
             if (mOnItemGestureListener != null) {
-                return mOnItemGestureListener.onItemSingleTapUp(MyItemizedLayer.this, list1, nearest);
+                return mOnItemGestureListener.onItemSingleTapUp(list1, nearest);
             }
             return false;
         }
@@ -62,7 +62,7 @@ public class MyItemizedLayer extends ItemizedLayer {
 
         public boolean run(List list1, int nearest) {
             if (mOnItemGestureListener != null) {
-                return mOnItemGestureListener.onItemLongPress(MyItemizedLayer.this, list1, nearest);
+                return mOnItemGestureListener.onItemLongPress(list1, nearest);
             }
             return false;
         }
@@ -155,8 +155,8 @@ public class MyItemizedLayer extends ItemizedLayer {
     }
 
     public interface OnItemGestureListener {
-        boolean onItemSingleTapUp(MyItemizedLayer layer, List<Integer> list, int nearest);
+        boolean onItemSingleTapUp(List<Integer> list, int nearest);
 
-        boolean onItemLongPress(MyItemizedLayer layer, List<Integer> list, int nearest);
+        boolean onItemLongPress(List<Integer> list, int nearest);
     }
 }

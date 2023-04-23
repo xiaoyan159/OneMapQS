@@ -35,22 +35,22 @@ class ProblemLinkFragment : BaseFragment() {
         var rightLayoutManager = LinearLayoutManager(requireContext())
 
         binding.linkRightRecyclerview.layoutManager = rightLayoutManager
-        val rightAdapter = PhenomenonRightGroupHeaderAdapter { _, bean ->
+        val rightAdapter = RightGroupHeaderAdapter { _, bean ->
             viewModel.setProblemLinkMiddleBean(bean)
         }
         binding.linkRightRecyclerview.adapter = rightAdapter
         //右侧菜单增加组标题
         binding.linkRightRecyclerview.addItemDecoration(
-            PhenomenonRightGroupHeaderDecoration(
+            RightGroupHeaderDecoration(
                 requireContext()
             )
         )
         //右侧菜单查询数据监听
-        viewModel.liveDataPhenomenonRightList.observe(viewLifecycleOwner) {
+        viewModel.liveDataRightTypeList.observe(viewLifecycleOwner) {
             rightAdapter.refreshData(it)
         }
 
-        val middleAdapter = PhenomenonMiddleAdapter { _, title ->
+        val middleAdapter = MiddleAdapter { _, title ->
             rightLayoutManager.scrollToPositionWithOffset(rightAdapter.getGroupTopIndex(title), 0)
         }
 
@@ -72,7 +72,7 @@ class ProblemLinkFragment : BaseFragment() {
         binding.linkMiddleRecyclerview.layoutManager = LinearLayoutManager(requireContext())
         binding.linkMiddleRecyclerview.adapter = middleAdapter
         //中间侧菜单查询结果监听
-        viewModel.liveDataProblemTypeList.observe(viewLifecycleOwner) {
+        viewModel.liveDataMiddleTypeList.observe(viewLifecycleOwner) {
             middleAdapter.refreshData(it)
         }
         binding.linkDrawer.setOnClickListener {

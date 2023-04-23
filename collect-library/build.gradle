@@ -101,7 +101,7 @@ dependencies {
     implementation "com.badlogicgames.gdx:gdx:1.11.0"
     implementation "com.badlogicgames.gdx:gdx-backend-android:1.11.0"
     implementation "com.caverock:androidsvg:1.4"
-    implementation "org.mapsforge:vtm-jts:$vtmVersion"
+    api "org.mapsforge:vtm-jts:$vtmVersion"
     api 'org.locationtech.jts:jts-core:1.19.0'
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
     implementation 'com.squareup.okio:okio:3.3.0'

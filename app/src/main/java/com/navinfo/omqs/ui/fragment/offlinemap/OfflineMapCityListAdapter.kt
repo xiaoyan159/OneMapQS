@@ -10,6 +10,8 @@ import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.AdapterOfflineMapCityBinding
 import com.navinfo.omqs.bean.OfflineMapCityBean
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
+import com.navinfo.omqs.tools.FileManager
+import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 import javax.inject.Inject
@@ -31,11 +33,11 @@ class OfflineMapCityListAdapter(
         if (it.tag != null) {
             val cityBean = data[it.tag as Int]
             when (cityBean.status) {
-                OfflineMapCityBean.NONE, OfflineMapCityBean.UPDATE, OfflineMapCityBean.PAUSE, OfflineMapCityBean.ERROR -> {
+                FileDownloadStatus.NONE, FileDownloadStatus.UPDATE, FileDownloadStatus.PAUSE, FileDownloadStatus.ERROR -> {
                     Log.e("jingo", "开始下载 ${cityBean.status}")
                     downloadManager.start(cityBean.id)
                 }
-                OfflineMapCityBean.LOADING, OfflineMapCityBean.WAITING -> {
+                FileDownloadStatus.LOADING, FileDownloadStatus.WAITING -> {
                     Log.e("jingo", "暂停 ${cityBean.status}")
                     downloadManager.pause(cityBean.id)
                 }
@@ -88,37 +90,37 @@ class OfflineMapCityListAdapter(
         binding.offlineMapProgress.progress =
             (cityBean.currentSize * 100 / cityBean.fileSize).toInt()
         when (cityBean.status) {
-            OfflineMapCityBean.NONE -> {
+            FileDownloadStatus.NONE -> {
                 if (binding.offlineMapProgress.visibility == View.VISIBLE) binding.offlineMapProgress.visibility =
                     View.INVISIBLE
                 binding.offlineMapDownloadBtn.text = "下载"
             }
-            OfflineMapCityBean.WAITING -> {
+            FileDownloadStatus.WAITING -> {
                 if (binding.offlineMapProgress.visibility != View.VISIBLE) binding.offlineMapProgress.visibility =
                     View.VISIBLE
                 binding.offlineMapDownloadBtn.text = "等待中"
             }
-            OfflineMapCityBean.LOADING -> {
+            FileDownloadStatus.LOADING -> {
                 if (binding.offlineMapProgress.visibility != View.VISIBLE) binding.offlineMapProgress.visibility =
                     View.VISIBLE
                 binding.offlineMapDownloadBtn.text = "暂停"
             }
-            OfflineMapCityBean.PAUSE -> {
+            FileDownloadStatus.PAUSE -> {
                 if (binding.offlineMapProgress.visibility != View.VISIBLE) binding.offlineMapProgress.visibility =
                     View.VISIBLE
                 binding.offlineMapDownloadBtn.text = "继续"
             }
-            OfflineMapCityBean.ERROR -> {
+            FileDownloadStatus.ERROR -> {
                 if (binding.offlineMapProgress.visibility != View.VISIBLE) binding.offlineMapProgress.visibility =
                     View.VISIBLE
                 binding.offlineMapDownloadBtn.text = "重试"
             }
-            OfflineMapCityBean.DONE -> {
+            FileDownloadStatus.DONE -> {
                 if (binding.offlineMapProgress.visibility == View.VISIBLE) binding.offlineMapProgress.visibility =
                     View.INVISIBLE
                 binding.offlineMapDownloadBtn.text = "已完成"
             }
-            OfflineMapCityBean.UPDATE -> {
+            FileDownloadStatus.UPDATE -> {
                 if (binding.offlineMapProgress.visibility == View.VISIBLE) binding.offlineMapProgress.visibility =
                     View.INVISIBLE
                 binding.offlineMapDownloadBtn.text = "更新"
