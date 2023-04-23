@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import com.blankj.utilcode.util.ToastUtils
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
@@ -18,6 +19,8 @@ import com.navinfo.omqs.db.TraceDataBase
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.system.SystemConstant
 import com.navinfo.omqs.ui.activity.BaseActivity
+import com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultFragment
+import com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -57,12 +60,8 @@ class MainActivity : BaseActivity() {
         binding.viewModel = viewModel
 
         viewModel.liveDataQsRecordIdList.observe(this) {
-            if (it.size == 1) {
-                val bundle = Bundle()
-                bundle.putString("QsId", it[0])
-                val naviController = findNavController(R.id.main_activity_right_fragment)
-                naviController.navigate(R.id.EvaluationResultFragment, bundle)
-            }
+            //处理页面跳转
+            viewModel.navigation(this, it)
         }
 
     }
@@ -74,11 +73,11 @@ class MainActivity : BaseActivity() {
         mapController.locationLayerHandler.startLocation()
         //启动轨迹存储
         mapController.locationLayerHandler.setNiLocationListener(NiLocationListener {
-            binding!!.viewModel!!.addSaveTrace(it)
-            binding!!.viewModel!!.startSaveTraceThread(this)
+            viewModel.addSaveTrace(it)
+//            binding.viewModel!!.startSaveTraceThread(this)
         })
         //显示轨迹图层
-        mapController.layerManagerHandler.showNiLocationLayer(Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite")
+//        mapController.layerManagerHandler.showNiLocationLayer(Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite")
     }
 
     override fun onPause() {
@@ -108,7 +107,7 @@ class MainActivity : BaseActivity() {
      * 打开相机预览
      */
     fun openCamera() {
-        binding!!.viewModel!!.onClickCameraButton(this)
+        binding.viewModel!!.onClickCameraButton(this)
     }
 
     /**

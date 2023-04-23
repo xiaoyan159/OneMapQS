@@ -4,9 +4,8 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.navinfo.collect.library.map.GeoPoint
-import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.data.entity.QsRecordBean
+import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.db.RoomAppDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
@@ -46,8 +45,10 @@ class EvaluationResultViewModel @Inject constructor(
 
     var liveDataQsRecordBean = MutableLiveData<QsRecordBean>()
 
+    var oldBean: QsRecordBean? = null
+
     init {
-        liveDataQsRecordBean.value = QsRecordBean(id = UUID.randomUUID().toString(), classType = "89193")
+        liveDataQsRecordBean.value = QsRecordBean(id = UUID.randomUUID().toString())
         Log.e("jingo", "EvaluationResultViewModel 创建了 ${hashCode()}")
         mapController.markerHandle.apply {
             setOnMapClickListener {
@@ -69,7 +70,7 @@ class EvaluationResultViewModel @Inject constructor(
     /**
      * 查询数据库，获取问题分类
      */
-    fun loadMetadata() {
+    fun initNewData() {
         viewModelScope.launch(Dispatchers.IO) {
             getClassTypeList()
             getProblemLinkList()
@@ -88,7 +89,6 @@ class EvaluationResultViewModel @Inject constructor(
         Log.e("jingo", "getClassTypeList S")
         viewModelScope.launch(Dispatchers.IO) {
             val list = roomAppDatabase.getScProblemTypeDao().findClassTypeList()
-            Log.e("jingo", "getClassTypeList ${list?.size}")
             list?.let {
                 if (list.isNotEmpty()) {
                     //通知页面更新
@@ -110,6 +110,7 @@ class EvaluationResultViewModel @Inject constructor(
      * 获取问题环节列表和初步问题
      */
     fun getProblemLinkList() {
+        Log.e("jingo", "getProblemLinkList S")
         viewModelScope.launch(Dispatchers.IO) {
             val list = roomAppDatabase.getScRootCauseAnalysisDao().findAllData()
             list?.let { tl ->
@@ -128,21 +129,26 @@ class EvaluationResultViewModel @Inject constructor(
                     }
                     if (liveDataQsRecordBean.value!!.problemLink.isEmpty()) {
                         liveDataQsRecordBean.value!!.problemLink = middleList[0]
+                        Log.e("jingo", "getProblemLinkList ${middleList[0]}")
                     }
                     if (liveDataQsRecordBean.value!!.cause.isEmpty()) {
                         liveDataQsRecordBean.value!!.cause = rightList[0].text
+                        Log.e("jingo", "getProblemLinkList ${rightList[0].text}")
                     }
+                    liveDataQsRecordBean.postValue(liveDataQsRecordBean.value)
                     liveDataMiddleTypeList.postValue(middleList)
                     liveDataRightTypeList.postValue(rightList)
                 }
             }
         }
+        Log.e("jingo", "getProblemLinkList E")
     }
 
     /**
      * 获取问题类型列表和问题现象
      */
     private suspend fun getProblemList(classType: String) {
+        Log.e("jingo", "getProblemList S")
         val typeList = roomAppDatabase.getScProblemTypeDao().findProblemTypeList(classType)
         typeList?.let { tl ->
             if (tl.isNotEmpty()) {
@@ -158,10 +164,20 @@ class EvaluationResultViewModel @Inject constructor(
                         )
                     )
                 }
+                if (liveDataQsRecordBean.value!!.problemType.isEmpty()) {
+                    liveDataQsRecordBean.value!!.problemType = typeTitleList[0]
+                    Log.e("jingo", "getProblemList ${typeTitleList[0]}")
+                }
                 liveDataMiddleTypeList.postValue(typeTitleList)
+                if (liveDataQsRecordBean.value!!.phenomenon.isEmpty()) {
+                    liveDataQsRecordBean.value!!.phenomenon = phenomenonRightList[0].text
+                    Log.e("jingo", "getProblemList ${phenomenonRightList[0].text}")
+                }
+                liveDataQsRecordBean.postValue(liveDataQsRecordBean.value)
                 liveDataRightTypeList.postValue(phenomenonRightList)
             }
         }
+        Log.e("jingo", "getProblemList E")
     }
 
     /**
@@ -179,45 +195,42 @@ class EvaluationResultViewModel @Inject constructor(
     fun setPhenomenonMiddleBean(adapterBean: RightBean) {
         liveDataQsRecordBean.value!!.phenomenon = adapterBean.text
         liveDataQsRecordBean.value!!.problemType = adapterBean.title
+        liveDataQsRecordBean.postValue(liveDataQsRecordBean.value)
     }
 
     fun setProblemLinkMiddleBean(adapterBean: RightBean) {
         liveDataQsRecordBean.value!!.cause = adapterBean.text
         liveDataQsRecordBean.value!!.problemLink = adapterBean.title
-
+        liveDataQsRecordBean.postValue(liveDataQsRecordBean.value)
     }
 
     fun saveData() {
         viewModelScope.launch(Dispatchers.IO) {
             val realm = Realm.getDefaultInstance()
+            Log.e("jingo","realm hashCOde ${realm.hashCode()}")
             realm.executeTransaction {
                 it.copyToRealmOrUpdate(liveDataQsRecordBean.value)
             }
-            realm.close()
+//            realm.close()
             mapController.layerManagerHandler.addOrUpdateQsRecordMark(liveDataQsRecordBean.value!!)
             liveDataFinish.postValue(true)
         }
     }
 
     fun deleteData() {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            val qsRecord = QsRecordBean(
-//                id = UUID.randomUUID().toString(),
-//                classType = liveDataCurrentClassType.value.toString(),
-//                type = liveDataCurrentProblemType.value.toString(),
-//                phenomenon = liveDataCurrentPhenomenon.value.toString(),
-//                problemLink = liveDataCurrentProblemLink.value.toString(),
-//                cause = liveDataCurrentCause.value.toString(),
-//            )
-//            qsRecord.geometry = currentGeoPoint!!.toGeometry()
-//            val realm = Realm.getDefaultInstance()
-//            realm.executeTransaction {
-//                it.copyToRealmOrUpdate(qsRecord)
-//            }
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val realm = Realm.getDefaultInstance()
+            Log.e("jingo","realm hashCOde ${realm.hashCode()}")
+            realm.executeTransaction {
+                val objects = it.where(QsRecordBean::class.java)
+                    .equalTo("id", liveDataQsRecordBean.value?.id).findFirst()
+                objects?.deleteFromRealm()
+            }
 //            realm.close()
-//            mapController.layerManagerHandler.addOrUpdateQsRecordMark(qsRecord)
-//            liveDataFinish.postValue(true)
-//        }
+            mapController.layerManagerHandler.removeQsRecordMark(liveDataQsRecordBean.value!!)
+            liveDataFinish.postValue(true)
+        }
     }
 
     /**
@@ -229,7 +242,8 @@ class EvaluationResultViewModel @Inject constructor(
             val objects = realm.where<QsRecordBean>().equalTo("id", id).findFirst()
 
             if (objects != null) {
-                liveDataQsRecordBean.postValue(realm.copyFromRealm(objects))
+                oldBean = realm.copyFromRealm(objects)
+                liveDataQsRecordBean.postValue(oldBean!!.copy())
             }
         }
     }

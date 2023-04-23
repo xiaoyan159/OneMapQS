@@ -61,10 +61,10 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             if (id != null) {
                 viewModel.loadData(id)
             } else {
-                viewModel.loadMetadata()
+                viewModel.initNewData()
             }
         } else {
-            viewModel.loadMetadata()
+            viewModel.initNewData()
         }
 
 //        //监听大分类数据变化

@@ -2,9 +2,11 @@ package com.navinfo.omqs.ui.activity.map
 
 import android.content.Context
 import android.content.DialogInterface
+import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.map.NIMapController
@@ -33,7 +35,7 @@ class MainViewModel @Inject constructor(
     val liveDataQsRecordIdList = MutableLiveData<List<String>>()
     private var mCameraDialog: CommonDialog? = null
 
-    private var niLocationList:MutableList<NiLocation> = ArrayList<NiLocation>()
+    private var niLocationList: MutableList<NiLocation> = ArrayList<NiLocation>()
 
     init {
         mapController.layerManagerHandler.setOnQsRecordItemClickListener(object :
@@ -56,14 +58,21 @@ class MainViewModel @Inject constructor(
     }
 
     //点击相机按钮
-    fun onClickCameraButton(context: Context){
+    fun onClickCameraButton(context: Context) {
 
         Log.e("qj", LibVlcUtil.hasCompatibleCPU(context).toString())
 
         ToastUtils.showShort("点击了相机")
 
         if (mCameraDialog == null) {
-            mCameraDialog = CommonDialog(context, context.resources.getDimension(R.dimen.head_img_width).toInt() * 3 + context.resources.getDimension(R.dimen.ten).toInt() + context.resources.getDimension(R.dimen.twenty_four).toInt(), context.resources.getDimension(R.dimen.head_img_width).toInt() + 10, 1)
+            mCameraDialog = CommonDialog(
+                context,
+                context.resources.getDimension(R.dimen.head_img_width)
+                    .toInt() * 3 + context.resources.getDimension(R.dimen.ten)
+                    .toInt() + context.resources.getDimension(R.dimen.twenty_four).toInt(),
+                context.resources.getDimension(R.dimen.head_img_width).toInt() + 10,
+                1
+            )
             mCameraDialog!!.setCancelable(true)
         }
         mCameraDialog!!.openCamear(mCameraDialog!!.getmShareUtil().continusTakePhotoState)
@@ -72,10 +81,11 @@ class MainViewModel @Inject constructor(
             mCameraDialog!!.hideLoading()
             mCameraDialog!!.stopVideo()
             try {
-                if (!mCameraDialog!!.getmShareUtil().connectstate){
+                if (!mCameraDialog!!.getmShareUtil().connectstate) {
                     mCameraDialog!!.updateCameraResources(1, mCameraDialog!!.getmDeviceNum())
                 }
-                TakePhotoManager.getInstance().getCameraVedioClent(mCameraDialog!!.getmDeviceNum()).StopSearch()
+                TakePhotoManager.getInstance().getCameraVedioClent(mCameraDialog!!.getmDeviceNum())
+                    .StopSearch()
             } catch (e: Exception) {
             }
         })
@@ -87,12 +97,12 @@ class MainViewModel @Inject constructor(
         })
     }
 
-    fun startSaveTraceThread(context: Context){
+    fun startSaveTraceThread(context: Context) {
         Thread(Runnable {
             try {
-                while (true){
+                while (true) {
 
-                    if(niLocationList!=null&&niLocationList.size>0){
+                    if (niLocationList != null && niLocationList.size > 0) {
 
                         var niLocation = niLocationList[0]
                         var doubleArray = doubleArrayOf()
@@ -112,23 +122,60 @@ class MainViewModel @Inject constructor(
                             }
                         }
 
-                        TraceDataBase.getDatabase(context, Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite").niLocationDao.insert(niLocation)
+                        TraceDataBase.getDatabase(
+                            context,
+                            Constant.DATA_PATH + SystemConstant.USER_ID + "/trace.sqlite"
+                        ).niLocationDao.insert(niLocation)
                         niLocationList.removeAt(0)
-                        Log.e("qj","saveTrace")
+                        Log.e("qj", "saveTrace")
                     }
                     Thread.sleep(30)
                 }
             } catch (e: InterruptedException) {
                 e.printStackTrace()
-                Log.e("qj","异常==${e.message}")
+                Log.e("qj", "异常==${e.message}")
             }
         }).start()
     }
 
     //增加轨迹存储
-    fun addSaveTrace(niLocation: NiLocation){
-        if(niLocation!=null&&niLocationList!=null){
+    fun addSaveTrace(niLocation: NiLocation) {
+        if (niLocation != null && niLocationList != null) {
             niLocationList.add(niLocation)
         }
+    }
+
+    fun navigation(activity: MainActivity, list: List<String>) {
+        //获取右侧fragment容器
+        val naviController = activity.findNavController(R.id.main_activity_right_fragment)
+
+        naviController.currentDestination?.let { navDestination ->
+//            when (val fragment =
+//                activity.supportFragmentManager.findFragmentById(navDestination.id)) {
+//                //判断右侧的fragment是不是质检数据
+////                is EvaluationResultFragment -> {
+////                    val viewModelFragment =
+////                        ViewModelProvider(fragment)[EvaluationResultViewModel::class.java]
+////                    viewModelFragment.notifyData(list)
+////                }
+//                is EmptyFragment -> {
+//                    if (list.size == 1) {
+//                        val bundle = Bundle()
+//                        bundle.putString("QsId", list[0])
+//                        naviController.navigate(R.id.EvaluationResultFragment, bundle)
+//                    }
+//                }
+//            }
+            when (navDestination.id) {
+                R.id.EmptyFragment -> {
+                    if (list.size == 1) {
+                        val bundle = Bundle()
+                        bundle.putString("QsId", list[0])
+                        naviController.navigate(R.id.EvaluationResultFragment, bundle)
+                    }
+                }
+            }
+        }
+
     }
 }

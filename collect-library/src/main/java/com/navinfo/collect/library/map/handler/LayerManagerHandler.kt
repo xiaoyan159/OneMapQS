@@ -4,13 +4,13 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import com.navinfo.collect.library.R
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.map.NIMapView
-import com.navinfo.collect.library.map.NIMapView.LAYER_GROUPS
 import com.navinfo.collect.library.map.cluster.ClusterMarkerItem
 import com.navinfo.collect.library.map.cluster.ClusterMarkerRenderer
 import com.navinfo.collect.library.map.layers.MyItemizedLayer
@@ -32,17 +32,19 @@ import org.oscim.backend.canvas.Bitmap
 import org.oscim.backend.canvas.Paint
 import org.oscim.core.GeoPoint
 import org.oscim.layers.GroupLayer
-import org.oscim.layers.marker.*
+import org.oscim.layers.marker.MarkerInterface
+import org.oscim.layers.marker.MarkerItem
+import org.oscim.layers.marker.MarkerRendererFactory
+import org.oscim.layers.marker.MarkerSymbol
 import org.oscim.layers.tile.buildings.BuildingLayer
 import org.oscim.layers.tile.vector.VectorTileLayer
 import org.oscim.layers.tile.vector.labeling.LabelLayer
-import org.oscim.map.Map.UpdateListener
 import org.oscim.layers.tile.vector.labeling.LabelTileLoaderHook
+import org.oscim.map.Map.UpdateListener
 import org.oscim.tiling.source.OkHttpEngine.OkHttpFactory
 import org.oscim.tiling.source.mapfile.MapFileTileSource
 import java.io.File
 import java.util.*
-import java.util.stream.Collectors
 
 /**
  * Layer 操作
@@ -196,17 +198,19 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
         withContext(Dispatchers.Main) {
             mMapView.updateMap(true)
         }
+
     }
+
 
     /**
      * 删除marker
      */
-    suspend fun deleteQsRecordMark(data: QsRecordBean) {
+    suspend fun removeQsRecordMark(data: QsRecordBean) {
         for (item in itemizedLayer.itemList) {
             if (item is MarkerItem) {
                 if (item.title == data.id) {
                     itemizedLayer.itemList.remove(item)
-                    mMapView.updateMap()
+                    itemizedLayer.populate()
                     return
                 }
             }
@@ -285,11 +289,12 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
         mContext.lifecycleScope.launch(Dispatchers.IO) {
             var list = mutableListOf<QsRecordBean>()
             val realm = Realm.getDefaultInstance()
+            Log.e("jingo","realm hashCOde ${realm.hashCode()}")
             realm.executeTransaction {
                 val objects = realm.where<QsRecordBean>().findAll()
                 list = realm.copyFromRealm(objects)
             }
-            realm.close()
+//            realm.close()
 
             for (item in list) {
                 createMarkerItem(item)
@@ -359,11 +364,7 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
                 }
             }
         }
-        withContext(Dispatchers.Main) {
-            itemizedLayer.update()
-        }
-
-//        itemizedLayer.populate()
+        itemizedLayer.populate()
     }
 
 
@@ -583,7 +584,8 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
             mapLifeNiLocationTileSource = MapLifeNiLocationTileSource(mContext, dbName)
         }
         if (vectorNiLocationTileLayer == null) {
-            vectorNiLocationTileLayer = VectorTileLayer(mMapView.vtmMap, mapLifeNiLocationTileSource)
+            vectorNiLocationTileLayer =
+                VectorTileLayer(mMapView.vtmMap, mapLifeNiLocationTileSource)
         }
         if (labelNiLocationLayer == null) {
             labelNiLocationLayer =
@@ -596,6 +598,7 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
     fun hideNiLocationLayer() {
         removeLayer(labelNiLocationLayer)
     }
+
 }
 
 interface OnQsRecordItemClickListener {

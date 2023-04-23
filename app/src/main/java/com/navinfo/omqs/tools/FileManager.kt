@@ -6,7 +6,19 @@ import com.navinfo.omqs.bean.OfflineMapCityBean
 import java.io.File
 
 class FileManager {
+
     companion object {
+
+        object FileDownloadStatus {
+            const val NONE = 0 //无状态
+            const val WAITING = 1 //等待中
+            const val LOADING = 2 //下载中
+            const val PAUSE = 3 //暂停
+            const val ERROR = 4 //错误
+            const val DONE = 5 //完成
+            const val UPDATE = 6 //有新版本要更新
+        }
+
         //初始化数据文件夹
         fun initRootDir(context:Context){
             // 在SD卡创建项目目录
@@ -51,7 +63,7 @@ class FileManager {
                 if (item.isFile && item.name.startsWith(cityBean.id)) {
                     //如果本地文件与从网络获取到版本号一致，表示这个文件已经下载完毕,不用处理了
                     if (item.name.contains("_${cityBean.version}.map")) {
-                        cityBean.status = OfflineMapCityBean.DONE
+                        cityBean.status = FileDownloadStatus.DONE
                         return
                     }
                     //文件存在，版本号不对应，留给下面流程处理
@@ -72,16 +84,16 @@ class FileManager {
                                 if (item.renameTo(File("${Constant.OFFLINE_MAP_PATH}${cityBean.fileName}"))) {
                                     //删除旧版本数据
                                     mapFile?.delete()
-                                    cityBean.status = OfflineMapCityBean.DONE
+                                    cityBean.status = FileDownloadStatus.DONE
                                     return
                                 }
                             } else { // 临时文件大小和目标不一致，说明下载了一半
-                                cityBean.status = OfflineMapCityBean.PAUSE
+                                cityBean.status = FileDownloadStatus.PAUSE
                                 cityBean.currentSize = item.length()
                                 return
                             }
                         } else { //虽然省市id开头一致，但是版本号不一致，说明之前版本下载了一部分，现在要更新了，原来下载的文件直接删除
-                            cityBean.status = OfflineMapCityBean.UPDATE
+                            cityBean.status = FileDownloadStatus.UPDATE
                             item.delete()
                             return
                         }

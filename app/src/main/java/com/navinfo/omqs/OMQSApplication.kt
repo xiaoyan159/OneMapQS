@@ -3,6 +3,7 @@ package com.navinfo.omqs
 import android.app.Application
 import android.util.Log
 import com.navinfo.collect.library.data.dao.impl.MapLifeDataBase
+import com.navinfo.omqs.db.MyRealmModule
 import com.navinfo.omqs.db.TraceDataBase
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.ui.manager.TakePhotoManager
@@ -29,12 +30,11 @@ class OMQSApplication : Application() {
         val password = "encryp".encodeToByteArray().copyInto(ByteArray(64))
         // 656e6372797000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
         Log.d("OMQSApplication", "密码是： ${byteArrayToHexString(password)}")
-        // 1110000011000010111001101110011011101110110111101110010011001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
         val config = RealmConfiguration.Builder()
             .directory(File(Constant.DATA_PATH))
             .name("OMQS.realm")
             .encryptionKey(password)
-//            .modules(Realm.getDefaultModule(), MyRealmModule())
+            .modules(Realm.getDefaultModule(), MyRealmModule())
             .schemaVersion(1)
             .build()
         Realm.setDefaultConfiguration(config)
