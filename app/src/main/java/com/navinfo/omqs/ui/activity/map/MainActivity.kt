@@ -6,6 +6,7 @@ import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.NiLocationListener
 import com.navinfo.omqs.Constant
@@ -63,6 +64,7 @@ class MainActivity : BaseActivity() {
         mapController.locationLayerHandler.startLocation()
         //启动轨迹存储
         mapController.locationLayerHandler.setNiLocationListener(NiLocationListener {
+            ToastUtils.showLong("定位${it.longitude}")
             binding!!.viewModel!!.addSaveTrace(it)
             binding!!.viewModel!!.startSaveTraceThread(this)
         })
@@ -97,7 +99,7 @@ class MainActivity : BaseActivity() {
      */
     fun openCamera() {
         //显示轨迹图层
-        //binding!!.viewModel!!.onClickCameraButton(this)
+        binding!!.viewModel!!.onClickCameraButton(this)
     }
 
     /**

@@ -33,7 +33,7 @@ open class PermissionsActivity : BaseActivity() {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
             permissionList.add(Permission.ACCESS_BACKGROUND_LOCATION)
         }
-/*        XXPermissions.with(this)
+        XXPermissions.with(this)
             // 申请单个权限
             .permission(permissionList)
             // 设置权限请求拦截器（局部设置）
@@ -73,7 +73,7 @@ open class PermissionsActivity : BaseActivity() {
                         onPermissionsDenied()
                     }
                 }
-            })*/
+            })
     }
 
     /**

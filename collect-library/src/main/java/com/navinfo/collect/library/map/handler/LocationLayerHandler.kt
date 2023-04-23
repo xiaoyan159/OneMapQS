@@ -100,7 +100,7 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) : Bas
 //        locationOption.setOpenAutoNotifyMode()
             //设置打开自动回调位置模式，该开关打开后，期间只要定位SDK检测到位置变化就会主动回调给开发者
             locationOption.setOpenAutoNotifyMode(
-                1000, 1, LocationClientOption.LOC_SENSITIVITY_HIGHT
+                5, 1, LocationClientOption.LOC_SENSITIVITY_HIGHT
             )
             //需将配置好的LocationClientOption对象，通过setLocOption方法传递给LocationClient对象使用
             locationClient.locOption = locationOption
