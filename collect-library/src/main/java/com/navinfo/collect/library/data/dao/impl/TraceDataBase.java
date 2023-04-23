@@ -1,14 +1,15 @@
-package com.navinfo.omqs.db;
+package com.navinfo.collect.library.data.dao.impl;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
-import com.navinfo.collect.library.data.dao.impl.INiLocationDao;
+
 import com.navinfo.collect.library.data.entity.NiLocation;
 import com.tencent.wcdb.database.SQLiteCipherSpec;
 import com.tencent.wcdb.database.SQLiteDatabase;

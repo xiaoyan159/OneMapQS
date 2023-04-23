@@ -49,11 +49,10 @@ import java.util.*
 /**
  * Layer 操作
  */
-open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
-    BaseHandler(context, mapView) {
+open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePath: String) : BaseHandler(context, mapView) {
     private var baseGroupLayer // 用于盛放所有基础底图的图层组，便于统一管理
             : GroupLayer? = null
-
+    protected val mTracePath:String = tracePath
     /**
      * 默认文字颜色
      */
@@ -104,6 +103,26 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
         loadBaseMap()
         //初始化之间数据图层
         initQsRecordDataLayer()
+
+        mapLifeNiLocationTileSource = MapLifeNiLocationTileSource(mContext, mTracePath)
+
+        vectorNiLocationTileLayer = VectorTileLayer(mMapView.vtmMap, mapLifeNiLocationTileSource)
+
+        labelNiLocationLayer = LabelLayer(mMapView.vtmMap, vectorNiLocationTileLayer, LabelTileLoaderHook(), 15)
+
+        if(vectorNiLocationTileLayer!=null){
+            addLayer(vectorNiLocationTileLayer,NIMapView.LAYER_GROUPS.BASE)
+        }
+        if(labelNiLocationLayer!=null){
+            addLayer(labelNiLocationLayer, NIMapView.LAYER_GROUPS.BASE)
+        }
+
+        vectorNiLocationTileLayer.isEnabled = false
+        labelNiLocationLayer.isEnabled = false
+
+        mMapView.switchTileVectorLayerTheme(NIMapView.MAP_THEME.DEFAULT)
+
+
         mMapView.updateMap()
 //        initMapLifeSource()
         // 设置矢量图层均在12级以上才显示
@@ -579,24 +598,15 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView) :
     }
 
     //显示轨迹图层
-    fun showNiLocationLayer(dbName: String?) {
-        if (mapLifeNiLocationTileSource == null) {
-            mapLifeNiLocationTileSource = MapLifeNiLocationTileSource(mContext, dbName)
-        }
-        if (vectorNiLocationTileLayer == null) {
-            vectorNiLocationTileLayer =
-                VectorTileLayer(mMapView.vtmMap, mapLifeNiLocationTileSource)
-        }
-        if (labelNiLocationLayer == null) {
-            labelNiLocationLayer =
-                LabelLayer(mMapView.vtmMap, vectorNiLocationTileLayer, LabelTileLoaderHook(), 15)
-        }
-        addLayer(labelNiLocationLayer, NIMapView.LAYER_GROUPS.VECTOR)
+    fun showNiLocationLayer() {
+        vectorNiLocationTileLayer.isEnabled = true
+        labelNiLocationLayer.isEnabled = true
     }
 
     //隐藏轨迹图层
     fun hideNiLocationLayer() {
-        removeLayer(labelNiLocationLayer)
+        vectorNiLocationTileLayer.isEnabled = false
+        labelNiLocationLayer.isEnabled = false
     }
 
 }

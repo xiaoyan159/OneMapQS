@@ -25,9 +25,9 @@ class NIMapController {
     lateinit var viewportHandler: ViewportHandler
     lateinit var measureLayerHandler: MeasureLayerHandler
 
-    fun init(context: AppCompatActivity, mapView: NIMapView, options: NIMapOptions? = null, mapPath: String) {
+    fun init(context: AppCompatActivity, mapView: NIMapView, options: NIMapOptions? = null, mapPath: String, tracePath: String) {
         Constant.MAP_PATH = mapPath
-        layerManagerHandler = LayerManagerHandler(context, mapView)
+        layerManagerHandler = LayerManagerHandler(context, mapView, tracePath)
         locationLayerHandler = LocationLayerHandler(context, mapView)
         animationHandler = AnimationHandler(context, mapView)
         markerHandle = MarkHandler(context, mapView)

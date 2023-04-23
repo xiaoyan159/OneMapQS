@@ -1530,4 +1530,23 @@
             <symbol src="assets:symbols/traffic_signal.svg" />
         </m>
     </m>
+
+    <m k="nav_style">
+        <m v="symbol_object_line">
+            <m k="rule" zoom-min="15" zoom-max="22">
+                <!-- 蓝色黑色间隔线 -->
+                <m v="blue_link">
+                    <line stroke="#00000000" stipple-stroke="#00000000" dasharray="20,20" fix="true" width="0.1"  />
+                </m>
+                <!-- 黄色线 -->
+                <m v="yellow_link">
+                    <line stroke="#f4ea2a" width="0.1" stipple-width="0.1"/>
+                </m>
+            </m>
+            <line stroke="#33aaaa" width="0.3" stipple-width="0.5"/>
+        </m>
+        <m v="symbol_track_point" zoom-min="10" zoom-max="25">
+            <symbol src="assets:symbols/dot_blue.svg" />
+        </m>
+    </m>
 </rendertheme>

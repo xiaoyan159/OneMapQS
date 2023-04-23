@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
+import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
@@ -15,12 +16,12 @@ import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
-import com.navinfo.omqs.db.TraceDataBase
 import com.navinfo.omqs.system.SystemConstant
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.RealmSet
+import org.oscim.core.GeoPoint
 import org.videolan.libvlc.LibVlcUtil
 import javax.inject.Inject
 
@@ -105,10 +106,7 @@ class MainViewModel @Inject constructor(
                     if (niLocationList != null && niLocationList.size > 0) {
 
                         var niLocation = niLocationList[0]
-                        var doubleArray = doubleArrayOf()
-                        doubleArray[0] = niLocation.longitude
-                        doubleArray[1] = niLocation.latitude
-                        val geometry = GeometryTools.createGeometry(doubleArray)
+                        val geometry = GeometryTools.createGeometry(GeoPoint(niLocation.latitude,niLocation.longitude))
                         val tileX = RealmSet<Int>()
                         GeometryToolsKt.getTileXByGeometry(geometry.toString(), tileX)
                         val tileY = RealmSet<Int>()

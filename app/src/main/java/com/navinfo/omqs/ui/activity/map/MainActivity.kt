@@ -1,21 +1,18 @@
 package com.navinfo.omqs.ui.activity.map
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.blankj.utilcode.util.ToastUtils
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.NiLocationListener
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityMainBinding
-import com.navinfo.omqs.db.TraceDataBase
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.system.SystemConstant
 import com.navinfo.omqs.ui.activity.BaseActivity
@@ -50,7 +47,8 @@ class MainActivity : BaseActivity() {
             this,
             binding.mainActivityMap,
             null,
-            Constant.MAP_PATH
+            Constant.MAP_PATH,
+            Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite"
         )
         //关联生命周期
         binding.lifecycleOwner = this
@@ -78,6 +76,7 @@ class MainActivity : BaseActivity() {
         })
         //显示轨迹图层
 //        mapController.layerManagerHandler.showNiLocationLayer(Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite")
+        mapController.layerManagerHandler.showNiLocationLayer()
     }
 
     override fun onPause() {
@@ -108,6 +107,8 @@ class MainActivity : BaseActivity() {
      */
     fun openCamera() {
         binding.viewModel!!.onClickCameraButton(this)
+        //显示轨迹图层
+        //binding!!.viewModel!!.onClickCameraButton(this)
     }
 
     /**

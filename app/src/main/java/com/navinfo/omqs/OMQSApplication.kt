@@ -12,9 +12,7 @@ import dagger.hilt.android.HiltAndroidApp
 import org.videolan.vlc.Util
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import kotlinx.coroutines.launch
 import java.io.File
-import java.math.BigInteger
 import java.security.MessageDigest
 
 @HiltAndroidApp

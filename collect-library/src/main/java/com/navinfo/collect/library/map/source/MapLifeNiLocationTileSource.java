@@ -5,6 +5,8 @@ import android.content.Context;
 import org.oscim.tiling.ITileDataSource;
 import org.oscim.tiling.TileSource;
 
+import java.util.Date;
+
 public class MapLifeNiLocationTileSource extends TileSource {
     private Context mCon;
     private String dbName;
