@@ -10,7 +10,7 @@ import com.hjq.permissions.XXPermissions
 /**
  * 权限申请Activity
  */
-open class PermissionsActivity : BaseActivity() {
+open abstract class PermissionsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val permissionList = mutableListOf<String>()
@@ -50,10 +50,10 @@ open class PermissionsActivity : BaseActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
-                        onPermissionsGranted()
+                        onPermissionsDenied()
                         return
                     } else {
-                        onPermissionsDenied()
+                        onPermissionsGranted()
                     }
                     // 在SD卡创建项目目录
                 }
@@ -79,14 +79,10 @@ open class PermissionsActivity : BaseActivity() {
     /**
      * 权限全部同意
      */
-    open fun onPermissionsGranted() {
-
-    }
+    open abstract fun onPermissionsGranted()
 
     /**
      * 权限
      */
-    open fun onPermissionsDenied() {
-
-    }
+    open abstract fun onPermissionsDenied()
 }

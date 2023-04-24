@@ -7,14 +7,19 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.blankj.utilcode.util.ResourceUtils
+import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.LoginUserBean
 import com.navinfo.omqs.db.RoomAppDatabase
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import kotlinx.coroutines.*
 import okio.IOException
+import java.io.File
 import javax.inject.Inject
 
 enum class LoginStatus {
@@ -110,8 +115,7 @@ class LoginViewModel @Inject constructor(
         //文件夹初始化
         try {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_INIT)
-            createUserFolder(context)
-            // 初始化Realm
+            createUserFolder(context, "1")
         } catch (e: IOException) {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_FAILURE)
         }
@@ -151,8 +155,28 @@ class LoginViewModel @Inject constructor(
      * 创建用户目录
      */
     @Throws(IOException::class)
-    private fun createUserFolder(context: Context) {
+    private fun createUserFolder(context: Context, userId: String) {
         // 在SD卡创建用户目录，解压资源等
+        val userFolder = File("${Constant.DATA_PATH}/${userId}")
+        Constant.CURRENT_USER_ID = userId
+        // 初始化Realm
+        Realm.init(context.applicationContext)
+        val password = "encryp".encodeToByteArray().copyInto(ByteArray(64))
+        // 656e6372797000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        Log.d("OMQSApplication", "密码是： ${byteArrayToHexString(password)}")
+        val config = RealmConfiguration.Builder()
+            .directory(userFolder)
+            .name("OMQS.realm")
+            .encryptionKey(password)
+//            .modules(Realm.getDefaultModule(), MyRealmModule())
+            .schemaVersion(1)
+            .build()
+        Realm.setDefaultConfiguration(config)
+        // 拷贝配置文件到用户目录下
+        val omdbConfigFile = File(userFolder.absolutePath, Constant.OMDB_CONFIG);
+        if (!omdbConfigFile.exists()) {
+            ResourceUtils.copyFileFromAssets(Constant.OMDB_CONFIG, omdbConfigFile.absolutePath)
+        }
     }
 
     /**
@@ -168,5 +192,9 @@ class LoginViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         cancelLogin()
+    }
+
+    private fun byteArrayToHexString(byteArray: ByteArray): String {
+        return byteArray.joinToString("") { "%02x".format(it) }
     }
 }

@@ -20,6 +20,11 @@ class Constant {
         lateinit var DATA_PATH: String
 
         /**
+         * 当前用户ID
+         */
+        lateinit var CURRENT_USER_ID: String
+
+        /**
          * 离线地图目录
          */
         lateinit var OFFLINE_MAP_PATH: String
@@ -41,7 +46,7 @@ class Constant {
         const val message_version_right_off = "1" //立即发送
 
         const val MESSAGE_PAGE_SIZE = 30 //消息列表一页最多数量
-        lateinit var realm: Realm
+        const val OMDB_CONFIG = "omdb.config"
     }
 
 }

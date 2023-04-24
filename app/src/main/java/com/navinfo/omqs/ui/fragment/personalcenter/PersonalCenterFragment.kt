@@ -17,6 +17,7 @@ import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
 import com.github.k1rakishou.fsaf.callback.FileChooserCallback
 import com.navinfo.collect.library.data.RealmUtils
 import com.navinfo.collect.library.data.entity.OMDBEntity
+import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentPersonalCenterBinding
 import com.navinfo.omqs.db.ImportOMDBHelper
@@ -31,6 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.oscim.core.GeoPoint
 import java.io.File
 import java.util.UUID
 import javax.inject.Inject
@@ -48,6 +50,8 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
 
     @Inject
     lateinit var importOMDBHiltFactory: ImportOMDBHiltFactory
+    @Inject
+    lateinit var niMapController: NIMapController
 
 
     override fun onCreateView(
@@ -73,15 +77,14 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
                             val file = UriUtils.uri2File(uri)
                             // 开始导入数据
                             // 656e6372797000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-                            val job = CoroutineUtils.launchWithLoading(
+                            CoroutineUtils.launchWithLoading(
                                 requireContext(),
                                 loadingMessage = "生成数据..."
                             ) {
                                 val importOMDBHelper: ImportOMDBHelper =
                                     importOMDBHiltFactory.obtainImportOMDBHelper(
                                         requireContext(),
-                                        file,
-                                        File(file.parentFile, "config.json")
+                                        file
                                     )
                                 viewModel.obtainOMDBZipData(importOMDBHelper)
                             }
@@ -95,19 +98,19 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
 
                         override fun onResult(uri: Uri) {
                             val file = UriUtils.uri2File(uri)
-                            // 开始导入数据
-                            CoroutineUtils.launchWithLoading(
-                                requireContext(),
-                                loadingMessage = "导入数据..."
-                            ) {
-                                val importOMDBHelper: ImportOMDBHelper =
-                                    importOMDBHiltFactory.obtainImportOMDBHelper(
-                                        requireContext(),
-                                        file,
-                                        File(file.parentFile, "config.json")
-                                    )
+                            val importOMDBHelper: ImportOMDBHelper =
+                                importOMDBHiltFactory.obtainImportOMDBHelper(
+                                    requireContext(),
+                                    file
+                                )
                                 viewModel.importOMDBData(importOMDBHelper)
-                            }
+//                            // 开始导入数据
+//                            CoroutineUtils.launchWithLoading(
+//                                requireContext(),
+//                                loadingMessage = "导入数据..."
+//                            ) {
+//
+//                            }
                         }
                     })
                 }
@@ -125,6 +128,8 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
                 }
                 R.id.personal_center_menu_test -> {
                     viewModel.readRealmData()
+                    // 定位到指定位置
+                    niMapController.mMapView.vtmMap.animator().animateTo(GeoPoint(28.608398, 115.67901))
                 }
                 R.id.personal_center_menu_task_list -> {
                     findNavController().navigate(R.id.TaskListFragment)

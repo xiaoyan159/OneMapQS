@@ -23,7 +23,10 @@ open class RenderEntity(): RealmObject() {
     lateinit var table: String //要素表名
     var code: Int = 0 // 要素编码
     var geometry: String = ""
-        get() = field
+        get() {
+            wkt = GeometryTools.createGeometry(field)
+            return field
+        }
         set(value) {
             field = value
             // 根据geometry自动计算当前要素的x-tile和y-tile
@@ -39,8 +42,8 @@ open class RenderEntity(): RealmObject() {
     @Ignore
     var wkt: Geometry? = null
     var properties: RealmDictionary<String?> = RealmDictionary()
-    val tileX: RealmSet<Int> = RealmSet() // x方向的tile编码
-    val tileY: RealmSet<Int> = RealmSet()  // y方向的tile编码
+    var tileX: RealmSet<Int> = RealmSet() // x方向的tile编码
+    var tileY: RealmSet<Int> = RealmSet()  // y方向的tile编码
 
     constructor(name: String, properties: RealmDictionary<String?>): this() {
         this.name = name

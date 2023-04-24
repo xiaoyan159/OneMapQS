@@ -16,6 +16,7 @@ import com.navinfo.collect.library.map.cluster.ClusterMarkerRenderer
 import com.navinfo.collect.library.map.layers.MyItemizedLayer
 import com.navinfo.collect.library.map.source.MapLifeNiLocationTileSource
 import com.navinfo.collect.library.map.source.NavinfoMultiMapFileTileSource
+import com.navinfo.collect.library.map.source.OMDBTileSource
 import com.navinfo.collect.library.system.Constant
 import com.navinfo.collect.library.utils.GeometryTools
 import io.realm.Realm
@@ -40,6 +41,7 @@ import org.oscim.layers.tile.buildings.BuildingLayer
 import org.oscim.layers.tile.vector.VectorTileLayer
 import org.oscim.layers.tile.vector.labeling.LabelLayer
 import org.oscim.layers.tile.vector.labeling.LabelTileLoaderHook
+import org.oscim.map.Map
 import org.oscim.map.Map.UpdateListener
 import org.oscim.tiling.source.OkHttpEngine.OkHttpFactory
 import org.oscim.tiling.source.mapfile.MapFileTileSource
@@ -69,6 +71,15 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tr
      */
     private lateinit var labelNiLocationLayer: LabelLayer
 
+    /**
+     * 显示待测评OMDB数据的图层
+     * */
+    private lateinit var omdbVectorTileLayer: VectorTileLayer
+    private lateinit var omdbLabelLayer: LabelLayer
+    /**
+     * 文字大小
+     */
+    private val NUM_13 = 13
 
     init {
         initMap()
@@ -80,6 +91,8 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tr
     private fun initMap() {
 
         loadBaseMap()
+
+        initOMDBVectorTileLayer()
 
         mapLifeNiLocationTileSource = MapLifeNiLocationTileSource(mContext, mTracePath)
 
@@ -105,6 +118,17 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tr
 
     }
 
+    private fun initOMDBVectorTileLayer() {
+        val omdbTileSource: OMDBTileSource = OMDBTileSource()
+        omdbVectorTileLayer = VectorTileLayer(mMapView.vtmMap, omdbTileSource)
+        omdbLabelLayer = LabelLayer(mMapView.vtmMap, omdbVectorTileLayer, LabelTileLoaderHook(), Constant.OMDB_MIN_ZOOM)
+        if(omdbVectorTileLayer!=null){
+            addLayer(omdbVectorTileLayer,NIMapView.LAYER_GROUPS.VECTOR_TILE)
+        }
+        if(omdbLabelLayer!=null){
+            addLayer(omdbLabelLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
+        }
+    }
 
     /**
      * 切换基础底图样式
