@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
+import com.blankj.utilcode.util.ToastUtils
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.navinfo.collect.library.map.NIMapController
@@ -14,6 +16,8 @@ import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.system.SystemConstant
 import com.navinfo.omqs.ui.activity.BaseActivity
+import com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultFragment
+import com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -52,8 +56,12 @@ class MainActivity : BaseActivity() {
         binding.mainActivity = this
         //给xml传递viewModel对象
         binding.viewModel = viewModel
-//        lifecycle.addObserver(viewModel)
-        lifecycleScope
+
+        viewModel.liveDataQsRecordIdList.observe(this) {
+            //处理页面跳转
+            viewModel.navigation(this, it)
+        }
+
     }
 
     override fun onStart() {
@@ -63,9 +71,11 @@ class MainActivity : BaseActivity() {
         mapController.locationLayerHandler.startLocation()
         //启动轨迹存储
         mapController.locationLayerHandler.setNiLocationListener(NiLocationListener {
-            binding!!.viewModel!!.addSaveTrace(it)
-            binding!!.viewModel!!.startSaveTraceThread(this)
+            viewModel.addSaveTrace(it)
+//            binding.viewModel!!.startSaveTraceThread(this)
         })
+        //显示轨迹图层
+//        mapController.layerManagerHandler.showNiLocationLayer(Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite")
         mapController.layerManagerHandler.showNiLocationLayer()
     }
 
@@ -96,6 +106,7 @@ class MainActivity : BaseActivity() {
      * 打开相机预览
      */
     fun openCamera() {
+        binding.viewModel!!.onClickCameraButton(this)
         //显示轨迹图层
         //binding!!.viewModel!!.onClickCameraButton(this)
     }
@@ -108,7 +119,7 @@ class MainActivity : BaseActivity() {
         naviController.navigate(R.id.EvaluationResultFragment)
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-    }
+//    override fun onBackPressed() {
+//        super.onBackPressed()
+//    }
 }

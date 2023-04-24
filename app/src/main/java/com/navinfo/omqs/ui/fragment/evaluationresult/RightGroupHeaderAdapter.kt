@@ -7,8 +7,8 @@ import com.navinfo.omqs.databinding.TextItemSelectBinding
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 
-class PhenomenonRightGroupHeaderAdapter(private var itemListener: ((Int, PhenomenonMiddleBean) -> Unit?)? = null) :
-    BaseRecyclerViewAdapter<PhenomenonMiddleBean>() {
+class RightGroupHeaderAdapter(private var itemListener: ((Int, RightBean) -> Unit?)? = null) :
+    BaseRecyclerViewAdapter<RightBean>() {
     private var groupTitleList = mutableListOf<String>()
     override fun getItemViewRes(position: Int): Int {
         return R.layout.text_item_select
@@ -85,7 +85,7 @@ class PhenomenonRightGroupHeaderAdapter(private var itemListener: ((Int, Phenome
         return 0
     }
 
-    override fun refreshData(newData: List<PhenomenonMiddleBean>) {
+    override fun refreshData(newData: List<RightBean>) {
         super.refreshData(newData)
         groupTitleList.clear()
         for (item in newData) {

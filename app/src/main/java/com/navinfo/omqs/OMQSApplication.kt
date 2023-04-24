@@ -2,6 +2,7 @@ package com.navinfo.omqs
 
 import android.app.Application
 import android.util.Log
+import com.navinfo.omqs.db.MyRealmModule
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import com.navinfo.omqs.util.NetUtils
@@ -20,6 +21,7 @@ class OMQSApplication : Application() {
         Util.getInstance().init(applicationContext)
         NetUtils.getInstance().init(this)
         TakePhotoManager.getInstance().init(this, 1)
+        FileManager.initRootDir(this)
     }
 
     private fun getKey(inputString: String): String {

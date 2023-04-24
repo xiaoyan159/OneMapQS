@@ -1,12 +1,11 @@
-package com.navinfo.omqs.http.offlinemapdownload
+package com.navinfo.omqs.http.taskdownload
 
 import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.navinfo.omqs.Constant
-import com.navinfo.omqs.bean.OfflineMapCityBean
-import com.navinfo.omqs.tools.FileManager
+import com.navinfo.omqs.bean.TaskBean
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import kotlinx.coroutines.*
 import java.io.File
@@ -14,16 +13,9 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.RandomAccessFile
 
-/**
- * 代表一个下载任务
- * [OfflineMapCityBean.id]将做为下载任务的唯一标识
- * 不要直接在外部直接创建此对象,那样就可能无法统一管理下载任务,请通过[OfflineMapDownloadManager.request]获取此对象
- * 这是一个协程作用域，
- * EmptyCoroutineContext 表示一个不包含任何元素的协程上下文，它通常用于创建新的协程上下文，或者作为协程上下文的基础。
- */
-class OfflineMapDownloadScope(
-    private val downloadManager: OfflineMapDownloadManager,
-    val cityBean: OfflineMapCityBean,
+class TaskDownloadScope(
+    private val downloadManager: TaskDownloadManager,
+    val taskBean: TaskBean,
 ) :
     CoroutineScope by CoroutineScope(Dispatchers.IO + CoroutineName("OfflineMapDownLoad")) {
     /**
@@ -40,16 +32,16 @@ class OfflineMapDownloadScope(
     /**
      *通知UI更新
      */
-    private val downloadData = MutableLiveData<OfflineMapCityBean>()
+    private val downloadData = MutableLiveData<TaskBean>()
 
     init {
-        downloadData.value = cityBean
+        downloadData.value = taskBean
     }
 
     //改进的代码
     fun start() {
         change(FileDownloadStatus.WAITING)
-        downloadManager.launchScope(this@OfflineMapDownloadScope)
+        downloadManager.launchScope(this@TaskDownloadScope)
     }
 
     /**
@@ -68,7 +60,7 @@ class OfflineMapDownloadScope(
     fun launch() {
         downloadJob = launch() {
             download()
-            downloadManager.launchNext(cityBean.id)
+            downloadManager.launchNext(taskBean.id)
         }
     }
 
@@ -77,7 +69,7 @@ class OfflineMapDownloadScope(
      * 是否是等待任务
      */
     fun isWaiting(): Boolean {
-        return cityBean.status == FileDownloadStatus.WAITING
+        return taskBean.status == FileDownloadStatus.WAITING
     }
 
     /**
@@ -85,11 +77,11 @@ class OfflineMapDownloadScope(
      * @param status [OfflineMapCityBean.Status]
      */
     private fun change(status: Int) {
-        if (cityBean.status != status || status == FileDownloadStatus.LOADING) {
-            cityBean.status = status
-            downloadData.postValue(cityBean)
+        if (taskBean.status != status || status == FileDownloadStatus.LOADING) {
+            taskBean.status = status
+            downloadData.postValue(taskBean)
             launch(Dispatchers.IO) {
-                downloadManager.roomDatabase.getOfflineMapDao().update(cityBean)
+//                downloadManager.roomDatabase.getOfflineMapDao().update(taskBean)
             }
 
         }
@@ -98,7 +90,7 @@ class OfflineMapDownloadScope(
     /**
      * 添加下载任务观察者
      */
-    fun observer(owner: LifecycleOwner, ob: Observer<OfflineMapCityBean>) {
+    fun observer(owner: LifecycleOwner, ob: Observer<TaskBean>) {
         removeObserver()
 //        this.lifecycleOwner = owner
         downloadData.observe(owner, ob)
@@ -118,13 +110,13 @@ class OfflineMapDownloadScope(
             }
 
             val fileTemp =
-                File("${Constant.OFFLINE_MAP_PATH}download/${cityBean.id}_${cityBean.version}")
-            val startPosition = cityBean.currentSize
+                File("${Constant.OFFLINE_MAP_PATH}download/${taskBean.id}_${taskBean.dataVersion}")
+            val startPosition = taskBean.currentSize
             //验证断点有效性
             if (startPosition < 0) throw IOException("jingo Start position less than zero")
             val response = downloadManager.netApi.retrofitDownLoadFile(
                 start = "bytes=$startPosition-",
-                url = cityBean.url
+                url = taskBean.getDownLoadUrl()
             )
             val responseBody = response.body()
             change(FileDownloadStatus.LOADING)
@@ -132,7 +124,7 @@ class OfflineMapDownloadScope(
             //写入文件
             randomAccessFile = RandomAccessFile(fileTemp, "rwd")
             randomAccessFile.seek(startPosition)
-            cityBean.currentSize = startPosition
+            taskBean.currentSize = startPosition
             inputStream = responseBody.byteStream()
             val bufferSize = 1024 * 2
             val buffer = ByteArray(bufferSize)
@@ -142,22 +134,19 @@ class OfflineMapDownloadScope(
                 readLength = inputStream.read(buffer)
                 if (readLength != -1) {
                     randomAccessFile.write(buffer, 0, readLength)
-                    cityBean.currentSize += readLength
+                    taskBean.currentSize += readLength
                     change(FileDownloadStatus.LOADING)
                 } else {
                     break
                 }
             }
 
-            Log.e("jingo", "文件下载完成 ${cityBean.currentSize} == ${cityBean.fileSize}")
-            if (cityBean.currentSize == cityBean.fileSize) {
+            Log.e("jingo", "文件下载完成 ${taskBean.currentSize} == ${taskBean.fileSize}")
+            if (taskBean.currentSize == taskBean.fileSize) {
                 val res =
-                    fileTemp.renameTo(File("${Constant.OFFLINE_MAP_PATH}${cityBean.fileName}"))
+                    fileTemp.renameTo(File("${Constant.OFFLINE_MAP_PATH}${taskBean.evaluationTaskName}.zip"))
                 Log.e("jingo", "文件下载完成 修改文件 $res")
                 change(FileDownloadStatus.DONE)
-                withContext(Dispatchers.Main) {
-                    downloadManager.mapController.layerManagerHandler.loadBaseMap()
-                }
             } else {
                 change(FileDownloadStatus.PAUSE)
             }

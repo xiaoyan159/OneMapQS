@@ -3,6 +3,7 @@ package com.navinfo.omqs.bean
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.navinfo.omqs.tools.FileManager
 import kotlinx.parcelize.Parcelize
 
 
@@ -17,18 +18,8 @@ data class OfflineMapCityBean @JvmOverloads constructor(
     var version: Long = 0L,
     var fileSize: Long = 0L,
     var currentSize: Long = 0L,
-    var status: Int = NONE
+    var status: Int = FileManager.Companion.FileDownloadStatus.NONE
 ) : Parcelable {
-
-    companion object Status {
-        const val NONE = 0 //无状态
-        const val WAITING = 1 //等待中
-        const val LOADING = 2 //下载中
-        const val PAUSE = 3 //暂停
-        const val ERROR = 4 //错误
-        const val DONE = 5 //完成
-        const val UPDATE = 6 //有新版本要更新
-    }
 
 //    // status的转换对象
 //    var statusEnum: StatusEnum

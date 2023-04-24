@@ -10,15 +10,7 @@ import org.oscim.layers.marker.MarkerItem
  *10:51
  *说明（）
  */
-class ClusterMarkerItem(uid: Any?, title: String?, description: String?, geoPoint: GeoPoint?) :
+class ClusterMarkerItem(uid: Any, title: String?, description: String?, geoPoint: GeoPoint) :
     MarkerItem(uid, title, description, geoPoint) {
     var clusterList: List<Int> = ArrayList()
-
-    constructor(title: String?, description: String?, geoPoint: GeoPoint?) : this(
-        null,
-        title,
-        description,
-        geoPoint
-    ) {
-    }
 }

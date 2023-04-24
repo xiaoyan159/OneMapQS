@@ -5,13 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
-import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentPhenomenonBinding
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
@@ -41,12 +37,15 @@ class PhenomenonFragment :
         //左侧菜单
         binding.phenomenonLeftRecyclerview.setHasFixedSize(true)
         binding.phenomenonLeftRecyclerview.layoutManager = LinearLayoutManager(requireContext())
-        val leftAdapter = PhenomenonLeftAdapter { _, text ->
+        /**
+         * 监听左侧栏的点击事件
+         */
+        val leftAdapter = LeftAdapter { _, text ->
             viewModel.getProblemTypeList(text)
         }
         binding.phenomenonLeftRecyclerview.adapter = leftAdapter
         //左侧菜单查询结果监听
-        viewModel.liveDataClassTypeList.observe(viewLifecycleOwner) {
+        viewModel.liveDataLeftTypeList.observe(viewLifecycleOwner) {
             leftAdapter.refreshData(it)
         }
 
@@ -55,26 +54,34 @@ class PhenomenonFragment :
         var rightLayoutManager = LinearLayoutManager(requireContext())
 
         binding.phenomenonRightRecyclerview.layoutManager = rightLayoutManager
-        val rightAdapter = PhenomenonRightGroupHeaderAdapter { _, bean ->
+        /**
+         * 监听右侧栏的点击事件
+         */
+        val rightAdapter = RightGroupHeaderAdapter { _, bean ->
             viewModel.setPhenomenonMiddleBean(bean)
         }
         binding.phenomenonRightRecyclerview.adapter = rightAdapter
         //右侧菜单增加组标题
         binding.phenomenonRightRecyclerview.addItemDecoration(
-            PhenomenonRightGroupHeaderDecoration(
+            RightGroupHeaderDecoration(
                 requireContext()
             )
         )
         //右侧菜单查询数据监听
-        viewModel.liveDataPhenomenonRightList.observe(viewLifecycleOwner) {
+        viewModel.liveDataRightTypeList.observe(viewLifecycleOwner) {
             rightAdapter.refreshData(it)
         }
 
-        val middleAdapter = PhenomenonMiddleAdapter { _, title ->
+        /**
+         * 监听中间栏的点击事件
+         */
+        val middleAdapter = MiddleAdapter { _, title ->
             rightLayoutManager.scrollToPositionWithOffset(rightAdapter.getGroupTopIndex(title), 0)
-
         }
 
+        /**
+         * 监控右侧滚动，更新左侧
+         */
         binding.phenomenonRightRecyclerview.addOnScrollListener(object :
             OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -98,7 +105,7 @@ class PhenomenonFragment :
         binding.phenomenonMiddleRecyclerview.layoutManager = LinearLayoutManager(requireContext())
         binding.phenomenonMiddleRecyclerview.adapter = middleAdapter
         //中间侧菜单查询结果监听
-        viewModel.liveDataProblemTypeList.observe(viewLifecycleOwner) {
+        viewModel.liveDataMiddleTypeList.observe(viewLifecycleOwner) {
             middleAdapter.refreshData(it)
         }
         binding.phenomenonDrawer.setOnClickListener {

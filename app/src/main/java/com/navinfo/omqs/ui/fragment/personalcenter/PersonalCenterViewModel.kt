@@ -185,15 +185,16 @@ class PersonalCenterViewModel @Inject constructor(
                     val list = mutableListOf<ScProblemTypeBean>()
                     for (i in 1 until rowCount) {
                         val row: Row = it.getRow(i) // 获取行
-                        val cellCount: Int = row.physicalNumberOfCells // 获取列数
-                        if (cellCount == 3) {
-                            val bean = ScProblemTypeBean()
-                            bean.classType = row.getCell(0).stringCellValue
-                            bean.problemType = row.getCell(1).stringCellValue
-                            bean.phenomenon = row.getCell(2).stringCellValue
-                            list.add(bean)
-                            Log.e("jingo", bean.toString())
-                        }
+//                        val cellCount: Int = row.physicalNumberOfCells // 获取列数
+                        val bean = ScProblemTypeBean(
+                            elementType = row.getCell(0).stringCellValue,
+                            elementCode = row.getCell(1).numericCellValue.toString(),
+                            classType = row.getCell(2).stringCellValue,
+                            problemType = row.getCell(3).stringCellValue,
+                            phenomenon = row.getCell(4).stringCellValue
+                        )
+                        list.add(bean)
+                        Log.e("jingo", bean.toString())
                     }
                     roomAppDatabase.getScProblemTypeDao().insertOrUpdateList(list)
                 }
