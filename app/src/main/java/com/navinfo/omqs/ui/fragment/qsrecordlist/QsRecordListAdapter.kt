@@ -50,10 +50,14 @@ class QsRecordListAdapter(
     }
 
     private fun changeViews(binding: AdapterQsRecordListBinding, qsRecordBean: QsRecordBean) {
+        binding.qsRecordClassType.text = qsRecordBean.classType
+        binding.qsRecordProblemType.text = qsRecordBean.problemType
+        binding.qsRecordPhenomenon.text = qsRecordBean.phenomenon
+        binding.qsRecordProblemLink.text = qsRecordBean.problemLink
     }
 
     override fun getItemViewRes(position: Int): Int {
-        return R.layout.adapter_offline_map_city
+        return R.layout.adapter_qs_record_list
     }
 }
 

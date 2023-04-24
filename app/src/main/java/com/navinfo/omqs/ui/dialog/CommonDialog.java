@@ -36,11 +36,10 @@ import com.navinfo.collect.library.garminvirbxe.SensorParams;
 import com.navinfo.collect.library.garminvirbxe.HostBean;
 import com.navinfo.omqs.Constant;
 import com.navinfo.omqs.R;
-import com.navinfo.omqs.system.SystemConstant;
-import com.navinfo.omqs.system.SystemDateTime;
 import com.navinfo.omqs.ui.activity.map.MainActivity;
 import com.navinfo.omqs.ui.manager.TakePhotoManager;
 import com.navinfo.omqs.ui.other.BaseToast;
+import com.navinfo.omqs.util.DateTimeUtil;
 import com.navinfo.omqs.util.FileUtils;
 import com.navinfo.omqs.util.NetUtils;
 import com.navinfo.omqs.util.ShareUtil;
@@ -282,13 +281,13 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
 
                     Log.e("AAA", "连接中");
                     connectstate = false;
-                    mShareUtil.setConnectstate(SystemConstant.USER_ID, connectstate);
+                    mShareUtil.setConnectstate(Constant.USER_ID, connectstate);
                     mOneBtConnect.setText("连接中");
                     updateCameraResources(2, getmDeviceNum());
 
                 } else {
                     connectstate = false;
-                    mShareUtil.setConnectstate(SystemConstant.USER_ID, connectstate);
+                    mShareUtil.setConnectstate(Constant.USER_ID, connectstate);
                     click_state = true;
 
                     mOneBtConnect.setEnabled(click_state);
@@ -357,11 +356,11 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
 
                             Message msg = new Message();
 
-                            String picPath = Constant.DATA_PATH + "/" + SystemConstant.USER_ID + "/pic.jpg";
+                            String picPath = Constant.DATA_PATH + "/" + Constant.USER_ID + "/pic.jpg";
 
                             //创建目录
-                            if(!new File(Constant.DATA_PATH + "/" + SystemConstant.USER_ID).exists()){
-                                new File(Constant.DATA_PATH + "/" + SystemConstant.USER_ID).mkdirs();
+                            if(!new File(Constant.DATA_PATH + "/" + Constant.USER_ID).exists()){
+                                new File(Constant.DATA_PATH + "/" + Constant.USER_ID).mkdirs();
                             }
 
                             //多次获取照片信息，解决概率事件无法获取有效照片问题
@@ -376,7 +375,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
 
                                 Log.e("AAA", "获取单张拍照时间" + time+"次数"+i);
                                 if (!TextUtils.isEmpty(time)) {
-                                    long picTime = SystemDateTime.getPicTime(time);
+                                    long picTime = DateTimeUtil.getPicTime(time);
 
                                     long disTime = mStartCheckTime - picTime / 1000;
 
@@ -482,7 +481,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
 
                 updateCameraResources(0, getmDeviceNum());
                 connectstate = true;
-                mShareUtil.setConnectstate(SystemConstant.USER_ID, connectstate);
+                mShareUtil.setConnectstate(Constant.USER_ID, connectstate);
                 stopVideo();
                 mOneBtConnect.setPressed(true);
                 mOneBtConnect.setBackgroundResource(R.drawable.btn_red_disconnect_bg);
@@ -614,7 +613,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
                             mGpsTv.setText("相机GPS信号差，请稍等片刻，或将相机移到开发地带。");
                             mGpsTv.setVisibility(View.VISIBLE);
                             mStartOrEndTakePicture.setEnabled(status);
-                            mShareUtil.setContinusTakePhotoState(SystemConstant.USER_ID, true);
+                            mShareUtil.setContinusTakePhotoState(Constant.USER_ID, true);
                         }
 
                     }
@@ -778,7 +777,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
         ImageView ivStatus = (ImageView) findViewById(resId);
 
         if (ivStatus != null) {
-            String time = SystemDateTime.getDateSimpleTime(SystemDateTime.getTimeInfo(SystemDateTime.getTime()) - 0/*MainActivity.disGoogleTime*/);
+            String time = DateTimeUtil.getDateSimpleTime(DateTimeUtil.getTimeInfo(DateTimeUtil.getTime()) - 0/*MainActivity.disGoogleTime*/);
 
             ivStatus.setImageDrawable(null);
 
@@ -810,7 +809,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
                 if (connectstate) {
 
                     Log.i("chentao", "打开/结束连拍:" + arg1);
-                    mShareUtil.setContinusTakePhotoState(SystemConstant.USER_ID, arg1);
+                    mShareUtil.setContinusTakePhotoState(Constant.USER_ID, arg1);
 
                     if (!arg1) {
 
@@ -829,7 +828,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
 
                     mStartOrEndTakePicture.setChecked(true);
 
-                    mShareUtil.setContinusTakePhotoState(SystemConstant.USER_ID, true);
+                    mShareUtil.setContinusTakePhotoState(Constant.USER_ID, true);
 
                     BaseToast.makeText(context, "外接相机没有连接成功！不能进行连续拍照！", Toast.LENGTH_SHORT).show();
                 }
@@ -845,9 +844,9 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
 
                     connectstate = false;
 
-                    mShareUtil.setContinusTakePhotoState(SystemConstant.USER_ID, true);
+                    mShareUtil.setContinusTakePhotoState(Constant.USER_ID, true);
 
-                    mShareUtil.setConnectstate(SystemConstant.USER_ID, connectstate);
+                    mShareUtil.setConnectstate(Constant.USER_ID, connectstate);
 
                     mStartOrEndTakePicture.setChecked(true);
 
@@ -908,10 +907,10 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
             public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
                 if (connectstate) {
                     Log.i("chentao", "选择相机:" + arg1);
-                    mShareUtil.setSelectCameraKind(SystemConstant.USER_ID, arg1);
+                    mShareUtil.setSelectCameraKind(Constant.USER_ID, arg1);
                 } else {
                     mSelectCamera.setChecked(false);
-                    mShareUtil.setSelectCameraKind(SystemConstant.USER_ID, false);
+                    mShareUtil.setSelectCameraKind(Constant.USER_ID, false);
                     BaseToast.makeText(context, "外接相机没有连接成功！只能使用系统相机，谢谢！", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -962,7 +961,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
                             }
 
                             //重置拍照按钮
-                            mShareUtil.setContinusTakePhotoState(SystemConstant.USER_ID, true);
+                            mShareUtil.setContinusTakePhotoState(Constant.USER_ID, true);
                         }
 
                         //设置另外一台相机状态
@@ -980,11 +979,11 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
 
                         }
 
-                        shareUtilOther.setSelectTakePhotoOrRecord(SystemConstant.USER_ID, !isCheck);
+                        shareUtilOther.setSelectTakePhotoOrRecord(Constant.USER_ID, !isCheck);
 
-                        shareUtilOther.setContinusTakePhotoState(SystemConstant.USER_ID, true);
+                        shareUtilOther.setContinusTakePhotoState(Constant.USER_ID, true);
 
-                        mShareUtil.setSelectTakePhotoOrRecord(SystemConstant.USER_ID, isCheck);
+                        mShareUtil.setSelectTakePhotoOrRecord(Constant.USER_ID, isCheck);
 
                         if (isCheck) {
 
@@ -993,18 +992,18 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
 
                             takephotoManager.setCameraMode(getmDeviceNum(), SensorWorkingMode.CAMERA_VEDIO_TIMELAPSE);
 
-                            mShareUtil.setTakeCameraMode(SystemConstant.USER_ID, 0);
+                            mShareUtil.setTakeCameraMode(Constant.USER_ID, 0);
 
-                            shareUtilOther.setTakeCameraMode(SystemConstant.USER_ID, 1);
+                            shareUtilOther.setTakeCameraMode(Constant.USER_ID, 1);
 
                         } else {
 
                             mTakePhotoOrRecord.setText("拍照");
                             setmImgViewImageDrawable(1);
 
-                            mShareUtil.setTakeCameraMode(SystemConstant.USER_ID, 1);
+                            mShareUtil.setTakeCameraMode(Constant.USER_ID, 1);
 
-                            shareUtilOther.setTakeCameraMode(SystemConstant.USER_ID, 0);
+                            shareUtilOther.setTakeCameraMode(Constant.USER_ID, 0);
 
                             takephotoManager.setCameraMode(getmDeviceNum(), SensorWorkingMode.CAMEAR_PHOTO_CONTINUOUS_PHOTO);
 
@@ -1074,7 +1073,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
         BaseToast.makeText(context, TextUtils.isEmpty(msg) ? "相机丢失连接，请检查网络是否畅通！" : msg, Toast.LENGTH_SHORT).show();
 
         connectstate = false;
-        mShareUtil.setConnectstate(SystemConstant.USER_ID, connectstate);
+        mShareUtil.setConnectstate(Constant.USER_ID, connectstate);
         mOneBtConnect.setPressed(false);
         mOneBtConnect.setBackgroundResource(R.drawable.btn_connect_bg_enabled);
         mOneBtConnect.setText("一键连接");
@@ -1536,9 +1535,9 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
 
             mHostBean = hostBean;
 
-            mShareUtil.setTakeCameraIP(SystemConstant.USER_ID, hostBean.ipAddress.toString());
+            mShareUtil.setTakeCameraIP(Constant.USER_ID, hostBean.ipAddress.toString());
 
-            mShareUtil.setTakeCameraMac(SystemConstant.USER_ID, hostBean.hardwareAddress.toString());
+            mShareUtil.setTakeCameraMac(Constant.USER_ID, hostBean.hardwareAddress.toString());
 
             takephotoManager.connect(getmDeviceNum(), hostBean, params);
         }

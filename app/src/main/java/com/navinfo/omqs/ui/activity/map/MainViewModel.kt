@@ -16,7 +16,6 @@ import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
-import com.navinfo.omqs.system.SystemConstant
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -122,7 +121,7 @@ class MainViewModel @Inject constructor(
 
                         TraceDataBase.getDatabase(
                             context,
-                            Constant.DATA_PATH + SystemConstant.USER_ID + "/trace.sqlite"
+                            Constant.USER_DATA_PATH + "/trace.sqlite"
                         ).niLocationDao.insert(niLocation)
                         niLocationList.removeAt(0)
                         Log.e("qj", "saveTrace")

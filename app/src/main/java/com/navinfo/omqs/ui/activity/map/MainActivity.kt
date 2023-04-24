@@ -14,10 +14,7 @@ import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
-import com.navinfo.omqs.system.SystemConstant
 import com.navinfo.omqs.ui.activity.BaseActivity
-import com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultFragment
-import com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -48,7 +45,7 @@ class MainActivity : BaseActivity() {
             binding.mainActivityMap,
             null,
             Constant.MAP_PATH,
-            Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite"
+            Constant.USER_DATA_PATH+"/trace.sqlite"
         )
         //关联生命周期
         binding.lifecycleOwner = this

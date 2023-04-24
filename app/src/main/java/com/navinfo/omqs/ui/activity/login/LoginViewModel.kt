@@ -17,8 +17,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.coroutines.*
-import okio.IOException
 import java.io.File
+import java.io.IOException
 import javax.inject.Inject
 
 enum class LoginStatus {
@@ -153,8 +153,10 @@ class LoginViewModel @Inject constructor(
     /**
      * 创建用户目录
      */
-    @Throws(IOException::class)
     private fun createUserFolder(context: Context, userId: String) {
+        Constant.USER_ID = userId
+        Constant.VERSION_ID = userId
+        Constant.USER_DATA_PATH = Constant.DATA_PATH + Constant.USER_ID + "/" + Constant.VERSION_ID
         // 在SD卡创建用户目录，解压资源等
         // 初始化Realm
         Realm.init(context.applicationContext)
