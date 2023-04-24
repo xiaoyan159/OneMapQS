@@ -77,15 +77,14 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
                             val file = UriUtils.uri2File(uri)
                             // 开始导入数据
                             // 656e6372797000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-                            val job = CoroutineUtils.launchWithLoading(
+                            CoroutineUtils.launchWithLoading(
                                 requireContext(),
                                 loadingMessage = "生成数据..."
                             ) {
                                 val importOMDBHelper: ImportOMDBHelper =
                                     importOMDBHiltFactory.obtainImportOMDBHelper(
                                         requireContext(),
-                                        file,
-                                        File(file.parentFile, "config.json")
+                                        file
                                     )
                                 viewModel.obtainOMDBZipData(importOMDBHelper)
                             }
@@ -99,19 +98,19 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
 
                         override fun onResult(uri: Uri) {
                             val file = UriUtils.uri2File(uri)
-                            // 开始导入数据
-                            CoroutineUtils.launchWithLoading(
-                                requireContext(),
-                                loadingMessage = "导入数据..."
-                            ) {
-                                val importOMDBHelper: ImportOMDBHelper =
-                                    importOMDBHiltFactory.obtainImportOMDBHelper(
-                                        requireContext(),
-                                        file,
-                                        File(file.parentFile, "config.json")
-                                    )
+                            val importOMDBHelper: ImportOMDBHelper =
+                                importOMDBHiltFactory.obtainImportOMDBHelper(
+                                    requireContext(),
+                                    file
+                                )
                                 viewModel.importOMDBData(importOMDBHelper)
-                            }
+//                            // 开始导入数据
+//                            CoroutineUtils.launchWithLoading(
+//                                requireContext(),
+//                                loadingMessage = "导入数据..."
+//                            ) {
+//
+//                            }
                         }
                     })
                 }

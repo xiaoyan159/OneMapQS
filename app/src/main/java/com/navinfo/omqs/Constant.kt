@@ -1,11 +1,8 @@
 package com.navinfo.omqs
 
-import androidx.core.util.rangeTo
 import io.realm.Realm
-import java.util.*
 
 class Constant {
-
     companion object {
         /**
          * sd卡根目录
@@ -36,9 +33,19 @@ class Constant {
         lateinit var USER_DATA_PATH: String
 
         /**
+         * 当前用户ID
+         */
+        lateinit var CURRENT_USER_ID: String
+
+        /**
          * 离线地图目录
          */
         lateinit var OFFLINE_MAP_PATH: String
+
+        /**
+         * 下载目录
+         */
+        lateinit var DOWNLOAD_PATH: String
 
         /**
          * 服务器地址
@@ -74,6 +81,7 @@ class Constant {
         //选择拍照或者录像
         const val SELECT_TAKEPHOTO_OR_RECORD = "select_takephoto_or_record"
 
+        const val OMDB_CONFIG = "omdb.config"
     }
 
 }

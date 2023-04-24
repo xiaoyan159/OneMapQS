@@ -136,39 +136,15 @@ class PersonalCenterViewModel @Inject constructor(
     /**
      * 导入OMDB数据
      * */
-    suspend fun importOMDBData(importOMDBHelper: ImportOMDBHelper) {
-        Log.d("OMQSApplication", "开始导入数据")
-//        Realm.getDefaultInstance().beginTransaction()
-        importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile).collect {
-            Realm.getDefaultInstance().beginTransaction()
-            for (map in it) { // 每一个map就是Realm的一条数据
-                val renderEntity = RenderEntity()
-                renderEntity.code = map["QIcode"].toString().toInt()
-                renderEntity.name = map["QIname"].toString()
-                renderEntity.table = map["QItable"].toString()
-                // 其他数据插入到Properties中
-                renderEntity.geometry = map["GEOMETRY"].toString()
-                for (entry in map) {
-                    renderEntity.properties[entry.key] = entry.value.toString()
-                }
-                Realm.getDefaultInstance().insert(renderEntity)
+    fun importOMDBData(importOMDBHelper: ImportOMDBHelper) {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d("OMQSApplication", "开始导入数据")
+            importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile).collect {
+                Log.d("importOMDBData", it)
             }
-            Realm.getDefaultInstance().commitTransaction()
+            Log.d("OMQSApplication", "导入数据完成")
         }
-//        Realm.getDefaultInstance().commitTransaction()
 
-//        val gson = Gson()
-//        // 数据导入结束后，开始生成渲染表所需的json文件，并生成压缩包
-//        for (table in importOMDBHelper.openConfigFile().tables/*listOf<String>("HAD_LINK")*/) {
-//            val omdbList = Realm.getDefaultInstance().where(OMDBEntity::class.java).equalTo("table", table.table).findAll()
-//            val outputFile = File(importOMDBHelper.omdbFile, "${table.table}.txt")
-//            // 将读取到的数据转换为json数据文件
-//            for (omdb in omdbList) {
-//                FileIOUtils.writeFileFromString(outputFile, gson.toJson(omdb))
-//            }
-//        }
-
-        Log.d("OMQSApplication", "导入数据完成")
     }
 
     fun importScProblemData(uri: Uri) {

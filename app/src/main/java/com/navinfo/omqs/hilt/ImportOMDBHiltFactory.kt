@@ -8,5 +8,5 @@ import java.io.File
 
 @AssistedFactory
 interface ImportOMDBHiltFactory {
-    fun obtainImportOMDBHelper(@Assisted("context")context: Context, @Assisted("omdbFile") omdbFile: File, @Assisted("configFile") dbVersion: File): ImportOMDBHelper
+    fun obtainImportOMDBHelper(@Assisted("context")context: Context, @Assisted("omdbFile") omdbFile: File): ImportOMDBHelper
 }

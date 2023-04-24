@@ -11,11 +11,13 @@ import com.blankj.utilcode.util.ZipUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.data.entity.RenderEntity
+import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
 import com.navinfo.omqs.hilt.OMDBDataBaseHiltFactory
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import io.realm.Realm
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -28,13 +30,13 @@ import kotlin.streams.toList
 /**
  * 导入omdb数据的帮助类
  * */
-class ImportOMDBHelper @AssistedInject constructor(@Assisted("context") val context: Context,@Assisted("omdbFile") val omdbFile: File,@Assisted("configFile") val configFile: File) {
+class ImportOMDBHelper @AssistedInject constructor(@Assisted("context") val context: Context,@Assisted("omdbFile") val omdbFile: File) {
     @Inject
     lateinit var omdbHiltFactory: OMDBDataBaseHiltFactory
     @Inject
     lateinit var gson: Gson
     private val database by lazy { omdbHiltFactory.obtainOmdbDataBaseHelper(context, omdbFile.absolutePath, 1).writableDatabase }
-
+    private val configFile: File = File("${Constant.DATA_PATH}/${Constant.CURRENT_USER_ID}", Constant.OMDB_CONFIG)
 
     /**
      * 读取config的配置文件
@@ -99,10 +101,10 @@ class ImportOMDBHelper @AssistedInject constructor(@Assisted("context") val cont
      * @param omdbZipFile omdb数据抽取生成的Zip文件
      * @param configFile 对应的配置文件
      * */
-    suspend fun importOmdbZipFile(omdbZipFile: File): Flow<List<Map<String, Any>>> = withContext(Dispatchers.IO) {
+    suspend fun importOmdbZipFile(omdbZipFile: File): Flow<String> = withContext(Dispatchers.IO) {
         val importConfig = openConfigFile()
         val unZipFolder = File(omdbZipFile.parentFile, "result")
-        flow<List<Map<String, Any>>> {
+        flow<String> {
             if (unZipFolder.exists()) {
                 unZipFolder.deleteRecursively()
             }
@@ -110,26 +112,45 @@ class ImportOMDBHelper @AssistedInject constructor(@Assisted("context") val cont
             // 开始解压zip文件
             val unZipFiles = ZipUtils.unzipFile(omdbZipFile, unZipFolder)
             // 遍历解压后的文件，读取该数据返回
-            for (txtFile in unZipFiles) {
-                val listResult: MutableList<Map<String, Any>> = mutableListOf()
-                // 根据文件名称获取对应的配置
-                val currentConfig=importConfig.tables.find {
-                    txtFile.name.substring(0, txtFile.name.lastIndexOf("."))==it.table
+            for ((index, currentConfig) in importConfig.tables.withIndex()) {
+                val txtFile = unZipFiles.find {
+                    it.name == currentConfig.table
                 }
-                val list = FileIOUtils.readFile2List(txtFile, "UTF-8")
-                // 将list数据转换为map
-                for (line in list) {
-                    val map = gson.fromJson<Map<String, Any>>(line, object : TypeToken<MutableMap<String, Any>>() {}.type)
-                        .toMutableMap()
-                    currentConfig?.let {
-                        map["QItable"] = currentConfig.table
-                        map["QIname"] = currentConfig.name
-                        map["QIcode"] = currentConfig.code
-                        listResult.add(map)
+
+                val listResult: MutableList<Map<String, Any>> = mutableListOf()
+                currentConfig?.let {
+                    val list = FileIOUtils.readFile2List(txtFile, "UTF-8")
+                    if (list!=null) {
+                        // 将list数据转换为map
+                        for (line in list) {
+                            val map = gson.fromJson<Map<String, Any>>(line, object : TypeToken<MutableMap<String, Any>>() {}.type)
+                                .toMutableMap()
+                            map["QItable"] = currentConfig.table
+                            map["QIname"] = currentConfig.name
+                            map["QIcode"] = currentConfig.code
+                            listResult.add(map)
+                        }
                     }
                 }
+                // 将listResult数据插入到Realm数据库中
+                Realm.getDefaultInstance().beginTransaction()
+                for (map in listResult) { // 每一个map就是Realm的一条数据
+                    // 先查询这个mesh下有没有数据，如果有则跳过即可
+//                    val meshEntity = Realm.getDefaultInstance().where(RenderEntity::class.java).equalTo("properties['mesh']", map["mesh"].toString()).findFirst()
+                    val renderEntity = RenderEntity()
+                    renderEntity.code = map["QIcode"].toString().toInt()
+                    renderEntity.name = map["QIname"].toString()
+                    renderEntity.table = map["QItable"].toString()
+                    // 其他数据插入到Properties中
+                    renderEntity.geometry = map["geometry"].toString()
+                    for (entry in map) {
+                        renderEntity.properties[entry.key] = entry.value.toString()
+                    }
+                    Realm.getDefaultInstance().insert(renderEntity)
+                }
+                Realm.getDefaultInstance().commitTransaction()
                 // 1个文件发送一次flow流
-                emit(listResult)
+                emit("${index+1}/${importConfig.tables.size}")
             }
         }
     }

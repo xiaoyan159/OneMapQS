@@ -38,7 +38,7 @@ class MainViewModel @Inject constructor(
     private var niLocationList: MutableList<NiLocation> = ArrayList<NiLocation>()
 
     init {
-        mapController.layerManagerHandler.setOnQsRecordItemClickListener(object :
+        mapController.markerHandle.setOnQsRecordItemClickListener(object :
             OnQsRecordItemClickListener {
             override fun onQsRecordList(list: MutableList<String>) {
                 liveDataQsRecordIdList.value = list

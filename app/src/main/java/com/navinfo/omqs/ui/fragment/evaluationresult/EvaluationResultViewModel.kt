@@ -212,7 +212,7 @@ class EvaluationResultViewModel @Inject constructor(
                 it.copyToRealmOrUpdate(liveDataQsRecordBean.value)
             }
 //            realm.close()
-            mapController.layerManagerHandler.addOrUpdateQsRecordMark(liveDataQsRecordBean.value!!)
+            mapController.markerHandle.addOrUpdateQsRecordMark(liveDataQsRecordBean.value!!)
             liveDataFinish.postValue(true)
         }
     }
@@ -228,7 +228,7 @@ class EvaluationResultViewModel @Inject constructor(
                 objects?.deleteFromRealm()
             }
 //            realm.close()
-            mapController.layerManagerHandler.removeQsRecordMark(liveDataQsRecordBean.value!!)
+            mapController.markerHandle.removeQsRecordMark(liveDataQsRecordBean.value!!)
             liveDataFinish.postValue(true)
         }
     }
