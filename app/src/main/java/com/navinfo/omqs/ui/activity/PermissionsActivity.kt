@@ -10,7 +10,7 @@ import com.hjq.permissions.XXPermissions
 /**
  * 权限申请Activity
  */
-open class PermissionsActivity : BaseActivity() {
+open abstract class PermissionsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val permissionList = mutableListOf<String>()
@@ -29,11 +29,11 @@ open class PermissionsActivity : BaseActivity() {
         //定位权限
         permissionList.add(Permission.ACCESS_FINE_LOCATION)
         permissionList.add(Permission.ACCESS_COARSE_LOCATION)
-        //android10
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-            permissionList.add(Permission.ACCESS_BACKGROUND_LOCATION)
-        }
-/*        XXPermissions.with(this)
+//        //android10
+//        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+//            permissionList.add(Permission.ACCESS_BACKGROUND_LOCATION)
+//        }
+        XXPermissions.with(this)
             // 申请单个权限
             .permission(permissionList)
             // 设置权限请求拦截器（局部设置）
@@ -50,10 +50,10 @@ open class PermissionsActivity : BaseActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
-                        onPermissionsGranted()
+                        onPermissionsDenied()
                         return
                     } else {
-                        onPermissionsDenied()
+                        onPermissionsGranted()
                     }
                     // 在SD卡创建项目目录
                 }
@@ -73,20 +73,16 @@ open class PermissionsActivity : BaseActivity() {
                         onPermissionsDenied()
                     }
                 }
-            })*/
+            })
     }
 
     /**
      * 权限全部同意
      */
-    open fun onPermissionsGranted() {
-
-    }
+    open abstract fun onPermissionsGranted()
 
     /**
      * 权限
      */
-    open fun onPermissionsDenied() {
-
-    }
+    open abstract fun onPermissionsDenied()
 }

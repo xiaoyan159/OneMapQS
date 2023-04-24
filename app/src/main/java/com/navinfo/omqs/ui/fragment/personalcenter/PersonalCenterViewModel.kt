@@ -10,6 +10,7 @@ import com.blankj.utilcode.util.UriUtils
 import com.blankj.utilcode.util.ZipUtils
 import com.google.gson.Gson
 import com.navinfo.collect.library.data.entity.*
+import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.bean.ScProblemTypeBean
 import com.navinfo.omqs.bean.ScRootCauseAnalysisBean

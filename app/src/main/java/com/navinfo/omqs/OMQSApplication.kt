@@ -20,20 +20,6 @@ class OMQSApplication : Application() {
         Util.getInstance().init(applicationContext)
         NetUtils.getInstance().init(this)
         TakePhotoManager.getInstance().init(this, 1)
-        FileManager.initRootDir(this)
-        Realm.init(this)
-        val password = "encryp".encodeToByteArray().copyInto(ByteArray(64))
-        // 656e6372797000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-        Log.d("OMQSApplication", "密码是： ${byteArrayToHexString(password)}")
-        // 1110000011000010111001101110011011101110110111101110010011001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-        val config = RealmConfiguration.Builder()
-            .directory(File(Constant.DATA_PATH))
-            .name("OMQS.realm")
-            .encryptionKey(password)
-//            .modules(Realm.getDefaultModule(), MyRealmModule())
-            .schemaVersion(1)
-            .build()
-        Realm.setDefaultConfiguration(config)
     }
 
     private fun getKey(inputString: String): String {
@@ -42,7 +28,4 @@ class OMQSApplication : Application() {
         return hashBytes.joinToString("") { "%02x".format(it) };
     }
 
-    fun byteArrayToHexString(byteArray: ByteArray): String {
-        return byteArray.joinToString("") { "%02x".format(it) }
-    }
 }

@@ -17,6 +17,7 @@ import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
 import com.github.k1rakishou.fsaf.callback.FileChooserCallback
 import com.navinfo.collect.library.data.RealmUtils
 import com.navinfo.collect.library.data.entity.OMDBEntity
+import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentPersonalCenterBinding
 import com.navinfo.omqs.db.ImportOMDBHelper
@@ -30,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.oscim.core.GeoPoint
 import java.io.File
 import java.util.UUID
 import javax.inject.Inject
@@ -46,6 +48,8 @@ class PersonalCenterFragment : Fragment(), FSAFActivityCallbacks {
     private val viewModel by lazy { viewModels<PersonalCenterViewModel>().value }
     @Inject
     lateinit var importOMDBHiltFactory: ImportOMDBHiltFactory
+    @Inject
+    lateinit var niMapController: NIMapController
 
 
     override fun onCreateView(
@@ -107,6 +111,8 @@ class PersonalCenterFragment : Fragment(), FSAFActivityCallbacks {
                 }
                 R.id.personal_center_menu_test -> {
                     viewModel.readRealmData()
+                    // 定位到指定位置
+                    niMapController.mMapView.vtmMap.animator().animateTo(GeoPoint(28.608398, 115.67901))
                 }
             }
             true
