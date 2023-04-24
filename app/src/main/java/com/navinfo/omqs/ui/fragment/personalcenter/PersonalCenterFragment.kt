@@ -129,6 +129,9 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
                 R.id.personal_center_menu_task_list -> {
                     findNavController().navigate(R.id.TaskListFragment)
                 }
+                R.id.personal_center_menu_qs_record_list -> {
+                    findNavController().navigate(R.id.QsRecordListFragment)
+                }
             }
             true
         }

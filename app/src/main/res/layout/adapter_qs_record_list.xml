@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/cv_bg_color"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="5dp"
+    tools:context="com.navinfo.omqs.ui.fragment.qsrecordlist.QsRecordListAdapter">
+
+    <TextView
+        android:id="@+id/qs_record_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="问题描述"
+        android:textColor="@color/white"
+        android:textSize="@dimen/default_font_size" />
+
+
+</RelativeLayout>

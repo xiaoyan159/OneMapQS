@@ -74,8 +74,6 @@ class MainActivity : BaseActivity() {
             ToastUtils.showLong("定位${it.longitude}")
             binding!!.viewModel!!.addSaveTrace(it)
             binding!!.viewModel!!.startSaveTraceThread(this)
-            viewModel.addSaveTrace(it)
-//            binding.viewModel!!.startSaveTraceThread(this)
         })
         //显示轨迹图层
 //        mapController.layerManagerHandler.showNiLocationLayer(Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite")

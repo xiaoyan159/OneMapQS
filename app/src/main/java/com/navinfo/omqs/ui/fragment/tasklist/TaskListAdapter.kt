@@ -10,7 +10,7 @@ import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.TaskBean
 import com.navinfo.omqs.databinding.AdapterTaskListBinding
 import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
-import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
+import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 
@@ -31,11 +31,11 @@ class TaskListAdapter(
         if (it.tag != null) {
             val taskBean = data[it.tag as Int]
             when (taskBean.status) {
-                FileDownloadStatus.NONE, FileDownloadStatus.UPDATE, FileDownloadStatus.PAUSE, FileDownloadStatus.ERROR -> {
+                FileManager.Companion.FileDownloadStatus.NONE, FileManager.Companion.FileDownloadStatus.UPDATE, FileManager.Companion.FileDownloadStatus.PAUSE, FileManager.Companion.FileDownloadStatus.ERROR -> {
                     Log.e("jingo", "开始下载 ${taskBean.status}")
                     downloadManager.start(taskBean.id)
                 }
-                FileDownloadStatus.LOADING, FileDownloadStatus.WAITING -> {
+                FileManager.Companion.FileDownloadStatus.LOADING, FileManager.Companion.FileDownloadStatus.WAITING -> {
                     Log.e("jingo", "暂停 ${taskBean.status}")
                     downloadManager.pause(taskBean.id)
                 }
@@ -86,37 +86,37 @@ class TaskListAdapter(
         binding.taskProgress.progress =
             (cityBean.currentSize * 100 / cityBean.fileSize).toInt()
         when (cityBean.status) {
-            FileDownloadStatus.NONE -> {
+            FileManager.Companion.FileDownloadStatus.NONE -> {
                 if (binding.taskProgress.visibility == View.VISIBLE) binding.taskProgress.visibility =
                     View.INVISIBLE
                 binding.taskDownloadBtn.text = "下载"
             }
-            FileDownloadStatus.WAITING -> {
+            FileManager.Companion.FileDownloadStatus.WAITING -> {
                 if (binding.taskProgress.visibility != View.VISIBLE) binding.taskProgress.visibility =
                     View.VISIBLE
                 binding.taskDownloadBtn.text = "等待中"
             }
-            FileDownloadStatus.LOADING -> {
+            FileManager.Companion.FileDownloadStatus.LOADING -> {
                 if (binding.taskProgress.visibility != View.VISIBLE) binding.taskProgress.visibility =
                     View.VISIBLE
                 binding.taskDownloadBtn.text = "暂停"
             }
-            FileDownloadStatus.PAUSE -> {
+            FileManager.Companion.FileDownloadStatus.PAUSE -> {
                 if (binding.taskProgress.visibility != View.VISIBLE) binding.taskProgress.visibility =
                     View.VISIBLE
                 binding.taskDownloadBtn.text = "继续"
             }
-            FileDownloadStatus.ERROR -> {
+            FileManager.Companion.FileDownloadStatus.ERROR -> {
                 if (binding.taskProgress.visibility != View.VISIBLE) binding.taskProgress.visibility =
                     View.VISIBLE
                 binding.taskDownloadBtn.text = "重试"
             }
-            FileDownloadStatus.DONE -> {
+            FileManager.Companion.FileDownloadStatus.DONE -> {
                 if (binding.taskProgress.visibility == View.VISIBLE) binding.taskProgress.visibility =
                     View.INVISIBLE
                 binding.taskDownloadBtn.text = "已完成"
             }
-            FileDownloadStatus.UPDATE -> {
+            FileManager.Companion.FileDownloadStatus.UPDATE -> {
                 if (binding.taskProgress.visibility == View.VISIBLE) binding.taskProgress.visibility =
                     View.INVISIBLE
                 binding.taskDownloadBtn.text = "更新"
