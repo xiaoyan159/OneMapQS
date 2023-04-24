@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.navinfo.omqs.databinding.FragmentTaskListBinding
 import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
@@ -22,7 +23,6 @@ class TaskListFragment : BaseFragment(){
     private val adapter: TaskListAdapter by lazy {
         TaskListAdapter(
             downloadManager,
-            requireContext()
         )
     }
 
@@ -46,6 +46,9 @@ class TaskListFragment : BaseFragment(){
             adapter.refreshData(it)
         }
         viewModel.getTaskList(requireContext())
+        binding.taskBack.setOnClickListener{
+            findNavController().navigateUp()
+        }
     }
 
     override fun onDestroyView() {

@@ -104,13 +104,13 @@ class TaskDownloadScope(
         var randomAccessFile: RandomAccessFile? = null
         try {
             //创建离线地图 下载文件夹，.map文件夹的下一级
-            val fileDir = File("${Constant.OFFLINE_MAP_PATH}download")
+            val fileDir = File("${Constant.DOWNLOAD_PATH}download")
             if (!fileDir.exists()) {
                 fileDir.mkdirs()
             }
 
             val fileTemp =
-                File("${Constant.OFFLINE_MAP_PATH}download/${taskBean.id}_${taskBean.dataVersion}")
+                File("${Constant.DOWNLOAD_PATH}${taskBean.id}_${taskBean.dataVersion}")
             val startPosition = taskBean.currentSize
             //验证断点有效性
             if (startPosition < 0) throw IOException("jingo Start position less than zero")
@@ -119,8 +119,13 @@ class TaskDownloadScope(
                 url = taskBean.getDownLoadUrl()
             )
             val responseBody = response.body()
+
             change(FileDownloadStatus.LOADING)
             responseBody ?: throw IOException("jingo ResponseBody is null")
+
+            if (startPosition == 0L) {
+                taskBean.fileSize = responseBody.contentLength()
+            }
             //写入文件
             randomAccessFile = RandomAccessFile(fileTemp, "rwd")
             randomAccessFile.seek(startPosition)
@@ -144,7 +149,7 @@ class TaskDownloadScope(
             Log.e("jingo", "文件下载完成 ${taskBean.currentSize} == ${taskBean.fileSize}")
             if (taskBean.currentSize == taskBean.fileSize) {
                 val res =
-                    fileTemp.renameTo(File("${Constant.OFFLINE_MAP_PATH}${taskBean.evaluationTaskName}.zip"))
+                    fileTemp.renameTo(File("${Constant.DOWNLOAD_PATH}${taskBean.evaluationTaskName}.zip"))
                 Log.e("jingo", "文件下载完成 修改文件 $res")
                 change(FileDownloadStatus.DONE)
             } else {

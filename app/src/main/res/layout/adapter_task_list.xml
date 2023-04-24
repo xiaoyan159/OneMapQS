@@ -6,26 +6,48 @@
     android:layout_height="wrap_content"
     android:background="@color/cv_bg_color"
     android:paddingLeft="10dp"
-    android:paddingRight="10dp"
     android:paddingTop="5dp"
+    android:paddingRight="10dp"
     tools:context="com.navinfo.omqs.ui.fragment.tasklist.TaskListAdapter">
 
     <TextView
         android:id="@+id/task_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="省市名称"
+        android:layout_toLeftOf="@id/task_download_btn"
+        android:text="任务名称"
         android:textColor="@color/white"
         android:textSize="@dimen/default_font_size" />
+
+    <TextView
+        android:id="@+id/task_city_name"
+        style="@style/map_size_font_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/task_name"
+        android:layout_marginTop="5dp"
+        android:text="省市名称"
+        android:textSize="@dimen/card_title_font_3size" />
+
+    <TextView
+        android:id="@+id/task_data_version"
+        style="@style/map_size_font_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/task_city_name"
+        android:layout_alignTop="@id/task_city_name"
+        android:layout_marginLeft="5dp"
+        android:text="版本号"
+        android:textSize="@dimen/card_title_font_3size" />
 
     <TextView
         android:id="@+id/task_size"
         style="@style/map_size_font_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/task_name"
-        android:drawableLeft="@mipmap/point_blue"
+        android:layout_below="@id/task_city_name"
         android:layout_marginTop="5dp"
+        android:drawableLeft="@mipmap/point_blue"
         android:text="文件大小"
         android:textSize="@dimen/card_title_font_3size" />
 
@@ -34,9 +56,9 @@
         android:id="@+id/task_download_btn"
         style="@style/map_download_style_btn"
         android:layout_width="60dp"
-        android:layout_alignTop="@id/task_name"
-        android:layout_alignBottom="@id/task_size"
         android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:gravity="center"
         android:shadowColor="@android:color/transparent"
         android:text="下载"
         android:textColor="@color/btn_blue_solid"
@@ -60,8 +82,8 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="16dp"
-        android:layout_below="@id/task_download_btn"
-        android:progressDrawable="@drawable/progress_bg"
+        android:layout_below="@id/task_size"
         android:paddingTop="10dp"
+        android:progressDrawable="@drawable/progress_bg"
         android:visibility="invisible" />
 </RelativeLayout>

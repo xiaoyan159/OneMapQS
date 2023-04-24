@@ -7,6 +7,28 @@
     android:background="@color/white"
     tools:context=".ui.fragment.tasklist.TaskListFragment">
 
+    <TextView
+        android:id="@+id/task_title"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="任务列表"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:background="@color/default_blue"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <ImageView
+        android:id="@+id/task_back"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:src="@drawable/btn_back_xml"
+        android:paddingLeft="15dp"
+        android:paddingRight="10dp"
+        app:layout_constraintLeft_toLeftOf="@id/task_title"
+        app:layout_constraintTop_toTopOf="@id/task_title"
+        app:layout_constraintBottom_toBottomOf="@id/task_title"
+        />
     <EditText
         android:id="@+id/task_search"
         style="@style/input_blue_type"
@@ -14,7 +36,7 @@
         android:layout_height="wrap_content"
         android:hint="搜索"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/task_title" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/task_recyclerview"
