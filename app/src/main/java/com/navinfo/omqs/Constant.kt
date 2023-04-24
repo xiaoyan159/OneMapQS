@@ -20,7 +20,7 @@ class Constant {
         lateinit var DATA_PATH: String
 
         /**
-         * 用户id
+         * 当前用户ID
          */
         lateinit var USER_ID: String
 
@@ -31,11 +31,6 @@ class Constant {
          * 用户数据目录
          */
         lateinit var USER_DATA_PATH: String
-
-        /**
-         * 当前用户ID
-         */
-        lateinit var CURRENT_USER_ID: String
 
         /**
          * 离线地图目录

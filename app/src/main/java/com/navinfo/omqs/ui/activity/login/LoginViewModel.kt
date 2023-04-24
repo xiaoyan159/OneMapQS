@@ -160,7 +160,6 @@ class LoginViewModel @Inject constructor(
         Constant.USER_DATA_PATH = Constant.DATA_PATH + Constant.USER_ID + "/" + Constant.VERSION_ID
         // 在SD卡创建用户目录，解压资源等
         val userFolder = File("${Constant.DATA_PATH}/${userId}")
-        Constant.CURRENT_USER_ID = userId
         // 初始化Realm
         Realm.init(context.applicationContext)
         val password = "encryp".encodeToByteArray().copyInto(ByteArray(64))
