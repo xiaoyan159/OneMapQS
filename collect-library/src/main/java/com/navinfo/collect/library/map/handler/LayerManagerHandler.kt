@@ -16,6 +16,7 @@ import com.navinfo.collect.library.map.cluster.ClusterMarkerRenderer
 import com.navinfo.collect.library.map.layers.MyItemizedLayer
 import com.navinfo.collect.library.map.source.MapLifeNiLocationTileSource
 import com.navinfo.collect.library.map.source.NavinfoMultiMapFileTileSource
+import com.navinfo.collect.library.map.source.OMDBTileSource
 import com.navinfo.collect.library.system.Constant
 import com.navinfo.collect.library.utils.GeometryTools
 import io.realm.Realm
@@ -31,6 +32,7 @@ import org.oscim.backend.CanvasAdapter
 import org.oscim.backend.canvas.Bitmap
 import org.oscim.backend.canvas.Paint
 import org.oscim.core.GeoPoint
+import org.oscim.event.EventListener
 import org.oscim.layers.GroupLayer
 import org.oscim.layers.marker.MarkerInterface
 import org.oscim.layers.marker.MarkerItem
@@ -40,6 +42,7 @@ import org.oscim.layers.tile.buildings.BuildingLayer
 import org.oscim.layers.tile.vector.VectorTileLayer
 import org.oscim.layers.tile.vector.labeling.LabelLayer
 import org.oscim.layers.tile.vector.labeling.LabelTileLoaderHook
+import org.oscim.map.Map
 import org.oscim.map.Map.UpdateListener
 import org.oscim.tiling.source.OkHttpEngine.OkHttpFactory
 import org.oscim.tiling.source.mapfile.MapFileTileSource
@@ -85,7 +88,11 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tr
      * 增加作业渲染
      */
     private lateinit var labelNiLocationLayer: LabelLayer
-
+    /**
+     * 显示待测评OMDB数据的图层
+     * */
+    private lateinit var omdbVectorTileLayer: VectorTileLayer
+    private lateinit var omdbLabelLayer: LabelLayer
     /**
      * 文字大小
      */
@@ -103,6 +110,8 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tr
         loadBaseMap()
         //初始化之间数据图层
         initQsRecordDataLayer()
+
+        initOMDBVectorTileLayer()
 
         mapLifeNiLocationTileSource = MapLifeNiLocationTileSource(mContext, mTracePath)
 
@@ -122,6 +131,9 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tr
 
         mMapView.switchTileVectorLayerTheme(NIMapView.MAP_THEME.DEFAULT)
 
+        //初始化之间数据图层
+        initQsRecordDataLayer()
+
 
         mMapView.updateMap()
 //        initMapLifeSource()
@@ -129,10 +141,29 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tr
         mMapView.vtmMap.events.bind(UpdateListener { e, mapPosition ->
             if (e == org.oscim.map.Map.SCALE_EVENT) {
                 itemizedLayer.isEnabled = mapPosition.getZoomLevel() >= 12
+
+                // 测评数据图层在指定Zoom后开始显示
+                val isOmdbZoom = mapPosition.zoomLevel>=Constant.OMDB_MIN_ZOOM
+                baseGroupLayer?.layers?.forEach {
+                    it.isEnabled = !isOmdbZoom
+                }
+                omdbVectorTileLayer.isEnabled = isOmdbZoom
+                omdbLabelLayer.isEnabled = isOmdbZoom
             }
         })
     }
 
+    private fun initOMDBVectorTileLayer() {
+        val omdbTileSource: OMDBTileSource = OMDBTileSource()
+        omdbVectorTileLayer = VectorTileLayer(mMapView.vtmMap, omdbTileSource)
+        omdbLabelLayer = LabelLayer(mMapView.vtmMap, omdbVectorTileLayer, LabelTileLoaderHook(), Constant.OMDB_MIN_ZOOM)
+        if(omdbVectorTileLayer!=null){
+            addLayer(omdbVectorTileLayer,NIMapView.LAYER_GROUPS.VECTOR_TILE)
+        }
+        if(omdbLabelLayer!=null){
+            addLayer(omdbLabelLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
+        }
+    }
 
     /**
      * 切换基础底图样式
