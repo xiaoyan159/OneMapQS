@@ -37,9 +37,9 @@
                     android:icon="@drawable/baseline_person_24"
                     android:title="任务列表" />
                 <item
-                    android:id="@+id/personal_center_menu_offline_map3"
+                    android:id="@+id/personal_center_menu_qs_record_list"
                     android:icon="@drawable/baseline_person_24"
-                    android:title="menu_home" />
+                    android:title="我的数据" />
                 <item
                     android:id="@+id/personal_center_menu_offline_map4"
                     android:icon="@drawable/baseline_person_24"

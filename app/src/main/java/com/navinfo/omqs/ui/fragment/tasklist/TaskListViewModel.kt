@@ -52,8 +52,11 @@ class TaskListViewModel @Inject constructor(
                 else -> {}
             }
             val objects = realm.where(TaskBean::class.java).findAll()
-            liveDataTaskList.postValue(realm.copyFromRealm(objects))
-//            realm.close()
+            val taskList = realm.copyFromRealm(objects)
+            for(item in taskList){
+                FileManager.checkOMDBFileInfo(item)
+            }
+            liveDataTaskList.postValue(taskList)
         }
 
     }

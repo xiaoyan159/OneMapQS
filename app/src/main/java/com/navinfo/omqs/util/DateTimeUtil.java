@@ -1,4 +1,4 @@
-package com.navinfo.omqs.system;
+package com.navinfo.omqs.util;
 
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -13,7 +13,7 @@ import java.util.Date;
  * @Date           2023年4月17日 下午1:56:02
  * @Description:   时间工具类
  */
-public class SystemDateTime {
+public class DateTimeUtil {
     // 时间字符串
     private static String systemDate;
     // 全部时间信息

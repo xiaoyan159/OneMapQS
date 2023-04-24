@@ -16,9 +16,9 @@ import com.navinfo.collect.library.sensor.ISensor.SensorWorkingMode;
 import com.navinfo.collect.library.sensor.ISensor.enmSensorType;
 import com.navinfo.collect.library.sensor.ISensor.enmSignalQuality;
 import com.navinfo.collect.library.sensor.SensorManager;
-import com.navinfo.omqs.system.SystemConstant;
+import com.navinfo.collect.library.utils.StringUtil;
+import com.navinfo.omqs.Constant;
 import com.navinfo.omqs.util.ShareUtil;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -392,7 +392,7 @@ public class TakePhotoManager {
 
             setCameraMode(indexClent, SensorWorkingMode.CAMERA_VEDIO_TIMELAPSE);
 
-            ShareUtil.getCameraMode(mCon).setContinusTakePhotoState(SystemConstant.USER_ID, false);
+            ShareUtil.getCameraMode(mCon).setContinusTakePhotoState(Constant.USER_ID, false);
 
             StartRecording(hostBean, indexClent);
 
@@ -405,7 +405,7 @@ public class TakePhotoManager {
         if (hostBean != null) {
             CameraGarminVirbXE cameraGarminVirbXE = findCameraGarminVirbXE(hostBean, index);
             if (cameraGarminVirbXE != null) {
-                cameraGarminVirbXE.snapPicture(SystemConstant.getUuid(true));
+                cameraGarminVirbXE.snapPicture(StringUtil.Companion.createUUID());
             }
         }
     }

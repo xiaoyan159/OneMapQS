@@ -3,7 +3,7 @@ package com.navinfo.omqs.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import com.navinfo.omqs.system.SystemConstant;
+import com.navinfo.omqs.Constant;
 
 /**
  * @ClassName:     ShareUtil.java
@@ -57,9 +57,9 @@ public class ShareUtil {
 			return false;
 
 		if(mSharePre==null){
-			mSharePre = mContext.getSharedPreferences(SystemConstant.SELECT_CAMERA_STATE, Context.MODE_PRIVATE);
+			mSharePre = mContext.getSharedPreferences(Constant.SELECT_CAMERA_STATE, Context.MODE_PRIVATE);
 		}
-		return mSharePre.getBoolean(mDeviceNum+SystemConstant.USER_ID+SELECT_CAMERA_KIND, false);
+		return mSharePre.getBoolean(mDeviceNum+Constant.USER_ID+SELECT_CAMERA_KIND, false);
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class ShareUtil {
 			return ;
 
 		if(mSharePre==null){
-			mSharePre = mContext.getSharedPreferences(SystemConstant.SELECT_CAMERA_STATE, Context.MODE_PRIVATE);
+			mSharePre = mContext.getSharedPreferences(Constant.SELECT_CAMERA_STATE, Context.MODE_PRIVATE);
 		}
 
 		editor=mSharePre.edit();
@@ -98,10 +98,10 @@ public class ShareUtil {
 			return true;
 
 		if(mSharePre==null){
-			mSharePre = mContext.getSharedPreferences(SystemConstant.SELECT_TAKEPHOTO_OR_RECORD, Context.MODE_PRIVATE);
+			mSharePre = mContext.getSharedPreferences(Constant.SELECT_TAKEPHOTO_OR_RECORD, Context.MODE_PRIVATE);
 		}
 
-		return mSharePre.getBoolean(mDeviceNum+SystemConstant.USER_ID+SELECT_TAKE_PHOTO_OR_RECORD, mDeviceNum==1?true:false);
+		return mSharePre.getBoolean(mDeviceNum+Constant.USER_ID+SELECT_TAKE_PHOTO_OR_RECORD, mDeviceNum==1?true:false);
 
 	}
 
@@ -119,7 +119,7 @@ public class ShareUtil {
 			return ;
 
 		if(mSharePre==null){
-			mSharePre = mContext.getSharedPreferences(SystemConstant.SELECT_TAKEPHOTO_OR_RECORD, Context.MODE_PRIVATE);
+			mSharePre = mContext.getSharedPreferences(Constant.SELECT_TAKEPHOTO_OR_RECORD, Context.MODE_PRIVATE);
 		}
 		editor=mSharePre.edit();
 
@@ -139,9 +139,9 @@ public class ShareUtil {
 			return true;
 
 		if(mSharePre==null){
-			mSharePre = mContext.getSharedPreferences(SystemConstant.SELECT_CAMERA_STATE, Context.MODE_PRIVATE);
+			mSharePre = mContext.getSharedPreferences(Constant.SELECT_CAMERA_STATE, Context.MODE_PRIVATE);
 		}
-		return mSharePre.getBoolean(mDeviceNum+SystemConstant.USER_ID+CONTINUS_TAKE_PHOTO_STATE, true);
+		return mSharePre.getBoolean(mDeviceNum+Constant.USER_ID+CONTINUS_TAKE_PHOTO_STATE, true);
 
 	}
 
@@ -159,7 +159,7 @@ public class ShareUtil {
 			return ;
 
 		if(mSharePre==null){
-			mSharePre = mContext.getSharedPreferences(SystemConstant.SELECT_CAMERA_STATE, Context.MODE_PRIVATE);
+			mSharePre = mContext.getSharedPreferences(Constant.SELECT_CAMERA_STATE, Context.MODE_PRIVATE);
 		}
 		editor=mSharePre.edit();
 
@@ -178,9 +178,9 @@ public class ShareUtil {
 			return false;
 
 		if(mSharePre==null){
-			mSharePre = mContext.getSharedPreferences(SystemConstant.CAMERA_CONNECT_STATE, Context.MODE_PRIVATE);
+			mSharePre = mContext.getSharedPreferences(Constant.CAMERA_CONNECT_STATE, Context.MODE_PRIVATE);
 		}
-		return mSharePre.getBoolean(mDeviceNum+SystemConstant.USER_ID+CAMERA_CONNECT_STATE, false);
+		return mSharePre.getBoolean(mDeviceNum+Constant.USER_ID+CAMERA_CONNECT_STATE, false);
 	}
 
 	/**
@@ -197,7 +197,7 @@ public class ShareUtil {
 			return ;
 
 		if(mSharePre==null){
-			mSharePre = mContext.getSharedPreferences(SystemConstant.CAMERA_CONNECT_STATE, Context.MODE_PRIVATE);
+			mSharePre = mContext.getSharedPreferences(Constant.CAMERA_CONNECT_STATE, Context.MODE_PRIVATE);
 		}
 		editor=mSharePre.edit();
 
@@ -216,10 +216,10 @@ public class ShareUtil {
 			return 0;
 
 		if(mSharePre==null){
-			mSharePre = mContext.getSharedPreferences(SystemConstant.TAKE_CAMERA_MODE, Context.MODE_PRIVATE);
+			mSharePre = mContext.getSharedPreferences(Constant.TAKE_CAMERA_MODE, Context.MODE_PRIVATE);
 		}
 
-		return mSharePre.getInt(mDeviceNum+SystemConstant.USER_ID+TAKE_CAMERA_MODE, mDeviceNum==1?0:1);
+		return mSharePre.getInt(mDeviceNum+Constant.USER_ID+TAKE_CAMERA_MODE, mDeviceNum==1?0:1);
 
 	}
 
@@ -238,7 +238,7 @@ public class ShareUtil {
 
 
 		if(mSharePre==null){
-			mSharePre = mContext.getSharedPreferences(SystemConstant.TAKE_CAMERA_MODE, Context.MODE_PRIVATE);
+			mSharePre = mContext.getSharedPreferences(Constant.TAKE_CAMERA_MODE, Context.MODE_PRIVATE);
 		}
 		editor=mSharePre.edit();
 
@@ -257,9 +257,9 @@ public class ShareUtil {
 			return "";
 
 		if(mSharePre==null){
-			mSharePre = mContext.getSharedPreferences(SystemConstant.TAKE_CAMERA_IP, Context.MODE_PRIVATE);
+			mSharePre = mContext.getSharedPreferences(Constant.TAKE_CAMERA_IP, Context.MODE_PRIVATE);
 		}
-		String ip=mSharePre.getString(mDeviceNum+SystemConstant.USER_ID+TAKE_CAMERA_IP, "");
+		String ip=mSharePre.getString(mDeviceNum+Constant.USER_ID+TAKE_CAMERA_IP, "");
 		return ip;
 	}
 
@@ -277,7 +277,7 @@ public class ShareUtil {
 			return ;
 
 		if(mSharePre==null){
-			mSharePre = mContext.getSharedPreferences(SystemConstant.TAKE_CAMERA_IP, Context.MODE_PRIVATE);
+			mSharePre = mContext.getSharedPreferences(Constant.TAKE_CAMERA_IP, Context.MODE_PRIVATE);
 		}
 
 		editor=mSharePre.edit();
@@ -297,9 +297,9 @@ public class ShareUtil {
 			return "";
 
 		if(mSharePre==null){
-			mSharePre = mContext.getSharedPreferences(SystemConstant.TAKE_CAMERA_MAC, Context.MODE_PRIVATE);
+			mSharePre = mContext.getSharedPreferences(Constant.TAKE_CAMERA_MAC, Context.MODE_PRIVATE);
 		}
-		String mac=mSharePre.getString(mDeviceNum+SystemConstant.USER_ID+TAKE_CAMERA_MAC, "");
+		String mac=mSharePre.getString(mDeviceNum+Constant.USER_ID+TAKE_CAMERA_MAC, "");
 		return mac;
 	}
 
@@ -317,7 +317,7 @@ public class ShareUtil {
 			return ;
 
 		if(mSharePre==null){
-			mSharePre = mContext.getSharedPreferences(SystemConstant.TAKE_CAMERA_MAC, Context.MODE_PRIVATE);
+			mSharePre = mContext.getSharedPreferences(Constant.TAKE_CAMERA_MAC, Context.MODE_PRIVATE);
 		}
 
 		editor=mSharePre.edit();

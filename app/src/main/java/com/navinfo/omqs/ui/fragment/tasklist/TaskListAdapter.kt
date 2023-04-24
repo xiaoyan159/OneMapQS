@@ -23,7 +23,7 @@ import com.navinfo.omqs.ui.other.BaseViewHolder
  *使用 LifecycleRegistry 给 ViewHolder 分发生命周期(这里使用了这个)
  */
 class TaskListAdapter(
-    private val downloadManager: TaskDownloadManager, private val context: Context
+    private val downloadManager: TaskDownloadManager
 ) : BaseRecyclerViewAdapter<TaskBean>() {
 
 
@@ -70,6 +70,8 @@ class TaskListAdapter(
         binding.taskDownloadBtn.tag = position
         binding.taskDownloadBtn.setOnClickListener(downloadBtnClick)
         binding.taskName.text = taskBean.evaluationTaskName
+        binding.taskCityName.text = taskBean.cityName
+        binding.taskDataVersion.text = "版本号：${taskBean.dataVersion}"
 //        binding.offlineMapCitySize.text = cityBean.getFileSizeText()
     }
 
@@ -82,10 +84,12 @@ class TaskListAdapter(
     }
 
 
-    private fun changeViews(binding: AdapterTaskListBinding, cityBean: TaskBean) {
-        binding.taskProgress.progress =
-            (cityBean.currentSize * 100 / cityBean.fileSize).toInt()
-        when (cityBean.status) {
+    private fun changeViews(binding: AdapterTaskListBinding, taskBean: TaskBean) {
+        if (taskBean.fileSize > 0L) {
+            binding.taskProgress.progress =
+                (taskBean.currentSize * 100 / taskBean.fileSize).toInt()
+        }
+        when (taskBean.status) {
             FileDownloadStatus.NONE -> {
                 if (binding.taskProgress.visibility == View.VISIBLE) binding.taskProgress.visibility =
                     View.INVISIBLE

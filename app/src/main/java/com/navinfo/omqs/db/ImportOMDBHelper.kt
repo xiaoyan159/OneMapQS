@@ -36,7 +36,7 @@ class ImportOMDBHelper @AssistedInject constructor(@Assisted("context") val cont
     @Inject
     lateinit var gson: Gson
     private val database by lazy { omdbHiltFactory.obtainOmdbDataBaseHelper(context, omdbFile.absolutePath, 1).writableDatabase }
-    private val configFile: File = File("${Constant.DATA_PATH}/${Constant.CURRENT_USER_ID}", Constant.OMDB_CONFIG)
+    private val configFile: File = File("${Constant.USER_DATA_PATH}", Constant.OMDB_CONFIG)
 
     /**
      * 读取config的配置文件
