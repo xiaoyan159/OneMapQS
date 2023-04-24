@@ -1549,4 +1549,9 @@
             <symbol src="assets:symbols/dot_blue.svg" />
         </m>
     </m>
+
+    <m k="QIcode">
+        <!-- 道路线 -->
+        <m v="2001"></m>
+    </m>
 </rendertheme>

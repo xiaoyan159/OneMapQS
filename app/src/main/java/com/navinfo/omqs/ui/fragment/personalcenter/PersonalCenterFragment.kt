@@ -98,19 +98,11 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
 
                         override fun onResult(uri: Uri) {
                             val file = UriUtils.uri2File(uri)
-                            val importOMDBHelper: ImportOMDBHelper =
-                                importOMDBHiltFactory.obtainImportOMDBHelper(
+                            val importOMDBHelper: ImportOMDBHelper = importOMDBHiltFactory.obtainImportOMDBHelper(
                                     requireContext(),
                                     file
                                 )
                                 viewModel.importOMDBData(importOMDBHelper)
-//                            // 开始导入数据
-//                            CoroutineUtils.launchWithLoading(
-//                                requireContext(),
-//                                loadingMessage = "导入数据..."
-//                            ) {
-//
-//                            }
                         }
                     })
                 }
@@ -122,14 +114,13 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
 
                         override fun onResult(uri: Uri) {
                             viewModel.importScProblemData(uri)
-
                         }
                     })
                 }
                 R.id.personal_center_menu_test -> {
                     viewModel.readRealmData()
                     // 定位到指定位置
-                    niMapController.mMapView.vtmMap.animator().animateTo(GeoPoint(28.608398, 115.67901))
+                    niMapController.mMapView.vtmMap.animator().animateTo(GeoPoint(30.21137798479949, 113.84832672274896))
                 }
                 R.id.personal_center_menu_task_list -> {
                     findNavController().navigate(R.id.TaskListFragment)
