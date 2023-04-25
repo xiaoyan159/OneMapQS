@@ -116,6 +116,18 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tr
         mMapView.updateMap()
 //        initMapLifeSource()
 
+        // 设置矢量图层均在12级以上才显示
+        mMapView.vtmMap.events.bind(UpdateListener { e, mapPosition ->
+            if (e == org.oscim.map.Map.SCALE_EVENT) {
+                // 测评数据图层在指定Zoom后开始显示
+                val isOmdbZoom = mapPosition.zoomLevel>=Constant.OMDB_MIN_ZOOM
+                baseGroupLayer?.layers?.forEach {
+                    it.isEnabled = !isOmdbZoom
+                }
+                omdbVectorTileLayer.isEnabled = isOmdbZoom
+                omdbLabelLayer.isEnabled = isOmdbZoom
+            }
+        })
     }
 
     private fun initOMDBVectorTileLayer() {
