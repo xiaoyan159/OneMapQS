@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:tns="http://opensciencemap.org/rendertheme"
-           xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
-           targetNamespace="http://opensciencemap.org/rendertheme" xml:lang="en">
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    targetNamespace="http://opensciencemap.org/rendertheme" xml:lang="en">
 
     <!-- attribute types -->
     <xs:simpleType name="cap">
@@ -81,7 +81,7 @@
     <xs:simpleType name="strokeDasharray">
         <xs:restriction base="xs:string">
             <xs:pattern
-                    value="([0-9]+(\.[0-9]+)? *, *[0-9]+(\.[0-9]+)? *, *)*[0-9]+(\.[0-9]+)? *, *[0-9]+(\.[0-9]+)?"/>
+                value="([0-9]+(\.[0-9]+)? *, *[0-9]+(\.[0-9]+)? *, *)*[0-9]+(\.[0-9]+)? *, *[0-9]+(\.[0-9]+)?"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -357,9 +357,9 @@
         <xs:attribute name="version" type="xs:positiveInteger" use="required"/>
         <xs:attribute name="map-background" default="#ffffff" type="tns:color" use="optional"/>
         <xs:attribute name="base-stroke-width" default="1" type="tns:nonNegativeFloat"
-                      use="optional"/>
+            use="optional"/>
         <xs:attribute name="base-text-scale" default="1" type="tns:nonNegativeFloat"
-                      use="optional"/>
+            use="optional"/>
     </xs:complexType>
 
     <!-- root element -->

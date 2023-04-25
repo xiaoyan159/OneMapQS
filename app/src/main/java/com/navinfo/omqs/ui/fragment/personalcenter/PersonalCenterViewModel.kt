@@ -10,22 +10,17 @@ import com.blankj.utilcode.util.UriUtils
 import com.blankj.utilcode.util.ZipUtils
 import com.google.gson.Gson
 import com.navinfo.collect.library.data.entity.*
-import com.navinfo.collect.library.map.NIMapController
-import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.bean.ScProblemTypeBean
 import com.navinfo.omqs.bean.ScRootCauseAnalysisBean
 import com.navinfo.omqs.db.ImportOMDBHelper
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.db.RoomAppDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
-import io.realm.Realm
-import io.realm.RealmDictionary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.WorkbookFactory
-import org.locationtech.jts.geom.Point
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -151,9 +146,8 @@ class PersonalCenterViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val file = UriUtils.uri2File(uri)
-                val inputStream: InputStream =
-                    FileInputStream(file) //getAssets().open("sample.xlsx")
-                val workbook = WorkbookFactory.create(inputStream)
+                val inputStream: InputStream = FileInputStream(file) //getAssets().open("sample.xlsx")
+                val workbook = XSSFWorkbook(inputStream)
                 //获取所有sheet
                 val sheet1 = workbook.getSheet("SC_PROBLEM_TYPE")
                 sheet1?.let {
