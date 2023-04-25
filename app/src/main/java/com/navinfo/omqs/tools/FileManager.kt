@@ -16,8 +16,10 @@ class FileManager {
             const val LOADING = 2 //下载中
             const val PAUSE = 3 //暂停
             const val ERROR = 4 //错误
-            const val DONE = 5 //完成
-            const val UPDATE = 6 //有新版本要更新
+            const val IMPORT = 5 //安装
+            const val IMPORTING = 6 //安装中
+            const val UPDATE = 7 //有新版本要更新
+            const val DONE = 8 //完成
         }
 
         //初始化数据文件夹
@@ -109,60 +111,28 @@ class FileManager {
          * 检查离线地图文件
          */
         suspend fun checkOMDBFileInfo(taskBean: TaskBean) {
+            if (taskBean.status == FileDownloadStatus.DONE)
+                return
             //访问离线地图文件夹
             val fileDir = File("${Constant.DOWNLOAD_PATH}")
             //如果连本地文件夹还没有，就不用修改任何数据了
             if (!fileDir.exists()) {
                 return
             }
-            //访问离线地图临时下载文件夹
-            val fileTempDir = File(Constant.DOWNLOAD_PATH)
-            //是否有一份.map文件了
-            var mapFile: File? = null
             //文件夹里文件挨个访问
             for (item in fileDir.listFiles()) {
                 //先找到对应的省市文件，例如：540000_西藏自治区_20230401195018.map",以id开头
-                if (item.isFile && item.name.startsWith("${taskBean.id}_")) {
-                    //如果本地文件与从网络获取到版本号一致，表示这个文件已经下载完毕,不用处理了
-                    if (item.name == "${taskBean.id}_${taskBean.dataVersion}") {
-                        taskBean.status = FileDownloadStatus.DONE
-                        return
+                if (item.isFile && item.name == "${taskBean.evaluationTaskName}_${taskBean.dataVersion}.zip") {
+                    taskBean.currentSize = item.length()
+                    if (taskBean.fileSize > 0 && taskBean.fileSize == item.length()) {
+                        taskBean.status = FileDownloadStatus.IMPORT
+                    } else {
+                        taskBean.status = FileDownloadStatus.PAUSE
                     }
-                    //文件存在，版本号不对应，留给下面流程处理
-                    mapFile = item
-                    break
+                    return
                 }
             }
-            //临时下载文件夹
-            if (fileTempDir.exists()) {
-                for (item in fileTempDir.listFiles()) {
-                    //先找到对应的省市文件，例如：540000_20230401195018",以id开头
-                    if (item.isFile && item.name.startsWith("${taskBean.id}_")) {
-                        //如果本地文件与从网络获取到版本号一致，表示这个文件已经在下载列表中
-                        if (item.name == "${taskBean.id}_${taskBean.dataVersion}") {
-                            //如果这个临时文件的大小和下载大小是一致的，说明已经下载完了，但是在下载环节没有更名移动成功，需要重命名和移动文件夹
-                            if (item.length() == taskBean.fileSize) {
-                                //移动更名文件后删除旧数据，修改状态
-                                if (item.renameTo(File("${Constant.OFFLINE_MAP_PATH}${taskBean.evaluationTaskName}.zip"))) {
-                                    //删除旧版本数据
-                                    mapFile?.delete()
-                                    taskBean.status = FileDownloadStatus.DONE
-                                    return
-                                }
-                            } else { // 临时文件大小和目标不一致，说明下载了一半
-                                taskBean.status = FileDownloadStatus.PAUSE
-                                taskBean.currentSize = item.length()
-                                return
-                            }
-                        } else { //虽然省市id开头一致，但是版本号不一致，说明之前版本下载了一部分，现在要更新了，原来下载的文件直接删除
-                            taskBean.status = FileDownloadStatus.UPDATE
-                            item.delete()
-                            return
-                        }
-                        break
-                    }
-                }
-            }
+            taskBean.status = FileDownloadStatus.NONE
         }
     }
 }

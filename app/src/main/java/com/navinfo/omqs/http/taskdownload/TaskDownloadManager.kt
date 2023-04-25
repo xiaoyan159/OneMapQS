@@ -1,23 +1,32 @@
 package com.navinfo.omqs.http.taskdownload
 
+import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.navinfo.omqs.bean.TaskBean
+import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
+import com.navinfo.omqs.hilt.OMDBDataBaseHiltFactory
 import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
+import dagger.hilt.android.qualifiers.ActivityContext
 import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
 
 
 /**
  * 管理任务数据下载
  */
 
-class TaskDownloadManager(
+class TaskDownloadManager constructor(
+    val importFactory: ImportOMDBHiltFactory,
     val netApi: RetrofitNetworkServiceAPI,
 ) {
+
+    lateinit var context: Context
+
     /**
      * 最多同时下载数量
      */
-    private val MAX_SCOPE = 3
+    private val MAX_SCOPE = 1
 
     /**
      * 存储有哪些城市需要下载的队列
@@ -33,6 +42,9 @@ class TaskDownloadManager(
         ConcurrentHashMap<Int, TaskDownloadScope>()
     }
 
+    fun init(context: Context) {
+        this.context = context
+    }
 
     /**
      * 启动下载任务
@@ -92,7 +104,7 @@ class TaskDownloadManager(
 
     fun addTask(taskBean: TaskBean) {
         if (!scopeMap.containsKey(taskBean.id)) {
-            scopeMap[taskBean.id] = TaskDownloadScope(this, taskBean)
+            scopeMap[taskBean.id] = TaskDownloadScope( this, taskBean)
         }
     }
 

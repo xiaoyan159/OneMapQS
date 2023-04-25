@@ -4,10 +4,8 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
-import com.blankj.utilcode.util.ToastUtils
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.NiLocationListener
 import com.navinfo.omqs.Constant
@@ -34,10 +32,10 @@ class MainActivity : BaseActivity() {
     @Inject
     lateinit var offlineMapDownloadManager: OfflineMapDownloadManager
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         //初始化地图
         mapController.init(

@@ -30,6 +30,7 @@ class TaskListFragment : BaseFragment(){
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        downloadManager.init(requireContext())
         _binding = FragmentTaskListBinding.inflate(inflater, container, false)
         return binding.root
 

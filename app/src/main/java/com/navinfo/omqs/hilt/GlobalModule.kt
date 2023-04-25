@@ -17,6 +17,7 @@ import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.realm.Realm
 import kotlinx.coroutines.*
@@ -36,7 +37,7 @@ class GlobalModule {
 
     @Singleton
     @Provides
-    fun provideApplication(application: Application): OMQSApplication {
+    fun provideApplication(@ApplicationContext application: Application): OMQSApplication {
         return application as OMQSApplication
     }
 
