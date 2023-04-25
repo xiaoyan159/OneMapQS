@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityLoginBinding
+import com.navinfo.omqs.ui.activity.CheckPermissionsActivity
 import com.navinfo.omqs.ui.activity.PermissionsActivity
 import com.navinfo.omqs.ui.activity.map.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 
 @AndroidEntryPoint
-class LoginActivity : PermissionsActivity() {
+class LoginActivity : CheckPermissionsActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private val viewModel by viewModels<LoginViewModel>()
@@ -95,15 +96,6 @@ class LoginActivity : PermissionsActivity() {
         } else {
             loginDialog!!.setMessage(message)
         }
-    }
-
-    //进应用根本不调用，待查
-    override fun onPermissionsGranted() {
-        Log.e("jingo", "调用了吗")
-
-    }
-
-    override fun onPermissionsDenied() {
     }
 
     override fun onDestroy() {

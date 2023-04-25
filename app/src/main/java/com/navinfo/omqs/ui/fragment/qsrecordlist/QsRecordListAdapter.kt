@@ -28,6 +28,7 @@ class QsRecordListAdapter(
     private val context: Context
 ) : BaseRecyclerViewAdapter<QsRecordBean>() {
 
+    private var itemClickListener: IKotlinItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val viewBinding =
@@ -46,6 +47,10 @@ class QsRecordListAdapter(
         val qsRecordBean = data[position]
         //tag 方便onclick里拿到数据
         holder.tag = qsRecordBean.id.toString()
+        // 点击事件
+        holder.itemView.setOnClickListener {
+            itemClickListener!!.onItemClickListener(position)
+        }
         changeViews(binding, qsRecordBean)
     }
 
@@ -58,6 +63,16 @@ class QsRecordListAdapter(
 
     override fun getItemViewRes(position: Int): Int {
         return R.layout.adapter_qs_record_list
+    }
+
+    // 提供set方法
+    fun setOnKotlinItemClickListener(itemClickListener: IKotlinItemClickListener) {
+        this.itemClickListener = itemClickListener
+    }
+
+    //自定义接口
+    interface IKotlinItemClickListener {
+        fun onItemClickListener(position: Int)
     }
 }
 

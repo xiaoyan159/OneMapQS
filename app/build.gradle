@@ -12,12 +12,16 @@ android {
 
     defaultConfig {
         applicationId "com.navinfo.omqs"
-        minSdk 26
-        targetSdk 33
+        minSdk 21
+        targetSdk 21
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+
+        ndk {
+            abiFilters "armeabi-v7a", "armeabi", "mips"
+        }
     }
 
     buildTypes {
@@ -37,7 +41,18 @@ android {
         viewBinding true
         dataBinding true
     }
-
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+        debug.setRoot('build-types/debug')
+        release.setRoot('build-types/release')
+    }
+    //添加如下配置就ok了
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
 }
 
 
@@ -45,7 +60,6 @@ android {
 dependencies {
 
     implementation project(':collect-library')
-
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -72,8 +86,8 @@ dependencies {
     kapt "androidx.room:room-ktx:2.5.1"
 
     //读取excel word等文件
-    implementation 'org.apache.poi:poi:5.2.3'
-    implementation 'org.apache.poi:poi-ooxml:5.2.3'
+    implementation 'org.apache.poi:poi:4.0.0'
+    implementation 'org.apache.poi:poi-ooxml:4.0.0'
 
     // 读取spatialite文件
     implementation 'com.github.sevar83:android-spatialite:2.0.1'
