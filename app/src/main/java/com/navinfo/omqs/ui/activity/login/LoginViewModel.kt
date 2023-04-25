@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.ResourceUtils
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.LoginUserBean
+import com.navinfo.omqs.db.MyRealmModule
 import com.navinfo.omqs.db.RoomAppDatabase
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
@@ -168,7 +169,7 @@ class LoginViewModel @Inject constructor(
             .directory(userFolder)
             .name("OMQS.realm")
             .encryptionKey(password)
-//            .modules(Realm.getDefaultModule(), MyRealmModule())
+            .modules(Realm.getDefaultModule(), MyRealmModule())
             .schemaVersion(1)
             .build()
         Realm.setDefaultConfiguration(config)

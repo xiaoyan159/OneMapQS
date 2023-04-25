@@ -1,6 +1,7 @@
 package com.navinfo.omqs.ui.activity.map
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
@@ -14,6 +15,7 @@ import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
+import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
 import com.navinfo.omqs.system.SystemConstant
 import com.navinfo.omqs.ui.activity.BaseActivity
 import com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultFragment
@@ -37,10 +39,10 @@ class MainActivity : BaseActivity() {
     @Inject
     lateinit var offlineMapDownloadManager: OfflineMapDownloadManager
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         //初始化地图
         mapController.init(
@@ -48,7 +50,7 @@ class MainActivity : BaseActivity() {
             binding.mainActivityMap,
             null,
             Constant.MAP_PATH,
-            Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite"
+            Constant.DATA_PATH + SystemConstant.USER_ID + "/trace.sqlite"
         )
         //关联生命周期
         binding.lifecycleOwner = this

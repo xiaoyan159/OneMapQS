@@ -6,6 +6,7 @@ import com.navinfo.omqs.system.SystemConstant
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import io.realm.RealmList
 import io.realm.RealmObject
+import io.realm.annotations.Ignore
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
 
@@ -56,9 +57,11 @@ open class TaskBean @JvmOverloads constructor(
     /**
      * 当前下载状态
      */
-    var status: Int = FileDownloadStatus.NONE
-) : RealmObject(){
-    fun getDownLoadUrl():String{
+    var status: Int = FileDownloadStatus.NONE,
+    @Ignore
+    var message: String = ""
+) : RealmObject() {
+    fun getDownLoadUrl(): String {
         return "${Constant.SERVER_ADDRESS}devcp/download?fileStr=26"
     }
 }

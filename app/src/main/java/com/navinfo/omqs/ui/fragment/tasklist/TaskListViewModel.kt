@@ -27,12 +27,28 @@ class TaskListViewModel @Inject constructor(
     fun getTaskList(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val realm = Realm.getDefaultInstance()
-            Log.e("jingo","realm hashCOde ${realm.hashCode()}")
+            Log.e("jingo", "realm hashCOde ${realm.hashCode()}")
+            var taskList: List<TaskBean> = mutableListOf()
             when (val result = networkService.getTaskList("02911")) {
                 is NetResult.Success -> {
                     if (result.data != null) {
                         realm.executeTransaction {
-                            realm.copyToRealmOrUpdate(result.data.obj)
+                            result.data.obj?.let { list ->
+                                for (task in list) {
+                                    val item = realm.where(TaskBean::class.java).equalTo(
+                                        "id", task.id
+                                    ).findFirst()
+                                    if (item != null) {
+                                        task.fileSize = item.fileSize
+                                        Log.e("jingo", "当前文件大小 ${task.fileSize}")
+                                        task.status = item.status
+                                        task.currentSize = item.currentSize
+                                    }
+                                    realm.copyToRealmOrUpdate(task)
+                                }
+                            }
+                            val objects = realm.where(TaskBean::class.java).findAll()
+                            taskList = realm.copyFromRealm(objects)
                         }
                     }
                 }
@@ -51,9 +67,8 @@ class TaskListViewModel @Inject constructor(
                 is NetResult.Loading -> {}
                 else -> {}
             }
-            val objects = realm.where(TaskBean::class.java).findAll()
-            val taskList = realm.copyFromRealm(objects)
-            for(item in taskList){
+
+            for (item in taskList) {
                 FileManager.checkOMDBFileInfo(item)
             }
             liveDataTaskList.postValue(taskList)
