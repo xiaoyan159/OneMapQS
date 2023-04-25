@@ -84,8 +84,7 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
 
                         override fun onResult(uri: Uri) {
                             val file = UriUtils.uri2File(uri)
-                            val importOMDBHelper: ImportOMDBHelper =
-                                importOMDBHiltFactory.obtainImportOMDBHelper(
+                            val importOMDBHelper: ImportOMDBHelper = importOMDBHiltFactory.obtainImportOMDBHelper(
                                     requireContext(),
                                     file
                                 )
