@@ -75,7 +75,7 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) : Bas
             //可选，默认gcj02，设置返回的定位结果坐标系，如果配合百度地图使用，建议设置为bd09ll;
             locationOption.setCoorType("gcj02")
             //可选，默认0，即仅定位一次，设置发起连续定位请求的间隔需要大于等于1000ms才是有效的
-            locationOption.setScanSpan(1000)
+            locationOption.setScanSpan(1200)
             //可选，设置是否需要地址信息，默认不需要
             locationOption.setIsNeedAddress(false)
             //可选，设置是否需要地址描述
@@ -97,11 +97,11 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) : Bas
             //可选，默认false，设置定位时是否需要海拔信息，默认不需要，除基础定位版本都可用
             locationOption.setIsNeedAltitude(true)
             //设置打开自动回调位置模式，该开关打开后，期间只要定位SDK检测到位置变化就会主动回调给开发者，该模式下开发者无需再关心定位间隔是多少，定位SDK本身发现位置变化就会及时回调给开发者
-//        locationOption.setOpenAutoNotifyMode()
+            locationOption.setOpenAutoNotifyMode()
             //设置打开自动回调位置模式，该开关打开后，期间只要定位SDK检测到位置变化就会主动回调给开发者
-            locationOption.setOpenAutoNotifyMode(
-                1000, 1, LocationClientOption.LOC_SENSITIVITY_HIGHT
-            )
+/*            locationOption.setOpenAutoNotifyMode(
+                5, 1, LocationClientOption.LOC_SENSITIVITY_HIGHT
+            )*/
             //需将配置好的LocationClientOption对象，通过setLocOption方法传递给LocationClient对象使用
             locationClient.locOption = locationOption
         } catch (e: Throwable) {

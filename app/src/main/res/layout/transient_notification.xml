@@ -32,6 +32,6 @@
         android:shadowColor="#BB000000"
         android:shadowRadius="2.75"
         android:textAppearance="@android:style/TextAppearance.Small"
-        android:textColor="@android:color/background_light" />
+        android:textColor="@android:color/white" />
 
 </LinearLayout>

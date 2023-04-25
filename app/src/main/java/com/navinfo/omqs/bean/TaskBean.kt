@@ -2,7 +2,6 @@ package com.navinfo.omqs.bean
 
 import com.google.gson.annotations.SerializedName
 import com.navinfo.omqs.Constant
-import com.navinfo.omqs.system.SystemConstant
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import io.realm.RealmList
 import io.realm.RealmObject
