@@ -714,38 +714,38 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
         if (indexClentCamera == 2)
             resId = R.id.main_activity_camera2;
 
-        Drawable drawable = context.getResources().getDrawable(R.mipmap.icon_page_video_a0);
+        Drawable drawable = context.getResources().getDrawable(R.drawable.icon_page_video_a0);
 
         ShareUtil shareUtil = new ShareUtil(context, indexClentCamera);
         //0为录像模式
         if (shareUtil.getTakeCameraMode() == 0) {
             switch (statusType) {
                 case 0:
-                    drawable = context.getResources().getDrawable(R.mipmap.icon_page_video_a0);
+                    drawable = context.getResources().getDrawable(R.drawable.icon_page_video_a0);
                     break;
                 case 1:
-                    drawable = context.getResources().getDrawable(R.mipmap.icon_page_video_a1);
+                    drawable = context.getResources().getDrawable(R.drawable.icon_page_video_a1);
                     break;
                 case 2:
-                    drawable = context.getResources().getDrawable(R.mipmap.icon_page_video_a2);
+                    drawable = context.getResources().getDrawable(R.drawable.icon_page_video_a2);
                     break;
                 case 3:
-                    drawable = context.getResources().getDrawable(R.mipmap.icon_page_video_a3);
+                    drawable = context.getResources().getDrawable(R.drawable.icon_page_video_a3);
                     break;
             }
         } else {
             switch (statusType) {
                 case 0:
-                    drawable = context.getResources().getDrawable(R.mipmap.icon_page_take_photo_a0);
+                    drawable = context.getResources().getDrawable(R.drawable.icon_page_take_photo_a0);
                     break;
                 case 1:
-                    drawable = context.getResources().getDrawable(R.mipmap.icon_page_take_photo_a1);
+                    drawable = context.getResources().getDrawable(R.drawable.icon_page_take_photo_a1);
                     break;
                 case 2:
-                    drawable = context.getResources().getDrawable(R.mipmap.icon_page_take_photo_a2);
+                    drawable = context.getResources().getDrawable(R.drawable.icon_page_take_photo_a2);
                     break;
                 case 3:
-                    drawable = context.getResources().getDrawable(R.mipmap.icon_page_take_photo_a3);
+                    drawable = context.getResources().getDrawable(R.drawable.icon_page_take_photo_a3);
                     break;
             }
         }
@@ -1597,9 +1597,9 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
     }
 
     private void setmImgViewImageDrawable(int type) {
-        Drawable drawable = getContext().getResources().getDrawable(R.mipmap.icon_camera_img);
+        Drawable drawable = getContext().getResources().getDrawable(R.drawable.icon_camera_img);
         if (type == 1)
-            drawable = getContext().getResources().getDrawable(R.mipmap.icon_camera_take_photo_img);
+            drawable = getContext().getResources().getDrawable(R.drawable.icon_camera_take_photo_img);
 
         if (mImgView != null)
             mImgView.setImageDrawable(drawable);
