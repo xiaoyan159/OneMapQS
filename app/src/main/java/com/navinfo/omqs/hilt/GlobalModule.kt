@@ -1,20 +1,23 @@
 package com.navinfo.omqs.hilt
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import androidx.room.Room
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.OMQSApplication
 import com.navinfo.omqs.db.RoomAppDatabase
 import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
+import com.navinfo.omqs.tools.IntTypeAdapter
 import com.tencent.wcdb.database.SQLiteCipherSpec
 import com.tencent.wcdb.room.db.WCDBOpenHelperFactory
 import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.realm.Realm
 import kotlinx.coroutines.*
@@ -34,7 +37,7 @@ class GlobalModule {
 
     @Singleton
     @Provides
-    fun provideApplication(application: Application): OMQSApplication {
+    fun provideApplication(@ApplicationContext application: Application): OMQSApplication {
         return application as OMQSApplication
     }
 
@@ -86,7 +89,12 @@ class GlobalModule {
 
     @Provides
     @Singleton
-    fun provideGson(): Gson = Gson()
+    fun provideGson(): Gson = GsonBuilder()
+            // 解决解析Json时将int类型自动转换为Double的问题
+        .registerTypeAdapter(object : TypeToken<Map<String, Any?>>() {}.getType(), IntTypeAdapter())
+        .registerTypeAdapter(object : TypeToken<Map<String, Any>>() {}.getType(), IntTypeAdapter())
+        .registerTypeAdapter(object : TypeToken<Map<Any, Any>>() {}.getType(), IntTypeAdapter())
+        .create()
 
     @Provides
     @Singleton

@@ -30,13 +30,24 @@ import kotlin.streams.toList
 /**
  * 导入omdb数据的帮助类
  * */
-class ImportOMDBHelper @AssistedInject constructor(@Assisted("context") val context: Context,@Assisted("omdbFile") val omdbFile: File) {
+class ImportOMDBHelper @AssistedInject constructor(
+    @Assisted("context") val context: Context,
+    @Assisted("omdbFile") val omdbFile: File
+) {
     @Inject
     lateinit var omdbHiltFactory: OMDBDataBaseHiltFactory
+
     @Inject
     lateinit var gson: Gson
-    private val database by lazy { omdbHiltFactory.obtainOmdbDataBaseHelper(context, omdbFile.absolutePath, 1).writableDatabase }
-    private val configFile: File = File("${Constant.USER_DATA_PATH}", Constant.OMDB_CONFIG)
+    private val database by lazy {
+        omdbHiltFactory.obtainOmdbDataBaseHelper(
+            context,
+            omdbFile.absolutePath,
+            1
+        ).writableDatabase
+    }
+    private val configFile: File =
+        File("${Constant.DATA_PATH}/${Constant.CURRENT_USER_ID}", Constant.OMDB_CONFIG)
 
     /**
      * 读取config的配置文件
@@ -67,8 +78,10 @@ class ImportOMDBHelper @AssistedInject constructor(@Assisted("context") val cont
                         }
                     }.toList()
 
-                    val cursor = database.query(table, finalColumns.toTypedArray(), "1=1",
-                        mutableListOf<String>().toTypedArray(), null, null, null, null)
+                    val cursor = database.query(
+                        table, finalColumns.toTypedArray(), "1=1",
+                        mutableListOf<String>().toTypedArray(), null, null, null, null
+                    )
                     with(cursor) {
                         if (moveToFirst()) {
                             while (moveToNext()) {
@@ -76,13 +89,17 @@ class ImportOMDBHelper @AssistedInject constructor(@Assisted("context") val cont
                                 for (columnIndex in 0 until columnCount) {
                                     var columnName = getColumnName(columnIndex)
                                     if (columnName.startsWith("ST_AsText(")) {
-                                        columnName = columnName.replace("ST_AsText(", "").substringBeforeLast(")")
+                                        columnName = columnName.replace("ST_AsText(", "")
+                                            .substringBeforeLast(")")
                                     }
-                                    when(getType(columnIndex)) {
+                                    when (getType(columnIndex)) {
                                         FIELD_TYPE_NULL -> rowMap[columnName] = ""
-                                        FIELD_TYPE_INTEGER -> rowMap[columnName] = getInt(columnIndex)
-                                        FIELD_TYPE_FLOAT -> rowMap[columnName] = getFloat(columnIndex)
-                                        FIELD_TYPE_BLOB -> rowMap[columnName] = String(getBlob(columnIndex), Charsets.UTF_8)
+                                        FIELD_TYPE_INTEGER -> rowMap[columnName] =
+                                            getInt(columnIndex)
+                                        FIELD_TYPE_FLOAT -> rowMap[columnName] =
+                                            getFloat(columnIndex)
+                                        FIELD_TYPE_BLOB -> rowMap[columnName] =
+                                            String(getBlob(columnIndex), Charsets.UTF_8)
                                         else -> rowMap[columnName] = getString(columnIndex)
                                     }
                                 }
@@ -104,54 +121,60 @@ class ImportOMDBHelper @AssistedInject constructor(@Assisted("context") val cont
     suspend fun importOmdbZipFile(omdbZipFile: File): Flow<String> = withContext(Dispatchers.IO) {
         val importConfig = openConfigFile()
         val unZipFolder = File(omdbZipFile.parentFile, "result")
-        flow<String> {
+        flow {
             if (unZipFolder.exists()) {
                 unZipFolder.deleteRecursively()
             }
             unZipFolder.mkdirs()
             // 开始解压zip文件
             val unZipFiles = ZipUtils.unzipFile(omdbZipFile, unZipFolder)
+            // 将listResult数据插入到Realm数据库中
+            Realm.getDefaultInstance().beginTransaction()
             // 遍历解压后的文件，读取该数据返回
             for ((index, currentConfig) in importConfig.tables.withIndex()) {
                 val txtFile = unZipFiles.find {
                     it.name == currentConfig.table
                 }
 
-                val listResult: MutableList<Map<String, Any>> = mutableListOf()
+                val listResult = mutableListOf<Map<String, Any?>>()
                 currentConfig?.let {
                     val list = FileIOUtils.readFile2List(txtFile, "UTF-8")
-                    if (list!=null) {
+                    if (list != null) {
                         // 将list数据转换为map
                         for (line in list) {
-                            val map = gson.fromJson<Map<String, Any>>(line, object : TypeToken<MutableMap<String, Any>>() {}.type)
+                            val map = gson.fromJson<Map<String, Any?>>(line, object:TypeToken<Map<String, Any?>>(){}.getType())
                                 .toMutableMap()
-                            map["QItable"] = currentConfig.table
-                            map["QIname"] = currentConfig.name
-                            map["QIcode"] = currentConfig.code
+                            map["qi_table"] = currentConfig.table
+                            map["qi_name"] = currentConfig.name
+                            map["qi_code"] = currentConfig.code
                             listResult.add(map)
                         }
                     }
                 }
-                // 将listResult数据插入到Realm数据库中
-                Realm.getDefaultInstance().beginTransaction()
                 for (map in listResult) { // 每一个map就是Realm的一条数据
                     // 先查询这个mesh下有没有数据，如果有则跳过即可
 //                    val meshEntity = Realm.getDefaultInstance().where(RenderEntity::class.java).equalTo("properties['mesh']", map["mesh"].toString()).findFirst()
                     val renderEntity = RenderEntity()
-                    renderEntity.code = map["QIcode"].toString().toInt()
-                    renderEntity.name = map["QIname"].toString()
-                    renderEntity.table = map["QItable"].toString()
+                    renderEntity.code = map["qi_code"].toString().toInt()
+                    renderEntity.name = map["qi_name"].toString()
+                    renderEntity.table = map["qi_table"].toString()
                     // 其他数据插入到Properties中
                     renderEntity.geometry = map["geometry"].toString()
-                    for (entry in map) {
-                        renderEntity.properties[entry.key] = entry.value.toString()
+                    for ((key, value) in map) {
+                        when (value) {
+                            is String -> renderEntity.properties[key.toString()] = value
+                            is Int -> renderEntity.properties[key.toString()] = value.toInt().toString()
+                            is Double -> renderEntity.properties[key.toString()] = value.toDouble().toString()
+                            else -> renderEntity.properties[key.toString()] = value.toString()
+                        }
                     }
                     Realm.getDefaultInstance().insert(renderEntity)
                 }
-                Realm.getDefaultInstance().commitTransaction()
                 // 1个文件发送一次flow流
-                emit("${index+1}/${importConfig.tables.size}")
+                emit("${index + 1}/${importConfig.tables.size}")
             }
+            Realm.getDefaultInstance().commitTransaction()
+            emit("OK")
         }
     }
 
@@ -160,7 +183,15 @@ class ImportOMDBHelper @AssistedInject constructor(@Assisted("context") val cont
         val columns = mutableListOf<String>()
 
         // 查询 sqlite_master 表获取指定数据表的元数据信息
-        val cursor = db.query("sqlite_master", arrayOf("sql"), "type='table' AND name=?", arrayOf(tableName), null, null, null)
+        val cursor = db.query(
+            "sqlite_master",
+            arrayOf("sql"),
+            "type='table' AND name=?",
+            arrayOf(tableName),
+            null,
+            null,
+            null
+        )
 
         // 从元数据信息中解析出列名
         if (cursor.moveToFirst()) {

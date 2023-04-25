@@ -1,23 +1,34 @@
 package com.navinfo.omqs.http.taskdownload
 
+import android.content.Context
 import android.util.Log
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.TaskBean
+import com.navinfo.omqs.db.ImportOMDBHelper
+import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
+import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
+import io.realm.Realm
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.io.RandomAccessFile
+import javax.inject.Inject
 
 class TaskDownloadScope(
     private val downloadManager: TaskDownloadManager,
     val taskBean: TaskBean,
 ) :
     CoroutineScope by CoroutineScope(Dispatchers.IO + CoroutineName("OfflineMapDownLoad")) {
+
+    @Inject
+    lateinit var importOMDBHiltFactory: ImportOMDBHiltFactory
+
     /**
      *下载任务，用来取消的
      */
@@ -59,7 +70,12 @@ class TaskDownloadScope(
      */
     fun launch() {
         downloadJob = launch() {
-            download()
+            FileManager.checkOMDBFileInfo(taskBean)
+            if (taskBean.status == FileDownloadStatus.IMPORT) {
+                importData()
+            } else {
+                download()
+            }
             downloadManager.launchNext(taskBean.id)
         }
     }
@@ -76,14 +92,17 @@ class TaskDownloadScope(
      * 更新任务
      * @param status [OfflineMapCityBean.Status]
      */
-    private fun change(status: Int) {
-        if (taskBean.status != status || status == FileDownloadStatus.LOADING) {
+    private fun change(status: Int, message: String = "") {
+        if (taskBean.status != status || status == FileDownloadStatus.LOADING || status == FileDownloadStatus.IMPORTING) {
             taskBean.status = status
+            taskBean.message = message
             downloadData.postValue(taskBean)
-            launch(Dispatchers.IO) {
-//                downloadManager.roomDatabase.getOfflineMapDao().update(taskBean)
+            launch {
+                val realm = Realm.getDefaultInstance()
+                realm.executeTransaction {
+                    it.copyToRealmOrUpdate(taskBean)
+                }
             }
-
         }
     }
 
@@ -97,35 +116,74 @@ class TaskDownloadScope(
     }
 
     /**
+     * 导入数据
+     */
+    private suspend fun importData(file: File? = null) {
+        try {
+            Log.e("jingo", "importData SSS")
+            change(FileDownloadStatus.IMPORTING)
+            var fileNew = file
+                ?: File("${Constant.DOWNLOAD_PATH}${taskBean.evaluationTaskName}_${taskBean.dataVersion}.zip")
+            val importOMDBHelper: ImportOMDBHelper =
+                downloadManager.importFactory.obtainImportOMDBHelper(
+                    downloadManager.context,
+                    fileNew
+                )
+            importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile).collect {
+                Log.e("jingo", "数据安装 $it")
+                if (it == "OK") {
+                    change(FileDownloadStatus.DONE)
+                } else {
+                    change(FileDownloadStatus.IMPORTING, it)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("jingo", "数据安装失败 ${e.toString()}")
+            change(FileDownloadStatus.ERROR)
+        }
+
+        Log.e("jingo", "importData EEE")
+    }
+
+    /**
      * 下载文件
      */
     private suspend fun download() {
+        //如果文件下载安装已经完毕
+        if (taskBean.status == FileDownloadStatus.DONE) {
+            return
+        }
         var inputStream: InputStream? = null
         var randomAccessFile: RandomAccessFile? = null
         try {
             //创建离线地图 下载文件夹，.map文件夹的下一级
-            val fileDir = File("${Constant.DOWNLOAD_PATH}download")
+            val fileDir = File("${Constant.DOWNLOAD_PATH}")
             if (!fileDir.exists()) {
                 fileDir.mkdirs()
             }
 
             val fileTemp =
-                File("${Constant.DOWNLOAD_PATH}${taskBean.id}_${taskBean.dataVersion}")
+                File("${Constant.DOWNLOAD_PATH}${taskBean.evaluationTaskName}_${taskBean.dataVersion}.zip")
             val startPosition = taskBean.currentSize
-            //验证断点有效性
-            if (startPosition < 0) throw IOException("jingo Start position less than zero")
+
+            if (fileTemp.length() > 0 && taskBean.fileSize > 0 && fileTemp.length() == taskBean.fileSize) {
+                importData(fileTemp)
+                return
+            }
+
             val response = downloadManager.netApi.retrofitDownLoadFile(
                 start = "bytes=$startPosition-",
                 url = taskBean.getDownLoadUrl()
             )
             val responseBody = response.body()
 
-            change(FileDownloadStatus.LOADING)
-            responseBody ?: throw IOException("jingo ResponseBody is null")
 
+            responseBody ?: throw IOException("jingo ResponseBody is null")
             if (startPosition == 0L) {
                 taskBean.fileSize = responseBody.contentLength()
+                Log.e("jingo", "当前文件大小 ${taskBean.fileSize}")
             }
+            change(FileDownloadStatus.LOADING)
             //写入文件
             randomAccessFile = RandomAccessFile(fileTemp, "rwd")
             randomAccessFile.seek(startPosition)
@@ -146,17 +204,14 @@ class TaskDownloadScope(
                 }
             }
 
-            Log.e("jingo", "文件下载完成 ${taskBean.currentSize} == ${taskBean.fileSize}")
             if (taskBean.currentSize == taskBean.fileSize) {
-                val res =
-                    fileTemp.renameTo(File("${Constant.DOWNLOAD_PATH}${taskBean.evaluationTaskName}.zip"))
-                Log.e("jingo", "文件下载完成 修改文件 $res")
-                change(FileDownloadStatus.DONE)
+                importData(fileTemp)
             } else {
                 change(FileDownloadStatus.PAUSE)
             }
         } catch (e: Throwable) {
             change(FileDownloadStatus.ERROR)
+            Log.e("jingo","数据下载出错 ${e.message}")
         } finally {
             inputStream?.close()
             randomAccessFile?.close()

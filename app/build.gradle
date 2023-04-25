@@ -35,7 +35,7 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
     buildFeatures {
         viewBinding true
@@ -91,7 +91,6 @@ dependencies {
 
     // 读取spatialite文件
     implementation 'com.github.sevar83:android-spatialite:2.0.1'
-
 }
 //允许引用生成的代码
 kapt {

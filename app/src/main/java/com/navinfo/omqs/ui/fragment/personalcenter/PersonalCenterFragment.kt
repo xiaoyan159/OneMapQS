@@ -3,38 +3,24 @@ package com.navinfo.omqs.ui.fragment.personalcenter
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.blankj.utilcode.util.UriUtils
 import com.github.k1rakishou.fsaf.FileChooser
 import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
 import com.github.k1rakishou.fsaf.callback.FileChooserCallback
-import com.navinfo.collect.library.data.RealmUtils
-import com.navinfo.collect.library.data.entity.OMDBEntity
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentPersonalCenterBinding
 import com.navinfo.omqs.db.ImportOMDBHelper
 import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
 import com.navinfo.omqs.tools.CoroutineUtils
-import com.navinfo.omqs.ui.activity.BaseActivity
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
-import io.realm.Realm
-import io.realm.RealmDictionary
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.oscim.core.GeoPoint
-import java.io.File
-import java.util.UUID
 import javax.inject.Inject
 
 /**
@@ -104,13 +90,6 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
                                     file
                                 )
                                 viewModel.importOMDBData(importOMDBHelper)
-//                            // 开始导入数据
-//                            CoroutineUtils.launchWithLoading(
-//                                requireContext(),
-//                                loadingMessage = "导入数据..."
-//                            ) {
-//
-//                            }
                         }
                     })
                 }
@@ -122,14 +101,13 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
 
                         override fun onResult(uri: Uri) {
                             viewModel.importScProblemData(uri)
-
                         }
                     })
                 }
                 R.id.personal_center_menu_test -> {
                     viewModel.readRealmData()
                     // 定位到指定位置
-                    niMapController.mMapView.vtmMap.animator().animateTo(GeoPoint(28.608398, 115.67901))
+                    niMapController.mMapView.vtmMap.animator().animateTo(GeoPoint(30.270367985798032, 113.83513667119433))
                 }
                 R.id.personal_center_menu_task_list -> {
                     findNavController().navigate(R.id.TaskListFragment)

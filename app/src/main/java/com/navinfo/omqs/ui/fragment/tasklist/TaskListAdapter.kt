@@ -13,6 +13,8 @@ import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
+import java.io.File
+import javax.inject.Inject
 
 /**
  * 离线地图城市列表 RecyclerView 适配器
@@ -31,7 +33,7 @@ class TaskListAdapter(
         if (it.tag != null) {
             val taskBean = data[it.tag as Int]
             when (taskBean.status) {
-                FileDownloadStatus.NONE, FileDownloadStatus.UPDATE, FileDownloadStatus.PAUSE, FileDownloadStatus.ERROR -> {
+                FileDownloadStatus.NONE, FileDownloadStatus.UPDATE, FileDownloadStatus.PAUSE, FileDownloadStatus.IMPORT, FileDownloadStatus.ERROR -> {
                     Log.e("jingo", "开始下载 ${taskBean.status}")
                     downloadManager.start(taskBean.id)
                 }
@@ -124,6 +126,29 @@ class TaskListAdapter(
                 if (binding.taskProgress.visibility == View.VISIBLE) binding.taskProgress.visibility =
                     View.INVISIBLE
                 binding.taskDownloadBtn.text = "更新"
+            }
+            FileDownloadStatus.IMPORTING -> {
+                if (binding.taskProgress.visibility != View.VISIBLE) binding.taskProgress.visibility =
+                    View.VISIBLE
+                binding.taskDownloadBtn.text = "安装中"
+                val split = taskBean.message.split("/")
+                if (split.size == 2) {
+                    try {
+                        val index = split[0].toInt()
+                        val count = split[1].toInt()
+                        binding.taskProgress.progress =
+                            index * 100 / count
+                    } catch (e: Exception) {
+                        Log.e("jingo", "更新进度条 $e")
+                    }
+                } else {
+                    binding.taskProgress.progress = 0
+                }
+            }
+            FileDownloadStatus.IMPORT -> {
+                if (binding.taskProgress.visibility != View.VISIBLE) binding.taskProgress.visibility =
+                    View.INVISIBLE
+                binding.taskDownloadBtn.text = "安装"
             }
         }
     }

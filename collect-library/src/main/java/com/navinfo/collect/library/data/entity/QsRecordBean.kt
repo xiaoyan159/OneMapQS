@@ -4,7 +4,6 @@ import com.navinfo.collect.library.utils.GeometryToolsKt
 import io.realm.RealmObject
 import io.realm.RealmSet
 import io.realm.annotations.PrimaryKey
-import io.realm.annotations.RealmClass
 
 
 /**

@@ -42,7 +42,7 @@ class GeometryToolsKt {
                     val tileY1 = MercatorProjection.latitudeToTileY(minMaxY[1], Constant.OVER_ZOOM.toByte())
                     val minTileY = if (tileY0 <= tileY1) tileY0 else tileY1
                     val maxTileY = if (tileY0 <= tileY1) tileY1 else tileY0
-                    println("getTileYByGeometry$envelope===$minTileY===$maxTileY")
+//                    println("getTileYByGeometry$envelope===$minTileY===$maxTileY")
 
                     for (i in minTileY..maxTileY) {
                         tileYSet.add(i)
@@ -86,7 +86,7 @@ class GeometryToolsKt {
                         val tileX1 = MercatorProjection.longitudeToTileX(minMaxX[1], Constant.OVER_ZOOM.toByte())
                         val minTileX = if (tileX0 <= tileX1) tileX0 else tileX1
                         val maxTileX = if (tileX0 <= tileX1) tileX1 else tileX0
-                        println("getTileXByGeometry$envelope$minTileX===$maxTileX")
+//                        println("getTileXByGeometry$envelope$minTileX===$maxTileX")
                         for (i in minTileX..maxTileX) {
                             tileXSet.add(i)
                         }

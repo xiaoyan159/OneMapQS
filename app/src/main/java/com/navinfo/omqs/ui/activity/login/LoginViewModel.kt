@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.ResourceUtils
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.LoginUserBean
+import com.navinfo.omqs.db.MyRealmModule
 import com.navinfo.omqs.db.RoomAppDatabase
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
@@ -159,7 +160,8 @@ class LoginViewModel @Inject constructor(
         Constant.VERSION_ID = userId
         Constant.USER_DATA_PATH = Constant.DATA_PATH + Constant.USER_ID + "/" + Constant.VERSION_ID
         // 在SD卡创建用户目录，解压资源等
-        val userFolder = File("${Constant.DATA_PATH}/${userId}")
+        val userFolder = File(Constant.USER_DATA_PATH)
+        if (!userFolder.exists()) userFolder.mkdirs()
         // 初始化Realm
         Realm.init(context.applicationContext)
         val password = "encryp".encodeToByteArray().copyInto(ByteArray(64))
@@ -169,7 +171,7 @@ class LoginViewModel @Inject constructor(
             .directory(userFolder)
             .name("OMQS.realm")
             .encryptionKey(password)
-//            .modules(Realm.getDefaultModule(), MyRealmModule())
+            .modules(Realm.getDefaultModule(), MyRealmModule())
             .schemaVersion(1)
             .build()
         Realm.setDefaultConfiguration(config)

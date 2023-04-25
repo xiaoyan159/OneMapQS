@@ -1,0 +1,11 @@
+<svg width="580" height="580" xmlns="http://www.w3.org/2000/svg" version="1.0">
+ <metadata id="metadata10"/>
+
+ <g>
+  <title>Layer 1</title>
+  <g id="svg_1" transform="rotate(-0.400407 290 290)">
+   <path id="path4151" d="m30,261l286,0l0,-72.5l234,101.85l-234,101.15l0,-72.5l-286,0l0,-58z" mix-blend-mode="normal" solid-color="#000000" opacity="0.8" color-interpolation-filters="linearRGB" filter-gaussianBlur-deviation="0" color="#000000" image-rendering="auto" color-rendering="auto" stroke-width="64" isolation="auto" color-interpolation="sRGB" solid-opacity="1" fill="none" stroke-linejoin="round" filter-blend-mode="normal" shape-rendering="auto" stroke="#ffffff"/>
+   <path d="m30,261l286,0l0,-72.5l234,101.85l-234,101.15l0,-72.5l-286,0l0,-58z" id="path4136" fill="#6a6a6a"/>
+  </g>
+ </g>
+</svg>
