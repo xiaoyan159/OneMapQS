@@ -1,22 +1,17 @@
 package com.navinfo.omqs.ui.activity.map
 
 import android.os.Bundle
-import android.view.View
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
-import com.blankj.utilcode.util.ToastUtils
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.NiLocationListener
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
-import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
-import com.navinfo.omqs.system.SystemConstant
 import com.navinfo.omqs.ui.activity.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
