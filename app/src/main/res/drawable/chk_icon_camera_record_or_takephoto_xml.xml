@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_checked="true" android:drawable="@mipmap/record_select">
+    <item android:state_checked="true" android:drawable="@drawable/record_select">
     </item>
-    <item android:state_selected="true" android:drawable="@mipmap/record_select">
+    <item android:state_selected="true" android:drawable="@drawable/record_select">
     </item>
-    <item android:drawable="@mipmap/takephoto_select">
+    <item android:drawable="@drawable/takephoto_select">
     </item>
 </selector>

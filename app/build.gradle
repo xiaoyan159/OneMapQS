@@ -30,6 +30,21 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    signingConfigs {
+        debug {
+            storeFile file('D:/WrokSpace/OneMapQS/fastmap.keystore')
+            storePassword "navinfo"
+            keyAlias "fastmap"
+            keyPassword "navinfo"
+        }
+    }
+
+    dexOptions {
+        jumboMode = true
+        javaMaxHeapSize "4096M"
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
