@@ -22,6 +22,12 @@ class FileManager {
             const val DONE = 8 //完成
         }
 
+        object FileUploadStatus {
+            const val NONE = 0 //无状态
+            const val DONE = 1 //完成
+            const val ERROR = 2 //错误
+        }
+
         //初始化数据文件夹
         fun initRootDir(context: Context) {
             // 在SD卡创建项目目录

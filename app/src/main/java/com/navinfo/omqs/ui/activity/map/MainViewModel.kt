@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.navigation.findNavController
-import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.map.NIMapController
@@ -62,7 +61,7 @@ class MainViewModel @Inject constructor(
 
         Log.e("qj", LibVlcUtil.hasCompatibleCPU(context).toString())
 
-        ToastUtils.showShort("点击了相机")
+        //ToastUtils.showShort("点击了相机")
 
         if (mCameraDialog == null) {
             mCameraDialog = CommonDialog(

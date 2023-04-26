@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.navinfo.omqs.databinding.FragmentTaskListBinding
 import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
+import com.navinfo.omqs.http.taskupload.TaskUploadManager
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -17,12 +18,14 @@ import javax.inject.Inject
 class TaskListFragment : BaseFragment(){
     @Inject
     lateinit var downloadManager: TaskDownloadManager
+    @Inject
+    lateinit var uploadManager: TaskUploadManager
     private var _binding: FragmentTaskListBinding? = null
     private val viewModel by viewModels<TaskListViewModel>()
     private val binding get() = _binding!!
     private val adapter: TaskListAdapter by lazy {
         TaskListAdapter(
-            downloadManager,
+            downloadManager,uploadManager
         )
     }
 
@@ -31,6 +34,7 @@ class TaskListFragment : BaseFragment(){
         savedInstanceState: Bundle?
     ): View {
         downloadManager.init(requireContext())
+        uploadManager.init(requireContext())
         _binding = FragmentTaskListBinding.inflate(inflater, container, false)
         return binding.root
 

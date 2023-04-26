@@ -10,6 +10,8 @@ import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.TaskBean
 import com.navinfo.omqs.databinding.AdapterTaskListBinding
 import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
+import com.navinfo.omqs.http.taskupload.TaskUploadManager
+import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
@@ -25,7 +27,8 @@ import javax.inject.Inject
  *使用 LifecycleRegistry 给 ViewHolder 分发生命周期(这里使用了这个)
  */
 class TaskListAdapter(
-    private val downloadManager: TaskDownloadManager
+    private val downloadManager: TaskDownloadManager,
+    private val uploadManager: TaskUploadManager
 ) : BaseRecyclerViewAdapter<TaskBean>() {
 
 
@@ -43,6 +46,18 @@ class TaskListAdapter(
                 }
                 else -> {
                     Log.e("jingo", "暂停 ${taskBean.status}")
+                }
+            }
+        }
+    }
+
+    private val uploadBtnClick = View.OnClickListener() {
+        if (it.tag != null) {
+            val taskBean = data[it.tag as Int]
+            Log.e("jingo", "开始上传 ${taskBean.syncStatus}")
+            when (taskBean.syncStatus) {
+                FileManager.Companion.FileUploadStatus.NONE->{
+                    uploadManager.start(taskBean.id)
                 }
             }
         }
@@ -69,8 +84,12 @@ class TaskListAdapter(
         changeViews(binding, taskBean)
         downloadManager.addTask(taskBean)
         downloadManager.observer(taskBean.id, holder, DownloadObserver(taskBean.id, binding))
+        uploadManager.addTask(taskBean)
+        uploadManager.observer(taskBean.id, holder, UploadObserver(taskBean.id, binding))
         binding.taskDownloadBtn.tag = position
         binding.taskDownloadBtn.setOnClickListener(downloadBtnClick)
+        binding.taskUploadBtn.tag = position
+        binding.taskUploadBtn.setOnClickListener(uploadBtnClick)
         binding.taskName.text = taskBean.evaluationTaskName
         binding.taskCityName.text = taskBean.cityName
         binding.taskDataVersion.text = "版本号：${taskBean.dataVersion}"
@@ -82,6 +101,22 @@ class TaskListAdapter(
         override fun onChanged(t: TaskBean?) {
             if (id == t?.id)
                 changeViews(binding, t)
+        }
+    }
+
+    inner class UploadObserver(val id: Int, val binding: AdapterTaskListBinding) :
+        Observer<TaskBean> {
+        override fun onChanged(t: TaskBean?) {
+            if (id == t?.id)
+                changeUploadTxtViews(binding, t)
+        }
+    }
+
+    private fun changeUploadTxtViews(binding: AdapterTaskListBinding, taskBean: TaskBean) {
+        when (taskBean.syncStatus) {
+            FileManager.Companion.FileUploadStatus.NONE -> {
+                binding.taskUploadBtn.text = "已上传"
+            }
         }
     }
 

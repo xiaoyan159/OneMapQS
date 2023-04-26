@@ -7,6 +7,7 @@ import com.navinfo.omqs.db.RoomAppDatabase
 import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
+import com.navinfo.omqs.http.taskupload.TaskUploadManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,6 +48,16 @@ class ActivityModule {
         importFactory: ImportOMDBHiltFactory,
     ): TaskDownloadManager =
         TaskDownloadManager(importFactory, networkServiceAPI)
+
+    /**
+     * 注入任务下载
+     */
+    @ActivityRetainedScoped
+    @Provides
+    fun providesTaskListUploadManager(
+        networkServiceAPI: RetrofitNetworkServiceAPI,
+    ): TaskUploadManager =
+        TaskUploadManager(networkServiceAPI)
 
     /**
      * 实验失败，这样创建，viewmodel不会在activity销毁的时候同时销毁
