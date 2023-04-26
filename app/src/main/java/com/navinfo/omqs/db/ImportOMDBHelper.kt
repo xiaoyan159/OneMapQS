@@ -47,7 +47,7 @@ class ImportOMDBHelper @AssistedInject constructor(
         ).writableDatabase
     }
     private val configFile: File =
-        File("${Constant.DATA_PATH}/${Constant.CURRENT_USER_ID}", Constant.OMDB_CONFIG)
+        File("${Constant.USER_DATA_PATH}", Constant.OMDB_CONFIG)
 
     /**
      * 读取config的配置文件
@@ -174,7 +174,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                 emit("${index + 1}/${importConfig.tables.size}")
             }
             Realm.getDefaultInstance().commitTransaction()
-            emit("OK")
+            emit("finish")
         }
     }
 

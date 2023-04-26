@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.db.RoomAppDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
@@ -17,7 +18,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EvaluationResultViewModel @Inject constructor(
-    private val roomAppDatabase: RoomAppDatabase, private val mapController: NIMapController
+    private val roomAppDatabase: RoomAppDatabase,
+    private val mapController: NIMapController,
+    private val realmOperateHelper: RealmOperateHelper,
 ) : ViewModel() {
 
     private val markerTitle = "点选marker"
@@ -50,7 +53,7 @@ class EvaluationResultViewModel @Inject constructor(
     init {
         liveDataQsRecordBean.value = QsRecordBean(id = UUID.randomUUID().toString())
         Log.e("jingo", "EvaluationResultViewModel 创建了 ${hashCode()}")
-        mapController.markerHandle.apply {
+        mapController.markerHandle.run {
             setOnMapClickListener {
                 liveDataQsRecordBean.value!!.geometry = it.toGeometry()
                 addMarker(it, markerTitle)
@@ -207,7 +210,7 @@ class EvaluationResultViewModel @Inject constructor(
     fun saveData() {
         viewModelScope.launch(Dispatchers.IO) {
             val realm = Realm.getDefaultInstance()
-            Log.e("jingo","realm hashCOde ${realm.hashCode()}")
+            Log.e("jingo", "realm hashCOde ${realm.hashCode()}")
             realm.executeTransaction {
                 it.copyToRealmOrUpdate(liveDataQsRecordBean.value)
             }
@@ -221,7 +224,7 @@ class EvaluationResultViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             val realm = Realm.getDefaultInstance()
-            Log.e("jingo","realm hashCOde ${realm.hashCode()}")
+            Log.e("jingo", "realm hashCOde ${realm.hashCode()}")
             realm.executeTransaction {
                 val objects = it.where(QsRecordBean::class.java)
                     .equalTo("id", liveDataQsRecordBean.value?.id).findFirst()

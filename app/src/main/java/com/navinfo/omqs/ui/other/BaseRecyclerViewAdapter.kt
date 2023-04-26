@@ -45,7 +45,7 @@ abstract class BaseRecyclerViewAdapter<T>(var data: List<T> = listOf()) :
 
     override fun onViewDetachedFromWindow(holder: BaseViewHolder) {
         super.onViewDetachedFromWindow(holder)
-        holder.apply {
+        holder.run {
             onStop()
         }
     }

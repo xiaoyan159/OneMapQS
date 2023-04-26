@@ -86,8 +86,13 @@ dependencies {
     kapt "androidx.room:room-ktx:2.5.1"
 
     //读取excel word等文件
-    implementation 'org.apache.poi:poi:4.0.0'
-    implementation 'org.apache.poi:poi-ooxml:4.0.0'
+//    implementation 'org.apache.poi:poi:4.0.0'
+//    implementation 'org.apache.poi:poi-ooxml:4.0.0'
+//    implementation 'org.apache.poi:poi-ooxml-schemas:4.0.0'
+//    implementation 'org.apache.xmlbeans:xmlbeans:3.0.2'
+//    implementation 'javax.xml.stream:stax-api:1.0-2'
+//    implementation 'com.bea.xml.stream:com.bea.xml.stream:1.0.0'
+    implementation 'commons-io:commons-io:2.11.0'
 
     // 读取spatialite文件
     implementation 'com.github.sevar83:android-spatialite:2.0.1'

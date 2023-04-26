@@ -67,8 +67,8 @@ class MainActivity : BaseActivity() {
         //启动轨迹存储
         mapController.locationLayerHandler.setNiLocationListener(NiLocationListener {
             ToastUtils.showLong("定位${it.longitude}")
-            binding!!.viewModel!!.addSaveTrace(it)
-            binding!!.viewModel!!.startSaveTraceThread(this)
+            binding.viewModel!!.addSaveTrace(it)
+            binding.viewModel!!.startSaveTraceThread(this)
         })
         //显示轨迹图层
 //        mapController.layerManagerHandler.showNiLocationLayer(Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite")

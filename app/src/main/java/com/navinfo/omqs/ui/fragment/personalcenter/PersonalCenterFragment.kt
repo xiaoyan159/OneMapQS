@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.blankj.utilcode.util.ToastUtils
 import com.blankj.utilcode.util.UriUtils
 import com.github.k1rakishou.fsaf.FileChooser
 import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
@@ -36,6 +38,7 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
 
     @Inject
     lateinit var importOMDBHiltFactory: ImportOMDBHiltFactory
+
     @Inject
     lateinit var niMapController: NIMapController
 
@@ -77,22 +80,22 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
                         }
                     })
                 }
-                R.id.personal_center_menu_import_data -> { // 导入zip数据
-                    fileChooser.openChooseFileDialog(object : FileChooserCallback() {
-                        override fun onCancel(reason: String) {
-                        }
-
-                        override fun onResult(uri: Uri) {
-                            val file = UriUtils.uri2File(uri)
-                            val importOMDBHelper: ImportOMDBHelper =
-                                importOMDBHiltFactory.obtainImportOMDBHelper(
-                                    requireContext(),
-                                    file
-                                )
-                                viewModel.importOMDBData(importOMDBHelper)
-                        }
-                    })
-                }
+//                R.id.personal_center_menu_import_data -> { // 导入zip数据
+//                    fileChooser.openChooseFileDialog(object : FileChooserCallback() {
+//                        override fun onCancel(reason: String) {
+//                        }
+//
+//                        override fun onResult(uri: Uri) {
+//                            val file = UriUtils.uri2File(uri)
+//                            val importOMDBHelper: ImportOMDBHelper =
+//                                importOMDBHiltFactory.obtainImportOMDBHelper(
+//                                    requireContext(),
+//                                    file
+//                                )
+//                                viewModel.importOMDBData(importOMDBHelper)
+//                        }
+//                    })
+//                }
                 R.id.personal_center_menu_import_yuan_data -> {
                     // 用户选中导入数据，打开文件选择器，用户选择导入的数据文件目录
                     fileChooser.openChooseFileDialog(object : FileChooserCallback() {
@@ -107,7 +110,8 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
                 R.id.personal_center_menu_test -> {
                     viewModel.readRealmData()
                     // 定位到指定位置
-                    niMapController.mMapView.vtmMap.animator().animateTo(GeoPoint(30.270367985798032, 113.83513667119433))
+                    niMapController.mMapView.vtmMap.animator()
+                        .animateTo(GeoPoint(30.270367985798032, 113.83513667119433))
                 }
                 R.id.personal_center_menu_task_list -> {
                     findNavController().navigate(R.id.TaskListFragment)
@@ -117,6 +121,10 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
                 }
             }
             true
+        }
+
+        viewModel.liveDataMessage.observe(viewLifecycleOwner) {
+            ToastUtils.showShort(it)
         }
 
         fileChooser.setCallbacks(this@PersonalCenterFragment)
