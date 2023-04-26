@@ -34,6 +34,7 @@ import com.navinfo.collect.library.sensor.ISensor.enmConnectionStatus;
 import com.navinfo.collect.library.sensor.ISensor.SensorWorkingMode;
 import com.navinfo.collect.library.garminvirbxe.SensorParams;
 import com.navinfo.collect.library.garminvirbxe.HostBean;
+import com.navinfo.collect.library.system.VLCApplication;
 import com.navinfo.omqs.Constant;
 import com.navinfo.omqs.R;
 import com.navinfo.omqs.ui.activity.map.MainActivity;
