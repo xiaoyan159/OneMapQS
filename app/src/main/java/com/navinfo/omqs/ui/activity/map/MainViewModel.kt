@@ -119,14 +119,12 @@ class MainViewModel @Inject constructor(
                             }
                         }
 
-                        TraceDataBase.getDatabase(
-                            context,
-                            Constant.USER_DATA_PATH + "/trace.sqlite"
-                        ).niLocationDao.insert(niLocation)
+                        TraceDataBase.getDatabase(context, Constant.USER_DATA_PATH + "/trace.sqlite").niLocationDao.insert(niLocation)
                         if (niLocationList.isNotEmpty()) {
-                            niLocationList.removeAt(0)
+                            niLocationList.remove(niLocation)
                         }
-                        Log.e("qj", "saveTrace")
+
+                        Log.e("qj", "saveTrace==${niLocationList.size}")
                     }
                     Thread.sleep(30)
                 }

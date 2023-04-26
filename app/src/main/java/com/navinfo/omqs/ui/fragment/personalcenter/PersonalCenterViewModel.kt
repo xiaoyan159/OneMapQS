@@ -55,7 +55,7 @@ class PersonalCenterViewModel @Inject constructor(
 
         for (tableName in listOf<String>("HAD_LINK", "HAD_SPEEDLIMIT", "HAD_SPEEDLIMIT_COND", "HAD_SPEEDLIMIT_VAR")/*listOf<String>("HAD_LINK")*/) {
             importOMDBHelper.getOMDBTableData(tableName).collect {
-                   for (map in it) {
+                for (map in it) {
                     if ("HAD_LINK" == tableName) {
                         // 根据HAD_Link生成json文件
                         val hadLink = HAD_LINK()
