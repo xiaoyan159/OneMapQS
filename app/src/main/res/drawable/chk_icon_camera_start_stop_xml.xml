@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_checked="true" android:state_enabled="true" android:drawable="@mipmap/icon_camera_start">
+    <item android:state_checked="true" android:state_enabled="true" android:drawable="@drawable/icon_camera_start">
     </item>
-    <item android:state_selected="true" android:state_enabled="true" android:drawable="@mipmap/icon_camera_start">
+    <item android:state_selected="true" android:state_enabled="true" android:drawable="@drawable/icon_camera_start">
     </item>
-    <item android:state_enabled="false" android:drawable="@mipmap/icon_camera_start_disable">
+    <item android:state_enabled="false" android:drawable="@drawable/icon_camera_start_disable">
     </item>
-    <item android:drawable="@mipmap/icon_camera_end">
+    <item android:drawable="@drawable/icon_camera_end">
     </item>
 </selector>

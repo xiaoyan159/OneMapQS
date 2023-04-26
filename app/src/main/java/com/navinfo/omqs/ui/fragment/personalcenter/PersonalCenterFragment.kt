@@ -80,22 +80,21 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
                         }
                     })
                 }
-//                R.id.personal_center_menu_import_data -> { // 导入zip数据
-//                    fileChooser.openChooseFileDialog(object : FileChooserCallback() {
-//                        override fun onCancel(reason: String) {
-//                        }
-//
-//                        override fun onResult(uri: Uri) {
-//                            val file = UriUtils.uri2File(uri)
-//                            val importOMDBHelper: ImportOMDBHelper =
-//                                importOMDBHiltFactory.obtainImportOMDBHelper(
-//                                    requireContext(),
-//                                    file
-//                                )
-//                                viewModel.importOMDBData(importOMDBHelper)
-//                        }
-//                    })
-//                }
+                R.id.personal_center_menu_import_data -> { // 导入zip数据
+                    fileChooser.openChooseFileDialog(object : FileChooserCallback() {
+                        override fun onCancel(reason: String) {
+                        }
+
+                        override fun onResult(uri: Uri) {
+                            val file = UriUtils.uri2File(uri)
+                            val importOMDBHelper: ImportOMDBHelper = importOMDBHiltFactory.obtainImportOMDBHelper(
+                                    requireContext(),
+                                    file
+                                )
+                                viewModel.importOMDBData(importOMDBHelper)
+                        }
+                    })
+                }
                 R.id.personal_center_menu_import_yuan_data -> {
                     // 用户选中导入数据，打开文件选择器，用户选择导入的数据文件目录
                     fileChooser.openChooseFileDialog(object : FileChooserCallback() {
