@@ -123,7 +123,9 @@ class MainViewModel @Inject constructor(
                             context,
                             Constant.USER_DATA_PATH + "/trace.sqlite"
                         ).niLocationDao.insert(niLocation)
-                        niLocationList.removeAt(0)
+                        if (niLocationList.isNotEmpty()) {
+                            niLocationList.removeAt(0)
+                        }
                         Log.e("qj", "saveTrace")
                     }
                     Thread.sleep(30)
