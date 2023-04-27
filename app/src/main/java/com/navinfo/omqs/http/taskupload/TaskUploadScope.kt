@@ -106,7 +106,7 @@ class TaskUploadScope(
 
             val realm = Realm.getDefaultInstance()
             taskBean.hadLinkDvoList.forEach {
-                val list = realm.where(QsRecordBean::class.java).equalTo("linkId", it.linkPid).findAll()
+                val list = realm.where(QsRecordBean::class.java).equalTo("linkId", "123"/*it.linkPid*/).findAll()
             }
 
             val list: MutableList<EvaluationInfo> = ArrayList()
