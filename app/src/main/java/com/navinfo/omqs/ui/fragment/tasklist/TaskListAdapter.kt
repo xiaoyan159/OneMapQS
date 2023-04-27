@@ -114,8 +114,17 @@ class TaskListAdapter(
 
     private fun changeUploadTxtViews(binding: AdapterTaskListBinding, taskBean: TaskBean) {
         when (taskBean.syncStatus) {
-            FileManager.Companion.FileUploadStatus.NONE -> {
+            FileManager.Companion.FileUploadStatus.DONE -> {
                 binding.taskUploadBtn.text = "已上传"
+            }
+            FileManager.Companion.FileUploadStatus.ERROR -> {
+                binding.taskUploadBtn.text = "重新同步"
+            }
+            FileManager.Companion.FileUploadStatus.NONE -> {
+                binding.taskUploadBtn.text = "同步"
+            }
+            FileManager.Companion.FileUploadStatus.WAITING -> {
+                binding.taskUploadBtn.text = "等待同步"
             }
         }
     }

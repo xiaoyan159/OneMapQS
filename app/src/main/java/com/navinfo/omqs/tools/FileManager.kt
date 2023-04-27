@@ -26,6 +26,7 @@ class FileManager {
             const val NONE = 0 //无状态
             const val DONE = 1 //完成
             const val ERROR = 2 //错误
+            const val WAITING = 3 //等待中
         }
 
         //初始化数据文件夹

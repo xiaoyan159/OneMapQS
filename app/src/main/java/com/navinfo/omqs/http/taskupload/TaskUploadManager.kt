@@ -64,7 +64,7 @@ class TaskUploadManager constructor(
         taskScopeMap.remove(id)
         for (entrySet in scopeMap) {
             val uploadScope = entrySet.value
-            if (uploadScope.isNotSync()) {
+            if (uploadScope.isWaiting()) {
                 launchScope(uploadScope)
                 break
             }

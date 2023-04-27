@@ -1,6 +1,8 @@
 package com.navinfo.omqs.http.taskupload
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -25,7 +27,7 @@ class TaskUploadScope(
 
 
     /**
-     *下载任务，用来取消的
+     * 用来取消的
      */
     private var uploadJob: Job? = null
 
@@ -68,7 +70,8 @@ class TaskUploadScope(
      * @param status [OfflineMapCityBean.Status]
      */
     private fun change(status: Int, message: String = "") {
-        if (taskBean.syncStatus != status ) {
+        if (taskBean.syncStatus != status) {
+            taskBean.syncStatus = status
             uploadData.postValue(taskBean)
             launch {
                 val realm = Realm.getDefaultInstance()
@@ -82,8 +85,8 @@ class TaskUploadScope(
     /**
      * 是否未上传
      */
-    fun isNotSync(): Boolean {
-        return taskBean.syncStatus == FileManager.Companion.FileUploadStatus.NONE
+    fun isWaiting(): Boolean {
+        return taskBean.syncStatus == FileManager.Companion.FileUploadStatus.WAITING
     }
 
     /**
@@ -97,6 +100,7 @@ class TaskUploadScope(
     /**
      * 上传文件
      */
+    @RequiresApi(Build.VERSION_CODES.N)
     private suspend fun upload() {
         try {
             //如果已上传则返回
@@ -106,46 +110,65 @@ class TaskUploadScope(
 
             val realm = Realm.getDefaultInstance()
             taskBean.hadLinkDvoList.forEach {
-                val list = realm.where(QsRecordBean::class.java).equalTo("linkId", "123"/*it.linkPid*/).findAll()
+                val hadLinkDvoBean = it
+                val liveDataQSList = MutableLiveData<List<QsRecordBean>>()
+                val objects = realm.where(QsRecordBean::class.java)
+                    .equalTo("linkId", /*"84207223282277331"*/hadLinkDvoBean.linkPid).findAll()
+                val bodyList: MutableList<EvaluationInfo> = ArrayList()
+                if (objects != null) {
+
+                    liveDataQSList.postValue(realm.copyFromRealm(objects))
+
+                    if (liveDataQSList.value!!.isNotEmpty()) {
+
+                        liveDataQSList.value?.forEach {
+                            val evaluationInfo = EvaluationInfo(
+                                taskBean.id.toString(),
+                                hadLinkDvoBean.linkPid,//"84207223282277331"
+                                "已测评",
+                                hadLinkDvoBean.mesh,//"20065597"
+                                "",
+                                it.geometry,
+                                it.classType,
+                                it.problemType,
+                                it.phenomenon,
+                                it.description,
+                                it.problemLink,
+                                it.cause,
+                                it.checkUserId,
+                                it.checkTime
+                            )
+
+                            bodyList.add(evaluationInfo)
+                        }
+
+                        uploadManager.netApi.postRequest(bodyList).enqueue(object :
+                            Callback<ResponseBody> {
+                            override fun onResponse(
+                                call: Call<ResponseBody>,
+                                response: Response<ResponseBody>
+                            ) {
+                                if(response.code()==200){
+                                    taskBean.syncStatus = FileManager.Companion.FileUploadStatus.DONE
+                                    // handle the response
+                                    Log.e("qj", "")
+                                    change(FileManager.Companion.FileUploadStatus.DONE)
+                                }
+                            }
+
+                            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                                // handle the failure
+                                Log.e("qj", "")
+                                change(FileManager.Companion.FileUploadStatus.ERROR)
+                            }
+                        })
+                    }
+                }
             }
-
-            val list: MutableList<EvaluationInfo> = ArrayList()
-            val evaluationInfo = EvaluationInfo(taskBean.id.toString(),
-                "123123",
-                "原库",
-                "123123",
-                "",
-                "POINT (116.252097 40.00752)",
-                "点限速",
-                "多余",
-                "多余",
-                "多余",
-                "多余",
-                "多余",
-                "张三",
-                "20230426")
-
-            list.add(evaluationInfo)
-
-            //3. Create an instance of the interface:
-            val apiService = uploadManager.netApi.postRequest(list).enqueue(object :
-                Callback<ResponseBody> {
-                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                    // handle the response
-                    Log.e("qj","")
-                    change(FileManager.Companion.FileUploadStatus.NONE)
-                }
-
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    // handle the failure
-                    Log.e("qj","")
-                    change(FileManager.Companion.FileUploadStatus.ERROR)
-                }
-            })
 
         } catch (e: Throwable) {
             change(FileManager.Companion.FileUploadStatus.ERROR)
-            Log.e("jingo","数据上传出错 ${e.message}")
+            Log.e("jingo", "数据上传出错 ${e.message}")
         } finally {
 
         }

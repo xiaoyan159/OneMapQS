@@ -15,7 +15,7 @@ open class TaskBean @JvmOverloads constructor(
     /**
      * 测评任务id
      */
-//    @PrimaryKey
+    @PrimaryKey
     var id: Int = 0,
     /**
      * 测评任务名称
