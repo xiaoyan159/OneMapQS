@@ -26,12 +26,12 @@ class TaskListViewModel @Inject constructor(
 
     fun getTaskList(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            val realm = Realm.getDefaultInstance()
-            Log.e("jingo", "realm hashCOde ${realm.hashCode()}")
+
             var taskList: List<TaskBean> = mutableListOf()
             when (val result = networkService.getTaskList("02911")) {
                 is NetResult.Success -> {
                     if (result.data != null) {
+                        val realm = Realm.getDefaultInstance()
                         realm.executeTransaction {
                             result.data.obj?.let { list ->
                                 for (task in list) {

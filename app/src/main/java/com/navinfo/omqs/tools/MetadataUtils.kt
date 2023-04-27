@@ -7,7 +7,7 @@ class MetadataUtils {
             const val TITLE_ELEMENT_TYPE = "类型"
             const val TITLE_ELEMENT_CODE = "要素代码"
             const val TITLE_CLASS_TYPE = "要素分类"
-            const val TITLE_PROBLEM_TYPE = "问题类型·"
+            const val TITLE_PROBLEM_TYPE = "问题类型"
             const val TITLE_PHENOMENON = "问题现象"
         }
 

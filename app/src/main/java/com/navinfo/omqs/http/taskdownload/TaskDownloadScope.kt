@@ -44,7 +44,9 @@ class TaskDownloadScope(
 
     //改进的代码
     fun start() {
-        change(FileDownloadStatus.WAITING)
+        launch{
+            change(FileDownloadStatus.WAITING)
+        }
         downloadManager.launchScope(this@TaskDownloadScope)
     }
 
@@ -54,7 +56,10 @@ class TaskDownloadScope(
      */
     fun pause() {
         downloadJob?.cancel("pause")
-        change(FileDownloadStatus.PAUSE)
+        launch{
+            change(FileDownloadStatus.PAUSE)
+        }
+
     }
 
     /**
@@ -85,18 +90,20 @@ class TaskDownloadScope(
      * 更新任务
      * @param status [OfflineMapCityBean.Status]
      */
-    private fun change(status: Int, message: String = "") {
+    private suspend fun change(status: Int, message: String = "") {
+        Log.e("jingo", "我被挂起 S")
         if (taskBean.status != status || status == FileDownloadStatus.LOADING || status == FileDownloadStatus.IMPORTING) {
             taskBean.status = status
             taskBean.message = message
             downloadData.postValue(taskBean)
-            launch {
+            if (status != FileDownloadStatus.LOADING && status != FileDownloadStatus.IMPORTING) {
                 val realm = Realm.getDefaultInstance()
                 realm.executeTransaction {
                     it.copyToRealmOrUpdate(taskBean)
                 }
             }
         }
+        Log.e("jingo", "我被挂起 E")
     }
 
     /**
@@ -182,7 +189,7 @@ class TaskDownloadScope(
             randomAccessFile.seek(startPosition)
             taskBean.currentSize = startPosition
             inputStream = responseBody.byteStream()
-            val bufferSize = 1024 * 2
+            val bufferSize = 1024 * 4
             val buffer = ByteArray(bufferSize)
 
             var readLength = 0
@@ -198,13 +205,17 @@ class TaskDownloadScope(
             }
 
             if (taskBean.currentSize == taskBean.fileSize) {
-                importData(fileTemp)
+                inputStream?.close()
+                randomAccessFile?.close()
+                inputStream = null
+                randomAccessFile = null
+                importData()
             } else {
                 change(FileDownloadStatus.PAUSE)
             }
         } catch (e: Throwable) {
             change(FileDownloadStatus.ERROR)
-            Log.e("jingo","数据下载出错 ${e.message}")
+            Log.e("jingo", "数据下载出错 ${e.message}")
         } finally {
             inputStream?.close()
             randomAccessFile?.close()
