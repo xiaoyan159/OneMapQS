@@ -2,6 +2,7 @@ package com.navinfo.omqs.bean
 
 import com.google.gson.annotations.SerializedName
 import com.navinfo.omqs.Constant
+import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import io.realm.RealmList
 import io.realm.RealmObject
@@ -13,7 +14,7 @@ open class TaskBean @JvmOverloads constructor(
     /**
      * 测评任务id
      */
-//    @PrimaryKey
+    @PrimaryKey
     var id: Int = 0,
     /**
      * 测评任务名称
@@ -56,6 +57,12 @@ open class TaskBean @JvmOverloads constructor(
      * 当前下载状态
      */
     var status: Int = FileDownloadStatus.NONE,
+
+    /**
+     * 上传状态
+     */
+    var syncStatus: Int = FileManager.Companion.FileUploadStatus.NONE,
+
     @Ignore
     var message: String = ""
 ) : RealmObject() {

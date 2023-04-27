@@ -66,6 +66,19 @@
         android:textSize="@dimen/card_title_font_2size" />
 
     <TextView
+        android:id="@+id/task_upload_btn"
+        style="@style/map_download_style_btn"
+        android:layout_width="60dp"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@id/task_download_btn"
+        android:gravity="center"
+        android:shadowColor="@android:color/transparent"
+        android:text="同步"
+        android:textColor="@color/btn_blue_solid"
+        android:textSize="@dimen/card_title_font_2size" />
+
+    <TextView
         android:id="@+id/task_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

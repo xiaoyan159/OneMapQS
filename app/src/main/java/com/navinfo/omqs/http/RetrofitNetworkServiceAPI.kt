@@ -1,14 +1,12 @@
 package com.navinfo.omqs.http
 
+import com.navinfo.omqs.bean.EvaluationInfo
 import com.navinfo.omqs.bean.OfflineMapCityBean
 import com.navinfo.omqs.bean.TaskBean
 import okhttp3.ResponseBody
+import retrofit2.Call
 import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Query
-import retrofit2.http.Streaming
-import retrofit2.http.Url
+import retrofit2.http.*
 
 /**
  * retrofit2 网络请求接口
@@ -57,6 +55,10 @@ interface RetrofitNetworkServiceAPI {
     suspend fun retrofitGetTaskList(
         @Query("evaluatorNo") evaluatorNo: String,
     ): Response<DefaultTaskResponse<List<TaskBean>>>
+
+    @Headers("Content-Type: application/json")
+    @POST("/devcp/upload")
+    fun postRequest(@Body listEvaluationInfo: List<EvaluationInfo>?): Call<ResponseBody>
 
     /**
      * @FormUrlEncoded 请求格式注解，请求实体是一个From表单，每个键值对需要使用@Field注解

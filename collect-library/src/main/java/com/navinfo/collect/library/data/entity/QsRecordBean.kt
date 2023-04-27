@@ -28,7 +28,7 @@ open class QsRecordBean @JvmOverloads constructor(
     /**
      * linkPid 绑定的道路ID
      */
-    var linkId: String = "",
+    var linkId: String = "84207223282277331",
     /**
      *问题分类
      */
