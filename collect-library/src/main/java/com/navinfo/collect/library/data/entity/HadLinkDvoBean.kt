@@ -1,7 +1,6 @@
-package com.navinfo.omqs.bean
+package com.navinfo.collect.library.data.entity
 
 import io.realm.RealmObject
-import io.realm.annotations.RealmClass
 
 open class HadLinkDvoBean @JvmOverloads constructor(
     /**

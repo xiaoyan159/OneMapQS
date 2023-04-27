@@ -26,7 +26,7 @@ import org.oscim.layers.vector.VectorLayer
 import org.oscim.layers.vector.geometries.Style
 import org.oscim.map.Map
 
-@RequiresApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.N)
 class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(context, mapView),
     Map.UpdateListener {
 
@@ -60,6 +60,16 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
     private val mDefaultPathLayer: PathLayer
 
     val omdbTaskLinkLayer by lazy {
+        val omdbTaskLinkLayer = OmdbTaskLinkLayer(mMapView.vtmMap,
+            Style.builder()
+//            .stippleColor(context.resources.getColor(R.color.draw_line_red_color, null))
+            .fillColor(context.resources.getColor(R.color.draw_line_red_color, null))
+            .fillAlpha(0.5f)
+            .strokeColor(context.resources.getColor(R.color.draw_line_red_color, null))
+                .strokeWidth(4f)
+            .fixed(true).build())
+        addLayer(omdbTaskLinkLayer, NIMapView.LAYER_GROUPS.VECTOR)
+        omdbTaskLinkLayer
     }
 
     init {
