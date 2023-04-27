@@ -164,7 +164,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
 
 
     override fun onDestroyView() {
-        activity?.apply {
+        activity?.run {
             findNavController(R.id.main_activity_middle_fragment).navigateUp()
         }
         super.onDestroyView()
@@ -178,7 +178,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             when (v.id) {
                 //上三项，打开面板
                 R.id.evaluation_class_type, R.id.evaluation_problem_type, R.id.evaluation_phenomenon -> {
-                    activity?.apply {
+                    activity?.run {
                         val controller = findNavController(R.id.main_activity_middle_fragment)
                         controller.currentDestination?.let {
                             //如果之前页面是空fragment，直接打开面板
@@ -201,7 +201,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
                 }
                 //下两项，打开面板
                 R.id.evaluation_link, R.id.evaluation_cause -> {
-                    activity?.apply {
+                    activity?.run {
                         val controller = findNavController(R.id.main_activity_middle_fragment)
                         controller.currentDestination?.let {
                             //如果之前页面是空fragment，直接打开面板

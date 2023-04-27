@@ -65,7 +65,6 @@ class TaskListViewModel @Inject constructor(
                     }
                 }
                 is NetResult.Loading -> {}
-                else -> {}
             }
 
             for (item in taskList) {

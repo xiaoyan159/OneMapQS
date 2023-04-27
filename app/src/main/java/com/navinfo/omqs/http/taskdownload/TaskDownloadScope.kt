@@ -1,15 +1,12 @@
 package com.navinfo.omqs.http.taskdownload
 
-import android.content.Context
 import android.util.Log
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.TaskBean
 import com.navinfo.omqs.db.ImportOMDBHelper
-import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import io.realm.Realm
@@ -18,16 +15,12 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.io.RandomAccessFile
-import javax.inject.Inject
 
 class TaskDownloadScope(
     private val downloadManager: TaskDownloadManager,
     val taskBean: TaskBean,
 ) :
     CoroutineScope by CoroutineScope(Dispatchers.IO + CoroutineName("OfflineMapDownLoad")) {
-
-    @Inject
-    lateinit var importOMDBHiltFactory: ImportOMDBHiltFactory
 
     /**
      *下载任务，用来取消的
@@ -131,7 +124,7 @@ class TaskDownloadScope(
                 )
             importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile).collect {
                 Log.e("jingo", "数据安装 $it")
-                if (it == "OK") {
+                if (it == "finish") {
                     change(FileDownloadStatus.DONE)
                 } else {
                     change(FileDownloadStatus.IMPORTING, it)
