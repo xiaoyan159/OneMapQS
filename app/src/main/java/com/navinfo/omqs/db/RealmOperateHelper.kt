@@ -46,7 +46,7 @@ class RealmOperateHelper() {
             val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
             // 查询realm中对应tile号的数据
             val realmList = Realm.getDefaultInstance().where(RenderEntity::class.java)
-                .equalTo("table", "HAD_LINK")
+                .equalTo("table", "OMDB_RD_LINK")
                 .and()
                 .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd")
                 .findAll()
@@ -89,7 +89,7 @@ class RealmOperateHelper() {
             val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
             // 查询realm中对应tile号的数据
             val realmList = Realm.getDefaultInstance().where(RenderEntity::class.java)
-                .notEqualTo("table", "HAD_LINK")
+                .notEqualTo("table", "OMDB_RD_LINK")
                 .and()
                 .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd")
                 .findAll()
@@ -119,7 +119,7 @@ class RealmOperateHelper() {
         val result = mutableListOf<RenderEntity>()
         withContext(Dispatchers.IO) {
             val realmList = Realm.getDefaultInstance().where(RenderEntity::class.java)
-                .notEqualTo("table", "HAD_LINK")
+                .notEqualTo("table", "OMDB_RD_LINK")
                 .and()
                 .equalTo("properties['LINK_PID']", linkPid)
                 .findAll()

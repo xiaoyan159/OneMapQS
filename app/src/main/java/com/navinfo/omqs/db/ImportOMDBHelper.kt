@@ -174,7 +174,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                 emit("${index + 1}/${importConfig.tables.size}")
             }
             Realm.getDefaultInstance().commitTransaction()
-            emit("OK")
+            emit("finish")
         }
     }
 

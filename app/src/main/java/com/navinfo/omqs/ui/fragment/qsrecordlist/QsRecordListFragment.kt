@@ -8,18 +8,12 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView.VERTICAL
-import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentQsRecordListBinding
 import com.navinfo.omqs.ui.activity.map.MainActivity
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.fragment.tasklist.QsRecordListAdapter
-import com.navinfo.omqs.ui.other.BaseToast.makeText
-import com.navinfo.omqs.ui.widget.RecycleViewDivider
 import dagger.hilt.android.AndroidEntryPoint
-import org.apache.poi.xwpf.usermodel.VerticalAlign
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class QsRecordListFragment : BaseFragment(){

@@ -1,15 +1,12 @@
 package com.navinfo.omqs.http.taskdownload
 
-import android.content.Context
 import android.util.Log
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.TaskBean
 import com.navinfo.omqs.db.ImportOMDBHelper
-import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import io.realm.Realm
@@ -18,16 +15,12 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.io.RandomAccessFile
-import javax.inject.Inject
 
 class TaskDownloadScope(
     private val downloadManager: TaskDownloadManager,
     val taskBean: TaskBean,
 ) :
     CoroutineScope by CoroutineScope(Dispatchers.IO + CoroutineName("OfflineMapDownLoad")) {
-
-    @Inject
-    lateinit var importOMDBHiltFactory: ImportOMDBHiltFactory
 
     /**
      *下载任务，用来取消的
@@ -51,7 +44,9 @@ class TaskDownloadScope(
 
     //改进的代码
     fun start() {
-        change(FileDownloadStatus.WAITING)
+        launch{
+            change(FileDownloadStatus.WAITING)
+        }
         downloadManager.launchScope(this@TaskDownloadScope)
     }
 
@@ -61,7 +56,10 @@ class TaskDownloadScope(
      */
     fun pause() {
         downloadJob?.cancel("pause")
-        change(FileDownloadStatus.PAUSE)
+        launch{
+            change(FileDownloadStatus.PAUSE)
+        }
+
     }
 
     /**
@@ -92,18 +90,20 @@ class TaskDownloadScope(
      * 更新任务
      * @param status [OfflineMapCityBean.Status]
      */
-    private fun change(status: Int, message: String = "") {
+    private suspend fun change(status: Int, message: String = "") {
+        Log.e("jingo", "我被挂起 S")
         if (taskBean.status != status || status == FileDownloadStatus.LOADING || status == FileDownloadStatus.IMPORTING) {
             taskBean.status = status
             taskBean.message = message
             downloadData.postValue(taskBean)
-            launch {
+            if (status != FileDownloadStatus.LOADING && status != FileDownloadStatus.IMPORTING) {
                 val realm = Realm.getDefaultInstance()
                 realm.executeTransaction {
                     it.copyToRealmOrUpdate(taskBean)
                 }
             }
         }
+        Log.e("jingo", "我被挂起 E")
     }
 
     /**
@@ -131,7 +131,7 @@ class TaskDownloadScope(
                 )
             importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile).collect {
                 Log.e("jingo", "数据安装 $it")
-                if (it == "OK") {
+                if (it == "finish") {
                     change(FileDownloadStatus.DONE)
                 } else {
                     change(FileDownloadStatus.IMPORTING, it)
@@ -189,7 +189,7 @@ class TaskDownloadScope(
             randomAccessFile.seek(startPosition)
             taskBean.currentSize = startPosition
             inputStream = responseBody.byteStream()
-            val bufferSize = 1024 * 2
+            val bufferSize = 1024 * 4
             val buffer = ByteArray(bufferSize)
 
             var readLength = 0
@@ -205,13 +205,17 @@ class TaskDownloadScope(
             }
 
             if (taskBean.currentSize == taskBean.fileSize) {
-                importData(fileTemp)
+                inputStream?.close()
+                randomAccessFile?.close()
+                inputStream = null
+                randomAccessFile = null
+                importData()
             } else {
                 change(FileDownloadStatus.PAUSE)
             }
         } catch (e: Throwable) {
             change(FileDownloadStatus.ERROR)
-            Log.e("jingo","数据下载出错 ${e.message}")
+            Log.e("jingo", "数据下载出错 ${e.message}")
         } finally {
             inputStream?.close()
             randomAccessFile?.close()
