@@ -65,6 +65,7 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) : Bas
                 //第一次定位成功显示当前位置
                 if (this.bFirst) {
                     animateToCurrentPosition(16.0)
+                    this.bFirst = false
                 }
 
             }

@@ -1,13 +1,16 @@
 package com.navinfo.collect.library.map.handler
 
-import android.content.Context
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.R
 import com.navinfo.collect.library.map.NIMapView
+import com.navinfo.collect.library.map.layers.OmdbTaskLinkLayer
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.StringUtil
+import org.locationtech.jts.geom.LineString
 import org.oscim.android.canvas.AndroidBitmap
 import org.oscim.backend.canvas.Bitmap
 import org.oscim.core.GeoPoint
@@ -19,11 +22,13 @@ import org.oscim.layers.marker.MarkerInterface
 import org.oscim.layers.marker.MarkerItem
 import org.oscim.layers.marker.MarkerSymbol
 import org.oscim.layers.vector.PathLayer
+import org.oscim.layers.vector.VectorLayer
 import org.oscim.layers.vector.geometries.Style
 import org.oscim.map.Map
 
-open class LineHandler(context: AppCompatActivity, mapView: NIMapView) :
-    BaseHandler(context, mapView), Map.UpdateListener {
+@RequiresApi(Build.VERSION_CODES.M)
+class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(context, mapView),
+    Map.UpdateListener {
 
     private var editIndex: Int = -1;
     private val mPathMakers: MutableList<MarkerItem> = mutableListOf()
@@ -51,6 +56,12 @@ open class LineHandler(context: AppCompatActivity, mapView: NIMapView) :
 
     private var bDrawLine = false
 
+
+    private val mDefaultPathLayer: PathLayer
+
+    val omdbTaskLinkLayer by lazy {
+    }
+
     init {
         mMapView.vtmMap.events.bind(this)
 
@@ -61,29 +72,21 @@ open class LineHandler(context: AppCompatActivity, mapView: NIMapView) :
             .fillColor(context.resources.getColor(R.color.draw_line_blue2_color, null))
             .fillAlpha(0.5f)
             .strokeColor(context.resources.getColor(R.color.draw_line_blue2_color, null))
-            .fixed(true)
-            .build()
+            .fixed(true).build()
 
-        newTempStyle = Style.builder()
-            .stippleColor(context.resources.getColor(R.color.transparent, null))
-            .stipple(30)
-            .stippleWidth(30f)
-            .strokeWidth(4f)
-            .strokeColor(context.resources.getColor(R.color.draw_line_blue2_color, null))
-            .fixed(true)
-            .randomOffset(false)
-            .build()
+        newTempStyle =
+            Style.builder().stippleColor(context.resources.getColor(R.color.transparent, null))
+                .stipple(30).stippleWidth(30f).strokeWidth(4f)
+                .strokeColor(context.resources.getColor(R.color.draw_line_blue2_color, null))
+                .fixed(true).randomOffset(false).build()
 
-        editTempStyle = Style.builder()
-            .stippleColor(context.resources.getColor(R.color.transparent, null))
-            .stipple(30)
-            .stippleWidth(30f)
-            .strokeWidth(8f)
-            .strokeColor(context.resources.getColor(R.color.draw_line_red_color, null))
-            .fixed(true)
-            .randomOffset(false)
-            .build()
-
+        editTempStyle =
+            Style.builder().stippleColor(context.resources.getColor(R.color.transparent, null))
+                .stipple(30).stippleWidth(30f).strokeWidth(8f)
+                .strokeColor(context.resources.getColor(R.color.draw_line_red_color, null))
+                .fixed(true).randomOffset(false).build()
+        mDefaultPathLayer = PathLayer(mMapView.vtmMap, lineStyle)
+        addLayer(mDefaultPathLayer, NIMapView.LAYER_GROUPS.VECTOR)
         mPathLayer = PathLayer(mMapView.vtmMap, lineStyle)
 //        addLayer(mPathLayer, NIMapView.LAYER_GROUPS.OPERATE)
 
@@ -92,8 +95,7 @@ open class LineHandler(context: AppCompatActivity, mapView: NIMapView) :
 
         mPathMarkerBitmap = AndroidBitmap(
             BitmapFactory.decodeResource(
-                mContext.resources,
-                R.mipmap.icon_path_maker
+                mContext.resources, R.mipmap.icon_path_maker
             )
         )
         val markerSymbol = MarkerSymbol(mPathMarkerBitmap, MarkerSymbol.HotspotPlace.CENTER)
@@ -110,8 +112,7 @@ open class LineHandler(context: AppCompatActivity, mapView: NIMapView) :
                         if (item === item1) {
                             mMapView.vtmMap.animator().animateTo(
                                 GeoPoint(
-                                    item.getPoint().latitude,
-                                    item.getPoint().longitude
+                                    item.getPoint().latitude, item.getPoint().longitude
                                 )
                             )
                             editIndex = i
@@ -137,6 +138,22 @@ open class LineHandler(context: AppCompatActivity, mapView: NIMapView) :
                 return false
             }
         })
+    }
+
+    fun showLine(geometry: String) {
+        try {
+
+        } catch (e: Exception) {
+            Toast.makeText(mContext, "高亮路线失败 ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+        val g = GeometryTools.getGeoPoints(geometry)
+        mDefaultPathLayer.setPoints(g)
+        mDefaultPathLayer.isEnabled = true
+    }
+
+    fun removeLine() {
+        mDefaultPathLayer.clearPath()
+        mDefaultPathLayer.isEnabled = false
     }
 
     fun addDrawLinePoint(geoPoint: GeoPoint): List<GeoPoint> {
@@ -210,7 +227,7 @@ open class LineHandler(context: AppCompatActivity, mapView: NIMapView) :
                         }
                     }
                 }
-                if (editIndex < mPathLayer.getPoints().size) {
+                if (editIndex < mPathLayer.points.size) {
                     mPathLayer.points.removeAt(editIndex)
                     val list2: MutableList<GeoPoint> = mutableListOf<GeoPoint>()
                     list2.addAll(mPathLayer.points)
@@ -268,8 +285,7 @@ open class LineHandler(context: AppCompatActivity, mapView: NIMapView) :
 
 
     override fun onMapEvent(e: Event, mapPosition: MapPosition) {
-        if (!bDrawLine)
-            return
+        if (!bDrawLine) return
 //        if (mMapView.centerPixel[1] > mMapView.vtmMap.height / 2) {
 //            val geoPoint =
 //                mMapView.vtmMap.viewport()
@@ -287,16 +303,14 @@ open class LineHandler(context: AppCompatActivity, mapView: NIMapView) :
                         list.add(mPathMakers[editIndex].geoPoint)
                         list.add(
                             GeoPoint(
-                                mapPosition.latitude,
-                                mapPosition.longitude
+                                mapPosition.latitude, mapPosition.longitude
                             )
                         )
                     } else {
                         list.add(mPathMakers[editIndex - 1].geoPoint)
                         list.add(
                             GeoPoint(
-                                mapPosition.latitude,
-                                mapPosition.longitude
+                                mapPosition.latitude, mapPosition.longitude
                             )
                         )
                         list.add(mPathMakers[editIndex + 1].geoPoint)
@@ -308,8 +322,7 @@ open class LineHandler(context: AppCompatActivity, mapView: NIMapView) :
                     list.add(mPathLayer.points[mPathLayer.points.size - 1])
                     list.add(
                         GeoPoint(
-                            mapPosition.latitude,
-                            mapPosition.longitude
+                            mapPosition.latitude, mapPosition.longitude
                         )
                     )
                     mPathLayerTemp.setPoints(list)
@@ -317,8 +330,7 @@ open class LineHandler(context: AppCompatActivity, mapView: NIMapView) :
                         val listDis: MutableList<GeoPoint> = mutableListOf()
                         listDis.add(
                             GeoPoint(
-                                mapPosition.latitude,
-                                mapPosition.longitude
+                                mapPosition.latitude, mapPosition.longitude
                             )
                         )
 //                        val distance: Double =

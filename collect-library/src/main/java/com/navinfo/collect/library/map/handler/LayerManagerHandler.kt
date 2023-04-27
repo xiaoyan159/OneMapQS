@@ -1,58 +1,27 @@
 package com.navinfo.collect.library.map.handler
 
-import android.content.Context
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
-import androidx.lifecycle.lifecycleScope
-import com.navinfo.collect.library.R
-import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.map.NIMapView
-import com.navinfo.collect.library.map.cluster.ClusterMarkerItem
-import com.navinfo.collect.library.map.cluster.ClusterMarkerRenderer
-import com.navinfo.collect.library.map.layers.MyItemizedLayer
 import com.navinfo.collect.library.map.source.MapLifeNiLocationTileSource
 import com.navinfo.collect.library.map.source.NavinfoMultiMapFileTileSource
 import com.navinfo.collect.library.map.source.OMDBTileSource
 import com.navinfo.collect.library.system.Constant
-import com.navinfo.collect.library.utils.GeometryTools
-import io.realm.Realm
-import io.realm.kotlin.where
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.Cache
 import okhttp3.OkHttpClient
-import org.locationtech.jts.geom.Geometry
-import org.oscim.android.canvas.AndroidBitmap
-import org.oscim.backend.CanvasAdapter
-import org.oscim.backend.canvas.Bitmap
-import org.oscim.backend.canvas.Paint
-import org.oscim.core.GeoPoint
 import org.oscim.layers.GroupLayer
-import org.oscim.layers.marker.MarkerInterface
-import org.oscim.layers.marker.MarkerItem
-import org.oscim.layers.marker.MarkerRendererFactory
-import org.oscim.layers.marker.MarkerSymbol
 import org.oscim.layers.tile.buildings.BuildingLayer
 import org.oscim.layers.tile.vector.VectorTileLayer
 import org.oscim.layers.tile.vector.labeling.LabelLayer
 import org.oscim.layers.tile.vector.labeling.LabelTileLoaderHook
-import org.oscim.layers.vector.VectorLayer
-import org.oscim.map.Map
 import org.oscim.map.Map.UpdateListener
 import org.oscim.tiling.source.OkHttpEngine.OkHttpFactory
 import org.oscim.tiling.source.mapfile.MapFileTileSource
 import java.io.File
-import java.util.*
 
 /**
  * Layer 操作
  */
-open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePath: String) : BaseHandler(context, mapView) {
+class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePath: String) : BaseHandler(context, mapView) {
     private var baseGroupLayer // 用于盛放所有基础底图的图层组，便于统一管理
             : GroupLayer? = null
     protected val mTracePath:String = tracePath
@@ -77,10 +46,6 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tr
      * */
     private lateinit var omdbVectorTileLayer: VectorTileLayer
     private lateinit var omdbLabelLayer: LabelLayer
-    /**
-     * 文字大小
-     */
-    private val NUM_13 = 13
 
     init {
         initMap()
