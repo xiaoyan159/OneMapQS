@@ -10,7 +10,6 @@ import io.realm.annotations.Ignore
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
 
-@RealmClass
 open class TaskBean @JvmOverloads constructor(
     /**
      * 测评任务id
