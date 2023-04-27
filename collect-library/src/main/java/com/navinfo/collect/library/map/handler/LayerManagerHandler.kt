@@ -41,6 +41,7 @@ import org.oscim.layers.tile.buildings.BuildingLayer
 import org.oscim.layers.tile.vector.VectorTileLayer
 import org.oscim.layers.tile.vector.labeling.LabelLayer
 import org.oscim.layers.tile.vector.labeling.LabelTileLoaderHook
+import org.oscim.layers.vector.VectorLayer
 import org.oscim.map.Map
 import org.oscim.map.Map.UpdateListener
 import org.oscim.tiling.source.OkHttpEngine.OkHttpFactory
@@ -140,6 +141,12 @@ open class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tr
         if(omdbLabelLayer!=null){
             addLayer(omdbLabelLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
         }
+    }
+
+    /**
+     * 初始化任务Link高亮的图层
+     * */
+    private fun initOMDBTaskVectorLayer() {
     }
 
     /**
