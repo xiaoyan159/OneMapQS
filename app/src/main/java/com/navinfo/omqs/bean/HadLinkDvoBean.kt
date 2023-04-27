@@ -3,7 +3,6 @@ package com.navinfo.omqs.bean
 import io.realm.RealmObject
 import io.realm.annotations.RealmClass
 
-@RealmClass
 open class HadLinkDvoBean @JvmOverloads constructor(
     /**
      * 图幅号

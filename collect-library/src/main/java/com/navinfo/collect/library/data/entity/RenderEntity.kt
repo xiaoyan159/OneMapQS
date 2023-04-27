@@ -41,12 +41,11 @@ open class RenderEntity(): RealmObject() {
         }
     @Ignore
     var wkt: Geometry? = null
-    var properties: RealmDictionary<String?> = RealmDictionary()
+    var properties: RealmDictionary<String> = RealmDictionary()
     var tileX: RealmSet<Int> = RealmSet() // x方向的tile编码
     var tileY: RealmSet<Int> = RealmSet()  // y方向的tile编码
 
-    constructor(name: String, properties: RealmDictionary<String?>): this() {
+    constructor(name: String): this() {
         this.name = name
-        this.properties = properties
     }
 }

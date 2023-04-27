@@ -136,13 +136,13 @@ class ImportOMDBHelper @AssistedInject constructor(
                     it.name == currentConfig.table
                 }
 
-                val listResult = mutableListOf<Map<String, Any?>>()
+                val listResult = mutableListOf<Map<String, Any>>()
                 currentConfig?.let {
                     val list = FileIOUtils.readFile2List(txtFile, "UTF-8")
                     if (list != null) {
                         // 将list数据转换为map
                         for (line in list) {
-                            val map = gson.fromJson<Map<String, Any?>>(line, object:TypeToken<Map<String, Any?>>(){}.getType())
+                            val map = gson.fromJson<Map<String, Any>>(line, object:TypeToken<Map<String, Any>>(){}.getType())
                                 .toMutableMap()
                             map["qi_table"] = currentConfig.table
                             map["qi_name"] = currentConfig.name
@@ -162,13 +162,13 @@ class ImportOMDBHelper @AssistedInject constructor(
                     renderEntity.geometry = map["geometry"].toString()
                     for ((key, value) in map) {
                         when (value) {
-                            is String -> renderEntity.properties[key.toString()] = value
-                            is Int -> renderEntity.properties[key.toString()] = value.toInt().toString()
-                            is Double -> renderEntity.properties[key.toString()] = value.toDouble().toString()
-                            else -> renderEntity.properties[key.toString()] = value.toString()
+                            is String -> renderEntity.properties.put(key, value)
+                            is Int -> renderEntity.properties.put(key, value.toInt().toString())
+                            is Double -> renderEntity.properties.put(key, value.toDouble().toString())
+                            else -> renderEntity.properties.put(key, value.toString())
                         }
                     }
-                    Realm.getDefaultInstance().insert(renderEntity)
+                    Realm.getDefaultInstance().copyToRealm(renderEntity)
                 }
                 // 1个文件发送一次flow流
                 emit("${index + 1}/${importConfig.tables.size}")

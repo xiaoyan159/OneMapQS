@@ -120,9 +120,7 @@ class MainViewModel @Inject constructor(
                         }
 
                         TraceDataBase.getDatabase(context, Constant.USER_DATA_PATH + "/trace.sqlite").niLocationDao.insert(niLocation)
-                        if (niLocationList.isNotEmpty()) {
-                            niLocationList.remove(niLocation)
-                        }
+                        niLocationList.remove(niLocation)
 
                         Log.e("qj", "saveTrace==${niLocationList.size}")
                     }
