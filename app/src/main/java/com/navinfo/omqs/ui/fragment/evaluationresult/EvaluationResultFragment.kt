@@ -59,7 +59,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         if (arguments != null) {
             val id = requireArguments().getString("QsId")
             if (id != null) {
-                viewModel.loadData(id)
+                viewModel.initData(id)
             } else {
                 viewModel.initNewData()
             }
