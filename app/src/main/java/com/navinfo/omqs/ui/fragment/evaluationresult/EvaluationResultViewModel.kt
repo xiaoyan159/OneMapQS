@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.db.RoomAppDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,6 +14,7 @@ import io.realm.Realm
 import io.realm.kotlin.where
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.locationtech.jts.geom.Point
 import java.util.*
 import javax.inject.Inject
 
@@ -57,6 +59,17 @@ class EvaluationResultViewModel @Inject constructor(
             setOnMapClickListener {
                 liveDataQsRecordBean.value!!.geometry = it.toGeometry()
                 addMarker(it, markerTitle)
+                viewModelScope.launch {
+                    val linkList = realmOperateHelper.queryLink(
+                        point = GeometryTools.createPoint(
+                            it.longitude,
+                            it.latitude
+                        ), sort = true
+                    )
+                    if (linkList.isNotEmpty()) {
+                        liveDataQsRecordBean.value!!.linkId = linkList[0].id
+                    }
+                }
             }
         }
 
@@ -82,6 +95,17 @@ class EvaluationResultViewModel @Inject constructor(
         geoPoint?.let {
             liveDataQsRecordBean.value!!.geometry = it.toGeometry()
             mapController.markerHandle.addMarker(geoPoint, markerTitle)
+            viewModelScope.launch {
+                val linkList = realmOperateHelper.queryLink(
+                    GeometryTools.createPoint(
+                        geoPoint.longitude,
+                        geoPoint.latitude
+                    )
+                )
+                if (linkList.isNotEmpty()) {
+                    liveDataQsRecordBean.value!!.linkId = linkList[0].id
+                }
+            }
         }
     }
 

@@ -33,7 +33,7 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file('D:/WrokSpace/OneMapQS/fastmap.keystore')
+            storeFile file('../fastmap.keystore')
             storePassword "navinfo"
             keyAlias "fastmap"
             keyPassword "navinfo"
