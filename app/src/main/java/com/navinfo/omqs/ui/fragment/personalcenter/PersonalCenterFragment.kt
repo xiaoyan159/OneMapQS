@@ -117,6 +117,9 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
                 R.id.personal_center_menu_qs_record_list -> {
                     findNavController().navigate(R.id.QsRecordListFragment)
                 }
+                R.id.personal_center_menu_layer_manager -> { // 图层管理
+                    findNavController().navigate(R.id.QsLayerManagerFragment)
+                }
             }
             true
         }
