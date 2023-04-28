@@ -1,14 +1,20 @@
 package com.navinfo.collect.library.map
 
-import android.content.Context
-import android.util.Log
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.data.handler.DataNiLocationHandler
+import com.navinfo.collect.library.map.NIMapView.OnMapClickListener
 import com.navinfo.collect.library.map.handler.*
-import com.navinfo.collect.library.map.maphandler.MeasureLayerHandler
+import com.navinfo.collect.library.map.handler.MeasureLayerHandler
 import com.navinfo.collect.library.map.handler.ViewportHandler
 import com.navinfo.collect.library.system.Constant
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
+import org.oscim.core.GeoPoint
 
 /**
  *  地图控制器
@@ -25,19 +31,35 @@ class NIMapController {
     lateinit var viewportHandler: ViewportHandler
     lateinit var measureLayerHandler: MeasureLayerHandler
 
-    fun init(context: AppCompatActivity, mapView: NIMapView, options: NIMapOptions? = null, mapPath: String, tracePath: String) {
+    val onMapClickFlow = MutableSharedFlow<GeoPoint>()
+
+    fun init(
+        context: AppCompatActivity,
+        mapView: NIMapView,
+        options: NIMapOptions? = null,
+        mapPath: String,
+        tracePath: String
+    ) {
         Constant.MAP_PATH = mapPath
         layerManagerHandler = LayerManagerHandler(context, mapView, tracePath)
         locationLayerHandler = LocationLayerHandler(context, mapView)
         animationHandler = AnimationHandler(context, mapView)
         markerHandle = MarkHandler(context, mapView)
-        lineHandler = LineHandler(context, mapView)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            lineHandler = LineHandler(context, mapView)
+        }
         polygonHandler = PolygonHandler(context, mapView)
         viewportHandler = ViewportHandler(context, mapView)
-        measureLayerHandler = MeasureLayerHandler(context, mapView)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            measureLayerHandler = MeasureLayerHandler(context, mapView)
+        }
         mMapView = mapView
+        mMapView.setOnMapClickListener {
+            context.lifecycleScope.launch {
+                onMapClickFlow.emit(it)
+            }
+        }
         mapView.setOptions(options)
-        mMapView.vtmMap.viewport().maxZoomLevel = Constant.MAX_ZOOM // 设置地图的最大级别
     }
 
 

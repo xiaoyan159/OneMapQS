@@ -16,7 +16,7 @@ import java.util.*
 /**
  * 渲染要素对应的实体
  * */
-open class RenderEntity(): RealmObject() {
+open class RenderEntity() : RealmObject() {
     @PrimaryKey
     var id: String = UUID.randomUUID().toString() // id
     lateinit var name: String //要素名
@@ -39,14 +39,37 @@ open class RenderEntity(): RealmObject() {
 
             }
         }
+
     @Ignore
     var wkt: Geometry? = null
-    var properties: RealmDictionary<String?> = RealmDictionary()
+        get() {
+            if (field == null || field!!.isEmpty) {
+                try {
+                    field = GeometryTools.createGeometry(geometry)
+                } catch (e: Exception) {
+
+                }
+            }
+            return field
+        }
+    var properties: RealmDictionary<String> = RealmDictionary()
     var tileX: RealmSet<Int> = RealmSet() // x方向的tile编码
     var tileY: RealmSet<Int> = RealmSet()  // y方向的tile编码
 
-    constructor(name: String, properties: RealmDictionary<String?>): this() {
+    constructor(name: String): this() {
         this.name = name
-        this.properties = properties
+    }
+
+    companion object {
+        object LinkTable {
+            //道路linkId
+            const val linkPid = "linkPid"
+        }
+        object LimitTable {
+            const val linkPid = "linkPid"
+        }
+        object KindCodeTable {
+            const val linkPid = "linkPid"
+        }
     }
 }

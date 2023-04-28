@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.NiLocationListener
@@ -37,6 +38,7 @@ class MainActivity : BaseActivity() {
     @Inject
     lateinit var offlineMapDownloadManager: OfflineMapDownloadManager
 
+    private val signAdapter by lazy { SignAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -48,7 +50,7 @@ class MainActivity : BaseActivity() {
             binding.mainActivityMap,
             null,
             Constant.MAP_PATH,
-            Constant.USER_DATA_PATH+"/trace.sqlite"
+            Constant.USER_DATA_PATH + "/trace.sqlite"
         )
         //关联生命周期
         binding.lifecycleOwner = this
@@ -81,7 +83,11 @@ class MainActivity : BaseActivity() {
             //处理页面跳转
             viewModel.navigation(this, it)
         }
-
+        binding.mainActivitySignRecyclerview.layoutManager = LinearLayoutManager(this)
+        binding.mainActivitySignRecyclerview.adapter = signAdapter
+        viewModel.liveDataSignList.observe(this) {
+            signAdapter.refreshData(it)
+        }
     }
 
     override fun onStart() {
@@ -89,15 +95,10 @@ class MainActivity : BaseActivity() {
 
         //开启定位
         mapController.locationLayerHandler.startLocation()
+
         //启动轨迹存储
-        mapController.locationLayerHandler.setNiLocationListener(NiLocationListener {
-            //ToastUtils.showLong("定位${it.longitude}")
-            binding!!.viewModel!!.addSaveTrace(it)
-        })
-        binding!!.viewModel!!.startSaveTraceThread(this)
-        //显示轨迹图层
-//        mapController.layerManagerHandler.showNiLocationLayer(Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite")
-        mapController.layerManagerHandler.showNiLocationLayer()
+//        viewModel.startSaveTraceThread(this)
+
     }
 
     override fun onPause() {
@@ -128,7 +129,7 @@ class MainActivity : BaseActivity() {
      */
     fun openCamera() {
         //显示轨迹图层
-        binding!!.viewModel!!.onClickCameraButton(this)
+        viewModel.onClickCameraButton(this)
     }
 
     /**

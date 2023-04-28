@@ -1,6 +1,7 @@
 package com.navinfo.omqs.bean
 
 import com.google.gson.annotations.SerializedName
+import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
@@ -8,9 +9,7 @@ import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.Ignore
 import io.realm.annotations.PrimaryKey
-import io.realm.annotations.RealmClass
 
-@RealmClass
 open class TaskBean @JvmOverloads constructor(
     /**
      * 测评任务id

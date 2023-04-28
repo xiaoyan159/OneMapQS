@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.data.entity.QsRecordBean
+import com.navinfo.collect.library.data.entity.RenderEntity.Companion.LinkTable
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
@@ -19,6 +20,7 @@ import io.realm.Realm
 import io.realm.kotlin.where
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.oscim.core.GeoPoint
 import java.util.*
 import javax.inject.Inject
 
@@ -62,31 +64,24 @@ class EvaluationResultViewModel @Inject constructor(
     init {
         liveDataQsRecordBean.value = QsRecordBean(id = UUID.randomUUID().toString())
         Log.e("jingo", "EvaluationResultViewModel 创建了 ${hashCode()}")
-        mapController.markerHandle.run {
-            setOnMapClickListener {
-                liveDataQsRecordBean.value!!.geometry = it.toGeometry()
-                addMarker(it, markerTitle)
+        viewModelScope.launch {
+            mapController.onMapClickFlow.collect {
+                liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(it).toText()
+                mapController.markerHandle.addMarker(it, markerTitle)
                 viewModelScope.launch {
-                    val linkList = realmOperateHelper.queryLink(
-                        point = GeometryTools.createPoint(
-                            it.longitude,
-                            it.latitude
-                        ), sort = true
-                    )
-                    if (linkList.isNotEmpty()) {
-                        liveDataQsRecordBean.value!!.linkId = linkList[0].id
-                    }
+                    captureLink(it.longitude, it.latitude)
                 }
             }
         }
-
     }
 
     override fun onCleared() {
         super.onCleared()
         Log.e("jingo", "EvaluationResultViewModel 销毁了 ${hashCode()}")
         mapController.markerHandle.removeMarker(markerTitle)
-        mapController.markerHandle.removeOnMapClickListener()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mapController.lineHandler.removeLine()
+        }
     }
 
 
@@ -100,17 +95,34 @@ class EvaluationResultViewModel @Inject constructor(
         }
         val geoPoint = mapController.locationLayerHandler.getCurrentGeoPoint()
         geoPoint?.let {
-            liveDataQsRecordBean.value!!.geometry = it.toGeometry()
+            liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(it).toText()
             mapController.markerHandle.addMarker(geoPoint, markerTitle)
             viewModelScope.launch {
-                val linkList = realmOperateHelper.queryLink(
-                    GeometryTools.createPoint(
-                        geoPoint.longitude,
-                        geoPoint.latitude
-                    )
-                )
+                captureLink(geoPoint.longitude, geoPoint.latitude)
+            }
+        }
+    }
+
+    /**
+     * 捕捉到路
+     */
+    private suspend fun captureLink(longitude: Double, latitude: Double) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val linkList = realmOperateHelper.queryLink(
+                point = GeometryTools.createPoint(
+                    longitude,
+                    latitude
+                ),
+            )
+
+            liveDataQsRecordBean.value?.let {
                 if (linkList.isNotEmpty()) {
-                    liveDataQsRecordBean.value!!.linkId = linkList[0].id
+                    it.linkId =
+                        linkList[0].properties[LinkTable.linkPid] ?: ""
+                    mapController.lineHandler.showLine(linkList[0].geometry)
+                } else {
+                    it.linkId = ""
+                    mapController.lineHandler.removeLine()
                 }
             }
         }
@@ -270,14 +282,31 @@ class EvaluationResultViewModel @Inject constructor(
     /**
      * 根据数据id，查询数据
      */
-    fun loadData(id: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val realm = Realm.getDefaultInstance()
-            val objects = realm.where<QsRecordBean>().equalTo("id", id).findFirst()
 
-            if (objects != null) {
-                oldBean = realm.copyFromRealm(objects)
-                liveDataQsRecordBean.postValue(oldBean!!.copy())
+    fun initData(id: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val realm = Realm.getDefaultInstance()
+                val objects = realm.where<QsRecordBean>().equalTo("id", id).findFirst()
+
+                if (objects != null) {
+                    oldBean = realm.copyFromRealm(objects)
+                    oldBean?.let {
+                        liveDataQsRecordBean.postValue(it.copy())
+                        val p = GeometryTools.createGeoPoint(it.geometry)
+                        mapController.markerHandle.addMarker(
+                            GeoPoint(p.latitude, p.longitude),
+                            markerTitle
+                        )
+
+                        if (it.linkId.isNotEmpty()) {
+                            val link = realmOperateHelper.queryLink(it.linkId)
+                            link?.let { l ->
+                                mapController.lineHandler.showLine(l.geometry)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -1,7 +1,10 @@
 package com.navinfo.omqs.db
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.navinfo.collect.library.data.entity.RenderEntity
+import com.navinfo.collect.library.data.entity.RenderEntity.Companion.LinkTable
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
@@ -17,10 +20,11 @@ import org.oscim.core.MercatorProjection
 import javax.inject.Inject
 import kotlin.streams.toList
 
-
+@RequiresApi(Build.VERSION_CODES.N)
 class RealmOperateHelper() {
     @Inject
     lateinit var niMapController: NIMapController
+
     /**
      * 根据当前点位查询匹配的Link数据
      * @param point 点位经纬度信息
@@ -28,7 +32,12 @@ class RealmOperateHelper() {
      * @param bufferType 点位外扩距离的单位： 米-Meter，像素-PIXEL
      * @param sort 是否需要排序
      * */
-    suspend fun queryLink(point: Point, buffer: Double = DEFAULT_BUFFER, bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE, sort: Boolean = false): MutableList<RenderEntity> {
+    suspend fun queryLink(
+        point: Point,
+        buffer: Double = DEFAULT_BUFFER,
+        bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE,
+        sort: Boolean = true
+    ): MutableList<RenderEntity> {
         val result = mutableListOf<RenderEntity>()
         withContext(Dispatchers.IO) {
             val polygon = getPolygonFromPoint(point, buffer, bufferType)
@@ -45,25 +54,47 @@ class RealmOperateHelper() {
             val yStart = tileYSet.stream().min(Comparator.naturalOrder()).orElse(null)
             val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
             // 查询realm中对应tile号的数据
-            val realmList = Realm.getDefaultInstance().where(RenderEntity::class.java)
+            val realm = Realm.getDefaultInstance()
+            val realmList = realm.where(RenderEntity::class.java)
                 .equalTo("table", "OMDB_RD_LINK")
                 .and()
                 .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd")
                 .findAll()
             // 将获取到的数据和查询的polygon做相交，只返回相交的数据
-            val queryResult = realmList?.stream()?.filter {
+            val dataList = realm.copyFromRealm(realmList)
+            val queryResult = dataList?.stream()?.filter {
                 polygon.intersects(it.wkt)
             }?.toList()
+
             queryResult?.let {
-                result.addAll(queryResult)
+                if (sort) {
+                    result.addAll(sortRenderEntity(point, it))
+                } else {
+                    result.addAll(it)
+                }
             }
-            if (sort) {
-                result.clear()
-                result.addAll(sortRenderEntity(point, result))
-            }
+
         }
         return result
     }
+
+
+    suspend fun queryLink(linkPid: String): RenderEntity? {
+        var link: RenderEntity? = null
+        withContext(Dispatchers.IO) {
+            val realm = Realm.getDefaultInstance()
+            val realmR = realm.where(RenderEntity::class.java)
+                .equalTo("table", "OMDB_RD_LINK")
+                .and()
+                .equalTo("properties['${LinkTable.linkPid}']", linkPid)
+                .findFirst()
+            if (realmR != null) {
+                link = realm.copyFromRealm(realmR)
+            }
+        }
+        return link
+    }
+
     /**
      * 根据当前点位查询匹配的除Link外的其他要素数据
      * @param point 点位经纬度信息
@@ -71,7 +102,12 @@ class RealmOperateHelper() {
      * @param bufferType 点位外扩距离的单位： 米-Meter，像素-PIXEL
      * @param sort 是否需要排序
      * */
-    suspend fun queryElement(point: Point, buffer: Double = DEFAULT_BUFFER, bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE, sort: Boolean = false): MutableList<RenderEntity> {
+    suspend fun queryElement(
+        point: Point,
+        buffer: Double = DEFAULT_BUFFER,
+        bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE,
+        sort: Boolean = true
+    ): MutableList<RenderEntity> {
         val result = mutableListOf<RenderEntity>()
         withContext(Dispatchers.IO) {
             val polygon = getPolygonFromPoint(point, buffer, bufferType)
@@ -121,7 +157,7 @@ class RealmOperateHelper() {
             val realmList = Realm.getDefaultInstance().where(RenderEntity::class.java)
                 .notEqualTo("table", "OMDB_RD_LINK")
                 .and()
-                .equalTo("properties['LINK_PID']", linkPid)
+                .equalTo("properties['${LinkTable.linkPid}']", linkPid)
                 .findAll()
             result.addAll(realmList)
         }
@@ -134,15 +170,19 @@ class RealmOperateHelper() {
      * @param unSortList 未排序的数据
      * @return 排序后的数据
      * */
-    fun sortRenderEntity(point: Point, unSortList: MutableList<RenderEntity>): List<RenderEntity> {
+    fun sortRenderEntity(point: Point, unSortList: List<RenderEntity>): List<RenderEntity> {
         val sortList = unSortList.stream().sorted { renderEntity, renderEntity2 ->
             val near = point.distance(renderEntity.wkt) - point.distance(renderEntity2.wkt)
-            if (near<0) -1 else 1
+            if (near < 0) -1 else 1
         }.toList()
         return sortList
     }
 
-    private fun getPolygonFromPoint(point: Point, buffer: Double = DEFAULT_BUFFER, bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE): Polygon {
+    private fun getPolygonFromPoint(
+        point: Point,
+        buffer: Double = DEFAULT_BUFFER,
+        bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE
+    ): Polygon {
         // 首先计算当前点位的buffer组成的geometry
         val wkt: Polygon = if (bufferType == BUFFER_TYPE.METER) { // 如果单位是米
             val distanceDegrees = GeometryTools.convertDistanceToDegree(buffer, point.y)
@@ -151,14 +191,30 @@ class RealmOperateHelper() {
         } else { // 如果单位是像素，需要根据当前屏幕像素计算出经纬度变化
             val currentMapScale = niMapController.mMapView.vtmMap.mapPosition.scale
             // 转换为屏幕坐标
-            val pixelPoint = MercatorProjection.getPixelWithScale(GeoPoint(point.y, point.x), currentMapScale)
+            val pixelPoint =
+                MercatorProjection.getPixelWithScale(
+                    GeoPoint(point.y, point.x),
+                    currentMapScale
+                )
             // 将屏幕坐标外扩指定距离
             // 计算外扩矩形
             val envelope = Envelope(
-                MercatorProjection.pixelXToLongitudeWithScale(pixelPoint.x - buffer, currentMapScale),
-                MercatorProjection.pixelXToLongitudeWithScale(pixelPoint.x + buffer, currentMapScale),
-                MercatorProjection.pixelYToLatitudeWithScale(pixelPoint.y - buffer, currentMapScale),
-                MercatorProjection.pixelYToLatitudeWithScale(pixelPoint.y + buffer, currentMapScale),
+                MercatorProjection.pixelXToLongitudeWithScale(
+                    pixelPoint.x - buffer,
+                    currentMapScale
+                ),
+                MercatorProjection.pixelXToLongitudeWithScale(
+                    pixelPoint.x + buffer,
+                    currentMapScale
+                ),
+                MercatorProjection.pixelYToLatitudeWithScale(
+                    pixelPoint.y - buffer,
+                    currentMapScale
+                ),
+                MercatorProjection.pixelYToLatitudeWithScale(
+                    pixelPoint.y + buffer,
+                    currentMapScale
+                ),
             )
             // 将Envelope对象转换为Polygon对象
             val geometryFactory = GeometryFactory()
@@ -178,7 +234,8 @@ class RealmOperateHelper() {
 
 enum class BUFFER_TYPE(val index: Int) {
     METER(0)/*米*/, PIXEL(1)/*像素*/;
-    fun getBufferTypeByIndex(index: Int): BUFFER_TYPE{
+
+    fun getBufferTypeByIndex(index: Int): BUFFER_TYPE {
         for (item in BUFFER_TYPE.values()) {
             if (item.index == index) {
                 return item;

@@ -1,11 +1,16 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
 import android.content.Context
+import android.graphics.Color
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.core.graphics.toColor
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.bean.TaskBean
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
@@ -19,7 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
-    private val networkService: NetworkService
+    private val networkService: NetworkService,
+    private val niMapController: NIMapController
 ) : ViewModel() {
 
     val liveDataTaskList = MutableLiveData<List<TaskBean>>()
@@ -70,6 +76,11 @@ class TaskListViewModel @Inject constructor(
             for (item in taskList) {
                 FileManager.checkOMDBFileInfo(item)
             }
+//            niMapController.lineHandler.omdbTaskLinkLayer.setLineColor(Color.rgb(0, 255, 0).toColor())
+//            taskList.forEach {
+//                niMapController.lineHandler.omdbTaskLinkLayer.addLineList(it.hadLinkDvoList)
+//            }
+//            niMapController.lineHandler.omdbTaskLinkLayer.update()
             liveDataTaskList.postValue(taskList)
         }
 

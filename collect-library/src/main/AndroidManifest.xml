@@ -24,6 +24,7 @@
 
         <service
             android:name="com.baidu.location.f"
+            android:exported="true"
             android:enabled="true"
             android:process=":remote">
             <intent-filter>
