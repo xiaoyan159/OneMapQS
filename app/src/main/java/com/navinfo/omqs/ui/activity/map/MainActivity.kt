@@ -1,7 +1,12 @@
 package com.navinfo.omqs.ui.activity.map
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.view.MotionEvent
+import android.view.View
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
@@ -52,6 +57,26 @@ class MainActivity : BaseActivity() {
         //给xml传递viewModel对象
         binding.viewModel = viewModel
 
+        binding.mainActivityVoice.setOnTouchListener(object : View.OnTouchListener {
+            @RequiresApi(Build.VERSION_CODES.Q)
+            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                Log.e("qj",event?.action.toString())
+                when (event?.action) {
+                    MotionEvent.ACTION_DOWN ->{
+                        voiceOnTouchStart()//Do Something
+                        Log.e("qj","voiceOnTouchStart")
+                    }
+                    MotionEvent.ACTION_UP ->{
+                        voiceOnTouchStop()//Do Something
+                        Log.e("qj","voiceOnTouchStop")
+                    }
+                }
+
+
+                return v?.onTouchEvent(event) ?: true
+            }
+        })
+
         viewModel.liveDataQsRecordIdList.observe(this) {
             //处理页面跳转
             viewModel.navigation(this, it)
@@ -68,8 +93,8 @@ class MainActivity : BaseActivity() {
         mapController.locationLayerHandler.setNiLocationListener(NiLocationListener {
             //ToastUtils.showLong("定位${it.longitude}")
             binding!!.viewModel!!.addSaveTrace(it)
-            binding!!.viewModel!!.startSaveTraceThread(this)
         })
+        binding!!.viewModel!!.startSaveTraceThread(this)
         //显示轨迹图层
 //        mapController.layerManagerHandler.showNiLocationLayer(Constant.DATA_PATH+ SystemConstant.USER_ID+"/trace.sqlite")
         mapController.layerManagerHandler.showNiLocationLayer()
@@ -110,8 +135,19 @@ class MainActivity : BaseActivity() {
      * 点击录音按钮
      */
     fun voiceOnclick() {
-        val naviController = findNavController(R.id.main_activity_right_fragment)
-        naviController.navigate(R.id.EvaluationResultFragment)
+/*        val naviController = findNavController(R.id.main_activity_right_fragment)
+        naviController.navigate(R.id.EvaluationResultFragment)*/
+    }
+
+    fun voiceOnTouchStart(){
+        binding!!.viewModel!!.startSoundMetter(this,mapController.locationLayerHandler.getCurrentNiLocation(),binding.mainActivityVoice)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun voiceOnTouchStop(){
+        if(Constant.IS_VIDEO_SPEED){
+            binding!!.viewModel!!.stopSoundMeter()
+        }
     }
 
 //    override fun onBackPressed() {

@@ -63,7 +63,6 @@
                 android:layout_height="48dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="120dp"
-                android:onClick="@{()->mainActivity.voiceOnclick()}"
                 android:src="@drawable/baseline_keyboard_voice_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent" />

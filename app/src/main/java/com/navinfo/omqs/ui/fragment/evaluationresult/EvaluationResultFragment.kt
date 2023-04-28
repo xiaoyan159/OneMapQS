@@ -7,9 +7,11 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentEvaluationResultBinding
 import com.navinfo.omqs.ui.fragment.BaseFragment
+import com.navinfo.omqs.ui.fragment.tasklist.TaskListAdapter
 import com.navinfo.omqs.ui.other.shareViewModels
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,15 +19,26 @@ import dagger.hilt.android.AndroidEntryPoint
 class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentEvaluationResultBinding
     private val viewModel by shareViewModels<EvaluationResultViewModel>("QsRecode")
-
+    private val adapter: SoundtListAdapter by lazy {
+        SoundtListAdapter()
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_evaluation_result, container, false)
         binding.fragment = this
+        val layoutManager = LinearLayoutManager(context)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
+        //// 设置 RecyclerView 的固定大小，避免在滚动时重新计算视图大小和布局，提高性能
+        binding.evaluationVoiceRecyclerview.setHasFixedSize(true)
+        binding.evaluationVoiceRecyclerview.layoutManager = layoutManager
+        binding.evaluationVoiceRecyclerview.adapter = adapter
+        viewModel.listDataChatMsgEntityList.observe(viewLifecycleOwner) {
+            adapter.refreshData(it)
+        }
+        viewModel.getChatMsgEntityList()
         return binding.root
     }
 

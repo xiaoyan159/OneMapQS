@@ -125,10 +125,16 @@
                     android:layout_margin="5dp"
                     android:background="@color/gray_121" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="多媒体" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/evaluation_voice_recyclerview"
                     android:layout_width="match_parent"
-                    android:layout_height="80dp" />
+                    android:layout_height="120dp" />
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 

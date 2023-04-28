@@ -1,12 +1,17 @@
 package com.navinfo.omqs.ui.fragment.evaluationresult
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.GeometryTools
+import com.navinfo.omqs.Constant
+import com.navinfo.omqs.bean.Attachment
+import com.navinfo.omqs.bean.ChatMsgEntity
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.db.RoomAppDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +19,6 @@ import io.realm.Realm
 import io.realm.kotlin.where
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.locationtech.jts.geom.Point
 import java.util.*
 import javax.inject.Inject
 
@@ -47,8 +51,11 @@ class EvaluationResultViewModel @Inject constructor(
      */
     val liveDataRightTypeList = MutableLiveData<List<RightBean>>()
 
-
     var liveDataQsRecordBean = MutableLiveData<QsRecordBean>()
+
+    var listDataChatMsgEntityList = MutableLiveData<MutableList<ChatMsgEntity>>()
+
+    var listDataAttachmentList = MutableLiveData<MutableList<Attachment>>()
 
     var oldBean: QsRecordBean? = null
 
@@ -273,5 +280,23 @@ class EvaluationResultViewModel @Inject constructor(
                 liveDataQsRecordBean.postValue(oldBean!!.copy())
             }
         }
+    }
+
+    /**
+     * 查询问题类型列表
+     */
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun getChatMsgEntityList() {
+        val chatMsgEntityList: MutableList<ChatMsgEntity> = ArrayList()
+        liveDataQsRecordBean.value!!.attachments.forEach{
+            //1 录音
+            if(it.type==1){
+                val chatMsgEntity = ChatMsgEntity()
+                chatMsgEntity.name = it.filename
+                chatMsgEntity.voiceUri = Constant.USER_DATA_ATTACHEMNT_PATH
+                chatMsgEntityList.add(chatMsgEntity)
+            }
+        }
+        listDataChatMsgEntityList.postValue(chatMsgEntityList)
     }
 }

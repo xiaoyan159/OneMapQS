@@ -156,12 +156,17 @@ class LoginViewModel @Inject constructor(
      * 创建用户目录
      */
     private fun createUserFolder(context: Context, userId: String) {
+        Constant.IS_VIDEO_SPEED = false
         Constant.USER_ID = userId
         Constant.VERSION_ID = userId
         Constant.USER_DATA_PATH = Constant.DATA_PATH + Constant.USER_ID + "/" + Constant.VERSION_ID
+        Constant.USER_DATA_ATTACHEMNT_PATH = Constant.USER_DATA_PATH + "/attachment/"
         // 在SD卡创建用户目录，解压资源等
         val userFolder = File(Constant.USER_DATA_PATH)
         if (!userFolder.exists()) userFolder.mkdirs()
+        //创建附件目录
+        val userAttachmentFolder = File(Constant.USER_DATA_ATTACHEMNT_PATH)
+        if (!userAttachmentFolder.exists()) userAttachmentFolder.mkdirs()
         // 初始化Realm
         Realm.init(context.applicationContext)
         val password = "encryp".encodeToByteArray().copyInto(ByteArray(64))

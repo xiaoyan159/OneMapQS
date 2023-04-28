@@ -1,6 +1,7 @@
 package com.navinfo.collect.library.data.entity
 
 import com.navinfo.collect.library.utils.GeometryToolsKt
+import com.navinfo.omqs.bean.Attachment
 import io.realm.RealmObject
 import io.realm.RealmSet
 import io.realm.annotations.PrimaryKey
@@ -86,6 +87,8 @@ open class QsRecordBean @JvmOverloads constructor(
      */
     var guideGeometry: String = "",
 
+    var attachments:RealmSet<Attachment>,
+
     ) : RealmObject() {
 
     fun copy(): QsRecordBean {
@@ -104,6 +107,7 @@ open class QsRecordBean @JvmOverloads constructor(
             confirmUserId = confirmUserId,
             t_lifecycle = t_lifecycle,
             t_status = t_status,
+            attachments = attachments,
         )
         qs.geometry = geometry
         return qs
