@@ -1,5 +1,6 @@
 package com.navinfo.collect.library.map
 
+import com.navinfo.collect.library.system.Constant
 import org.json.JSONObject
 
 
@@ -8,6 +9,7 @@ data class NIMapOptions(
     val showZoomControl: Boolean = true, //是否显示zoom按钮
     val zoomLevel: Double = 13.0, /// 地图比例尺初始级别
     val coordinate: NICoordinate = NICoordinate(39.907375, 116.391349),
+    val maxZoom: Int = Constant.MAX_ZOOM
 ) {
     companion object {
         fun fromJson(json: String): NIMapOptions {

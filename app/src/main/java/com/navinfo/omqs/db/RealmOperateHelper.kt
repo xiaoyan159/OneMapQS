@@ -79,16 +79,14 @@ class RealmOperateHelper() {
     }
 
 
-    suspend fun queryLink(
-        linkPid: String,
-    ): RenderEntity? {
+    suspend fun queryLink(linkPid: String): RenderEntity? {
         var link: RenderEntity? = null
         withContext(Dispatchers.IO) {
             val realm = Realm.getDefaultInstance()
             val realmR = realm.where(RenderEntity::class.java)
                 .equalTo("table", "OMDB_RD_LINK")
                 .and()
-                .rawPredicate("properties['${LinkTable.linkPid}']=$linkPid")
+                .equalTo("properties['${LinkTable.linkPid}']", linkPid)
                 .findFirst()
             if (realmR != null) {
                 link = realm.copyFromRealm(realmR)

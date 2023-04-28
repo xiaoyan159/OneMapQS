@@ -1,27 +1,34 @@
 package com.navinfo.collect.library.map.handler
 
-import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
 import com.baidu.location.LocationClient
 import com.baidu.location.LocationClientOption
 import com.baidu.location.LocationClientOption.LocationMode
 import com.navinfo.collect.library.data.entity.NiLocation
-import com.navinfo.collect.library.map.GeoPoint
 import com.navinfo.collect.library.map.NIMapView
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
+import org.oscim.core.GeoPoint
 import org.oscim.layers.LocationLayer
 
 
-class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(context, mapView) {
+class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
+    BaseHandler(context, mapView) {
 
     private var mCurrentLocation: BDLocation? = null
     private var bFirst = true
     private val mLocationLayer: LocationLayer = LocationLayer(mMapView.vtmMap)
     private lateinit var locationClient: LocationClient
-    private lateinit var niLocationListener: NiLocationListener
+//    private var niLocationListener: NiLocationListener by lazy{
+//
+//    }
+
+    val niLocationFlow = MutableSharedFlow<NiLocation>(5)
 
     init {
         ///添加定位图层到地图，[NIMapView.LAYER_GROUPS.NAVIGATION] 是最上层layer组
@@ -47,20 +54,29 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) : Bas
                 //更多结果信息获取说明，请参照类参考中BDLocation类中的说明
 
                 //获取纬度信息
-                val latitude = it.latitude
+//                val latitude = it.latitude
                 //获取经度信息
-                val longitude = it.longitude
+//                val longitude = it.longitude
                 //获取定位精度，默认值为0.0f
-                val radius = it.radius
+//                val radius = it.radius
                 //获取经纬度坐标类型，以LocationClientOption中设置过的坐标类型为准
-                val coorType = it.coorType
+//                val coorType = it.coorType
                 //获取定位类型、定位错误返回码，具体信息可参照类参考中BDLocation类中的说明
                 val errorCode = it.locType
                 mCurrentLocation = it
                 mLocationLayer.setPosition(it.latitude, it.longitude, it.radius)
-                Log.e("qj","location==${it.longitude}==errorCode===$errorCode===${it.locTypeDescription}")
-                if(niLocationListener!=null){
-                    getCurrentNiLocation()?.let { it1 -> niLocationListener.call(it1) }
+//                Log.e(
+//                    "qj",
+//                    "location==${it.longitude}==errorCode===$errorCode===${it.locTypeDescription}"
+//                )
+
+//                if (niLocationListener != null) {
+                    getCurrentNiLocation()?.let { it1 ->
+                        mContext.lifecycleScope.launch {
+                            niLocationFlow.emit(it1)
+                        }
+
+//                    }// niLocationListener.call(it1) }
                 }
                 //第一次定位成功显示当前位置
                 if (this.bFirst) {
@@ -107,7 +123,7 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) : Bas
             locationClient.locOption = locationOption
         } catch (e: Throwable) {
             Toast.makeText(mContext, "定位初始化失败 $e", Toast.LENGTH_SHORT)
-            Log.e("qj","定位初始化失败$e")
+            Log.e("qj", "定位初始化失败$e")
         }
     }
 
@@ -160,8 +176,8 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) : Bas
 
     //获取当前定位对象
     fun getCurrentNiLocation(): NiLocation? {
-        if(mCurrentLocation!=null){
-            val niLocation:NiLocation = NiLocation()
+        if (mCurrentLocation != null) {
+            val niLocation: NiLocation = NiLocation()
             niLocation.longitude = mCurrentLocation!!.longitude
             niLocation.latitude = mCurrentLocation!!.latitude
             niLocation.direction = mCurrentLocation!!.direction.toDouble()
@@ -186,10 +202,10 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) : Bas
         return null
     }
 
-    //设置定位回调
-    fun setNiLocationListener(listener: NiLocationListener){
-        niLocationListener = listener
-    }
+//    //设置定位回调
+//    fun setNiLocationListener(listener: NiLocationListener) {
+//        niLocationListener = listener
+//    }
 }
 
 /**
@@ -205,7 +221,7 @@ private class MyLocationListener(callback: (BDLocation) -> Unit) : BDAbstractLoc
 /**
  * 实现定位回调
  */
-public class NiLocationListener(callback: (NiLocation) -> Unit){
+class NiLocationListener(callback: (NiLocation) -> Unit) {
     val call = callback;
     fun onReceiveLocation(location: NiLocation) {
         call(location)

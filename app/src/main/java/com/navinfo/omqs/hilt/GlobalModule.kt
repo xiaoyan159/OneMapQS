@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.OMQSApplication
 import com.navinfo.omqs.db.RoomAppDatabase
@@ -90,7 +91,7 @@ class GlobalModule {
     @Provides
     @Singleton
     fun provideGson(): Gson = GsonBuilder()
-            // 解决解析Json时将int类型自动转换为Double的问题
+        // 解决解析Json时将int类型自动转换为Double的问题
         .registerTypeAdapter(object : TypeToken<Map<String, Any?>>() {}.getType(), IntTypeAdapter())
         .registerTypeAdapter(object : TypeToken<Map<String, Any>>() {}.getType(), IntTypeAdapter())
         .registerTypeAdapter(object : TypeToken<Map<Any, Any>>() {}.getType(), IntTypeAdapter())
@@ -135,6 +136,15 @@ class GlobalModule {
             // Migration is not part of this codelab.
 //            .fallbackToDestructiveMigration().addCallback(sRoomDatabaseCallback)
             .build();
+    }
+
+    @Singleton
+    @Provides
+    fun provideTraceDatabase(context: Application): TraceDataBase {
+        return TraceDataBase.getDatabase(
+            context,
+            Constant.USER_DATA_PATH + "/trace.sqlite"
+        )
     }
 
 //    /**

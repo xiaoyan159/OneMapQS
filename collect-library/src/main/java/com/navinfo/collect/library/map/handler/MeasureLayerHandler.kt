@@ -1,19 +1,17 @@
-package com.navinfo.collect.library.map.maphandler
+package com.navinfo.collect.library.map.handler
 
-import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.os.Build
 import android.text.TextPaint
-import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.R
 import com.navinfo.collect.library.map.NIMapView
-import com.navinfo.collect.library.map.handler.BaseHandler
 import com.navinfo.collect.library.map.layers.NIPolygonLayer
 import com.navinfo.collect.library.utils.DistanceUtil
 import com.navinfo.collect.library.utils.GeometryTools
-import com.navinfo.collect.library.utils.StringUtil.Companion.createUUID
 import org.oscim.android.canvas.AndroidBitmap
 import org.oscim.backend.CanvasAdapter
 import org.oscim.backend.canvas.Bitmap
@@ -30,6 +28,7 @@ import org.oscim.layers.vector.geometries.Style
 import org.oscim.map.Map
 import java.math.BigDecimal
 
+@RequiresApi(Build.VERSION_CODES.M)
 open class MeasureLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
     BaseHandler(context, mapView), Map.UpdateListener {
 

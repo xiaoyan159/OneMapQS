@@ -10,7 +10,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import com.navinfo.collect.library.R
 import com.navinfo.collect.library.data.entity.QsRecordBean
-import com.navinfo.collect.library.map.GeoPoint
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.map.cluster.ClusterMarkerItem
 import com.navinfo.collect.library.map.cluster.ClusterMarkerRenderer
@@ -27,6 +26,7 @@ import org.oscim.android.canvas.AndroidBitmap
 import org.oscim.backend.CanvasAdapter
 import org.oscim.backend.canvas.Bitmap
 import org.oscim.backend.canvas.Paint
+import org.oscim.core.GeoPoint
 import org.oscim.layers.marker.*
 import org.oscim.layers.marker.ItemizedLayer.OnItemGestureListener
 import org.oscim.map.Map
@@ -90,9 +90,10 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
 
             }
         )
-        addLayer(mDefaultMarkerLayer, NIMapView.LAYER_GROUPS.OPERATE);
+
         //初始化之间数据图层
         initQsRecordDataLayer()
+        addLayer(mDefaultMarkerLayer, NIMapView.LAYER_GROUPS.OPERATE);
         // 设置矢量图层均在12级以上才显示
         mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
             if (e == Map.SCALE_EVENT) {
@@ -127,13 +128,13 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
             val marker = MarkerItem(
                 tempTitle,
                 description,
-                org.oscim.core.GeoPoint(geoPoint.latitude, geoPoint.longitude)
+                geoPoint
             )
             mDefaultMarkerLayer.addItem(marker);
             mMapView.vtmMap.updateMap(true)
         } else {
             marker.description = description
-            marker.geoPoint = org.oscim.core.GeoPoint(geoPoint.latitude, geoPoint.longitude)
+            marker.geoPoint = geoPoint
             mDefaultMarkerLayer.removeItem(marker)
             mDefaultMarkerLayer.addItem(marker)
             mMapView.vtmMap.updateMap(true)
