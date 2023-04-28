@@ -418,7 +418,7 @@ public class GeometryTools {
             Geometry startGeo = createGeometry(startGeoPoint);
             Geometry endGeo = createGeometry(endGeoPoint);
             double d = startGeo.distance(endGeo);
-            return d * 100000;
+            return convertDistanceToDegree(d,startGeoPoint.getLatitude());
         }
         return 0;
 

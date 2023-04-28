@@ -1,0 +1,20 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@mipmap/bg_sign"
+    tools:context="com.navinfo.omqs.ui.activity.map.SignAdapter">
+
+    <TextView
+        android:id="@+id/sign_main_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="19dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/icon_speed_limit"
+        android:gravity="center"
+        android:text="80"
+        android:textColor="#2F2F2F"
+        android:textSize="14.67sp" />
+</RelativeLayout>

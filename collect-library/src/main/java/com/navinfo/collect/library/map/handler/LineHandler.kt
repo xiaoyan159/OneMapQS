@@ -152,13 +152,12 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
 
     fun showLine(geometry: String) {
         try {
-
+            mDefaultPathLayer.clearPath()
+            mDefaultPathLayer.setPoints(GeometryTools.getGeoPoints(geometry))
+            mDefaultPathLayer.isEnabled = true
         } catch (e: Exception) {
             Toast.makeText(mContext, "高亮路线失败 ${e.message}", Toast.LENGTH_SHORT).show()
         }
-        val g = GeometryTools.getGeoPoints(geometry)
-        mDefaultPathLayer.setPoints(g)
-        mDefaultPathLayer.isEnabled = true
     }
 
     fun removeLine() {

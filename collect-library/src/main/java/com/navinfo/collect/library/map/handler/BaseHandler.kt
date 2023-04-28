@@ -20,11 +20,11 @@ abstract class BaseHandler(context: AppCompatActivity, mapView: NIMapView) {
         mMapView.vtmMap.layers().remove(layer)
     }
 
-    fun setOnMapClickListener(listener: NIMapView.OnMapClickListener) {
-        mMapView.setOnMapClickListener(listener)
-    }
-
-    fun removeOnMapClickListener() {
-        mMapView.setOnMapClickListener(null)
-    }
+//    fun setOnMapClickListener(listener: NIMapView.OnMapClickListener) {
+//        mMapView.setOnMapClickListener(listener)
+//    }
+//
+//    fun removeOnMapClickListener() {
+//        mMapView.setOnMapClickListener(null)
+//    }
 }

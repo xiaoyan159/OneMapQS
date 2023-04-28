@@ -24,7 +24,7 @@ import java.io.File
 class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePath: String) : BaseHandler(context, mapView) {
     private var baseGroupLayer // 用于盛放所有基础底图的图层组，便于统一管理
             : GroupLayer? = null
-    protected val mTracePath:String = tracePath
+    private val mTracePath:String = tracePath
 
     /**
      * 轨迹渲染图层

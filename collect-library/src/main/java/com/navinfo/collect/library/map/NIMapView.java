@@ -1,6 +1,7 @@
 package com.navinfo.collect.library.map;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -121,7 +122,7 @@ public final class NIMapView extends RelativeLayout {
          *
          * @param point
          */
-        void onMapClick(com.navinfo.collect.library.map.GeoPoint point);
+        void onMapClick(GeoPoint point);
 
         /**
          * 地图内 Poi 单击事件回调函数
@@ -358,6 +359,7 @@ public final class NIMapView extends RelativeLayout {
             }
             MapPosition mapPosition = getVtmMap().getMapPosition();
             mapPosition.setZoom(options.getZoomLevel());
+            getVtmMap().viewport().setMaxZoomLevel(options.getMaxZoom());
             mapPosition.setPosition(options.getCoordinate().getLatitude(), options.getCoordinate().getLongitude());
             getVtmMap().animator().animateTo(100, mapPosition);
         }
@@ -819,7 +821,9 @@ public final class NIMapView extends RelativeLayout {
         LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
         if (layoutParams.getRules() != null) {
             for (int i = 0; i < layoutParams.getRules().length; i++) {
-                layoutParams.removeRule(i);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    layoutParams.removeRule(i);
+                }
             }
         }
         switch (position) {
@@ -926,7 +930,7 @@ public final class NIMapView extends RelativeLayout {
             GeoPoint geoPoint = mMap.viewport().fromScreenPoint(e.getX(), e.getY());
             if (g instanceof Gesture.Tap) { // 单击事件
                 if (mapClickListener != null) {
-                    mapClickListener.onMapClick(new com.navinfo.collect.library.map.GeoPoint(geoPoint.getLatitude(), geoPoint.getLongitude()));
+                    mapClickListener.onMapClick(geoPoint);
                 }
             } else if (g instanceof Gesture.DoubleTap) { // 双击
                 if (mapDoubleClickListener != null) {
