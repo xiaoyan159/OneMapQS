@@ -109,6 +109,12 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePa
     }
 
     /**
+     * 初始化任务Link高亮的图层
+     * */
+    private fun initOMDBTaskVectorLayer() {
+    }
+
+    /**
      * 切换基础底图样式
      */
     fun loadBaseMap() {

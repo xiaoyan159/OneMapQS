@@ -1,6 +1,7 @@
 package com.navinfo.omqs.bean
 
 import com.google.gson.annotations.SerializedName
+import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
@@ -8,7 +9,6 @@ import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.Ignore
 import io.realm.annotations.PrimaryKey
-import io.realm.annotations.RealmClass
 
 open class TaskBean @JvmOverloads constructor(
     /**
@@ -67,6 +67,6 @@ open class TaskBean @JvmOverloads constructor(
     var message: String = ""
 ) : RealmObject() {
     fun getDownLoadUrl(): String {
-        return "${Constant.SERVER_ADDRESS}devcp/download?fileStr=$id"
+        return "${Constant.SERVER_ADDRESS}devcp/download?fileStr=26"
     }
 }

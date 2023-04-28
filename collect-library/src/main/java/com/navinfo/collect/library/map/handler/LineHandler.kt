@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.R
 import com.navinfo.collect.library.map.NIMapView
+import com.navinfo.collect.library.map.layers.OmdbTaskLinkLayer
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.StringUtil
 import org.locationtech.jts.geom.LineString
@@ -21,10 +22,11 @@ import org.oscim.layers.marker.MarkerInterface
 import org.oscim.layers.marker.MarkerItem
 import org.oscim.layers.marker.MarkerSymbol
 import org.oscim.layers.vector.PathLayer
+import org.oscim.layers.vector.VectorLayer
 import org.oscim.layers.vector.geometries.Style
 import org.oscim.map.Map
 
-@RequiresApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.N)
 class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(context, mapView),
     Map.UpdateListener {
 
@@ -56,6 +58,19 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
 
 
     private val mDefaultPathLayer: PathLayer
+
+    val omdbTaskLinkLayer by lazy {
+        val omdbTaskLinkLayer = OmdbTaskLinkLayer(mMapView.vtmMap,
+            Style.builder()
+//            .stippleColor(context.resources.getColor(R.color.draw_line_red_color, null))
+            .fillColor(context.resources.getColor(R.color.draw_line_red_color, null))
+            .fillAlpha(0.5f)
+            .strokeColor(context.resources.getColor(R.color.draw_line_red_color, null))
+                .strokeWidth(4f)
+            .fixed(true).build())
+        addLayer(omdbTaskLinkLayer, NIMapView.LAYER_GROUPS.VECTOR)
+        omdbTaskLinkLayer
+    }
 
     init {
         mMapView.vtmMap.events.bind(this)
