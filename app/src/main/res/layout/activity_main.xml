@@ -44,6 +44,7 @@
                 android:layout_marginTop="20dp"
                 android:onClick="@{()->mainActivity.openMenu()}"
                 android:src="@drawable/baseline_person_24"
+                android:background="@null"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -118,6 +119,7 @@
                 android:layout_marginTop="20dp"
                 android:onClick="@{()->mainActivity.openCamera()}"
                 android:src="@drawable/icon_page_video_a1"
+                android:background="@null"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -129,6 +131,7 @@
                 android:layout_marginTop="20dp"
                 android:onClick="@{()->mainActivity.openCamera()}"
                 android:src="@drawable/baseline_person_24"
+                android:background="@null"
                 android:visibility="gone"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

@@ -47,8 +47,6 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         viewModel.listDataChatMsgEntityList.observe(viewLifecycleOwner) {
             adapter.refreshData(it)
         }
-
-        viewModel.getChatMsgEntityList()
         return binding.root
     }
 

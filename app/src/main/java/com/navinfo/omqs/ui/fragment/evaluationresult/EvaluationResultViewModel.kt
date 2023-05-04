@@ -337,6 +337,8 @@ class EvaluationResultViewModel @Inject constructor(
                             }
                         }
                     }
+                    //显示语音界面布局
+                    getChatMsgEntityList()
                 }
             }
         }
