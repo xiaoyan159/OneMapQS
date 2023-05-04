@@ -10,6 +10,7 @@ import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.RenderEntity.Companion.LinkTable
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.GeometryTools
+import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.db.RoomAppDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -73,7 +74,7 @@ class EvaluationResultViewModel @Inject constructor(
         super.onCleared()
         Log.e("jingo", "EvaluationResultViewModel 销毁了 ${hashCode()}")
         mapController.markerHandle.removeMarker(markerTitle)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             mapController.lineHandler.removeLine()
         }
     }
@@ -82,23 +83,42 @@ class EvaluationResultViewModel @Inject constructor(
     /**
      * 查询数据库，获取问题分类
      */
-    fun initNewData() {
+    fun initNewData(bean: SignBean?) {
         viewModelScope.launch(Dispatchers.IO) {
             getClassTypeList()
             getProblemLinkList()
         }
         val geoPoint = mapController.locationLayerHandler.getCurrentGeoPoint()
-        geoPoint?.let {
-            liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(it).toText()
-            mapController.markerHandle.addMarker(geoPoint, markerTitle)
-            viewModelScope.launch {
-                captureLink(geoPoint.longitude, geoPoint.latitude)
+        if (bean == null) {
+            geoPoint?.let {
+                liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(it).toText()
+                mapController.markerHandle.addMarker(geoPoint, markerTitle)
+                viewModelScope.launch {
+                    captureLink(geoPoint.longitude, geoPoint.latitude)
+                }
             }
+        } else {
+            liveDataQsRecordBean.value?.run {
+                elementId = bean.elementId
+                linkId = bean.linkId
+                if (linkId.isNotEmpty()) {
+                    viewModelScope.launch {
+                        val link = realmOperateHelper.queryLink(linkId)
+                        link?.let { l ->
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                mapController.lineHandler.showLine(l.geometry)
+                            }
+                        }
+                    }
+                }
+            }
+            val point = GeometryTools.createGeoPoint(bean.geometry)
+            mapController.markerHandle.addMarker(point, markerTitle)
         }
     }
 
     /**
-     * 捕捉到路
+     * 捕捉道路
      */
     private suspend fun captureLink(longitude: Double, latitude: Double) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

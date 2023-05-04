@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import com.navinfo.omqs.R
+import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.databinding.FragmentEvaluationResultBinding
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
@@ -18,6 +19,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentEvaluationResultBinding
     private val viewModel by shareViewModels<EvaluationResultViewModel>("QsRecode")
 
+    //    private val args:EmptyFragmentArgs by navArgs()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -56,15 +58,21 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         /**
          * 读取元数据
          */
-        if (arguments != null) {
-            val id = requireArguments().getString("QsId")
-            if (id != null) {
-                viewModel.initData(id)
-            } else {
-                viewModel.initNewData()
+//        val id = args.qsId
+        var id: String = ""
+        var signBean: SignBean? = null
+        arguments?.let {
+            id = it.getString("QsId", "")
+            try {
+                signBean = it.getParcelable("SignBean")
+            } catch (e: java.lang.Exception) {
             }
+        }
+
+        if (id == null || id.isEmpty()) {
+            viewModel.initNewData(signBean)
         } else {
-            viewModel.initNewData()
+            viewModel.initData(id)
         }
 
 //        //监听大分类数据变化

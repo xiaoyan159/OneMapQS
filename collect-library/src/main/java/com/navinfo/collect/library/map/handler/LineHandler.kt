@@ -26,7 +26,7 @@ import org.oscim.layers.vector.VectorLayer
 import org.oscim.layers.vector.geometries.Style
 import org.oscim.map.Map
 
-@RequiresApi(Build.VERSION_CODES.N)
+@RequiresApi(Build.VERSION_CODES.M)
 class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(context, mapView),
     Map.UpdateListener {
 

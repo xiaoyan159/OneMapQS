@@ -20,7 +20,6 @@ import org.oscim.core.MercatorProjection
 import javax.inject.Inject
 import kotlin.streams.toList
 
-@RequiresApi(Build.VERSION_CODES.N)
 class RealmOperateHelper() {
     @Inject
     lateinit var niMapController: NIMapController
@@ -32,6 +31,7 @@ class RealmOperateHelper() {
      * @param bufferType 点位外扩距离的单位： 米-Meter，像素-PIXEL
      * @param sort 是否需要排序
      * */
+    @RequiresApi(Build.VERSION_CODES.N)
     suspend fun queryLink(
         point: Point,
         buffer: Double = DEFAULT_BUFFER,
@@ -102,6 +102,7 @@ class RealmOperateHelper() {
      * @param bufferType 点位外扩距离的单位： 米-Meter，像素-PIXEL
      * @param sort 是否需要排序
      * */
+    @RequiresApi(Build.VERSION_CODES.N)
     suspend fun queryElement(
         point: Point,
         buffer: Double = DEFAULT_BUFFER,
@@ -154,12 +155,13 @@ class RealmOperateHelper() {
     suspend fun queryLinkByLinkPid(linkPid: String): MutableList<RenderEntity> {
         val result = mutableListOf<RenderEntity>()
         withContext(Dispatchers.IO) {
-            val realmList = Realm.getDefaultInstance().where(RenderEntity::class.java)
+            val realm = Realm.getDefaultInstance()
+            val realmList = realm.where(RenderEntity::class.java)
                 .notEqualTo("table", "OMDB_RD_LINK")
                 .and()
                 .equalTo("properties['${LinkTable.linkPid}']", linkPid)
                 .findAll()
-            result.addAll(realmList)
+            result.addAll(realm.copyFromRealm(realmList))
         }
         return result
     }

@@ -1,16 +1,12 @@
 package com.navinfo.omqs.ui.activity.map
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.map.NIMapController
-import com.navinfo.collect.library.map.handler.NiLocationListener
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityMainBinding
@@ -35,7 +31,25 @@ class MainActivity : BaseActivity() {
     @Inject
     lateinit var offlineMapDownloadManager: OfflineMapDownloadManager
 
-    private val signAdapter by lazy { SignAdapter() }
+    private val rightController by lazy {
+        findNavController(R.id.main_activity_right_fragment)
+    }
+
+    private val signAdapter by lazy {
+        SignAdapter { position, signBean ->
+//            val directions =
+//                EmptyFragmentDirections.emptyFragmentToEvaluationResultFragment(
+//                )
+//            rightController.navigate(directions)
+            rightController.currentDestination?.let {
+                if(it.id == R.id.EvaluationResultFragment){
+                    val bundle = Bundle()
+                    bundle.putParcelable("SignBean", signBean)
+                    rightController.navigate(R.id.EvaluationResultFragment, bundle)
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -113,8 +127,7 @@ class MainActivity : BaseActivity() {
      * 点击录音按钮
      */
     fun voiceOnclick() {
-        val naviController = findNavController(R.id.main_activity_right_fragment)
-        naviController.navigate(R.id.EvaluationResultFragment)
+        rightController.navigate(R.id.EvaluationResultFragment)
     }
 
 //    override fun onBackPressed() {

@@ -3,11 +3,13 @@ package com.navinfo.omqs.ui.activity.map
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.navinfo.omqs.R
+import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.databinding.AdapterSignBinding
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 
-class SignAdapter : BaseRecyclerViewAdapter<SignBean>() {
+class SignAdapter(private var itemListener: ((Int, SignBean) -> Unit?)? = null) :
+    BaseRecyclerViewAdapter<SignBean>() {
     override fun getItemViewRes(position: Int): Int {
         return R.layout.adapter_sign
     }
@@ -23,6 +25,8 @@ class SignAdapter : BaseRecyclerViewAdapter<SignBean>() {
         val item = data[position]
         bd.signMainIcon.background = holder.viewBinding.root.context.getDrawable(item.iconId)
         bd.signMainIcon.text = item.iconText
-
+        bd.root.setOnClickListener {
+            itemListener?.invoke(position, item)
+        }
     }
 }

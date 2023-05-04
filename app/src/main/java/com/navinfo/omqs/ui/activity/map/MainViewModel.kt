@@ -5,27 +5,22 @@ import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
-import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.map.NIMapController
-import com.navinfo.collect.library.map.handler.NiLocationListener
 import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
-import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
+import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ActivityContext
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.realm.RealmSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -137,6 +132,9 @@ class MainViewModel @Inject constructor(
                                         iconId = R.drawable.icon_speed_limit,
                                         iconText = element.name,
                                         distance = distance.toInt(),
+                                        elementId = element.id,
+                                        linkId = linkId,
+                                        geometry = element.geometry
                                     )
                                 )
                             }
@@ -161,7 +159,7 @@ class MainViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             mapController.lineHandler.removeLine()
         }
     }
