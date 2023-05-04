@@ -26,6 +26,7 @@ import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
+import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.db.RealmOperateHelper

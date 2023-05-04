@@ -82,15 +82,15 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         binding.evaluationVoice.setOnTouchListener(object : View.OnTouchListener {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                Log.e("qj",event?.action.toString())
+                Log.e("qj", event?.action.toString())
                 when (event?.action) {
-                    MotionEvent.ACTION_DOWN ->{
+                    MotionEvent.ACTION_DOWN -> {
                         voiceOnTouchStart()//Do Something
-                        Log.e("qj","voiceOnTouchStart")
+                        Log.e("qj", "voiceOnTouchStart")
                     }
-                    MotionEvent.ACTION_UP ->{
+                    MotionEvent.ACTION_UP -> {
                         voiceOnTouchStop()//Do Something
-                        Log.e("qj","voiceOnTouchStop")
+                        Log.e("qj", "voiceOnTouchStop")
                     }
                 }
                 return v?.onTouchEvent(event) ?: true
@@ -103,8 +103,10 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
 //        val id = args.qsId
         var id: String = ""
         var signBean: SignBean? = null
+        var filePath: String = ""
         arguments?.let {
             id = it.getString("QsId", "")
+            filePath = it.getString("filePath", "")
             try {
                 signBean = it.getParcelable("SignBean")
             } catch (e: java.lang.Exception) {
@@ -112,7 +114,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         }
 
         if (id == null || id.isEmpty()) {
-            viewModel.initNewData(signBean)
+            viewModel.initNewData(signBean, filePath)
         } else {
             viewModel.initData(id)
         }
@@ -277,13 +279,13 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    fun voiceOnTouchStart(){
-        viewModel!!.startSoundMetter(requireActivity(),binding.evaluationVoice)
+    fun voiceOnTouchStart() {
+        viewModel!!.startSoundMetter(requireActivity(), binding.evaluationVoice)
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun voiceOnTouchStop(){
-        if(Constant.IS_VIDEO_SPEED){
+    fun voiceOnTouchStop() {
+        if (Constant.IS_VIDEO_SPEED) {
             viewModel!!.stopSoundMeter()
         }
     }

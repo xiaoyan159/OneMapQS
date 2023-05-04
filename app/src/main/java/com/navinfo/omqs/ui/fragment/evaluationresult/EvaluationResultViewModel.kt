@@ -384,7 +384,7 @@ class EvaluationResultViewModel @Inject constructor(
 
     fun addChatMsgEntity(filePath: String) {
 
-        if(filePath!=null){
+        if(filePath.isNotEmpty()){
             var chatMsgEntityList: MutableList<ChatMsgEntity> = ArrayList()
             if(listDataChatMsgEntityList.value?.isEmpty() == false){
                 chatMsgEntityList = listDataChatMsgEntityList.value!!
