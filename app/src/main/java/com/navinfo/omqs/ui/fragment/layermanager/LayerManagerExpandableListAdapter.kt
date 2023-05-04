@@ -13,21 +13,29 @@ import com.navinfo.omqs.bean.TableInfo
 class LayerManagerExpandableListAdapter(private val context: Context, private val parentItems: List<ImportConfig>) :
     BaseExpandableListAdapter() {
 
-    override fun getGroupCount(): Int = parentItems.size
+    override fun getGroupCount(): Int {
+        return parentItems.size
+    }
 
-    override fun getChildrenCount(groupPosition: Int): Int =
-        parentItems[groupPosition].tables.size
+    override fun getChildrenCount(groupPosition: Int): Int {
+        return parentItems[groupPosition].tables.size
+    }
 
-    override fun getGroup(groupPosition: Int): Any = parentItems[groupPosition]
 
-    override fun getChild(groupPosition: Int, childPosition: Int): Any =
-        parentItems[groupPosition].tables[childPosition]
+    override fun getGroup(groupPosition: Int): Any {
+        return parentItems[groupPosition]
+    }
+
+    override fun getChild(groupPosition: Int, childPosition: Int): Any {
+        return parentItems[groupPosition].tables[childPosition]
+    }
+
 
     override fun getGroupId(groupPosition: Int): Long = groupPosition.toLong()
 
     override fun getChildId(groupPosition: Int, childPosition: Int): Long = childPosition.toLong()
 
-    override fun hasStableIds(): Boolean = true
+    override fun hasStableIds(): Boolean = false
 
     override fun getGroupView(
         groupPosition: Int,
