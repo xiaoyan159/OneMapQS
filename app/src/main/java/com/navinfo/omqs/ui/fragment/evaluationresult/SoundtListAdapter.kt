@@ -64,17 +64,17 @@ class SoundtListAdapter(
         val entity = data[position]
         //tag 方便onclick里拿到数据
         holder.tag = entity.name.toString()
-        holder.viewBinding.tvTime.isSelected =  entity.isDelete
+        holder.viewBinding.tvTime.isSelected = entity.isDelete
         holder.viewBinding.rlSoundContent.isSelected = entity.isDelete
         holder.viewBinding.ivSoundAnim.setBackgroundResource(R.drawable.icon_sound_03)
-        if (itemClick != null) {
+/*        if (itemClick != null) {
             holder.viewBinding.rlSoundContent.setOnClickListener {
                 itemClick!!.onItemClick(it.findViewById<View>(R.id.rl_sound_content), position)
             }
-        }
+        }*/
         //mixWidth
         if (!TextUtils.isEmpty(entity.name)) {
-            if (entity.name.indexOf(".pcm") > 0) {
+/*            if (entity.name.indexOf(".pcm") > 0) {
                 val file: File = File(entity.voiceUri + entity.name)
                 if (file != null) {
                     val time = (file.length() / 16000).toInt()
@@ -89,15 +89,15 @@ class SoundtListAdapter(
             } else {
                 try {
                     md = MediaPlayer()
-                    md.reset()
-                    md.setDataSource(entity.getVoiceUri() + entity.getName())
-                    md.prepare()
+                    md!!.reset()
+                    md!!.setDataSource(entity.voiceUri+entity.name)
+                    md!!.prepare()
                 } catch (e: Exception) {
                     // TODO Auto-generated catch block
                     e.printStackTrace()
                 }
                 var time =
-                    if (entity.getVoiceTimeLong() == null) md!!.duration.toString() + "" else entity.getVoiceTimeLong()
+                    if (entity.voiceTimeLong == null) md!!.duration.toString() + "" else entity.voiceTimeLong
                         .toString() + ""
                 if (!TextUtils.isEmpty(time)) {
                     val i = md!!.duration / 1000
@@ -107,16 +107,12 @@ class SoundtListAdapter(
                     layoutParams.width = 115 + i * 10
                     layoutParams.width =
                         if (layoutParams.width > layoutParams.width) maxWidth else layoutParams.width
-                    holder.viewBinding.rlSoundContent.setLayoutParams(layoutParams)
+                    holder.viewBinding.rlSoundContent.layoutParams = layoutParams
                 }
                 holder.viewBinding.tvTime.text = time
                 md!!.release()
-            }
-    }
-
-
-    override fun getItemViewRes(position: Int): Int {
-        return R.layout.adapter_sound_list
+            }*/
+        }
     }
 
     /**
@@ -143,18 +139,18 @@ class SoundtListAdapter(
      * @param name 录音名称
      * @Description
      */
-    private fun playMusic(name: String, imageV: ImageView) {
+    fun playMusic(name: String, imageV: ImageView) {
         imageV.setBackgroundResource(R.drawable.sound_anim)
         animaV = imageV.background as AnimationDrawable
         animaV!!.start()
-        if (name.indexOf(".pcm") > 0) {
+/*        if (name.index(".pcm") > 0) {
             audioTrackPlay(name, imageV)
         } else {
             mediaPlayer(name, imageV)
-        }
+        }*/
     }
 
-    private fun mediaPlayer(name: String, imageV: ImageView) {
+    fun mediaPlayer(name: String, imageV: ImageView) {
         try {
             if (mMediaPlayer.isPlaying) {
                 mMediaPlayer.stop()
@@ -173,7 +169,7 @@ class SoundtListAdapter(
         }
     }
 
-    private fun audioTrackPlay(name: String, imageV: ImageView) {
+    fun audioTrackPlay(name: String, imageV: ImageView) {
         var dis: DataInputStream? = null
         try {
             //从音频文件中读取声音
@@ -235,6 +231,10 @@ class SoundtListAdapter(
 
     interface OnItemClickListner {
         fun onItemClick(view: View?, postion: Int)
+    }
+
+    override fun getItemViewRes(position: Int): Int {
+        return R.layout.adapter_sound_list
     }
 }
 

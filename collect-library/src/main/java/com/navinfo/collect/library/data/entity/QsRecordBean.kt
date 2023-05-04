@@ -1,11 +1,10 @@
 package com.navinfo.collect.library.data.entity
 
 import com.navinfo.collect.library.utils.GeometryToolsKt
-import com.navinfo.omqs.bean.Attachment
+import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.RealmSet
 import io.realm.annotations.PrimaryKey
-
 
 /**
  * @author zhjch
@@ -78,6 +77,8 @@ open class QsRecordBean @JvmOverloads constructor(
      * 问题记录提交状态   0 未提交；1 已提交；
      */
     var t_status: Int = 0,
+
+    var attachmentBeanList: RealmList<AttachmentBean> = RealmList<AttachmentBean>(),
     /**
      * 显示坐标
      */
@@ -86,8 +87,6 @@ open class QsRecordBean @JvmOverloads constructor(
      * 显示坐标
      */
     var guideGeometry: String = "",
-
-    var attachments:RealmSet<Attachment>,
 
     ) : RealmObject() {
 
@@ -107,7 +106,7 @@ open class QsRecordBean @JvmOverloads constructor(
             confirmUserId = confirmUserId,
             t_lifecycle = t_lifecycle,
             t_status = t_status,
-            attachments = attachments,
+            attachmentBeanList = attachmentBeanList,
         )
         qs.geometry = geometry
         return qs

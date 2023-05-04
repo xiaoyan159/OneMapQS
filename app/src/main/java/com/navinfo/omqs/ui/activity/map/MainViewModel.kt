@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
-import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
@@ -16,16 +15,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupWindow
 import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
+import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.map.NIMapController
-import com.navinfo.collect.library.map.handler.NiLocationListener
 import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
@@ -38,10 +36,9 @@ import com.navinfo.omqs.util.DateTimeUtil
 import com.navinfo.omqs.util.SoundMeter
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ActivityContext
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.realm.RealmSet
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
 import org.videolan.libvlc.LibVlcUtil
@@ -68,15 +65,11 @@ class MainViewModel @Inject constructor(
     //看板数据
     val liveDataSignList = MutableLiveData<List<SignBean>>()
 
-
-    //    private var niLocationList: MutableList<NiLocation> = ArrayList<NiLocation>()
     var testPoint = GeoPoint(0, 0)
     //语音窗体
     private var pop: PopupWindow? = null
 
     private var mSpeakMode: SpeakMode? = null
-
-    private var niLocationList: MutableList<NiLocation> = ArrayList<NiLocation>()
 
     //录音图标
     var volume: ImageView? = null
@@ -128,11 +121,12 @@ class MainViewModel @Inject constructor(
                 }
                 Log.e("jingo", "定位点插入 ${Thread.currentThread().name}")
                 traceDataBase.niLocationDao.insert(location)
+                mapController.mMapView.vtmMap.updateMap(true)
             }
         }
         //用于定位点捕捉道路
         viewModelScope.launch(Dispatchers.Default) {
-            mapController.locationLayerHandler.niLocationFlow.collect { location ->
+            mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
                 Log.e("jingo", "定位点绑定道路 ${Thread.currentThread().name}")
                 location.longitude = testPoint.longitude
                 location.latitude = testPoint.latitude
@@ -228,57 +222,82 @@ class MainViewModel @Inject constructor(
         })
     }
 
+    fun startSoundMetter(context: Context, v: View) {
 
-//    fun startSaveTraceThread(context: Context) {
-//        Thread(Runnable {
-//            try {
-//                while (true) {
-//
-//                    if (niLocationList != null && niLocationList.size > 0) {
-//
-//                        var niLocation = niLocationList[0]
-//                        val geometry = GeometryTools.createGeometry(
-//                            GeoPoint(
-//                                niLocation.latitude,
-//                                niLocation.longitude
-//                            )
-//                        )
-//                        val tileX = RealmSet<Int>()
-//                        GeometryToolsKt.getTileXByGeometry(geometry.toString(), tileX)
-//                        val tileY = RealmSet<Int>()
-//                        GeometryToolsKt.getTileYByGeometry(geometry.toString(), tileY)
-//
-//                        //遍历存储tile对应的x与y的值
-//                        tileX.forEach { x ->
-//                            tileY.forEach { y ->
-//                                niLocation.tilex = x
-//                                niLocation.tiley = y
-//                            }
-//                        }
-//
-//                        TraceDataBase.getDatabase(
-//                            context,
-//                            Constant.USER_DATA_PATH + "/trace.sqlite"
-//                        ).niLocationDao.insert(niLocation)
-//                        niLocationList.remove(niLocation)
-//
-//                        Log.e("qj", "saveTrace==${niLocationList.size}")
-//                    }
-//                    Thread.sleep(30)
-//                }
-//            } catch (e: InterruptedException) {
-//                e.printStackTrace()
-//                Log.e("qj", "异常==${e.message}")
-//            }
-//        }).start()
-//    }
+        if(mSpeakMode==null){
+            mSpeakMode = SpeakMode(context as Activity?)
+        }
 
-//    //增加轨迹存储
-//    fun addSaveTrace(niLocation: NiLocation) {
-//        if (niLocation != null && niLocationList != null) {
-//            niLocationList.add(niLocation)
-//        }
-//    }
+        //语音识别动画
+        if (pop == null) {
+            pop = PopupWindow()
+            pop!!.width = ViewGroup.LayoutParams.MATCH_PARENT
+            pop!!.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            pop!!.setBackgroundDrawable(BitmapDrawable())
+            val view = View.inflate(context, R.layout.cv_card_voice_rcd_hint_window, null)
+            pop!!.contentView = view
+            volume = view.findViewById(R.id.volume)
+        }
+
+        pop!!.update()
+
+        Constant.IS_VIDEO_SPEED = true
+        //录音动画
+        //录音动画
+        if (pop != null) {
+            pop!!.showAtLocation(v, Gravity.CENTER, 0, 0)
+        }
+        volume!!.setBackgroundResource(R.drawable.pop_voice_img)
+        val animation = volume!!.background as AnimationDrawable
+        animation.start()
+
+        val name: String = DateTimeUtil.getTimeSSS().toString() + ".m4a"
+        if (mSoundMeter == null) {
+            mSoundMeter = SoundMeter()
+        }
+        mSoundMeter!!.setmListener(object : SoundMeter.OnSoundMeterListener {
+            @RequiresApi(Build.VERSION_CODES.Q)
+            override fun onSuccess(filePath: String?) {
+                if (!TextUtils.isEmpty(filePath) && File(filePath).exists()) {
+                    if (File(filePath) == null || File(filePath).length() < 1600) {
+                        ToastUtils.showLong("语音时间太短，无效！")
+                        mSpeakMode!!.speakText("语音时间太短，无效")
+                        stopSoundMeter()
+                        return
+                    }
+                }
+                mSpeakMode!!.speakText("结束录音")
+                //获取右侧fragment容器
+                val naviController = (context as Activity).findNavController(R.id.main_activity_right_fragment)
+                val bundle = Bundle()
+                bundle.putString("filePath", filePath)
+                naviController.navigate(R.id.EvaluationResultFragment, bundle)
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.Q)
+            override fun onfaild(message: String?) {
+                ToastUtils.showLong("录制失败！")
+                mSpeakMode!!.speakText("录制失败")
+                stopSoundMeter()
+            }
+        })
+
+        mSoundMeter!!.start(Constant.USER_DATA_ATTACHEMNT_PATH + name)
+        ToastUtils.showLong("开始录音")
+        mSpeakMode!!.speakText("开始录音")
+    }
+
+    //停止语音录制
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    fun stopSoundMeter() {
+        //先重置标识，防止按钮抬起时触发语音结束
+        Constant.IS_VIDEO_SPEED = false
+        if (mSoundMeter != null && mSoundMeter!!.isStartSound()) {
+            mSoundMeter!!.stop()
+        }
+        if (pop != null && pop!!.isShowing) pop!!.dismiss()
+    }
+
 
     /**
      * 处理页面调转
@@ -314,6 +333,5 @@ class MainViewModel @Inject constructor(
                 }
             }
         }
-
     }
 }

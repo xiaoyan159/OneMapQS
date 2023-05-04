@@ -1,13 +1,18 @@
 package com.navinfo.omqs.ui.fragment.evaluationresult
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentEvaluationResultBinding
 import com.navinfo.omqs.ui.fragment.BaseFragment
@@ -66,18 +71,40 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
                 else -> true
             }
         }
+
+
+        binding.evaluationVoice.setOnTouchListener(object : View.OnTouchListener {
+            @RequiresApi(Build.VERSION_CODES.Q)
+            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                Log.e("qj",event?.action.toString())
+                when (event?.action) {
+                    MotionEvent.ACTION_DOWN ->{
+                        voiceOnTouchStart()//Do Something
+                        Log.e("qj","voiceOnTouchStart")
+                    }
+                    MotionEvent.ACTION_UP ->{
+                        voiceOnTouchStop()//Do Something
+                        Log.e("qj","voiceOnTouchStop")
+                    }
+                }
+                return v?.onTouchEvent(event) ?: true
+            }
+        })
+
         /**
          * 读取元数据
          */
         if (arguments != null) {
             val id = requireArguments().getString("QsId")
+            //语音路径
+            val filePath = requireArguments().getString("filePath")
             if (id != null) {
                 viewModel.initData(id)
             } else {
-                viewModel.initNewData()
+                viewModel.initNewData(filePath!!)
             }
         } else {
-            viewModel.initNewData()
+            viewModel.initNewData("")
         }
 
 //        //监听大分类数据变化
@@ -240,4 +267,16 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             }
         }
     }
+
+    fun voiceOnTouchStart(){
+        viewModel!!.startSoundMetter(requireActivity(),binding.evaluationVoice)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun voiceOnTouchStop(){
+        if(Constant.IS_VIDEO_SPEED){
+            viewModel!!.stopSoundMeter()
+        }
+    }
+
 }

@@ -141,13 +141,13 @@ class MainActivity : BaseActivity() {
     }
 
     fun voiceOnTouchStart(){
-        binding!!.viewModel!!.startSoundMetter(this,mapController.locationLayerHandler.getCurrentNiLocation(),binding.mainActivityVoice)
+        viewModel!!.startSoundMetter(this,binding.mainActivityVoice)
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     fun voiceOnTouchStop(){
         if(Constant.IS_VIDEO_SPEED){
-            binding!!.viewModel!!.stopSoundMeter()
+            viewModel!!.stopSoundMeter()
         }
     }
 

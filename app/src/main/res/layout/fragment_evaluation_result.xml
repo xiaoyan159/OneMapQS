@@ -138,23 +138,25 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <ImageView
+        <ImageButton
             android:id="@+id/evaluation_camera"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:padding="10dp"
+            android:background="@drawable/btn_bg_default"
             android:src="@drawable/baseline_camera_alt_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/evaluation_voice" />
 
-        <ImageView
+        <ImageButton
             android:id="@+id/evaluation_voice"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:padding="10dp"
             android:src="@drawable/baseline_keyboard_voice_24"
+            android:background="@drawable/btn_bg_default"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toRightOf="@id/evaluation_camera"
