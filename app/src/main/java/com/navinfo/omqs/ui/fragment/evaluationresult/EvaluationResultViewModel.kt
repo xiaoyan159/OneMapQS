@@ -357,6 +357,8 @@ class EvaluationResultViewModel @Inject constructor(
                             }
                         }
                     }
+                    // 显示语音数据到界面
+                    getChatMsgEntityList()
                 }
             }
         }

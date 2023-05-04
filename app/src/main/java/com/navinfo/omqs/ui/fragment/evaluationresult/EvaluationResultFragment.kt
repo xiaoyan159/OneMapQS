@@ -50,7 +50,6 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             adapter.refreshData(it)
         }
 
-        viewModel.getChatMsgEntityList()
         return binding.root
     }
 
@@ -117,7 +116,6 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         } else {
             viewModel.initData(id)
         }
-
 //        //监听大分类数据变化
 //        viewModel.liveDataClassTypeList.observe(viewLifecycleOwner) {
 //            if (it == null || it.isEmpty()) {

@@ -17,60 +17,127 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@mipmap/login_bg">
 
-        <ImageView
-            android:id="@+id/login_fragment_logo"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:contentDescription="@string/imagedescription"
-            android:scaleType="fitXY"
-            android:src="@mipmap/ic_launcher"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.1"
-            app:roundPercent="0.2" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/login_fragment_user_layout"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:scrollbarAlwaysDrawHorizontalTrack="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.4">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/login_username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/input_user_name"
-                android:text="@{loginUserModel.loginUser.username}" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
+            android:layout_height="match_parent"
+            app:layout_constraintWidth_percent="0.5"
+            app:layout_constraintLeft_toLeftOf="parent">
+            <ImageView
+                android:id="@+id/login_fragment_logo"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:contentDescription="@string/imagedescription"
+                android:scaleType="fitXY"
+                android:src="@mipmap/logo"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.4"
+                app:layout_constraintHorizontal_bias="0.4"
+                app:roundPercent="0.2" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/login_fragment_user_layout">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/login_password"
-                android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintWidth_percent="0.5"
+            app:layout_constraintRight_toRightOf="parent">
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/input_password"
-                android:inputType="textPassword"
-                android:text="@{loginUserModel.loginUser.password}" />
-        </com.google.android.material.textfield.TextInputLayout>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp"
+                app:layout_constraintWidth_percent="0.7"
+                app:cardUseCompatPadding="true">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/activity_horizontal_margin"
+                    android:paddingVertical="@dimen/activity_vertical_margin"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/title_default_style"
+                        android:background="@color/transparent"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:text="Login to OneMap QE"
+                        android:layout_marginVertical="@dimen/activity_vertical_margin"></TextView>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/login_fragment_user_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:startIconDrawable="@mipmap/login_username"
+                        app:startIconTint="@color/colorSecondary"
+                        android:scrollbarAlwaysDrawHorizontalTrack="true"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.4">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/login_username"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/input_user_name"
+                            android:lines="1"
+                            android:background="@drawable/login_inputlayout_bg"
+                            android:text="@{loginUserModel.loginUser.username}"
+                            tools:ignore="TouchTargetSizeCheck" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:startIconDrawable="@mipmap/login_password"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:startIconTint="@color/colorSecondary"
+                        app:layout_constraintTop_toBottomOf="@id/login_fragment_user_layout">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/login_password"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/input_password"
+                            android:lines="1"
+                            android:inputType="textPassword"
+                            android:background="@drawable/login_inputlayout_bg"
+                            android:text="@{loginUserModel.loginUser.password}"
+                            tools:ignore="TouchTargetSizeCheck" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:id="@+id/tv_login_forget_passwd"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:text="忘记密码?"
+                        android:textColor="@color/colorSecondary"
+                        android:padding="@dimen/default_widget_padding"
+                        android:layout_marginTop="@dimen/fab_margin"></TextView>
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/login_activity_login_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="@{()->activity.onClickLoginButton()}"
+                        android:text="@string/login"
+                        app:cornerRadius="30dp"
+                        style="@style/btn_gradient_color" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/login_fragment_register_button"
@@ -80,24 +147,12 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:text="@string/logon"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/login_activity_login_button"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.8" />
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/login_activity_login_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="@{()->activity.onClickLoginButton()}"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="@string/login"
-            app:layout_constraintBaseline_toBaselineOf="@id/login_fragment_register_button"
-            app:layout_constraintLeft_toRightOf="@id/login_fragment_register_button"
-            app:layout_constraintRight_toRightOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

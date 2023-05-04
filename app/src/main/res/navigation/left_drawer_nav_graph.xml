@@ -37,4 +37,12 @@
         tools:layout="@layout/fragment_qs_record_list">
 
     </fragment>
+
+    <fragment
+        android:id="@+id/QsLayerManagerFragment"
+        android:name="com.navinfo.omqs.ui.fragment.layermanager.LayermanagerFragment"
+        android:label="图层管理"
+        tools:layout="@layout/fragment_qs_record_list">
+
+    </fragment>
 </navigation>

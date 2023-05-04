@@ -1,8 +1,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.OMQualityInspection" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- 应用程序的主色调 -->
+         <item name="colorPrimary">@color/colorPrimary</item>
+        <!-- 应用程序的次要色调 -->
+         <item name="colorSecondary">@color/colorSecondary</item>
+         <item name="colorAccent">@color/colorAccent</item>
+         <item name="colorSurface">@color/colorSurface</item>
+         <item name="colorOnSurface">@color/colorOnSurface</item>
+         <item name="colorPrimarySurface">@color/colorPrimarySurface</item>
+         <item name="colorError">@color/colorError</item>
     </style>
 
     <style name="Theme.OMQualityInspection" parent="Base.Theme.OMQualityInspection" />
