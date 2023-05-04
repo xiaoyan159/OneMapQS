@@ -47,7 +47,7 @@ class MainActivity : BaseActivity() {
 //                )
 //            rightController.navigate(directions)
             rightController.currentDestination?.let {
-                if (it.id == R.id.EvaluationResultFragment) {
+                if (it.id == R.id.EmptyFragment) {
                     val bundle = Bundle()
                     bundle.putParcelable("SignBean", signBean)
                     rightController.navigate(R.id.EvaluationResultFragment, bundle)
