@@ -2,9 +2,16 @@
 <resources>
     <color name="transp">#00000000</color>
     <color name="line_gray" comment="轻度灰色，一般用于下划线，不可点击按钮的边框">#dadade</color>
-    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimary">#6c14c4</color>
+    <color name="colorSecondary">#4c54ec</color>
+    <color name="colorAccent">#c42cd4</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorOnSurface">#4263EB</color>
+    <color name="colorPrimarySurface">#aa342c4c</color>
+    <color name="colorOnPrimarySurface">#FFFFFF</color>
+    <color name="colorError">#e74c3c</color>
+    <color name="ripple_color">#342c4c</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
     <color name="white">#FFFFFF</color> <!--白色 -->
     <color name="ivory">#FFFFF0</color> <!--象牙色 -->
     <color name="lightyellow">#FFFFE0</color> <!--亮黄色 -->

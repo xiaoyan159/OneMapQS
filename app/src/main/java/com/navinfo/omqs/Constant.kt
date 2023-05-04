@@ -84,6 +84,8 @@ class Constant {
         const val SELECT_TAKEPHOTO_OR_RECORD = "select_takephoto_or_record"
 
         const val OMDB_CONFIG = "omdb.config"
+        const val OTHER_CONFIG = "other.config"
+        const val LAYER_MANAGER_CONFIG = "LAYER_MANAGER_CONFIG" // 图层管理界面缓存的key
     }
 
 
