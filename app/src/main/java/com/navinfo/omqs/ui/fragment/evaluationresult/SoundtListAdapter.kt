@@ -26,6 +26,7 @@ import java.io.*
  *使用 LifecycleRegistry 给 ViewHolder 分发生命周期(这里使用了这个)
  */
 class SoundtListAdapter(
+    private var itemListener: ((Int, View) -> Unit?)? = null
 ) : BaseRecyclerViewAdapter<ChatMsgEntity>() {
 
     //媒体播放器
@@ -41,8 +42,6 @@ class SoundtListAdapter(
 
     //录音时动画效果
     private var animaV: AnimationDrawable? = null
-
-    private var itemClick: OnItemClickListner? = null
 
     //最大宽度
     private val maxWidth = 0
@@ -67,14 +66,14 @@ class SoundtListAdapter(
         holder.viewBinding.tvTime.isSelected = entity.isDelete
         holder.viewBinding.rlSoundContent.isSelected = entity.isDelete
         holder.viewBinding.ivSoundAnim.setBackgroundResource(R.drawable.icon_sound_03)
-/*        if (itemClick != null) {
-            holder.viewBinding.rlSoundContent.setOnClickListener {
-                itemClick!!.onItemClick(it.findViewById<View>(R.id.rl_sound_content), position)
-            }
-        }*/
+
+        holder.viewBinding.rlSoundContent.setOnClickListener {
+            setPlayerIndex(it.findViewById<View>(R.id.rl_sound_content),position)
+        }
+
         //mixWidth
         if (!TextUtils.isEmpty(entity.name)) {
-/*            if (entity.name.indexOf(".pcm") > 0) {
+            if (entity.name!!.indexOf(".pcm") > 0) {
                 val file: File = File(entity.voiceUri + entity.name)
                 if (file != null) {
                     val time = (file.length() / 16000).toInt()
@@ -90,7 +89,7 @@ class SoundtListAdapter(
                 try {
                     md = MediaPlayer()
                     md!!.reset()
-                    md!!.setDataSource(entity.voiceUri+entity.name)
+                    md!!.setDataSource(entity.voiceUri + entity.name)
                     md!!.prepare()
                 } catch (e: Exception) {
                     // TODO Auto-generated catch block
@@ -111,7 +110,7 @@ class SoundtListAdapter(
                 }
                 holder.viewBinding.tvTime.text = time
                 md!!.release()
-            }*/
+            }
         }
     }
 
@@ -143,11 +142,11 @@ class SoundtListAdapter(
         imageV.setBackgroundResource(R.drawable.sound_anim)
         animaV = imageV.background as AnimationDrawable
         animaV!!.start()
-/*        if (name.index(".pcm") > 0) {
+        if (name!!.indexOf(".pcm") > 0) {
             audioTrackPlay(name, imageV)
         } else {
             mediaPlayer(name, imageV)
-        }*/
+        }
     }
 
     fun mediaPlayer(name: String, imageV: ImageView) {
@@ -225,13 +224,6 @@ class SoundtListAdapter(
         }
     }
 
-    fun setOnItemClickListener(clickListner: OnItemClickListner) {
-        itemClick = clickListner
-    }
-
-    interface OnItemClickListner {
-        fun onItemClick(view: View?, postion: Int)
-    }
 
     override fun getItemViewRes(position: Int): Int {
         return R.layout.adapter_sound_list
