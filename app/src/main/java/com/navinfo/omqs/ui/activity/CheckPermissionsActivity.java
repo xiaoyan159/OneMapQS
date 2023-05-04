@@ -37,6 +37,7 @@ public class CheckPermissionsActivity extends BaseActivity {
 			Manifest.permission.ACCESS_FINE_LOCATION,
 			Manifest.permission.WRITE_EXTERNAL_STORAGE,
 			Manifest.permission.READ_EXTERNAL_STORAGE,
+			Manifest.permission.RECORD_AUDIO
 	};
 
 	private static final int PERMISSON_REQUESTCODE = 0;
@@ -51,6 +52,7 @@ public class CheckPermissionsActivity extends BaseActivity {
 					Manifest.permission.ACCESS_FINE_LOCATION,
 					Manifest.permission.WRITE_EXTERNAL_STORAGE,
 					Manifest.permission.READ_EXTERNAL_STORAGE,
+					Manifest.permission.RECORD_AUDIO,
 					BACKGROUND_LOCATION_PERMISSION
 			};
 		}

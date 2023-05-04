@@ -43,4 +43,7 @@ public interface INiLocationDao {
 
     @Query("SELECT * FROM niLocation where tilex>=:minx and tilex<=:maxx and tiley>=:miny and tiley <=:maxy and time>=:startTime and time<=:endTime")
     List<NiLocation> timeTofindList(int minx, int maxx, int miny, int maxy,long startTime,long endTime);
+
+    @Query("SELECT * FROM niLocation")
+    List<NiLocation> findAll();
 }

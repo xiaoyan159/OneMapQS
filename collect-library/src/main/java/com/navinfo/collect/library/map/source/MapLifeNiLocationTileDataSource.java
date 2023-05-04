@@ -53,7 +53,8 @@ public class MapLifeNiLocationTileDataSource implements ITileDataSource {
             if(mEndTime!=0){
                 list = TraceDataBase.getDatabase(mCon, dbName).getNiLocationDao().timeTofindList(xStart, xEnd, yStart, yEnd,mStartTime,mEndTime);
             }else{
-                list = TraceDataBase.getDatabase(mCon, dbName).getNiLocationDao().findList(xStart, xEnd, yStart, yEnd);
+                //list = TraceDataBase.getDatabase(mCon, dbName).getNiLocationDao().findList(xStart, xEnd, yStart, yEnd);
+                list = TraceDataBase.getDatabase(mCon, dbName).getNiLocationDao().findAll();
             }
 
             Log.e("qj","query"+(list==null?0:list.size())+"==="+xStart+"==="+xEnd+"==="+yStart+"==="+yEnd);

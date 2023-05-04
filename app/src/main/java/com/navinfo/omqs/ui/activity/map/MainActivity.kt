@@ -1,6 +1,9 @@
 package com.navinfo.omqs.ui.activity.map
 
 import android.os.Bundle
+import android.util.Log
+import android.view.MotionEvent
+import android.view.View
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
@@ -70,6 +73,26 @@ class MainActivity : BaseActivity() {
         //给xml传递viewModel对象
         binding.viewModel = viewModel
 
+        binding.mainActivityVoice.setOnTouchListener(object : View.OnTouchListener {
+            @RequiresApi(Build.VERSION_CODES.Q)
+            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                Log.e("qj",event?.action.toString())
+                when (event?.action) {
+                    MotionEvent.ACTION_DOWN ->{
+                        voiceOnTouchStart()//Do Something
+                        Log.e("qj","voiceOnTouchStart")
+                    }
+                    MotionEvent.ACTION_UP ->{
+                        voiceOnTouchStop()//Do Something
+                        Log.e("qj","voiceOnTouchStop")
+                    }
+                }
+
+
+                return v?.onTouchEvent(event) ?: true
+            }
+        })
+
         viewModel.liveDataQsRecordIdList.observe(this) {
             //处理页面跳转
             viewModel.navigation(this, it)
@@ -127,7 +150,19 @@ class MainActivity : BaseActivity() {
      * 点击录音按钮
      */
     fun voiceOnclick() {
-        rightController.navigate(R.id.EvaluationResultFragment)
+/*        val naviController = findNavController(R.id.main_activity_right_fragment)
+        naviController.navigate(R.id.EvaluationResultFragment)*/
+    }
+
+    fun voiceOnTouchStart(){
+        viewModel!!.startSoundMetter(this,binding.mainActivityVoice)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun voiceOnTouchStop(){
+        if(Constant.IS_VIDEO_SPEED){
+            viewModel!!.stopSoundMeter()
+        }
     }
 
 //    override fun onBackPressed() {
