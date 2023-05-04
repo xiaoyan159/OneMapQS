@@ -198,7 +198,7 @@ class TaskListAdapter(
     }
 
     override fun getItemViewRes(position: Int): Int {
-        return R.layout.adapter_offline_map_city
+        return R.layout.adapter_task_list
     }
 }
 

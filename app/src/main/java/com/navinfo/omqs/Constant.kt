@@ -33,6 +33,11 @@ class Constant {
         lateinit var USER_DATA_PATH: String
 
         /**
+         * 用户附件数据目录
+         */
+        lateinit var USER_DATA_ATTACHEMNT_PATH: String
+
+        /**
          * 离线地图目录
          */
         lateinit var OFFLINE_MAP_PATH: String
@@ -48,6 +53,8 @@ class Constant {
         const val SERVER_ADDRESS = "http://fastmap.navinfo.com/"
 
         const val DEBUG = true
+
+        var IS_VIDEO_SPEED by kotlin.properties.Delegates.notNull<Boolean>()
 
         const val message_status_late = "预约，待发送"
         const val message_status_send_over = "已发送"

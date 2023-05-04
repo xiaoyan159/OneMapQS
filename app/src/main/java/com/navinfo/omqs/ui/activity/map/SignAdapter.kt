@@ -23,6 +23,5 @@ class SignAdapter : BaseRecyclerViewAdapter<SignBean>() {
         val item = data[position]
         bd.signMainIcon.background = holder.viewBinding.root.context.getDrawable(item.iconId)
         bd.signMainIcon.text = item.iconText
-
     }
 }
