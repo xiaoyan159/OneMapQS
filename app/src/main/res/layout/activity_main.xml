@@ -56,36 +56,42 @@
                 app:layout_constraintLeft_toLeftOf="@id/main_activity_person_center"
                 app:layout_constraintTop_toBottomOf="@id/main_activity_person_center" />
 
-            <ImageButton
-                android:id="@+id/main_activity_location"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginBottom="80dp"
-                android:onClick="@{()->viewModel.onClickLocationButton()}"
-                android:src="@drawable/baseline_my_location_24"
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="108dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent" />
+                app:layout_constraintRight_toRightOf="parent"
+                tools:ignore="MissingConstraints">
 
-            <ImageButton
-                android:id="@+id/main_activity_voice"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="120dp"
-                android:src="@drawable/baseline_keyboard_voice_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent" />
 
-            <ImageButton
-                android:id="@+id/main_activity_line"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginBottom="10dp"
-                android:onClick="@{()->mainActivity.voiceOnclick()}"
-                android:src="@drawable/baseline_keyboard_voice_24"
-                app:layout_constraintBottom_toTopOf="@id/main_activity_voice"
-                app:layout_constraintRight_toRightOf="@id/main_activity_voice" />
+                <ImageButton
+                    android:id="@+id/main_activity_voice"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/icon_add_voice"
+                    android:background="@null" />
+
+                <ImageButton
+                    android:id="@+id/main_activity_line"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:onClick="@{()->mainActivity.voiceOnclick()}"
+                    android:src="@drawable/icon_add_data"
+                    android:background="@null" />
+
+                <ImageButton
+                    android:id="@+id/main_activity_location"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:onClick="@{()->viewModel.onClickLocationButton()}"
+                    android:src="@drawable/icon_location"
+                    android:background="@null" />
+
+            </LinearLayout>
+
 
             <fragment
                 android:id="@+id/main_activity_middle_fragment"

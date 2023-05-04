@@ -32,6 +32,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="48dp"
+        android:background="@drawable/map_zoom_bg_xml"
         android:orientation="vertical"
         android:padding="@dimen/nimap_defalut_padding">
 
@@ -39,7 +42,7 @@
             android:id="@+id/navinfo_map_zoom_in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_nimap_default_button"
+            android:background="@null"
             android:clickable="true"
             android:focusable="true"
             android:src="@drawable/icon_map_zoom_in" />
@@ -52,7 +55,7 @@
             android:id="@+id/navinfo_map_zoom_out"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_nimap_default_button"
+            android:background="@null"
             android:clickable="true"
             android:focusable="true"
             android:src="@drawable/icon_map_zoom_out" />

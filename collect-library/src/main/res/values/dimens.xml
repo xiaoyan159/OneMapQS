@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="nimap_defalut_padding">12dp</dimen>
+    <dimen name="nimap_defalut_padding">5dp</dimen>
 </resources>
