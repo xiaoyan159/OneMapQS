@@ -9,16 +9,25 @@
         android:id="@+id/EmptyFragment"
         android:name="com.navinfo.omqs.ui.fragment.empty.EmptyFragment"
         android:label="空页面"
-        tools:layout="@layout/fragment_empty"></fragment>
+        tools:layout="@layout/fragment_empty">
+<!--        <action-->
+<!--            android:id="@+id/EmptyFragment_to_EvaluationResultFragment"-->
+<!--            app:destination="@id/EvaluationResultFragment" />-->
+<!--        <argument-->
+<!--            android:name="QsId"-->
+<!--            app:argType="string"-->
+<!--            app:nullable="true" />-->
+<!--        <argument-->
+<!--            android:name="SignBean"-->
+<!--            app:argType="com.navinfo.omqs.ui.activity.map.SignBean"-->
+<!--            />-->
+    </fragment>
 
     <fragment
         android:id="@+id/EvaluationResultFragment"
         android:name="com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultFragment"
         android:label="评测页面"
         tools:layout="@layout/fragment_evaluation_result">
-        <argument
-            android:name="QsId"
-            app:argType="string"
-            app:nullable="true" />
+
     </fragment>
 </navigation>

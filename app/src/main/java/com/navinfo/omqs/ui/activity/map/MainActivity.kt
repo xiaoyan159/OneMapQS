@@ -11,9 +11,7 @@ import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.map.NIMapController
-import com.navinfo.collect.library.map.handler.NiLocationListener
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityMainBinding
@@ -38,7 +36,25 @@ class MainActivity : BaseActivity() {
     @Inject
     lateinit var offlineMapDownloadManager: OfflineMapDownloadManager
 
-    private val signAdapter by lazy { SignAdapter() }
+    private val rightController by lazy {
+        findNavController(R.id.main_activity_right_fragment)
+    }
+
+    private val signAdapter by lazy {
+        SignAdapter { position, signBean ->
+//            val directions =
+//                EmptyFragmentDirections.emptyFragmentToEvaluationResultFragment(
+//                )
+//            rightController.navigate(directions)
+            rightController.currentDestination?.let {
+                if (it.id == R.id.EmptyFragment) {
+                    val bundle = Bundle()
+                    bundle.putParcelable("SignBean", signBean)
+                    rightController.navigate(R.id.EvaluationResultFragment, bundle)
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -62,15 +78,15 @@ class MainActivity : BaseActivity() {
         binding.mainActivityVoice.setOnTouchListener(object : View.OnTouchListener {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                Log.e("qj",event?.action.toString())
+                Log.e("qj", event?.action.toString())
                 when (event?.action) {
-                    MotionEvent.ACTION_DOWN ->{
+                    MotionEvent.ACTION_DOWN -> {
                         voiceOnTouchStart()//Do Something
-                        Log.e("qj","voiceOnTouchStart")
+                        Log.e("qj", "voiceOnTouchStart")
                     }
-                    MotionEvent.ACTION_UP ->{
+                    MotionEvent.ACTION_UP -> {
                         voiceOnTouchStop()//Do Something
-                        Log.e("qj","voiceOnTouchStop")
+                        Log.e("qj", "voiceOnTouchStop")
                     }
                 }
 
@@ -140,14 +156,14 @@ class MainActivity : BaseActivity() {
         naviController.navigate(R.id.EvaluationResultFragment)*/
     }
 
-    fun voiceOnTouchStart(){
-        viewModel!!.startSoundMetter(this,binding.mainActivityVoice)
+    fun voiceOnTouchStart() {
+        viewModel.startSoundMetter(this, binding.mainActivityVoice)
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun voiceOnTouchStop(){
-        if(Constant.IS_VIDEO_SPEED){
-            viewModel!!.stopSoundMeter()
+    fun voiceOnTouchStop() {
+        if (Constant.IS_VIDEO_SPEED) {
+            viewModel.stopSoundMeter()
         }
     }
 

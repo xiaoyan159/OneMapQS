@@ -81,7 +81,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/fm_card_map_down_status_bg"
-                    android:onClick="@{fragment.onClick}"
+                    android:onClick="@{fragment::onClick}"
                     android:text="@{viewModel.liveDataQsRecordBean.phenomenon}" />
 
                 <TextView
@@ -90,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/fm_card_map_down_status_bg"
-                    android:onClick="@{fragment.onClick}"
+                    android:onClick="@{fragment::onClick}"
                     android:text="@{viewModel.liveDataQsRecordBean.problemLink}" />
 
                 <TextView
@@ -99,7 +99,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/fm_card_map_down_status_bg"
-                    android:onClick="@{fragment.onClick}"
+                    android:onClick="@{fragment::onClick}"
                     android:text="@{viewModel.liveDataQsRecordBean.cause}" />
 
                 <TextView
