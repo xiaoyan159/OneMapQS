@@ -83,6 +83,10 @@ class MainViewModel @Inject constructor(
     var volume: ImageView? = null
     var mSoundMeter: SoundMeter? = null
 
+    var menuState :Boolean = false
+
+    val liveDataMenuState = MutableLiveData<Boolean>()
+
     init {
         mapController.markerHandle.setOnQsRecordItemClickListener(object :
             OnQsRecordItemClickListener {
@@ -219,6 +223,14 @@ class MainViewModel @Inject constructor(
      */
     fun onClickLocationButton() {
         mapController.locationLayerHandler.animateToCurrentPosition()
+    }
+
+    /**
+     * 点击菜单
+     */
+    fun onClickMenu() {
+        menuState = !menuState
+        liveDataMenuState.postValue(menuState)
     }
 
     override fun onCleared() {

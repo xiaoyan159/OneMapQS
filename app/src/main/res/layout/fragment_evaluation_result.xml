@@ -40,7 +40,7 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:padding="10dp"
             app:layout_constraintBottom_toTopOf="@id/evaluation_camera"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -52,71 +52,143 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
+            <LinearLayout
+                android:paddingBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
                 <TextView
+                    style="@style/card_content_font_default"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="问题分类" />
+                    android:text="要素分类" />
 
                 <TextView
                     android:id="@+id/evaluation_class_type"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:background="@drawable/fm_card_map_down_status_bg"
+                    style="@style/card_text_font_default"
                     android:onClick="@{fragment::onClick}"
                     android:text="@{viewModel.liveDataQsRecordBean.classType}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:paddingBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/card_content_font_default"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="问题类型" />
 
                 <TextView
                     android:id="@+id/evaluation_problem_type"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:background="@drawable/fm_card_map_down_status_bg"
+                    style="@style/card_text_font_default"
                     android:onClick="@{fragment::onClick}"
                     android:text="@{viewModel.liveDataQsRecordBean.problemType}" />
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:paddingBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
                 <TextView
+                    style="@style/card_content_font_default"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="问题现象" />
+
+            <TextView
                     android:id="@+id/evaluation_phenomenon"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:background="@drawable/fm_card_map_down_status_bg"
+                    style="@style/card_text_font_default"
                     android:onClick="@{fragment::onClick}"
                     android:text="@{viewModel.liveDataQsRecordBean.phenomenon}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:paddingBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/card_content_font_default"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="问题环节" />
 
                 <TextView
                     android:id="@+id/evaluation_link"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:background="@drawable/fm_card_map_down_status_bg"
+                    style="@style/card_text_font_default"
                     android:onClick="@{fragment::onClick}"
                     android:text="@{viewModel.liveDataQsRecordBean.problemLink}" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:paddingBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/card_content_font_default"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="问题原因" />
 
                 <TextView
                     android:id="@+id/evaluation_cause"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:background="@drawable/fm_card_map_down_status_bg"
+                    style="@style/card_text_font_default"
                     android:onClick="@{fragment::onClick}"
                     android:text="@{viewModel.liveDataQsRecordBean.cause}" />
 
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:paddingBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
                 <TextView
+                    style="@style/card_content_font_default"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="备注信息" />
+                    android:text="问题描述" />
 
                 <com.navinfo.omqs.ui.widget.MyEditeText
+                    style="@style/card_text_font_default"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/fm_card_map_down_status_bg"
                     android:gravity="start"
                     android:hint="请输入备注信息"
                     android:inputType="textMultiLine"
                     android:lines="3"
                     android:maxLines="3"
                     android:text="@={viewModel.liveDataQsRecordBean.description}" />
+
+
+            </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"

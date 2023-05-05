@@ -111,6 +111,17 @@ class MainActivity : BaseActivity() {
             //处理页面跳转
             viewModel.navigation(this, it)
         }
+
+        viewModel.liveDataMenuState.observe(this) {
+            binding.mainActivityMenu.isSelected = it
+            if(it==true){
+                binding.mainActivityMenuLayout.visibility = View.VISIBLE
+            }else{
+                binding.mainActivityMenuLayout.visibility = View.GONE
+            }
+
+        }
+
         binding.mainActivitySignRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.mainActivitySignRecyclerview.adapter = signAdapter
         //增加4dp的间隔
@@ -174,6 +185,43 @@ class MainActivity : BaseActivity() {
         //显示轨迹图层
         viewModel.onClickCameraButton(this)
     }
+
+    /**
+     * 开关菜单
+     */
+    fun onClickMenu() {
+        //显示菜单图层
+        viewModel.onClickMenu()
+    }
+
+    /**
+     * 点击计算
+     */
+    fun onClickCalcDisance() {
+
+    }
+
+    /**
+     * 点击轨迹
+     */
+    fun onClickTrace() {
+
+    }
+
+    /**
+     * 点击搜索
+     */
+    fun onClickSerach() {
+
+    }
+
+    /**
+     * 点击2\3D
+     */
+    fun onClick2DOr3D() {
+
+    }
+
 
     /**
      * 点击录音按钮
