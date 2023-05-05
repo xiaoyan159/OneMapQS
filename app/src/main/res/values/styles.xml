@@ -115,6 +115,15 @@
         <item name="android:paddingBottom">1dp</item>
     </style>
 
+    <style name="checked_gradient_color" parent="TextAppearance.AppCompat.Button">
+        <item name="android:textColor">@color/selector_default_text_color_black_enable_white</item>
+        <item name="android:background">@drawable/selector_bg_gradient_checkbox</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingBottom">1dp</item>
+    </style>
+
     <style name="fm_btn_default_blue_white" parent="@android:style/Widget.Button">
         <item name="android:background">@drawable/selector_bg_blue_gray_bg_4_radius</item>
         <item name="android:textColor">@color/selector_default_text_color_white_enable_gray</item>
