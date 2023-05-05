@@ -118,7 +118,7 @@ class EvaluationResultViewModel @Inject constructor(
     /**
      * 查询数据库，获取问题分类
      */
-    fun initNewData(bean: SignBean?,filePath: String) {
+    fun initNewData(bean: SignBean?, filePath: String) {
         viewModelScope.launch(Dispatchers.IO) {
             getClassTypeList()
             getProblemLinkList()
@@ -171,6 +171,7 @@ class EvaluationResultViewModel @Inject constructor(
                     it.linkId =
                         linkList[0].properties[LinkTable.linkPid] ?: ""
                     mapController.lineHandler.showLine(linkList[0].geometry)
+                    Log.e("jingo", "捕捉到的linkId = ${it.linkId}")
                 } else {
                     it.linkId = ""
                     mapController.lineHandler.removeLine()
@@ -384,13 +385,13 @@ class EvaluationResultViewModel @Inject constructor(
 
     fun addChatMsgEntity(filePath: String) {
 
-        if(filePath.isNotEmpty()){
+        if (filePath.isNotEmpty()) {
             var chatMsgEntityList: MutableList<ChatMsgEntity> = ArrayList()
-            if(listDataChatMsgEntityList.value?.isEmpty() == false){
+            if (listDataChatMsgEntityList.value?.isEmpty() == false) {
                 chatMsgEntityList = listDataChatMsgEntityList.value!!
             }
             val chatMsgEntity = ChatMsgEntity()
-            chatMsgEntity.name = filePath.replace(Constant.USER_DATA_ATTACHEMNT_PATH,"").toString()
+            chatMsgEntity.name = filePath.replace(Constant.USER_DATA_ATTACHEMNT_PATH, "").toString()
             chatMsgEntity.voiceUri = Constant.USER_DATA_ATTACHEMNT_PATH
             chatMsgEntityList.add(chatMsgEntity)
 
@@ -398,7 +399,7 @@ class EvaluationResultViewModel @Inject constructor(
             var attachmentList: RealmList<AttachmentBean> = RealmList()
 
             //赋值处理
-            if(liveDataQsRecordBean.value?.attachmentBeanList?.isEmpty() == false){
+            if (liveDataQsRecordBean.value?.attachmentBeanList?.isEmpty() == false) {
                 attachmentList = liveDataQsRecordBean.value?.attachmentBeanList!!
             }
 
@@ -414,7 +415,7 @@ class EvaluationResultViewModel @Inject constructor(
 
     fun startSoundMetter(activity: Activity, v: View) {
 
-        if(mSpeakMode==null){
+        if (mSpeakMode == null) {
             mSpeakMode = SpeakMode(activity)
         }
 
@@ -424,7 +425,8 @@ class EvaluationResultViewModel @Inject constructor(
             pop!!.width = ViewGroup.LayoutParams.MATCH_PARENT
             pop!!.height = ViewGroup.LayoutParams.WRAP_CONTENT
             pop!!.setBackgroundDrawable(BitmapDrawable())
-            val view = View.inflate(activity as Context, R.layout.cv_card_voice_rcd_hint_window, null)
+            val view =
+                View.inflate(activity as Context, R.layout.cv_card_voice_rcd_hint_window, null)
             pop!!.contentView = view
             volume = view.findViewById(R.id.volume)
         }
