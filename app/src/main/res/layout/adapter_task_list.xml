@@ -42,14 +42,14 @@
         android:textSize="@dimen/card_title_font_3size" />
 
     <TextView
-        android:id="@+id/task_size"
+        android:id="@+id/task_color"
         style="@style/map_size_font_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/task_city_name"
         android:layout_marginTop="5dp"
         android:drawableLeft="@mipmap/point_blue"
-        android:text="文件大小"
+        android:text="路线颜色"
         android:textSize="@dimen/card_title_font_3size" />
 
 
@@ -68,7 +68,8 @@
     <TextView
         android:id="@+id/task_upload_btn"
         style="@style/map_download_style_btn"
-        android:layout_width="60dp"
+        android:layout_width="wrap_content"
+        android:minWidth="60dp"
         android:layout_centerVertical="true"
         android:layout_marginRight="5dp"
         android:layout_toLeftOf="@id/task_download_btn"
@@ -96,7 +97,7 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="16dp"
-        android:layout_below="@id/task_size"
+        android:layout_below="@id/task_color"
         android:paddingTop="10dp"
         android:progressDrawable="@drawable/progress_bg"
         android:visibility="invisible" />

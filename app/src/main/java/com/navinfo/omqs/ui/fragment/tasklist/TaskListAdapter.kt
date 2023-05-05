@@ -1,6 +1,7 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
 import android.content.Context
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,9 +14,11 @@ import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
 import com.navinfo.omqs.http.taskupload.TaskUploadManager
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
+import com.navinfo.omqs.tools.FileManager.Companion.FileUploadStatus
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 import java.io.File
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -56,7 +59,7 @@ class TaskListAdapter(
             val taskBean = data[it.tag as Int]
             Log.e("jingo", "开始上传 ${taskBean.syncStatus}")
             when (taskBean.syncStatus) {
-                FileManager.Companion.FileUploadStatus.NONE->{
+                FileUploadStatus.NONE, FileUploadStatus.ERROR -> {
                     uploadManager.start(taskBean.id)
                 }
             }
@@ -93,6 +96,7 @@ class TaskListAdapter(
         binding.taskName.text = taskBean.evaluationTaskName
         binding.taskCityName.text = taskBean.cityName
         binding.taskDataVersion.text = "版本号：${taskBean.dataVersion}"
+        binding.taskColor.setTextColor(taskBean.color)
 //        binding.offlineMapCitySize.text = cityBean.getFileSizeText()
     }
 
@@ -114,16 +118,16 @@ class TaskListAdapter(
 
     private fun changeUploadTxtViews(binding: AdapterTaskListBinding, taskBean: TaskBean) {
         when (taskBean.syncStatus) {
-            FileManager.Companion.FileUploadStatus.DONE -> {
+            FileUploadStatus.DONE -> {
                 binding.taskUploadBtn.text = "已上传"
             }
-            FileManager.Companion.FileUploadStatus.ERROR -> {
+            FileUploadStatus.ERROR -> {
                 binding.taskUploadBtn.text = "重新同步"
             }
-            FileManager.Companion.FileUploadStatus.NONE -> {
+            FileUploadStatus.NONE -> {
                 binding.taskUploadBtn.text = "同步"
             }
-            FileManager.Companion.FileUploadStatus.WAITING -> {
+            FileUploadStatus.WAITING -> {
                 binding.taskUploadBtn.text = "等待同步"
             }
         }

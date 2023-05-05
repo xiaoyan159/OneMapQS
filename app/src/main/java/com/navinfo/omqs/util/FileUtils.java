@@ -106,7 +106,7 @@ public class FileUtils {
                 while ((byteread = inStream.read(buffer)) != -1) {
 
                     bytesum += byteread; // 字节数 文件大小
-                    System.out.println(bytesum);
+//                    System.out.println(bytesum);
                     fs.write(buffer, 0, byteread);
 
                 }
@@ -398,7 +398,7 @@ public class FileUtils {
                         for (String str : suffix) {
                             if (fileName.endsWith(str)) { // 判断文件名是否以
                                 String strFileName = files[i].getAbsolutePath();
-                                System.out.println("---" + strFileName);
+//                                System.out.println("---" + strFileName);
                                 filelist.add(files[i]);
                             }
                         }
