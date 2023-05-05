@@ -83,7 +83,6 @@ class Constant {
 
         const val OMDB_CONFIG = "omdb.config"
         const val OTHER_CONFIG = "other.config"
-        const val LAYER_MANAGER_CONFIG = "LAYER_MANAGER_CONFIG" // 图层管理界面缓存的key
 
         val OMDB_LAYER_VISIBLE_LIST: MutableList<String> = mutableListOf() // 记录OMDB数据显示的图层名称列表
 
