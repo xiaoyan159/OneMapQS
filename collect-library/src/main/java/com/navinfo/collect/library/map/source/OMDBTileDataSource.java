@@ -41,14 +41,14 @@ public class OMDBTileDataSource implements ITileDataSource {
 
             RealmQuery<RenderEntity> realmQuery = Realm.getDefaultInstance().where(RenderEntity.class)
                     .rawPredicate("tileX>="+xStart+" and tileX<="+xEnd+" and tileY>="+yStart+" and tileY<="+yEnd);
-//            // 筛选不显示的数据
-//            if (Constant.HAD_LAYER_INVISIABLE_ARRAY!=null&&Constant.HAD_LAYER_INVISIABLE_ARRAY.length>0) {
-//                realmQuery.beginGroup();
-//                for (String type: Constant.HAD_LAYER_INVISIABLE_ARRAY) {
-//                    realmQuery.notEqualTo("name", type);
-//                }
-//                realmQuery.endGroup();
-//            }
+            // 筛选不显示的数据
+            if (Constant.HAD_LAYER_INVISIABLE_ARRAY!=null&&Constant.HAD_LAYER_INVISIABLE_ARRAY.length>0) {
+                realmQuery.beginGroup();
+                for (String type: Constant.HAD_LAYER_INVISIABLE_ARRAY) {
+                    realmQuery.notEqualTo("table", type);
+                }
+                realmQuery.endGroup();
+            }
             List<RenderEntity> listResult = realmQuery/*.distinct("id")*/.findAll();
             if (!listResult.isEmpty()) {
                 mThreadLocalDecoders.get().decode(tile, mapDataSink, listResult);

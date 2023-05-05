@@ -2,11 +2,12 @@
 <resources>
     <color name="transp">#00000000</color>
     <color name="line_gray" comment="轻度灰色，一般用于下划线，不可点击按钮的边框">#dadade</color>
+    <color name="bg_left_pannel" comment="左侧弹出框背景颜色">#f4f4fc</color>
     <color name="colorPrimary">#6c14c4</color>
     <color name="colorSecondary">#4c54ec</color>
     <color name="colorAccent">#c42cd4</color>
     <color name="colorSurface">#FFFFFF</color>
-    <color name="colorOnSurface">#4263EB</color>
+    <color name="colorOnSurface">#3c3c44</color>
     <color name="colorPrimarySurface">#aa342c4c</color>
     <color name="colorOnPrimarySurface">#FFFFFF</color>
     <color name="colorError">#e74c3c</color>

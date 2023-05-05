@@ -47,6 +47,8 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePa
     private lateinit var omdbVectorTileLayer: VectorTileLayer
     private lateinit var omdbLabelLayer: LabelLayer
 
+    private val omdbTileSource by lazy { OMDBTileSource() }
+
     init {
         initMap()
     }
@@ -97,7 +99,6 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePa
     }
 
     private fun initOMDBVectorTileLayer() {
-        val omdbTileSource: OMDBTileSource = OMDBTileSource()
         omdbVectorTileLayer = VectorTileLayer(mMapView.vtmMap, omdbTileSource)
         omdbLabelLayer = LabelLayer(mMapView.vtmMap, omdbVectorTileLayer, LabelTileLoaderHook(), Constant.OMDB_MIN_ZOOM)
         if(omdbVectorTileLayer!=null){
