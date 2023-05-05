@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">OMQualityInspection</string>
+    <string name="app_name">LandScope</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="personal_center">个人中心</string>

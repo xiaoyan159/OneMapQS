@@ -163,6 +163,7 @@
     <color name="cvm_red">#FF3B30</color>
     <color name="btn_blue_solid">#108ee9</color>
     <color name="titleColor">#2631DD</color>
+    <color name="contentColor">#000000</color>
     <!-- 一键连接对话框背景色 -->
     <color name="bg_gray2">#d1d1d1</color>
     <!-- 一键连接时间显示区域背景色 -->
