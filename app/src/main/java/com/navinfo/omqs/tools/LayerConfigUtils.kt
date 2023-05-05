@@ -17,7 +17,7 @@ class LayerConfigUtils {
         fun getLayerConfigList(): List<ImportConfig> {
             // 首先读取Shared文件，如果存在则直接返回，否则读取config文件
             return SPStaticUtils.getString(Constant.EVENT_LAYER_MANAGER_CHANGE, null).let {
-                if (this!=null) {
+                if (it!=null) {
                     val result: List<ImportConfig> = gson.fromJson(it, object : TypeToken<List<ImportConfig>>(){}.type)
                     result
                 } else {
