@@ -10,7 +10,7 @@ class SignUtil {
         /**
          * 获取面板上的文字
          */
-        fun getSignText(data: RenderEntity): String {
+        fun getSignIconText(data: RenderEntity): String {
             return when (data.code) {
                 //常规点限速
                 4002 -> getSpeedLimitText(data)
@@ -24,14 +24,28 @@ class SignUtil {
             }
         }
 
+        fun getSignBottomText(data: RenderEntity): String {
+            return when (data.code) {
+                //常规点限速
+                4002 -> "常规点限速"
+                //道路种别
+                2008 -> "道路种别"
+                //道路方向
+                2010 -> "道路方向"
+                //车道数
+                2041 -> "车道数"
+                else -> ""
+            }
+        }
+
         /**
          * 获取限速值文字
          */
         private fun getSpeedLimitText(data: RenderEntity): String {
             try {
                 //限速标志 0 限速开始 1 限速解除
-                val maxSpeed = data.properties["max_speed"]
-                val minSpeed = data.properties["min_speed"]
+                val maxSpeed = data.properties["maxSpeed"]
+                val minSpeed = data.properties["minSpeed"]
                 return if (maxSpeed != "0")
                     maxSpeed.toString()
                 else
@@ -48,8 +62,7 @@ class SignUtil {
         fun getSpeedLimitIcon(data: RenderEntity): Int {
             try {
                 //限速标志 0 限速开始 1 限速解除
-                val speedFlag = data.properties["speed_flag"]
-                return when (speedFlag) {
+                return when (data.properties["speed_flag"]) {
                     "1" -> return R.drawable.icon_speed_limit_off
                     else -> return R.drawable.icon_speed_limit
                 }

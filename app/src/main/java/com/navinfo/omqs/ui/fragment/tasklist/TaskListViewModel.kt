@@ -2,11 +2,8 @@ package com.navinfo.omqs.ui.fragment.tasklist
 
 import android.content.Context
 import android.graphics.Color
-import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.core.graphics.toColor
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +17,7 @@ import io.realm.Realm
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,6 +28,9 @@ class TaskListViewModel @Inject constructor(
 
     val liveDataTaskList = MutableLiveData<List<TaskBean>>()
 
+    /**
+     * 下载任务列表
+     */
     fun getTaskList(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -49,6 +50,16 @@ class TaskListViewModel @Inject constructor(
                                         Log.e("jingo", "当前文件大小 ${task.fileSize}")
                                         task.status = item.status
                                         task.currentSize = item.currentSize
+                                        task.color = item.color
+                                    } else {
+                                        val random = Random()
+                                        task.color = Color.argb(
+                                            255,
+                                            random.nextInt(256),
+                                            random.nextInt(256),
+                                            random.nextInt(256)
+                                        )
+                                        Log.e("jingo", "任务颜色 ${task.color}")
                                     }
                                     realm.copyToRealmOrUpdate(task)
                                 }
@@ -76,7 +87,9 @@ class TaskListViewModel @Inject constructor(
             for (item in taskList) {
                 FileManager.checkOMDBFileInfo(item)
             }
-//            niMapController.lineHandler.omdbTaskLinkLayer.setLineColor(Color.rgb(0, 255, 0).toColor())
+//            niMapController.lineHandler.omdbTaskLinkLayer.setLineColor(
+//                Color.rgb(0, 255, 0).toColor()
+//            )
 //            taskList.forEach {
 //                niMapController.lineHandler.omdbTaskLinkLayer.addLineList(it.hadLinkDvoList)
 //            }

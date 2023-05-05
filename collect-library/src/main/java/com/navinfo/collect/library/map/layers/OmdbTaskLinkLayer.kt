@@ -1,6 +1,8 @@
 package com.navinfo.collect.library.map.layers
 
 import android.graphics.Color
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.navinfo.collect.library.R
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.collect.library.utils.GeometryTools
@@ -31,7 +33,7 @@ class OmdbTaskLinkLayer(map: Map, private var style: Style) : VectorLayer(map) {
         }
     }
 
-    fun removeLine(linkPid: String):Boolean {
+    fun removeLine(linkPid: String): Boolean {
         if (lineMap.containsKey(linkPid)) {
             super.remove(lineMap[linkPid])
             lineMap.remove(linkPid)
@@ -43,6 +45,7 @@ class OmdbTaskLinkLayer(map: Map, private var style: Style) : VectorLayer(map) {
         super.remove(geometry)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun setLineColor(color: Color) {
         this.style = Style.builder()
             .fillColor(color.toArgb())
@@ -50,5 +53,12 @@ class OmdbTaskLinkLayer(map: Map, private var style: Style) : VectorLayer(map) {
             .strokeColor(color.toArgb())
             .strokeWidth(4f)
             .fixed(true).build()
+    }
+
+    fun removeAll() {
+        for ((key, value) in lineMap) {
+            super.remove(value)
+        }
+        lineMap.clear()
     }
 }
