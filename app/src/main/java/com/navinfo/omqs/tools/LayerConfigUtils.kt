@@ -17,8 +17,9 @@ class LayerConfigUtils {
         fun getLayerConfigList(): List<ImportConfig> {
             // 首先读取Shared文件，如果存在则直接返回，否则读取config文件
             return SPStaticUtils.getString(Constant.EVENT_LAYER_MANAGER_CHANGE, null).let {
-                if (this!=null) {
-                    val result: List<ImportConfig> = gson.fromJson(it, object : TypeToken<List<ImportConfig>>(){}.type)
+                if (it != null) {
+                    val result: List<ImportConfig> =
+                        gson.fromJson(it, object : TypeToken<List<ImportConfig>>() {}.type)
                     result
                 } else {
                     LayerConfigUtils.getLayerConfigListFromAssetsFile()
@@ -30,12 +31,13 @@ class LayerConfigUtils {
             val resultList = mutableListOf<ImportConfig>()
             if (omdbConfigFile.exists()) {
                 val omdbConfiStr = FileIOUtils.readFile2String(omdbConfigFile)
-                val omdbConfig =  gson.fromJson<ImportConfig>(omdbConfiStr, ImportConfig::class.java)
+                val omdbConfig = gson.fromJson<ImportConfig>(omdbConfiStr, ImportConfig::class.java)
                 resultList.add(omdbConfig)
             }
             if (otherConfigFile.exists()) {
                 val otherConfiStr = FileIOUtils.readFile2String(otherConfigFile)
-                val otherConfig =  gson.fromJson<ImportConfig>(otherConfiStr, ImportConfig::class.java)
+                val otherConfig =
+                    gson.fromJson<ImportConfig>(otherConfiStr, ImportConfig::class.java)
                 resultList.add(otherConfig)
             }
             return resultList
