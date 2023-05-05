@@ -28,13 +28,12 @@
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/evaluation_bar"
-                style="@style/Widget.MaterialComponents.Toolbar.Surface"
+                style="@style/card_title_font_default"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/default_blue"
+                android:background="@color/white"
                 app:menu="@menu/evaluation_bar_mean"
-                app:navigationIcon="@drawable/btn_back_xml"
-                app:title="测评结果" />
+                app:title="Mark" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -82,7 +81,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/fm_card_map_down_status_bg"
-                    android:onClick="@{fragment.onClick}"
+                    android:onClick="@{fragment::onClick}"
                     android:text="@{viewModel.liveDataQsRecordBean.phenomenon}" />
 
                 <TextView
@@ -91,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/fm_card_map_down_status_bg"
-                    android:onClick="@{fragment.onClick}"
+                    android:onClick="@{fragment::onClick}"
                     android:text="@{viewModel.liveDataQsRecordBean.problemLink}" />
 
                 <TextView
@@ -100,7 +99,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/fm_card_map_down_status_bg"
-                    android:onClick="@{fragment.onClick}"
+                    android:onClick="@{fragment::onClick}"
                     android:text="@{viewModel.liveDataQsRecordBean.cause}" />
 
                 <TextView
@@ -128,6 +127,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/card_title_font_default"
                     android:text="多媒体" />
 
                 <androidx.recyclerview.widget.RecyclerView

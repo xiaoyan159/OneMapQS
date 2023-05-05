@@ -13,6 +13,7 @@ import androidx.navigation.NavOptions
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
+import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.databinding.FragmentEvaluationResultBinding
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
@@ -24,6 +25,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentEvaluationResultBinding
     private val viewModel by shareViewModels<EvaluationResultViewModel>("QsRecode")
 
+    //    private val args:EmptyFragmentArgs by navArgs()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -80,15 +82,15 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         binding.evaluationVoice.setOnTouchListener(object : View.OnTouchListener {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                Log.e("qj",event?.action.toString())
+                Log.e("qj", event?.action.toString())
                 when (event?.action) {
-                    MotionEvent.ACTION_DOWN ->{
+                    MotionEvent.ACTION_DOWN -> {
                         voiceOnTouchStart()//Do Something
-                        Log.e("qj","voiceOnTouchStart")
+                        Log.e("qj", "voiceOnTouchStart")
                     }
-                    MotionEvent.ACTION_UP ->{
+                    MotionEvent.ACTION_UP -> {
                         voiceOnTouchStop()//Do Something
-                        Log.e("qj","voiceOnTouchStop")
+                        Log.e("qj", "voiceOnTouchStop")
                     }
                 }
                 return v?.onTouchEvent(event) ?: true
@@ -98,17 +100,23 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         /**
          * 读取元数据
          */
-        if (arguments != null) {
-            val id = requireArguments().getString("QsId")
-            //语音路径
-            val filePath = requireArguments().getString("filePath")
-            if (id != null) {
-                viewModel.initData(id)
-            } else {
-                viewModel.initNewData(filePath!!)
+//        val id = args.qsId
+        var id: String = ""
+        var signBean: SignBean? = null
+        var filePath: String = ""
+        arguments?.let {
+            id = it.getString("QsId", "")
+            filePath = it.getString("filePath", "")
+            try {
+                signBean = it.getParcelable("SignBean")
+            } catch (e: java.lang.Exception) {
             }
+        }
+
+        if (id == null || id.isEmpty()) {
+            viewModel.initNewData(signBean, filePath)
         } else {
-            viewModel.initNewData("")
+            viewModel.initData(id)
         }
 //        //监听大分类数据变化
 //        viewModel.liveDataClassTypeList.observe(viewLifecycleOwner) {
@@ -271,13 +279,13 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    fun voiceOnTouchStart(){
-        viewModel!!.startSoundMetter(requireActivity(),binding.evaluationVoice)
+    fun voiceOnTouchStart() {
+        viewModel!!.startSoundMetter(requireActivity(), binding.evaluationVoice)
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun voiceOnTouchStop(){
-        if(Constant.IS_VIDEO_SPEED){
+    fun voiceOnTouchStop() {
+        if (Constant.IS_VIDEO_SPEED) {
             viewModel!!.stopSoundMeter()
         }
     }

@@ -8,6 +8,7 @@
     <dimen name="default_widget_padding">10dp</dimen>
     <dimen name="left_pannel_title_font" comment="左侧弹出框顶部标题字体大小">22sp</dimen>
     <dimen name="default_font_size" comment="默认字体大小，style中父最顶层">15sp</dimen>
+    <dimen name="card_title_font_size">24sp</dimen>
     <dimen name="card_title_font_2size">13sp</dimen>
     <dimen name="card_title_font_3size">10sp</dimen>
     <dimen name="one">1dp</dimen>

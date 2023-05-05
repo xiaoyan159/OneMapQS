@@ -50,7 +50,7 @@ class QsRecordListFragment : BaseFragment(){
         binding.qsRecyclerview.addItemDecoration(itemDecoration)
         viewModel.getList(requireContext())
         // itemClick
-        adapter!!.setOnKotlinItemClickListener(object : QsRecordListAdapter.IKotlinItemClickListener {
+        adapter.setOnKotlinItemClickListener(object : QsRecordListAdapter.IKotlinItemClickListener {
             override fun onItemClickListener(position: Int) {
                 viewModel.onItemClickListener(activity as MainActivity,position)
                 findNavController().popBackStack()

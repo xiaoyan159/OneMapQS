@@ -20,6 +20,7 @@
 
 package org.videolan.vlc;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -364,10 +365,10 @@ public class Util {
         return dp;
     }
 
-    public static int convertDpToPx(int dp) {
+    public static int convertDpToPx(Context context,int dp) {
         return Math.round(
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
-                        VLCApplication.getAppResources().getDisplayMetrics())
+                        context.getResources().getDisplayMetrics())
         );
     }
 

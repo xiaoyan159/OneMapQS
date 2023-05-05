@@ -5,6 +5,7 @@ plugins {
     id 'com.google.dagger.hilt.android'
     id 'realm-android'
     id 'kotlin-parcelize' // 序列化
+    id 'androidx.navigation.safeargs.kotlin'//Safe Args传递数据
 }
 android {
     namespace 'com.navinfo.omqs'
@@ -109,6 +110,8 @@ dependencies {
 
     // 读取spatialite文件
     implementation 'com.github.sevar83:android-spatialite:2.0.1'
+    //fragment 传递数据
+    implementation "androidx.navigation:navigation-ui-ktx:2.5.3"
 }
 //允许引用生成的代码
 kapt {

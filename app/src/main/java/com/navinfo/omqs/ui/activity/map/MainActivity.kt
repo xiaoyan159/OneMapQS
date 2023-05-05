@@ -10,17 +10,24 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.blankj.utilcode.util.SPStaticUtils
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
+import com.navinfo.omqs.tools.LayerConfigUtils
 import com.navinfo.omqs.ui.activity.BaseActivity
 import com.navinfo.omqs.util.FlowEventBus
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import com.navinfo.omqs.ui.widget.RecyclerViewSpacesItemDecoration
+import org.videolan.vlc.Util
 import javax.inject.Inject
 
 /**
@@ -39,12 +46,31 @@ class MainActivity : BaseActivity() {
     @Inject
     lateinit var offlineMapDownloadManager: OfflineMapDownloadManager
 
-    private val signAdapter by lazy { SignAdapter() }
+    private val rightController by lazy {
+        findNavController(R.id.main_activity_right_fragment)
+    }
+
+    private val signAdapter by lazy {
+        SignAdapter { position, signBean ->
+//            val directions =
+//                EmptyFragmentDirections.emptyFragmentToEvaluationResultFragment(
+//                )
+//            rightController.navigate(directions)
+            rightController.currentDestination?.let {
+                if (it.id == R.id.EmptyFragment) {
+                    val bundle = Bundle()
+                    bundle.putParcelable("SignBean", signBean)
+                    rightController.navigate(R.id.EvaluationResultFragment, bundle)
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+
         //初始化地图
         mapController.init(
             this,
@@ -53,6 +79,8 @@ class MainActivity : BaseActivity() {
             Constant.MAP_PATH,
             Constant.USER_DATA_PATH + "/trace.sqlite"
         )
+        // 在mapController初始化前获取当前OMDB图层显隐
+        viewModel.refreshOMDBLayer(LayerConfigUtils.getLayerConfigList())
         //关联生命周期
         binding.lifecycleOwner = this
         //给xml转递对象
@@ -63,18 +91,17 @@ class MainActivity : BaseActivity() {
         binding.mainActivityVoice.setOnTouchListener(object : View.OnTouchListener {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                Log.e("qj",event?.action.toString())
+                Log.e("qj", event?.action.toString())
                 when (event?.action) {
-                    MotionEvent.ACTION_DOWN ->{
+                    MotionEvent.ACTION_DOWN -> {
                         voiceOnTouchStart()//Do Something
-                        Log.e("qj","voiceOnTouchStart")
+                        Log.e("qj", "voiceOnTouchStart")
                     }
-                    MotionEvent.ACTION_UP ->{
+                    MotionEvent.ACTION_UP -> {
                         voiceOnTouchStop()//Do Something
-                        Log.e("qj","voiceOnTouchStop")
+                        Log.e("qj", "voiceOnTouchStop")
                     }
                 }
-
 
                 return v?.onTouchEvent(event) ?: true
             }
@@ -86,6 +113,14 @@ class MainActivity : BaseActivity() {
         }
         binding.mainActivitySignRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.mainActivitySignRecyclerview.adapter = signAdapter
+        //增加4dp的间隔
+        binding.mainActivitySignRecyclerview.addItemDecoration(
+            RecyclerViewSpacesItemDecoration(
+                Util.convertDpToPx(
+                    this, 4
+                )
+            )
+        )
         viewModel.liveDataSignList.observe(this) {
             signAdapter.refreshData(it)
         }
@@ -93,17 +128,7 @@ class MainActivity : BaseActivity() {
         lifecycleScope.launch {
             // 初始化地图图层控制接收器
             FlowEventBus.subscribe<List<ImportConfig>>(lifecycle, Constant.EVENT_LAYER_MANAGER_CHANGE) {
-                // 根据获取到的配置信息，筛选未勾选的图层名称
-                val omdbVisibleList = it.filter { importConfig->
-                    importConfig.tableGroupName == "OMDB数据"
-                }.first().tables.filter { tableInfo ->
-                    !tableInfo.checked
-                }.map {
-                    tableInfo -> tableInfo.table
-                }.toList()
-                com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY = omdbVisibleList.toTypedArray()
-                // 刷新地图
-                mapController.mMapView.vtmMap.clearMap()
+                viewModel.refreshOMDBLayer(it)
             }
         }
     }
@@ -158,14 +183,14 @@ class MainActivity : BaseActivity() {
         naviController.navigate(R.id.EvaluationResultFragment)*/
     }
 
-    fun voiceOnTouchStart(){
-        viewModel!!.startSoundMetter(this,binding.mainActivityVoice)
+    fun voiceOnTouchStart() {
+        viewModel.startSoundMetter(this, binding.mainActivityVoice)
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun voiceOnTouchStop(){
-        if(Constant.IS_VIDEO_SPEED){
-            viewModel!!.stopSoundMeter()
+    fun voiceOnTouchStop() {
+        if (Constant.IS_VIDEO_SPEED) {
+            viewModel.stopSoundMeter()
         }
     }
 

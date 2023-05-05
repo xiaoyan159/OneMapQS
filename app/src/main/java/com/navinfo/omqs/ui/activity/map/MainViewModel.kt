@@ -21,7 +21,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
-import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
@@ -30,9 +29,11 @@ import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
+import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
+import com.navinfo.omqs.ui.widget.SignUtil
 import com.navinfo.omqs.util.DateTimeUtil
 import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.SoundMeter
@@ -69,6 +70,7 @@ class MainViewModel @Inject constructor(
     val liveDataSignList = MutableLiveData<List<SignBean>>()
 
     var testPoint = GeoPoint(0, 0)
+
     //语音窗体
     private var pop: PopupWindow? = null
 
@@ -87,7 +89,7 @@ class MainViewModel @Inject constructor(
         })
         initLocation()
         viewModelScope.launch {
-            mapController.onMapClickFlow.collect {
+            mapController.onMapClickFlow.collectLatest {
                 testPoint = it
             }
         }
@@ -156,9 +158,12 @@ class MainViewModel @Inject constructor(
                                 )
                                 signList.add(
                                     SignBean(
-                                        iconId = R.drawable.icon_speed_limit,
-                                        iconText = element.name,
+                                        iconId = SignUtil.getSignIcon(element),
+                                        iconText = SignUtil.getSignText(element),
                                         distance = distance.toInt(),
+                                        elementId = element.id,
+                                        linkId = linkId,
+                                        geometry = element.geometry
                                     )
                                 )
                             }
@@ -184,6 +189,9 @@ class MainViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            mapController.lineHandler.removeLine()
+        }
     }
 
     //点击相机按钮
@@ -226,7 +234,7 @@ class MainViewModel @Inject constructor(
 
     fun startSoundMetter(context: Context, v: View) {
 
-        if(mSpeakMode==null){
+        if (mSpeakMode == null) {
             mSpeakMode = SpeakMode(context as Activity?)
         }
 
@@ -270,7 +278,8 @@ class MainViewModel @Inject constructor(
                 }
                 mSpeakMode!!.speakText("结束录音")
                 //获取右侧fragment容器
-                val naviController = (context as Activity).findNavController(R.id.main_activity_right_fragment)
+                val naviController =
+                    (context as Activity).findNavController(R.id.main_activity_right_fragment)
                 val bundle = Bundle()
                 bundle.putString("filePath", filePath)
                 naviController.navigate(R.id.EvaluationResultFragment, bundle)
@@ -300,6 +309,24 @@ class MainViewModel @Inject constructor(
         if (pop != null && pop!!.isShowing) pop!!.dismiss()
     }
 
+    /**
+     * 刷新OMDB图层显隐
+     * */
+    fun refreshOMDBLayer(layerConfigList: List<ImportConfig>) {
+        // 根据获取到的配置信息，筛选未勾选的图层名称
+        if (layerConfigList!=null && !layerConfigList.isEmpty()) {
+            val omdbVisibleList = layerConfigList.filter { importConfig->
+                importConfig.tableGroupName == "OMDB数据"
+            }.first().tables.filter { tableInfo ->
+                !tableInfo.checked
+            }.map {
+                    tableInfo -> tableInfo.table
+            }.toList()
+            com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY = omdbVisibleList.toTypedArray()
+            // 刷新地图
+            mapController.mMapView.vtmMap.clearMap()
+        }
+    }
 
     /**
      * 处理页面调转
