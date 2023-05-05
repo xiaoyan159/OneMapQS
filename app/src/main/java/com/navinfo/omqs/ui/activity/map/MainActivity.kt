@@ -17,7 +17,9 @@ import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.ui.activity.BaseActivity
+import com.navinfo.omqs.ui.widget.RecyclerViewSpacesItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
+import org.videolan.vlc.Util
 import javax.inject.Inject
 
 /**
@@ -90,7 +92,6 @@ class MainActivity : BaseActivity() {
                     }
                 }
 
-
                 return v?.onTouchEvent(event) ?: true
             }
         })
@@ -101,6 +102,14 @@ class MainActivity : BaseActivity() {
         }
         binding.mainActivitySignRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.mainActivitySignRecyclerview.adapter = signAdapter
+        //增加4dp的间隔
+        binding.mainActivitySignRecyclerview.addItemDecoration(
+            RecyclerViewSpacesItemDecoration(
+                Util.convertDpToPx(
+                    this, 4
+                )
+            )
+        )
         viewModel.liveDataSignList.observe(this) {
             signAdapter.refreshData(it)
         }

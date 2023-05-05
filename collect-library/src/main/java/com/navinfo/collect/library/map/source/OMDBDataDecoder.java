@@ -74,7 +74,7 @@ public class OMDBDataDecoder extends TileDecoder {
         listResult.stream().iterator().forEachRemaining(new Consumer<RenderEntity>() {
             @Override
             public void accept(RenderEntity renderEntity) {
-                Log.d("RealmDBTileDataSource", renderEntity.getGeometry());
+//                Log.d("RealmDBTileDataSource", renderEntity.getGeometry());
                 Map<String, Object> properties= new HashMap<>(renderEntity.getProperties().size());
                 properties.putAll(renderEntity.getProperties());
                 parseGeometry(renderEntity.getTable(), renderEntity.getWkt(), properties);

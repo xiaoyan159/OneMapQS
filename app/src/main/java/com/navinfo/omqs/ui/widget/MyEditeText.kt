@@ -8,6 +8,10 @@ import android.widget.EditText
 import androidx.appcompat.widget.AppCompatEditText
 import com.navinfo.omqs.R
 
+/**
+ * 滚动嵌套时，处理滚动的edittext
+ */
+
 class MyEditeText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

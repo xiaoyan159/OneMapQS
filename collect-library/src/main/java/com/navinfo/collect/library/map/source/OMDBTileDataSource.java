@@ -54,7 +54,7 @@ public class OMDBTileDataSource implements ITileDataSource {
                 mThreadLocalDecoders.get().decode(tile, mapDataSink, listResult);
             }
             mapDataSink.completed(QueryResult.SUCCESS);
-            Log.d("RealmDBTileDataSource", "tile:"+tile.getBoundingBox().toString());
+//            Log.d("RealmDBTileDataSource", "tile:"+tile.getBoundingBox().toString());
         } else {
             mapDataSink.completed(QueryResult.SUCCESS);
         }

@@ -32,6 +32,7 @@ import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
+import com.navinfo.omqs.ui.widget.SignUtil
 import com.navinfo.omqs.util.DateTimeUtil
 import com.navinfo.omqs.util.SoundMeter
 import com.navinfo.omqs.util.SpeakMode
@@ -66,6 +67,7 @@ class MainViewModel @Inject constructor(
     val liveDataSignList = MutableLiveData<List<SignBean>>()
 
     var testPoint = GeoPoint(0, 0)
+
     //语音窗体
     private var pop: PopupWindow? = null
 
@@ -84,7 +86,7 @@ class MainViewModel @Inject constructor(
         })
         initLocation()
         viewModelScope.launch {
-            mapController.onMapClickFlow.collect {
+            mapController.onMapClickFlow.collectLatest {
                 testPoint = it
             }
         }
@@ -154,8 +156,8 @@ class MainViewModel @Inject constructor(
                                 )
                                 signList.add(
                                     SignBean(
-                                        iconId = R.drawable.icon_speed_limit,
-                                        iconText = element.name,
+                                        iconId = SignUtil.getSignIcon(element),
+                                        iconText = SignUtil.getSignText(element),
                                         distance = distance.toInt(),
                                         elementId = element.id,
                                         linkId = linkId,
@@ -230,7 +232,7 @@ class MainViewModel @Inject constructor(
 
     fun startSoundMetter(context: Context, v: View) {
 
-        if(mSpeakMode==null){
+        if (mSpeakMode == null) {
             mSpeakMode = SpeakMode(context as Activity?)
         }
 
@@ -274,7 +276,8 @@ class MainViewModel @Inject constructor(
                 }
                 mSpeakMode!!.speakText("结束录音")
                 //获取右侧fragment容器
-                val naviController = (context as Activity).findNavController(R.id.main_activity_right_fragment)
+                val naviController =
+                    (context as Activity).findNavController(R.id.main_activity_right_fragment)
                 val bundle = Bundle()
                 bundle.putString("filePath", filePath)
                 naviController.navigate(R.id.EvaluationResultFragment, bundle)

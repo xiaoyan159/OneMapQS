@@ -2,6 +2,7 @@ package com.navinfo.omqs.ui.activity.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -33,7 +34,34 @@ class LoginActivity : CheckPermissionsActivity() {
         binding.lifecycleOwner = this
         binding.activity = this
         initView()
+        Log.e("jingo", getScreenParams())
     }
+
+    private fun getScreenParams(): String {
+        val dm = DisplayMetrics();
+        windowManager.defaultDisplay.getMetrics(dm);
+        val heightPixels = dm.heightPixels;//高的像素
+        val widthPixels = dm.widthPixels;//宽的像素
+        val densityDpi = dm.densityDpi;//dpi
+        val xdpi = dm.xdpi;//xdpi
+        val ydpi = dm.ydpi;//ydpi
+        val density = dm.density;//density=dpi/160,密度比
+        val scaledDensity = dm.scaledDensity;//scaledDensity=dpi/160 字体缩放密度比
+        val heightDP = heightPixels / density;//高度的dp
+        val widthDP = widthPixels / density;//宽度的dp
+        var str = "heightPixels: " + heightPixels + "px";
+        str += "\nwidthPixels: " + widthPixels + "px";
+        str += "\ndensityDpi: " + densityDpi + "dpi";
+        str += "\nxdpi: " + xdpi + "dpi";
+        str += "\nydpi: " + ydpi + "dpi";
+        str += "\ndensity: " + density;
+        str += "\nscaledDensity: " + scaledDensity;
+        str += "\nheightDP: " + heightDP + "dp";
+        str += "\nwidthDP: " + widthDP + "dp";
+
+        return str;
+    }
+
 
     /**
      * 观察登录状态，把Observer提出来是为了防止每次数据变化都会有新的observer创建
