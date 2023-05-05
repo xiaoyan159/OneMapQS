@@ -39,6 +39,9 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
     //绘制线 样式
     private val lineStyle: Style
 
+    //高亮线绘制线 样式
+    private val defaultLineStyle: Style
+
     //线型编辑时的样式
     private val editTempStyle: Style
 
@@ -60,14 +63,16 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
     private val mDefaultPathLayer: PathLayer
 
     val omdbTaskLinkLayer by lazy {
-        val omdbTaskLinkLayer = OmdbTaskLinkLayer(mMapView.vtmMap,
+        val omdbTaskLinkLayer = OmdbTaskLinkLayer(
+            mMapView.vtmMap,
             Style.builder()
 //            .stippleColor(context.resources.getColor(R.color.draw_line_red_color, null))
-            .fillColor(context.resources.getColor(R.color.draw_line_red_color, null))
-            .fillAlpha(0.5f)
-            .strokeColor(context.resources.getColor(R.color.draw_line_red_color, null))
+                .fillColor(context.resources.getColor(R.color.draw_line_red_color, null))
+                .fillAlpha(0.5f)
+                .strokeColor(context.resources.getColor(R.color.draw_line_red_color, null))
                 .strokeWidth(4f)
-            .fixed(true).build())
+                .fixed(true).build()
+        )
         addLayer(omdbTaskLinkLayer, NIMapView.LAYER_GROUPS.VECTOR)
         omdbTaskLinkLayer
     }
@@ -84,6 +89,15 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
             .strokeColor(context.resources.getColor(R.color.draw_line_blue2_color, null))
             .fixed(true).build()
 
+
+        defaultLineStyle = Style.builder()
+            .stippleColor(context.resources.getColor(R.color.draw_line_blue2_color, null))
+            .strokeWidth(10f)
+            .fillColor(context.resources.getColor(R.color.teal_200, null))
+            .fillAlpha(0.5f)
+            .strokeColor(context.resources.getColor(R.color.teal_200, null))
+            .fixed(true).build()
+
         newTempStyle =
             Style.builder().stippleColor(context.resources.getColor(R.color.transparent, null))
                 .stipple(30).stippleWidth(30f).strokeWidth(4f)
@@ -95,8 +109,8 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
                 .stipple(30).stippleWidth(30f).strokeWidth(8f)
                 .strokeColor(context.resources.getColor(R.color.draw_line_red_color, null))
                 .fixed(true).randomOffset(false).build()
-        mDefaultPathLayer = PathLayer(mMapView.vtmMap, lineStyle)
-        addLayer(mDefaultPathLayer, NIMapView.LAYER_GROUPS.VECTOR)
+        mDefaultPathLayer = PathLayer(mMapView.vtmMap, defaultLineStyle)
+        addLayer(mDefaultPathLayer, NIMapView.LAYER_GROUPS.OPERATE_LINE)
         mPathLayer = PathLayer(mMapView.vtmMap, lineStyle)
 //        addLayer(mPathLayer, NIMapView.LAYER_GROUPS.OPERATE)
 

@@ -58,7 +58,7 @@ interface RetrofitNetworkServiceAPI {
 
     @Headers("Content-Type: application/json")
     @POST("/devcp/upload")
-    suspend fun postRequest(@Body listEvaluationInfo: List<EvaluationInfo>?): Call<ResponseBody>
+    suspend fun postRequest(@Body listEvaluationInfo: List<EvaluationInfo>?): Response<ResponseBody>
 
     /**
      * @FormUrlEncoded 请求格式注解，请求实体是一个From表单，每个键值对需要使用@Field注解

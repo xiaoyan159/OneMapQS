@@ -93,7 +93,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
 
         //初始化之间数据图层
         initQsRecordDataLayer()
-        addLayer(mDefaultMarkerLayer, NIMapView.LAYER_GROUPS.OPERATE);
+        addLayer(mDefaultMarkerLayer, NIMapView.LAYER_GROUPS.OPERATE_MARKER);
         // 设置矢量图层均在12级以上才显示
         mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
             if (e == Map.SCALE_EVENT) {
@@ -259,7 +259,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                         return true
                     }
                 })
-        addLayer(itemizedLayer, NIMapView.LAYER_GROUPS.OPERATE)
+        addLayer(itemizedLayer, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
         mContext.lifecycleScope.launch(Dispatchers.IO) {
             var list = mutableListOf<QsRecordBean>()
             val realm = Realm.getDefaultInstance()

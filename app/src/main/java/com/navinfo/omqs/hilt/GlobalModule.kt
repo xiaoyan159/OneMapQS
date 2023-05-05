@@ -24,6 +24,7 @@ import io.realm.Realm
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -66,7 +67,7 @@ class GlobalModule {
         }.apply {
             level = if (Constant.DEBUG) {
                 //坑 ！！！！ 下载文件时打印log 内存不足
-                HttpLoggingInterceptor.Level.BASIC
+                HttpLoggingInterceptor.Level.BODY
             } else {
                 HttpLoggingInterceptor.Level.NONE
             }
@@ -92,9 +93,12 @@ class GlobalModule {
     @Singleton
     fun provideGson(): Gson = GsonBuilder()
         // 解决解析Json时将int类型自动转换为Double的问题
-        .registerTypeAdapter(object : TypeToken<Map<String, Any?>>() {}.getType(), IntTypeAdapter())
-        .registerTypeAdapter(object : TypeToken<Map<String, Any>>() {}.getType(), IntTypeAdapter())
-        .registerTypeAdapter(object : TypeToken<Map<Any, Any>>() {}.getType(), IntTypeAdapter())
+        .registerTypeAdapter(object : TypeToken<Map<String, Any?>>() {}.type, IntTypeAdapter())
+        .registerTypeAdapter(object : TypeToken<Map<String, Any>>() {}.type, IntTypeAdapter())
+        .registerTypeAdapter(object : TypeToken<Map<Any, Any>>() {}.type, IntTypeAdapter())
+//        .registerTypeAdapter(Call::class.java, object : TypeToken<Call<*>>(){
+//
+//        })
         .create()
 
     @Provides

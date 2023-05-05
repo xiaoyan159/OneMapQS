@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.omqs.bean.EvaluationInfo
 import com.navinfo.omqs.bean.TaskBean
+import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileUploadStatus
 import io.realm.Realm
@@ -114,9 +115,16 @@ class TaskUploadScope(
             taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
                 val objects = realm.where(QsRecordBean::class.java)
                     .equalTo("linkId", /*"84207223282277331"*/hadLinkDvoBean.linkPid).findAll()
+                if(objects.size == 0){
+//                    change(FileUploadStatus.NONE)
+                    return
+                }
+
                 val bodyList: MutableList<EvaluationInfo> = ArrayList()
+
                 if (objects != null) {
-                    objects.forEach{
+                    val copyList =realm.copyFromRealm(objects)
+                    copyList.forEach {
                         val evaluationInfo = EvaluationInfo(
                             taskBean.id.toString(),
                             hadLinkDvoBean.linkPid,//"84207223282277331"
@@ -137,26 +145,20 @@ class TaskUploadScope(
                         bodyList.add(evaluationInfo)
                     }
 
-                    uploadManager.netApi.postRequest(bodyList).enqueue(object :
-                        Callback<ResponseBody> {
-                        override fun onResponse(
-                            call: Call<ResponseBody>,
-                            response: Response<ResponseBody>
-                        ) {
-                            if (response.code() == 200) {
-                                taskBean.syncStatus = FileUploadStatus.DONE
-                                // handle the response
-                                Log.e("qj", "")
-                                change(FileUploadStatus.DONE)
-                            }
-                        }
-
-                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    val result = uploadManager.netApi.postRequest(bodyList)// .enqueue(object :
+//                        Callback<ResponseBody> {
+                    if (result.isSuccessful) {
+                        if (result.code() == 200) {
+                            taskBean.syncStatus = FileUploadStatus.DONE
+                            // handle the response
+                            change(FileUploadStatus.DONE)
+                        } else {
                             // handle the failure
-                            Log.e("qj", "")
                             change(FileUploadStatus.ERROR)
                         }
-                    })
+                    } else {
+                        change(FileUploadStatus.ERROR)
+                    }
                 }
             }
 
