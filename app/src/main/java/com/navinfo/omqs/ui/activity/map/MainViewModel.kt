@@ -29,15 +29,18 @@ import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
+import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import com.navinfo.omqs.util.DateTimeUtil
+import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.SoundMeter
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.RealmSet
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
@@ -88,7 +91,6 @@ class MainViewModel @Inject constructor(
                 testPoint = it
             }
         }
-
     }
 
     private fun initLocation() {

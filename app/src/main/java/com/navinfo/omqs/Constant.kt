@@ -62,8 +62,6 @@ class Constant {
 
         const val MESSAGE_PAGE_SIZE = 30 //消息列表一页最多数量
 
-        lateinit var realm: Realm
-
         //选择相机默认或者外设
         const val SELECT_CAMERA_STATE = "select_camera_state"
 
@@ -86,6 +84,10 @@ class Constant {
         const val OMDB_CONFIG = "omdb.config"
         const val OTHER_CONFIG = "other.config"
         const val LAYER_MANAGER_CONFIG = "LAYER_MANAGER_CONFIG" // 图层管理界面缓存的key
+
+        val OMDB_LAYER_VISIBLE_LIST: MutableList<String> = mutableListOf() // 记录OMDB数据显示的图层名称列表
+
+        const val EVENT_LAYER_MANAGER_CHANGE = "EVENT_LAYER_MANAGER_CHANGE" // 图层管理中的配置修改
     }
 
 

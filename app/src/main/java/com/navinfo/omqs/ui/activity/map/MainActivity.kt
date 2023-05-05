@@ -9,17 +9,18 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.findNavController
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.map.NIMapController
-import com.navinfo.collect.library.map.handler.NiLocationListener
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
+import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.ui.activity.BaseActivity
+import com.navinfo.omqs.util.FlowEventBus
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -87,6 +88,23 @@ class MainActivity : BaseActivity() {
         binding.mainActivitySignRecyclerview.adapter = signAdapter
         viewModel.liveDataSignList.observe(this) {
             signAdapter.refreshData(it)
+        }
+
+        lifecycleScope.launch {
+            // 初始化地图图层控制接收器
+            FlowEventBus.subscribe<List<ImportConfig>>(lifecycle, Constant.EVENT_LAYER_MANAGER_CHANGE) {
+                // 根据获取到的配置信息，筛选未勾选的图层名称
+                val omdbVisibleList = it.filter { importConfig->
+                    importConfig.tableGroupName == "OMDB数据"
+                }.first().tables.filter { tableInfo ->
+                    !tableInfo.checked
+                }.map {
+                    tableInfo -> tableInfo.table
+                }.toList()
+                com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY = omdbVisibleList.toTypedArray()
+                // 刷新地图
+                mapController.mMapView.vtmMap.clearMap()
+            }
         }
     }
 

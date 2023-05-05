@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
     <androidx.appcompat.widget.AppCompatCheckBox
         android:id="@+id/chk_layermanager_parent"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
         android:checked="true"></androidx.appcompat.widget.AppCompatCheckBox>
-</LinearLayout>
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/img_group_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/selector_img_expand"></androidx.appcompat.widget.AppCompatImageView>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_layermanager_parent_name"
+        android:textStyle="bold"
+        android:textSize="@dimen/default_font_size"
+        android:layout_width="match_parent"
+        android:layout_toLeftOf="@id/img_group_indicator"
+        android:layout_toRightOf="@id/chk_layermanager_parent"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content"></androidx.appcompat.widget.AppCompatTextView>
+</RelativeLayout>
