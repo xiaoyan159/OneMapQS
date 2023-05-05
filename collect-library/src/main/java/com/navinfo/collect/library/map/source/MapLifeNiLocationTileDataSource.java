@@ -57,7 +57,7 @@ public class MapLifeNiLocationTileDataSource implements ITileDataSource {
                 list = TraceDataBase.getDatabase(mCon, dbName).getNiLocationDao().findAll();
             }
 
-            Log.e("qj","query"+(list==null?0:list.size())+"==="+xStart+"==="+xEnd+"==="+yStart+"==="+yEnd);
+//            Log.e("qj","query"+(list==null?0:list.size())+"==="+xStart+"==="+xEnd+"==="+yStart+"==="+yEnd);
             mThreadLocalDecoders.get().decode(tile, mapDataSink, "MapLifeNiLocationTile", list);
 
             mapDataSink.completed(QueryResult.SUCCESS);

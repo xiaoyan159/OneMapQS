@@ -64,9 +64,11 @@ open class TaskBean @JvmOverloads constructor(
     var syncStatus: Int = FileManager.Companion.FileUploadStatus.NONE,
 
     @Ignore
-    var message: String = ""
+    var message: String = "",
+    var color: Int = 0xFF00AA
 ) : RealmObject() {
     fun getDownLoadUrl(): String {
         return "${Constant.SERVER_ADDRESS}devcp/download?fileStr=$id"
     }
+
 }

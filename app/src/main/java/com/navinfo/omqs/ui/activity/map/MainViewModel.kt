@@ -3,6 +3,7 @@ package com.navinfo.omqs.ui.activity.map
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
+import android.graphics.Color
 import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
@@ -30,6 +31,7 @@ import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.bean.SignBean
+import com.navinfo.omqs.bean.TaskBean
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
@@ -39,6 +41,7 @@ import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.SoundMeter
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.realm.Realm
 import io.realm.RealmSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -96,6 +99,36 @@ class MainViewModel @Inject constructor(
             mapController.onMapClickFlow.collectLatest {
                 testPoint = it
             }
+        }
+
+        initTaskData()
+    }
+
+    /**
+     * 初始话任务高亮高亮
+     */
+    private fun initTaskData() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            viewModelScope.launch {
+                val realm = Realm.getDefaultInstance()
+                val results = realm.where(TaskBean::class.java).findAll()
+                val list = realm.copyFromRealm(results)
+                results.addChangeListener { changes ->
+                    val list2 = realm.copyFromRealm(changes)
+                    mapController.lineHandler.omdbTaskLinkLayer.removeAll()
+                    for (item in list2) {
+                        mapController.lineHandler.omdbTaskLinkLayer.addLineList(item.hadLinkDvoList)
+                    }
+                }
+                mapController.lineHandler.omdbTaskLinkLayer.removeAll()
+                for (item in list) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        mapController.lineHandler.omdbTaskLinkLayer.setLineColor(Color.valueOf(item.color))
+                    }
+                    mapController.lineHandler.omdbTaskLinkLayer.addLineList(item.hadLinkDvoList)
+                }
+            }
+//            realm.close()
         }
     }
 
@@ -163,11 +196,12 @@ class MainViewModel @Inject constructor(
                                 signList.add(
                                     SignBean(
                                         iconId = SignUtil.getSignIcon(element),
-                                        iconText = SignUtil.getSignText(element),
+                                        iconText = SignUtil.getSignIconText(element),
                                         distance = distance.toInt(),
                                         elementId = element.id,
                                         linkId = linkId,
-                                        geometry = element.geometry
+                                        geometry = element.geometry,
+                                        bottomText = SignUtil.getSignBottomText(element)
                                     )
                                 )
                             }

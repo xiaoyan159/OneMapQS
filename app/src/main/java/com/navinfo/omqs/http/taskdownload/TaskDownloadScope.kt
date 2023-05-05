@@ -91,7 +91,6 @@ class TaskDownloadScope(
      * @param status [OfflineMapCityBean.Status]
      */
     private suspend fun change(status: Int, message: String = "") {
-        Log.e("jingo", "我被挂起 S")
         if (taskBean.status != status || status == FileDownloadStatus.LOADING || status == FileDownloadStatus.IMPORTING) {
             taskBean.status = status
             taskBean.message = message
@@ -103,7 +102,6 @@ class TaskDownloadScope(
                 }
             }
         }
-        Log.e("jingo", "我被挂起 E")
     }
 
     /**
