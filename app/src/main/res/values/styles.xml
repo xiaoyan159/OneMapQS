@@ -24,6 +24,15 @@
     </style>
 
     <!-- 默认字体 -->
+    <style name="card_title_font_default">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/card_title_font_size</item>
+        <item name="android:textColor">@color/titleColor</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <!-- 默认字体 -->
     <style name="content_font_default_size_13sp">
         <item name="android:gravity">center_vertical</item>
         <item name="android:textSize">@dimen/card_title_font_2size</item>
