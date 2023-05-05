@@ -29,6 +29,7 @@ import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
+import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.bean.TaskBean
 import com.navinfo.omqs.db.RealmOperateHelper
@@ -36,12 +37,14 @@ import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import com.navinfo.omqs.ui.widget.SignUtil
 import com.navinfo.omqs.util.DateTimeUtil
+import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.SoundMeter
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import io.realm.RealmSet
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
@@ -340,6 +343,24 @@ class MainViewModel @Inject constructor(
         if (pop != null && pop!!.isShowing) pop!!.dismiss()
     }
 
+    /**
+     * 刷新OMDB图层显隐
+     * */
+    fun refreshOMDBLayer(layerConfigList: List<ImportConfig>) {
+        // 根据获取到的配置信息，筛选未勾选的图层名称
+        if (layerConfigList!=null && !layerConfigList.isEmpty()) {
+            val omdbVisibleList = layerConfigList.filter { importConfig->
+                importConfig.tableGroupName == "OMDB数据"
+            }.first().tables.filter { tableInfo ->
+                !tableInfo.checked
+            }.map {
+                    tableInfo -> tableInfo.table
+            }.toList()
+            com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY = omdbVisibleList.toTypedArray()
+            // 刷新地图
+            mapController.mMapView.vtmMap.clearMap()
+        }
+    }
 
     /**
      * 处理页面调转

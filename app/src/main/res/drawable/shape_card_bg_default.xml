@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="@dimen/default_widget_padding"></corners>
+    <padding
+        android:bottom="@dimen/nimap_defalut_padding"
+        android:left="@dimen/nimap_defalut_padding"
+        android:right="@dimen/nimap_defalut_padding"
+        android:top="@dimen/nimap_defalut_padding"></padding>
+    <solid android:color="@color/colorSurface"></solid>
+</shape>

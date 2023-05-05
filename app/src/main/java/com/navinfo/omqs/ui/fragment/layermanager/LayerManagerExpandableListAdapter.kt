@@ -4,13 +4,12 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseExpandableListAdapter
-import android.widget.CheckBox
+import android.widget.*
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.bean.TableInfo
 
-class LayerManagerExpandableListAdapter(private val context: Context, private val parentItems: List<ImportConfig>) :
+class LayerManagerExpandableListAdapter(private val context: Context, val parentItems: List<ImportConfig>) :
     BaseExpandableListAdapter() {
 
     override fun getGroupCount(): Int {
@@ -29,7 +28,6 @@ class LayerManagerExpandableListAdapter(private val context: Context, private va
     override fun getChild(groupPosition: Int, childPosition: Int): Any {
         return parentItems[groupPosition].tables[childPosition]
     }
-
 
     override fun getGroupId(groupPosition: Int): Long = groupPosition.toLong()
 
@@ -56,14 +54,18 @@ class LayerManagerExpandableListAdapter(private val context: Context, private va
         }
 
         val parentItem = getGroup(groupPosition) as ImportConfig
-        viewHolder.parentCheckBox.text = parentItem.tableGroupName
+        viewHolder.parentName.text = parentItem.tableGroupName
         viewHolder.parentCheckBox.isChecked = parentItem.checked
-        viewHolder.parentCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            parentItem.checked = isChecked
-            parentItem.tables.forEach { it.checked = isChecked }
+        viewHolder.parentCheckBox.setOnClickListener {
+            parentItem.checked = !parentItem.checked
+            parentItem.tables.forEach { it.checked = parentItem.checked }
             notifyDataSetChanged()
         }
-
+        if (isExpanded) {
+            viewHolder.imgGroupIndicator.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24)
+        } else {
+            viewHolder.imgGroupIndicator.setImageResource(R.drawable.ic_baseline_keyboard_arrow_right_24)
+        }
         return view!!
     }
 
@@ -87,10 +89,10 @@ class LayerManagerExpandableListAdapter(private val context: Context, private va
         }
 
         val childItem = getChild(groupPosition, childPosition) as TableInfo
-        viewHolder.childCheckBox.text = childItem.name
+        viewHolder.childName.text = childItem.name
         viewHolder.childCheckBox.isChecked = childItem.checked
-        viewHolder.childCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            childItem.checked = isChecked
+        viewHolder.childCheckBox.setOnClickListener {
+            childItem.checked = !childItem.checked
             parentItems[groupPosition].checked = parentItems[groupPosition].tables.all { it.checked }
             notifyDataSetChanged()
         }
@@ -102,9 +104,12 @@ class LayerManagerExpandableListAdapter(private val context: Context, private va
 
     internal class ParentViewHolder(view: View) {
         val parentCheckBox: CheckBox = view.findViewById(R.id.chk_layermanager_parent)
+        val parentName: TextView = view.findViewById(R.id.tv_layermanager_parent_name)
+        val imgGroupIndicator: ImageView = view.findViewById(R.id.img_group_indicator)
     }
 
     internal class ChildViewHolder(view: View) {
         val childCheckBox: CheckBox = view.findViewById(R.id.chk_layermanager_child)
+        val childName: TextView = view.findViewById(R.id.tv_layermanager_child_name)
     }
 }
