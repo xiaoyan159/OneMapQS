@@ -53,11 +53,10 @@
                 android:orientation="vertical">
 
             <LinearLayout
-                android:padding="5dp"
+                android:paddingBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
-
 
                 <TextView
                     style="@style/card_content_font_default"
@@ -76,7 +75,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:padding="5dp"
+                android:paddingBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
@@ -98,7 +97,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:padding="5dp"
+                android:paddingBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
@@ -120,11 +119,10 @@
             </LinearLayout>
 
             <LinearLayout
-                android:padding="5dp"
+                android:paddingBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
-
 
                 <TextView
                     style="@style/card_content_font_default"
@@ -144,11 +142,10 @@
 
 
             <LinearLayout
-                android:padding="5dp"
+                android:paddingBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
-
 
                 <TextView
                     style="@style/card_content_font_default"
@@ -168,11 +165,10 @@
             </LinearLayout>
 
             <LinearLayout
-                android:padding="5dp"
+                android:paddingBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
-
 
                 <TextView
                     style="@style/card_content_font_default"
