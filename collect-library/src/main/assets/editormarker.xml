@@ -1682,7 +1682,7 @@
             </m>
         </m>
         <!--车道中心线-->
-        <m v="OMDB_LANE_LG_LINK">
+        <m v="OMDB_LANE_LINK_LG">
             <line stroke="#ecf0f1" width="0.1" dasharray="35,35"/>
         </m>
     </m>
