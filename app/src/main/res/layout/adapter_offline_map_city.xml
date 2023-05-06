@@ -39,7 +39,6 @@
         android:gravity="center"
         android:shadowColor="@android:color/transparent"
         android:text="下载"
-        android:textColor="@color/btn_blue_solid"
         android:textSize="@dimen/card_title_font_2size" />
 
     <TextView

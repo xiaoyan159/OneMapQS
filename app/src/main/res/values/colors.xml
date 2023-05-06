@@ -166,6 +166,7 @@
     <color name="highFontColor">#2631DD</color>
     <color name="high_item_color">#FFF5F7FE</color>
     <color name="contentColor">#000000</color>
+    <color name="icon_blue">#FF4263EB</color>
     <!-- 一键连接对话框背景色 -->
     <color name="bg_gray2">#d1d1d1</color>
     <!-- 一键连接时间显示区域背景色 -->

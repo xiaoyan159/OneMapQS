@@ -63,6 +63,15 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <!-- 默认字体 -->
+    <style name="content_font_default_size_10sp">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/card_title_font_3size</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <!-- 输入框基本样式 -->
     <style name="input_blue_type" parent="content_font_default">
         <item name="android:textSize">16sp</item>
@@ -85,14 +94,15 @@
         <item name="android:clickable">false</item>
     </style>
 
-    <style name="map_download_style_btn" comment="离线地图下载的按钮样式">
+    <style name="map_download_style_btn" comment="离线地图下载的按钮样式" parent="ThemeOverlay.Material3.AutoCompleteTextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:padding">@dimen/default_widget_padding</item>
         <item name="android:background">@drawable/fm_card_map_down_status_bg</item>
+        <item name="android:foreground">@drawable/ripple_btn_press</item>
         <item name="android:gravity">center_horizontal</item>
-        <item name="android:textColor">@color/btn_blue_white</item>
+        <item name="android:textColor">@color/selector_default_primary_press_secondary</item>
         <item name="android:textSize">15sp</item>
     </style>
 
