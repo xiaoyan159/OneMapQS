@@ -57,9 +57,69 @@
                 app:layout_constraintTop_toBottomOf="@id/main_activity_person_center" />
 
             <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="108dp"
+                app:layout_constraintRight_toLeftOf="@+id/main_activity_right_fragment"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                tools:ignore="MissingConstraints">
+
+                <ImageButton
+                    android:id="@+id/main_activity_voice"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/icon_add_voice"
+                    android:background="@null" />
+
+                <ImageButton
+                    android:id="@+id/main_activity_line"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:onClick="@{()->mainActivity.voiceOnclick()}"
+                    android:src="@drawable/icon_add_data"
+                    android:background="@null" />
+
+                <ImageButton
+                    android:id="@+id/main_activity_location"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:onClick="@{()->viewModel.onClickLocationButton()}"
+                    android:src="@drawable/icon_location"
+                    android:background="@null" />
+
+            </LinearLayout>
+
+            <fragment
+                android:id="@+id/main_activity_middle_fragment"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_weight="6"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/main_activity_right_fragment"
+                app:layout_constraintTop_toTopOf="parent"
+                app:navGraph="@navigation/middle_fragment_nav_graph" />
+
+            <fragment
+                android:id="@id/main_activity_right_fragment"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/main_activity_middle_fragment"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:navGraph="@navigation/right_fragment_nav_graph" />
+
+            <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:layout_constraintRight_toLeftOf="@+id/main_activity_right_fragment"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="10dp"
                 app:layout_constraintTop_toTopOf="parent"
@@ -122,66 +182,6 @@
 
             </LinearLayout>
 
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="108dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                tools:ignore="MissingConstraints">
-
-                <ImageButton
-                    android:id="@+id/main_activity_voice"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/icon_add_voice"
-                    android:background="@null" />
-
-                <ImageButton
-                    android:id="@+id/main_activity_line"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:onClick="@{()->mainActivity.voiceOnclick()}"
-                    android:src="@drawable/icon_add_data"
-                    android:background="@null" />
-
-                <ImageButton
-                    android:id="@+id/main_activity_location"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:onClick="@{()->viewModel.onClickLocationButton()}"
-                    android:src="@drawable/icon_location"
-                    android:background="@null" />
-
-            </LinearLayout>
-
-
-            <fragment
-                android:id="@+id/main_activity_middle_fragment"
-                android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_weight="6"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@+id/main_activity_right_fragment"
-                app:layout_constraintTop_toTopOf="parent"
-                app:navGraph="@navigation/middle_fragment_nav_graph" />
-
-            <fragment
-                android:id="@id/main_activity_right_fragment"
-                android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_weight="2"
-                app:layout_constraintLeft_toRightOf="@id/main_activity_middle_fragment"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:navGraph="@navigation/right_fragment_nav_graph" />
 
 
             <ImageButton

@@ -5,8 +5,8 @@
     android:layout_height="match_parent"
     android:gravity="right|center_vertical"
     android:orientation="horizontal"
-    android:paddingTop="64dp"
-    android:paddingLeft="380dp"
+    android:paddingTop="@dimen/fragment_margin_top"
+    android:paddingLeft="@dimen/fragment_margin_left"
     tools:context="com.navinfo.omqs.ui.fragment.evaluationresult.PhenomenonFragment">
 
     <ImageView
