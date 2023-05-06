@@ -31,6 +31,7 @@ class OmdbTaskLinkLayer(map: Map, private var style: Style) : VectorLayer(map) {
         hadLinkDvoBeanList.forEach {
             addLine(it, style)
         }
+        update()
     }
 
     fun removeLine(linkPid: String): Boolean {
