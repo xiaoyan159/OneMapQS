@@ -33,6 +33,9 @@ interface ScProblemTypeDao {
     @Query("select DISTINCT CLASS_TYPE from ScProblemType order by CLASS_TYPE")
     suspend fun findClassTypeList(): List<String>?
 
+    @Query("select DISTINCT CLASS_TYPE from ScProblemType where ELEMENT_CODE=:code")
+    suspend fun findClassTypeByCode(code: Int): String?
+
     /**
      * 获取问题类型，并去重
      */

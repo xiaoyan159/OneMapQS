@@ -114,9 +114,9 @@ class MainActivity : BaseActivity() {
 
         viewModel.liveDataMenuState.observe(this) {
             binding.mainActivityMenu.isSelected = it
-            if(it==true){
+            if (it == true) {
                 binding.mainActivityMenuLayout.visibility = View.VISIBLE
-            }else{
+            } else {
                 binding.mainActivityMenuLayout.visibility = View.GONE
             }
 
@@ -138,7 +138,10 @@ class MainActivity : BaseActivity() {
 
         lifecycleScope.launch {
             // 初始化地图图层控制接收器
-            FlowEventBus.subscribe<List<ImportConfig>>(lifecycle, Constant.EVENT_LAYER_MANAGER_CHANGE) {
+            FlowEventBus.subscribe<List<ImportConfig>>(
+                lifecycle,
+                Constant.EVENT_LAYER_MANAGER_CHANGE
+            ) {
                 viewModel.refreshOMDBLayer(it)
             }
         }
@@ -227,8 +230,16 @@ class MainActivity : BaseActivity() {
      * 点击录音按钮
      */
     fun voiceOnclick() {
-/*        val naviController = findNavController(R.id.main_activity_right_fragment)
-        naviController.navigate(R.id.EvaluationResultFragment)*/
+        val naviController = findNavController(R.id.main_activity_right_fragment)
+        naviController.navigate(R.id.EvaluationResultFragment)
+    }
+
+    /**
+     * 点击线选择
+     */
+    fun selectLineOnclick() {
+        viewModel.setSelectRoad(!viewModel.isSelectRoad())
+        binding.mainActivitySelectLine.isSelected = viewModel.isSelectRoad()
     }
 
     fun voiceOnTouchStart() {

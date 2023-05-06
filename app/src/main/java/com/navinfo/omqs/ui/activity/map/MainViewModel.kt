@@ -37,14 +37,12 @@ import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import com.navinfo.omqs.ui.widget.SignUtil
 import com.navinfo.omqs.util.DateTimeUtil
-import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.SoundMeter
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import io.realm.RealmSet
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
@@ -72,7 +70,7 @@ class MainViewModel @Inject constructor(
     //看板数据
     val liveDataSignList = MutableLiveData<List<SignBean>>()
 
-    var testPoint = GeoPoint(0, 0)
+//    var testPoint = GeoPoint(0, 0)
 
     //语音窗体
     private var pop: PopupWindow? = null
@@ -83,9 +81,14 @@ class MainViewModel @Inject constructor(
     var volume: ImageView? = null
     var mSoundMeter: SoundMeter? = null
 
-    var menuState :Boolean = false
+    var menuState: Boolean = false
 
     val liveDataMenuState = MutableLiveData<Boolean>()
+
+    /**
+     * 是不是线选择模式
+     */
+    private var bSelectRoad = false
 
     init {
         mapController.markerHandle.setOnQsRecordItemClickListener(object :
@@ -97,7 +100,10 @@ class MainViewModel @Inject constructor(
         initLocation()
         viewModelScope.launch {
             mapController.onMapClickFlow.collectLatest {
-                testPoint = it
+//                testPoint = it
+                if (bSelectRoad) {
+                    captureLink(it)
+                }
             }
         }
 
@@ -140,8 +146,8 @@ class MainViewModel @Inject constructor(
         //用于定位点存储到数据库
         viewModelScope.launch(Dispatchers.Default) {
             mapController.locationLayerHandler.niLocationFlow.collect { location ->
-                location.longitude = testPoint.longitude
-                location.latitude = testPoint.latitude
+//                location.longitude = testPoint.longitude
+//                location.latitude = testPoint.latitude
                 val geometry = GeometryTools.createGeometry(
                     GeoPoint(
                         location.latitude,
@@ -168,54 +174,58 @@ class MainViewModel @Inject constructor(
         //用于定位点捕捉道路
         viewModelScope.launch(Dispatchers.Default) {
             mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
-                Log.e("jingo", "定位点绑定道路 ${Thread.currentThread().name}")
-                location.longitude = testPoint.longitude
-                location.latitude = testPoint.latitude
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    val linkList = realmOperateHelper.queryLink(
-                        point = GeometryTools.createPoint(
-                            location.longitude,
-                            location.latitude
-                        ),
-                    )
-                    //看板数据
-                    val signList = mutableListOf<SignBean>()
-                    if (linkList.isNotEmpty()) {
-                        val link = linkList[0]
-                        val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
-                        mapController.lineHandler.showLine(link.geometry)
-                        linkId?.let {
-                            var elementList = realmOperateHelper.queryLinkByLinkPid(it)
-                            for (element in elementList) {
-                                val distance = GeometryTools.distanceToDouble(
-                                    GeoPoint(
-                                        location.latitude, location.longitude,
-                                    ),
-                                    GeometryTools.createGeoPoint(element.geometry)
-                                )
-                                signList.add(
-                                    SignBean(
-                                        iconId = SignUtil.getSignIcon(element),
-                                        iconText = SignUtil.getSignIconText(element),
-                                        distance = distance.toInt(),
-                                        elementId = element.id,
-                                        linkId = linkId,
-                                        geometry = element.geometry,
-                                        bottomText = SignUtil.getSignBottomText(element)
-                                    )
-                                )
-                            }
-                            liveDataSignList.postValue(signList)
-                            Log.e("jingo", "自动捕捉数据 共${elementList.size}条")
-                        }
-                    }
-                }
+//                location.longitude = testPoint.longitude
+//                location.latitude = testPoint.latitude
+                if (!isSelectRoad())
+                    captureLink(GeoPoint(location.latitude, location.longitude))
             }
         }
 
         //显示轨迹图层
         mapController.layerManagerHandler.showNiLocationLayer()
 
+    }
+
+    /**
+     * 捕获道路和面板
+     */
+    private suspend fun captureLink(point: GeoPoint) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val linkList = realmOperateHelper.queryLink(
+                point = point,
+            )
+            //看板数据
+            val signList = mutableListOf<SignBean>()
+            if (linkList.isNotEmpty()) {
+                val link = linkList[0]
+                val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
+                mapController.lineHandler.showLine(link.geometry)
+                linkId?.let {
+                    var elementList = realmOperateHelper.queryLinkByLinkPid(it)
+                    for (element in elementList) {
+                        val distance = GeometryTools.distanceToDouble(
+                            point,
+                            GeometryTools.createGeoPoint(element.geometry)
+                        )
+                        signList.add(
+                            SignBean(
+                                iconId = SignUtil.getSignIcon(element),
+                                iconText = SignUtil.getSignIconText(element),
+                                distance = distance.toInt(),
+                                elementId = element.id,
+                                linkId = linkId,
+                                geometry = element.geometry,
+                                bottomText = SignUtil.getSignBottomText(element),
+                                elementCode = element.code
+                            )
+                        )
+                    }
+
+                }
+            }
+            liveDataSignList.postValue(signList)
+            Log.e("jingo", "自动捕捉数据 共${signList.size}条")
+        }
     }
 
     /**
@@ -360,15 +370,16 @@ class MainViewModel @Inject constructor(
      * */
     fun refreshOMDBLayer(layerConfigList: List<ImportConfig>) {
         // 根据获取到的配置信息，筛选未勾选的图层名称
-        if (layerConfigList!=null && !layerConfigList.isEmpty()) {
-            val omdbVisibleList = layerConfigList.filter { importConfig->
+        if (layerConfigList != null && !layerConfigList.isEmpty()) {
+            val omdbVisibleList = layerConfigList.filter { importConfig ->
                 importConfig.tableGroupName == "OMDB数据"
             }.first().tables.filter { tableInfo ->
                 !tableInfo.checked
-            }.map {
-                    tableInfo -> tableInfo.table
+            }.map { tableInfo ->
+                tableInfo.table
             }.toList()
-            com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY = omdbVisibleList.toTypedArray()
+            com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY =
+                omdbVisibleList.toTypedArray()
             // 刷新地图
             mapController.mMapView.vtmMap.clearMap()
         }
@@ -409,4 +420,20 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * 开启线选择
+     */
+    fun setSelectRoad(select: Boolean) {
+        bSelectRoad = select
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mapController.lineHandler.removeLine()
+            liveDataSignList.value = mutableListOf()
+        }
+    }
+
+    fun isSelectRoad(): Boolean {
+        return bSelectRoad
+    }
+
 }

@@ -2,12 +2,14 @@ package com.navinfo.omqs.ui.fragment.tasklist
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.TaskBean
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
@@ -23,7 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
     private val networkService: NetworkService,
-    private val niMapController: NIMapController
+    private val mapController: NIMapController
 ) : ViewModel() {
 
     val liveDataTaskList = MutableLiveData<List<TaskBean>>()
@@ -35,7 +37,7 @@ class TaskListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             var taskList: List<TaskBean> = mutableListOf()
-            when (val result = networkService.getTaskList("02911")) {
+            when (val result = networkService.getTaskList(Constant.USER_ID)) {
                 is NetResult.Success -> {
                     if (result.data != null) {
                         val realm = Realm.getDefaultInstance()
@@ -66,6 +68,7 @@ class TaskListViewModel @Inject constructor(
                             }
                             val objects = realm.where(TaskBean::class.java).findAll()
                             taskList = realm.copyFromRealm(objects)
+
                         }
                     }
                 }
@@ -95,6 +98,14 @@ class TaskListViewModel @Inject constructor(
 //            }
 //            niMapController.lineHandler.omdbTaskLinkLayer.update()
             liveDataTaskList.postValue(taskList)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                mapController.lineHandler.omdbTaskLinkLayer.removeAll()
+                for (item in taskList) {
+                    mapController.lineHandler.omdbTaskLinkLayer.setLineColor(Color.valueOf(item.color))
+                    mapController.lineHandler.omdbTaskLinkLayer.addLineList(item.hadLinkDvoList)
+                }
+            }
+
         }
 
     }

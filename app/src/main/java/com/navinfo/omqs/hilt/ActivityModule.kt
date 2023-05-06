@@ -46,8 +46,9 @@ class ActivityModule {
     fun providesTaskListDownloadManager(
         networkServiceAPI: RetrofitNetworkServiceAPI,
         importFactory: ImportOMDBHiltFactory,
+        mapController: NIMapController
     ): TaskDownloadManager =
-        TaskDownloadManager(importFactory, networkServiceAPI)
+        TaskDownloadManager(importFactory, networkServiceAPI, mapController)
 
     /**
      * 注入任务下载

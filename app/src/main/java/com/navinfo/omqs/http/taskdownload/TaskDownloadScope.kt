@@ -131,6 +131,9 @@ class TaskDownloadScope(
                 Log.e("jingo", "数据安装 $it")
                 if (it == "finish") {
                     change(FileDownloadStatus.DONE)
+                    withContext(Dispatchers.Main) {
+                        downloadManager.mapController.mMapView.updateMap(true)
+                    }
                 } else {
                     change(FileDownloadStatus.IMPORTING, it)
                 }
@@ -138,6 +141,8 @@ class TaskDownloadScope(
         } catch (e: Exception) {
             Log.e("jingo", "数据安装失败 ${e.toString()}")
             change(FileDownloadStatus.ERROR)
+        }finally {
+
         }
 
         Log.e("jingo", "importData EEE")

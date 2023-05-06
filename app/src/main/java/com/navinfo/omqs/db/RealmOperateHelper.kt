@@ -13,8 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.locationtech.jts.geom.*
 import org.locationtech.jts.operation.buffer.BufferOp
-import org.locationtech.spatial4j.context.SpatialContext
-import org.locationtech.spatial4j.distance.DistanceUtils
 import org.oscim.core.GeoPoint
 import org.oscim.core.MercatorProjection
 import javax.inject.Inject
@@ -33,14 +31,18 @@ class RealmOperateHelper() {
      * */
     @RequiresApi(Build.VERSION_CODES.N)
     suspend fun queryLink(
-        point: Point,
+        point: GeoPoint,
         buffer: Double = DEFAULT_BUFFER,
         bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE,
         sort: Boolean = true
     ): MutableList<RenderEntity> {
         val result = mutableListOf<RenderEntity>()
         withContext(Dispatchers.IO) {
-            val polygon = getPolygonFromPoint(point, buffer, bufferType)
+            val polygon = getPolygonFromPoint(
+                GeometryTools.createPoint(point.longitude, point.latitude),
+                buffer,
+                bufferType
+            )
             // 根据polygon查询相交的tile号
             val tileXSet = mutableSetOf<Int>()
             tileXSet.toString()
@@ -68,7 +70,14 @@ class RealmOperateHelper() {
 
             queryResult?.let {
                 if (sort) {
-                    result.addAll(sortRenderEntity(point, it))
+                    result.addAll(
+                        sortRenderEntity(
+                            GeometryTools.createPoint(
+                                point.longitude,
+                                point.latitude
+                            ) , it
+                        )
+                    )
                 } else {
                     result.addAll(it)
                 }
@@ -172,6 +181,7 @@ class RealmOperateHelper() {
      * @param unSortList 未排序的数据
      * @return 排序后的数据
      * */
+    @RequiresApi(Build.VERSION_CODES.N)
     fun sortRenderEntity(point: Point, unSortList: List<RenderEntity>): List<RenderEntity> {
         val sortList = unSortList.stream().sorted { renderEntity, renderEntity2 ->
             val near = point.distance(renderEntity.wkt) - point.distance(renderEntity2.wkt)

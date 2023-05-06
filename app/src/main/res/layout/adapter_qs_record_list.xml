@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/ivory"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
     android:paddingTop="5dp"
@@ -12,42 +10,54 @@
     tools:context="com.navinfo.omqs.ui.fragment.qsrecordlist.QsRecordListAdapter">
 
     <TextView
+        android:id="@+id/qs_record_index"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@mipmap/marker"
+        android:maxLength="3"
+        android:text=""
+        android:layout_marginRight="@dimen/default_widget_padding"
+        style="@style/content_font_default_size_13sp" />
+
+    <TextView
         android:id="@+id/qs_record_classType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawableLeft="@mipmap/point_blue"
-        android:text="问题分类"
-        style="@style/content_font_default"
-        android:textSize="@dimen/default_font_size" />
-
-    <TextView
-        android:id="@+id/qs_record_problemLink"
-        style="@style/content_font_default"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/qs_record_classType"
-        android:drawableLeft="@mipmap/point_blue"
-        android:layout_marginLeft="@dimen/default_widget_padding"
-        android:text="问题环节" />
-
-    <TextView
-        android:id="@+id/qs_record_problem_type"
         style="@style/content_font_default_size_13sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxEms="6"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:layout_toRightOf="@id/qs_record_index"
+        android:text="问题分类" />
+
+    <TextView
+        android:id="@+id/qs_record_time"
+        style="@style/content_font_default_size_13sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/default_widget_padding"
+        android:layout_toRightOf="@id/qs_record_classType"
+        android:maxLines="1"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/qs_record_problem_type"
+        style="@style/content_font_default_size_10sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@id/qs_record_classType"
-        android:drawableLeft="@mipmap/point_blue"
+        android:layout_toRightOf="@id/qs_record_index"
         android:layout_marginTop="5dp"
         android:text="问题类型" />
 
     <TextView
         android:id="@+id/qs_record_phenomenon"
-        style="@style/content_font_default_size_13sp"
+        style="@style/content_font_default_size_10sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/qs_record_problem_type"
+        android:maxLines="2"
         android:layout_below="@id/qs_record_classType"
-        android:drawableLeft="@mipmap/point_blue"
         android:layout_marginLeft="@dimen/default_widget_padding"
         android:layout_marginTop="5dp"
         android:text="问题现象" />

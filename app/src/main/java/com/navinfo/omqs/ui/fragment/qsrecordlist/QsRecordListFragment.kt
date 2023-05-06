@@ -44,6 +44,7 @@ class QsRecordListFragment : BaseFragment(){
         binding.qsRecyclerview.adapter = adapter
         viewModel.liveDataQSList.observe(viewLifecycleOwner) {
             adapter.refreshData(it)
+            binding.tvTitleCount.text = "共"+adapter.data.size+"条"
         }
         val itemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         itemDecoration.setDrawable(resources.getDrawable(R.drawable.separator))
@@ -57,7 +58,7 @@ class QsRecordListFragment : BaseFragment(){
             }
         })
 
-        binding.recordBack.setOnClickListener{
+        binding.imgBack.setOnClickListener{
             findNavController().navigateUp()
         }
     }

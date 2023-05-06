@@ -3,6 +3,7 @@ package com.navinfo.omqs.http.taskdownload
 import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.bean.TaskBean
 import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
 import com.navinfo.omqs.hilt.OMDBDataBaseHiltFactory
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class TaskDownloadManager constructor(
     val importFactory: ImportOMDBHiltFactory,
     val netApi: RetrofitNetworkServiceAPI,
+    val mapController:NIMapController
 ) {
 
     lateinit var context: Context
