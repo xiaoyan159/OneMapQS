@@ -1,25 +1,19 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
-import android.content.Context
-import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.navinfo.omqs.R
-import com.navinfo.omqs.bean.TaskBean
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.databinding.AdapterTaskListBinding
 import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
 import com.navinfo.omqs.http.taskupload.TaskUploadManager
-import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import com.navinfo.omqs.tools.FileManager.Companion.FileUploadStatus
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
-import java.io.File
-import java.util.*
-import javax.inject.Inject
 
 /**
  * 离线地图城市列表 RecyclerView 适配器

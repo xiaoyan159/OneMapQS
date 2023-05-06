@@ -47,11 +47,6 @@ class Constant {
          */
         lateinit var DOWNLOAD_PATH: String
 
-        /**
-         * 服务器地址
-         */
-        const val SERVER_ADDRESS = "http://fastmap.navinfo.com/"
-
         const val DEBUG = true
 
         var IS_VIDEO_SPEED by kotlin.properties.Delegates.notNull<Boolean>()

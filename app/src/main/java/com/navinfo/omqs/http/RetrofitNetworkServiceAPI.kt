@@ -2,9 +2,8 @@ package com.navinfo.omqs.http
 
 import com.navinfo.omqs.bean.EvaluationInfo
 import com.navinfo.omqs.bean.OfflineMapCityBean
-import com.navinfo.omqs.bean.TaskBean
+import com.navinfo.collect.library.data.entity.TaskBean
 import okhttp3.ResponseBody
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 

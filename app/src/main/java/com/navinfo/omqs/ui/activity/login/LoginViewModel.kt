@@ -176,7 +176,7 @@ class LoginViewModel @Inject constructor(
             .directory(userFolder)
             .name("OMQS.realm")
             .encryptionKey(password)
-            .modules(Realm.getDefaultModule(), MyRealmModule())
+//            .modules(Realm.getDefaultModule(), MyRealmModule())
             .schemaVersion(1)
             .build()
         Realm.setDefaultConfiguration(config)

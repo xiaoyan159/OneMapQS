@@ -8,16 +8,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.omqs.bean.EvaluationInfo
-import com.navinfo.omqs.bean.TaskBean
-import com.navinfo.omqs.http.NetResult
-import com.navinfo.omqs.tools.FileManager
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.tools.FileManager.Companion.FileUploadStatus
 import io.realm.Realm
 import kotlinx.coroutines.*
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.*
 
 class TaskUploadScope(

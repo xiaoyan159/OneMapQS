@@ -3,7 +3,7 @@ package com.navinfo.omqs.http.taskupload
 import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import com.navinfo.omqs.bean.TaskBean
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
 import java.util.concurrent.ConcurrentHashMap
 
