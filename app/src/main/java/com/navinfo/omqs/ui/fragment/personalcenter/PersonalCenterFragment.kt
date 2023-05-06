@@ -87,11 +87,12 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
 
                         override fun onResult(uri: Uri) {
                             val file = UriUtils.uri2File(uri)
-                            val importOMDBHelper: ImportOMDBHelper = importOMDBHiltFactory.obtainImportOMDBHelper(
+                            val importOMDBHelper: ImportOMDBHelper =
+                                importOMDBHiltFactory.obtainImportOMDBHelper(
                                     requireContext(),
                                     file
                                 )
-                                viewModel.importOMDBData(importOMDBHelper)
+                            viewModel.importOMDBData(importOMDBHelper)
                         }
                     })
                 }
@@ -109,7 +110,8 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
                 R.id.personal_center_menu_test -> {
                     viewModel.readRealmData()
                     // 定位到指定位置
-                    niMapController.mMapView.vtmMap.animator().animateTo(GeoPoint(30.226256855699773, 113.84660523913344))
+                    niMapController.mMapView.vtmMap.animator()
+                        .animateTo(GeoPoint(40.1012346774074730, 116.25571303257621))
                 }
                 R.id.personal_center_menu_task_list -> {
                     findNavController().navigate(R.id.TaskListFragment)
