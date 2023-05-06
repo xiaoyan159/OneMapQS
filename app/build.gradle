@@ -3,7 +3,6 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
-    id 'realm-android'
     id 'kotlin-parcelize' // 序列化
     id 'androidx.navigation.safeargs.kotlin'//Safe Args传递数据
 }
@@ -74,6 +73,7 @@ android {
 
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation project(':collect-library')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
