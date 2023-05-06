@@ -52,7 +52,7 @@
     <style-text style="bold" fill="#606060" id="ferry" k="name" size="12" stroke="#ffffff"
         stroke-width="2.0" />
     <!--speedlimit-->
-    <style-text fill="#ffffff" id="max-speed-limit" k="name" size="14" stroke="#ffffff"
+    <style-text fill="#000000" id="max-speed-limit" k="name" size="15" stroke="#ffffff"
         stroke-width="0.1" />
 
 
@@ -1618,7 +1618,7 @@
         <m v="OMDB_SPEEDLIMIT">
             <m k="speedFlag">
                 <m v="0">
-                    <circle fill="#0000ff" radius="28" scale-radius="true" stroke="#ff0000" stroke-width="2"/>
+                    <circle fill="#ffffff" radius="28" scale-radius="true" stroke="#ff0000" stroke-width="4"/>
                     <m select="any">
                         <text k="maxSpeed" use="max-speed-limit"></text>
                         <caption k="minSpeed" dy="-28" fill="#000000" priority="5" size="14" stroke="#ffffff"
@@ -1626,7 +1626,7 @@
                     </m>
                 </m>
                 <m v="1">
-                    <circle fill="#0000ff" radius="28" scale-radius="true" stroke="#ff0000" stroke-width="2"/>
+                    <circle fill="#ffffff" radius="28" scale-radius="true" stroke="#00ff00" stroke-width="4"/>
                     <m select="any">
                         <text k="maxSpeed" use="max-speed-limit"></text>
                         <caption k="minSpeed" dy="-28" fill="#000000" priority="5" size="14" stroke="#ffffff"

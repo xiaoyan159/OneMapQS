@@ -98,7 +98,8 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:padding">@dimen/default_widget_padding</item>
+        <item name="android:paddingHorizontal">@dimen/default_widget_padding</item>
+        <item name="android:paddingVertical">5dp</item>
         <item name="android:background">@drawable/fm_card_map_down_status_bg</item>
         <item name="android:foreground">@drawable/ripple_btn_press</item>
         <item name="android:gravity">center_horizontal</item>
