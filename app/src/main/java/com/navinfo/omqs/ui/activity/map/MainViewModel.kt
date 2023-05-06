@@ -425,6 +425,10 @@ class MainViewModel @Inject constructor(
      */
     fun setSelectRoad(select: Boolean) {
         bSelectRoad = select
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mapController.lineHandler.removeLine()
+            liveDataSignList.value = mutableListOf()
+        }
     }
 
     fun isSelectRoad(): Boolean {

@@ -67,6 +67,16 @@
                 app:layout_constraintRight_toRightOf="parent"
                 tools:ignore="MissingConstraints">
 
+
+                <ImageButton
+                    android:id="@+id/main_activity_select_line"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/selector_road_line_btn_bg"
+                    android:onClick="@{()->mainActivity.selectLineOnclick()}"
+                    android:src="@drawable/selector_road_line_src" />
+
                 <ImageButton
                     android:id="@+id/main_activity_voice"
                     android:layout_width="48dp"
@@ -133,13 +143,6 @@
                     android:orientation="horizontal"
                     android:visibility="gone">
 
-                    <ImageButton
-                        android:id="@+id/main_activity_select_line"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:background="@drawable/shape_card_bg_default"
-                        android:onClick="@{()->mainActivity.selectLineOnclick()}"
-                        android:src="@drawable/baseline_timeline_24" />
 
                     <ImageButton
                         android:id="@+id/main_activity_serach"
