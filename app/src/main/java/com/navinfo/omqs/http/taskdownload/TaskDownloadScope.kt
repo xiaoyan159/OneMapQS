@@ -5,7 +5,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.navinfo.omqs.Constant
-import com.navinfo.omqs.bean.TaskBean
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.db.ImportOMDBHelper
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus

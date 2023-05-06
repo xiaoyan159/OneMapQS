@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
+import com.navinfo.collect.library.system.Constant.SERVER_ADDRESS
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.OMQSApplication
 import com.navinfo.omqs.db.RoomAppDatabase
@@ -82,7 +83,7 @@ class GlobalModule {
         converterFactory: GsonConverterFactory,
     ): Retrofit {
         val retrofitBuilder = Retrofit.Builder()
-            .baseUrl(Constant.SERVER_ADDRESS)
+            .baseUrl(SERVER_ADDRESS)
             .client(client.get())
             .addConverterFactory(converterFactory)
 

@@ -3,7 +3,6 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
-    id 'realm-android'
     id 'kotlin-parcelize' // 序列化
     id 'androidx.navigation.safeargs.kotlin'//Safe Args传递数据
 }
@@ -74,7 +73,7 @@ android {
 
 
 dependencies {
-    implementation project(':collect-library')
+    api project(':collect-library')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -89,11 +88,6 @@ dependencies {
     implementation 'com.google.dagger:hilt-android:2.45'
     kapt 'com.google.dagger:hilt-compiler:2.45'
 
-    // Retrofit 网络请求相关
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation('com.squareup.okhttp3:okhttp:5.0.0-alpha.11')
-    implementation('com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11')
 
     kapt 'android.arch.persistence.room:compiler:1.1.1'// compiler 需要用 room 的
     kapt "androidx.room:room-compiler:2.5.1"

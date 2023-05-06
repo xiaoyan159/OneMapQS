@@ -1,18 +1,11 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.omqs.R
-import com.navinfo.omqs.bean.TaskBean
 import com.navinfo.omqs.databinding.AdapterQsRecordListBinding
-import com.navinfo.omqs.databinding.AdapterTaskListBinding
-import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
-import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 

@@ -3,7 +3,7 @@ package com.navinfo.omqs.tools
 import android.content.Context
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.OfflineMapCityBean
-import com.navinfo.omqs.bean.TaskBean
+import com.navinfo.collect.library.data.entity.TaskBean
 import java.io.File
 
 class FileManager {
