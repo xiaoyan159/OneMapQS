@@ -15,9 +15,11 @@
         android:id="@+id/task_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@id/task_download_btn"
         android:text="任务名称"
-        android:textSize="12sp" />
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="@dimen/default_font_size" />
 
     <TextView
         android:id="@+id/task_city_name"
@@ -35,10 +37,10 @@
         style="@style/map_size_font_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="5dp"
-        android:layout_below="@id/task_city_name"
-        android:layout_toLeftOf="@id/task_upload_btn"
         android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/task_upload_btn"
+        android:layout_below="@id/task_city_name"
+        android:textColor="@color/gray_121"
         android:text="版本号"
         android:textSize="@dimen/card_title_font_3size" />
 
@@ -49,6 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/task_data_version"
         android:layout_marginTop="5dp"
+        android:drawableLeft="@mipmap/point_blue"
         android:text="路线颜色"
         android:textSize="@dimen/card_title_font_3size" />
 
@@ -62,7 +65,6 @@
         android:gravity="center"
         android:shadowColor="@android:color/transparent"
         android:text="下载"
-        android:textColor="@color/btn_blue_solid"
         android:textSize="@dimen/card_title_font_2size" />
 
     <TextView
@@ -76,7 +78,6 @@
         android:gravity="center"
         android:shadowColor="@android:color/transparent"
         android:text="同步"
-        android:textColor="@color/btn_blue_solid"
         android:textSize="@dimen/card_title_font_2size" />
 
     <TextView
