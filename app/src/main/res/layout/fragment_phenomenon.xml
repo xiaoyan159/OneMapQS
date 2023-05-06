@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:gravity="right|center_vertical"
     android:orientation="horizontal"
-    android:paddingLeft="30dp"
+    android:paddingTop="@dimen/fragment_margin_top"
+    android:paddingLeft="@dimen/fragment_margin_left"
     tools:context="com.navinfo.omqs.ui.fragment.evaluationresult.PhenomenonFragment">
 
     <ImageView
@@ -25,42 +26,37 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/phenomenon_title_bg"
-            android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:background="@color/default_blue"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:text="问题列表"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/phenomenon_left_recyclerview"
+            <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
                 android:layout_weight="2"
-                android:background="@color/white" />
+                android:layout_height="match_parent">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/phenomenon_middle_recyclerview"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@color/white" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/phenomenon_middle_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_below="@id/phenomenon_middle_recyclerview"
+                    android:id="@+id/phenomenon_left_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white" />
+
+            </RelativeLayout>
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/phenomenon_right_recyclerview"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
+                android:layout_weight="3"
                 android:background="@color/white" />
         </LinearLayout>
     </LinearLayout>

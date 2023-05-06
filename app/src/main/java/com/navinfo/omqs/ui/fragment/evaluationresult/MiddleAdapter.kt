@@ -28,10 +28,15 @@ class MiddleAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) 
         val bd = holder.viewBinding as TextItemSelectBinding
         val title = data[position]
         bd.itemId.text = title
+        val layoutParams: ViewGroup.LayoutParams = holder.viewBinding.itemLayout.layoutParams
+        layoutParams.width = 115
+        bd.itemLayout.layoutParams = layoutParams
         if (selectTitle == title) {
-            bd.itemId.setBackgroundColor(holder.viewBinding.root.context.getColor(R.color.cv_gray_153))
+            bd.itemId.setBackgroundResource(R.drawable.drawable_bg_blue_bg_4_radius)
+            bd.itemId.setTextColor(holder.viewBinding.root.context.getColor(R.color.white))
         } else {
-            bd.itemId.setBackgroundColor(holder.viewBinding.root.context.getColor(R.color.white))
+            bd.itemId.setBackgroundResource(R.drawable.drawable_bg_white_bg_4_radius)
+            bd.itemId.setTextColor(holder.viewBinding.root.context.getColor(R.color.black))
         }
         bd.root.setOnClickListener {
             if (selectTitle != title) {

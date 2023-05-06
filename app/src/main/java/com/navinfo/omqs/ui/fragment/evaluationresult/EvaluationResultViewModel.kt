@@ -91,6 +91,8 @@ class EvaluationResultViewModel @Inject constructor(
 
     var mSoundMeter: SoundMeter? = null
 
+    var classTypeTemp: String = ""
+
     init {
         liveDataQsRecordBean.value = QsRecordBean(id = UUID.randomUUID().toString())
         Log.e("jingo", "EvaluationResultViewModel 创建了 ${hashCode()}")
@@ -128,6 +130,7 @@ class EvaluationResultViewModel @Inject constructor(
             geoPoint?.let {
                 liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(it).toText()
                 mapController.markerHandle.addMarker(geoPoint, markerTitle)
+                mapController.animationHandler.animationByLonLat(geoPoint.latitude,geoPoint.longitude)
                 viewModelScope.launch {
                     captureLink(geoPoint.longitude, geoPoint.latitude)
                 }
@@ -148,6 +151,8 @@ class EvaluationResultViewModel @Inject constructor(
                 }
             }
             val point = GeometryTools.createGeoPoint(bean.geometry)
+            liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(point).toText()
+            mapController.animationHandler.animationByLonLat(point.latitude,point.longitude)
             mapController.markerHandle.addMarker(point, markerTitle)
         }
 
@@ -196,6 +201,7 @@ class EvaluationResultViewModel @Inject constructor(
                     if (liveDataQsRecordBean.value!!.classType.isEmpty()) {
                         Log.e("jingo", "getClassTypeList $classType")
                         liveDataQsRecordBean.value!!.classType = classType
+                        classTypeTemp = classType
                     }
                     getProblemList(classType)
                 }
@@ -285,12 +291,14 @@ class EvaluationResultViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getProblemList(classType)
         }
+        classTypeTemp = classType
     }
 
     /**
      * 监听右侧栏的点击事件，修改数据
      */
     fun setPhenomenonMiddleBean(adapterBean: RightBean) {
+        liveDataQsRecordBean.value!!.classType = classTypeTemp
         liveDataQsRecordBean.value!!.phenomenon = adapterBean.text
         liveDataQsRecordBean.value!!.problemType = adapterBean.title
         liveDataQsRecordBean.postValue(liveDataQsRecordBean.value)
@@ -305,7 +313,6 @@ class EvaluationResultViewModel @Inject constructor(
     fun saveData() {
         viewModelScope.launch(Dispatchers.IO) {
             val realm = Realm.getDefaultInstance()
-            Log.e("jingo", "realm hashCOde ${realm.hashCode()}")
             realm.executeTransaction {
                 it.copyToRealmOrUpdate(liveDataQsRecordBean.value)
             }
@@ -327,6 +334,7 @@ class EvaluationResultViewModel @Inject constructor(
             }
 //            realm.close()
             mapController.markerHandle.removeQsRecordMark(liveDataQsRecordBean.value!!)
+            mapController.mMapView.vtmMap.updateMap(true)
             liveDataFinish.postValue(true)
         }
     }

@@ -1,7 +1,10 @@
 package com.navinfo.omqs.bean
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class EvaluationInfo(
     @SerializedName("evaluationTaskId")
     val evaluationTaskId: String = "",//测评任务id
@@ -46,5 +49,5 @@ data class EvaluationInfo(
 
     @SerializedName("evaluationWay")
     val evaluationWay: String = ""//测评方式
-)
+) : Parcelable
 

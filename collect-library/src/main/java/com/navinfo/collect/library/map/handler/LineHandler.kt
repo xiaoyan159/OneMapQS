@@ -110,7 +110,7 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
                 .strokeColor(context.resources.getColor(R.color.draw_line_red_color, null))
                 .fixed(true).randomOffset(false).build()
         mDefaultPathLayer = PathLayer(mMapView.vtmMap, defaultLineStyle)
-        addLayer(mDefaultPathLayer, NIMapView.LAYER_GROUPS.OPERATE)
+        addLayer(mDefaultPathLayer, NIMapView.LAYER_GROUPS.OPERATE_LINE)
         mPathLayer = PathLayer(mMapView.vtmMap, lineStyle)
 //        addLayer(mPathLayer, NIMapView.LAYER_GROUPS.OPERATE)
 

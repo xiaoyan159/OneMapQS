@@ -116,7 +116,7 @@ open class MeasureLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
 
         mPathLayer = PathLayer(mMapView.vtmMap, lineStyle)
 
-        addLayer(mPathLayer, NIMapView.LAYER_GROUPS.OPERATE)
+        addLayer(mPathLayer, NIMapView.LAYER_GROUPS.OPERATE_LINE)
 
     }
 
