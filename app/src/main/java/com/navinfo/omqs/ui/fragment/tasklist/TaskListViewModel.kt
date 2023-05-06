@@ -2,6 +2,7 @@ package com.navinfo.omqs.ui.fragment.tasklist
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
@@ -23,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
     private val networkService: NetworkService,
-    private val niMapController: NIMapController
+    private val mapController: NIMapController
 ) : ViewModel() {
 
     val liveDataTaskList = MutableLiveData<List<TaskBean>>()
@@ -66,6 +67,7 @@ class TaskListViewModel @Inject constructor(
                             }
                             val objects = realm.where(TaskBean::class.java).findAll()
                             taskList = realm.copyFromRealm(objects)
+
                         }
                     }
                 }
@@ -95,6 +97,14 @@ class TaskListViewModel @Inject constructor(
 //            }
 //            niMapController.lineHandler.omdbTaskLinkLayer.update()
             liveDataTaskList.postValue(taskList)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                mapController.lineHandler.omdbTaskLinkLayer.removeAll()
+                for (item in taskList) {
+                    mapController.lineHandler.omdbTaskLinkLayer.setLineColor(Color.valueOf(item.color))
+                    mapController.lineHandler.omdbTaskLinkLayer.addLineList(item.hadLinkDvoList)
+                }
+            }
+
         }
 
     }

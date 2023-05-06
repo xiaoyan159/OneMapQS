@@ -133,6 +133,13 @@
                 app:layout_constraintRight_toRightOf="parent"
                 tools:ignore="MissingConstraints">
 
+                <ImageButton
+                    android:id="@+id/main_activity_select_line"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/baseline_timeline_24"
+                    android:onClick="@{()->mainActivity.selectLineOnclick()}"
+                    android:background="@drawable/shape_card_bg_default" />
 
                 <ImageButton
                     android:id="@+id/main_activity_voice"

@@ -227,8 +227,15 @@ class MainActivity : BaseActivity() {
      * 点击录音按钮
      */
     fun voiceOnclick() {
-/*        val naviController = findNavController(R.id.main_activity_right_fragment)
-        naviController.navigate(R.id.EvaluationResultFragment)*/
+       val naviController = findNavController(R.id.main_activity_right_fragment)
+        naviController.navigate(R.id.EvaluationResultFragment)
+    }
+
+    /**
+     * 点击线选择
+     */
+    fun selectLineOnclick(){
+        viewModel.setSelectRoad(!viewModel.isSelectRoad())
     }
 
     fun voiceOnTouchStart() {

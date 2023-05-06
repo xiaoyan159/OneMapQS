@@ -115,15 +115,16 @@ class TaskUploadScope(
             taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
                 val objects = realm.where(QsRecordBean::class.java)
                     .equalTo("linkId", /*"84207223282277331"*/hadLinkDvoBean.linkPid).findAll()
-                if(objects.size == 0){
-//                    change(FileUploadStatus.NONE)
+                if (objects.size == 0) {
+                    if (taskBean.syncStatus == FileUploadStatus.WAITING)
+                        change(FileUploadStatus.NONE)
                     return
                 }
 
                 val bodyList: MutableList<EvaluationInfo> = ArrayList()
 
                 if (objects != null) {
-                    val copyList =realm.copyFromRealm(objects)
+                    val copyList = realm.copyFromRealm(objects)
                     copyList.forEach {
                         val evaluationInfo = EvaluationInfo(
                             taskBean.id.toString(),

@@ -17,4 +17,15 @@
         android:text="80"
         android:textColor="#2F2F2F"
         android:textSize="14.67sp" />
+    <TextView
+        android:id="@+id/sign_bottom_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="5dp"
+        android:text="道路名"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/white"
+        android:textSize="14.67sp" />
 </RelativeLayout>

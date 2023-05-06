@@ -25,6 +25,7 @@ class SignAdapter(private var itemListener: ((Int, SignBean) -> Unit?)? = null) 
         val item = data[position]
         bd.signMainIcon.background = holder.viewBinding.root.context.getDrawable(item.iconId)
         bd.signMainIcon.text = item.iconText
+        bd.signBottomText.text = item.bottomText
         bd.root.setOnClickListener {
             itemListener?.invoke(position, item)
         }

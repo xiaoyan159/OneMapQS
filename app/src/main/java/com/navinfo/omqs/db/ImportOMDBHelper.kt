@@ -129,7 +129,7 @@ class ImportOMDBHelper @AssistedInject constructor(
             // 开始解压zip文件
             val unZipFiles = ZipUtils.unzipFile(omdbZipFile, unZipFolder)
             // 将listResult数据插入到Realm数据库中
-            Realm.getDefaultInstance().beginTransaction()
+            val realm =  Realm.getDefaultInstance()
             // 遍历解压后的文件，读取该数据返回
             for ((index, currentConfig) in importConfig.tables.withIndex()) {
                 val txtFile = unZipFiles.find {

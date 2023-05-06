@@ -4,9 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.Gravity
@@ -15,11 +13,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupWindow
 import androidx.annotation.RequiresApi
-import androidx.core.util.rangeTo
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.entity.AttachmentBean
 import com.navinfo.collect.library.data.entity.QsRecordBean
@@ -130,7 +126,9 @@ class EvaluationResultViewModel @Inject constructor(
             geoPoint?.let {
                 liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(it).toText()
                 mapController.markerHandle.addMarker(geoPoint, markerTitle)
-                mapController.animationHandler.animationByLonLat(geoPoint.latitude,geoPoint.longitude)
+                mapController.animationHandler.animationByLonLat(
+                    geoPoint.latitude, geoPoint.longitude
+                )
                 viewModelScope.launch {
                     captureLink(geoPoint.longitude, geoPoint.latitude)
                 }
@@ -152,7 +150,7 @@ class EvaluationResultViewModel @Inject constructor(
             }
             val point = GeometryTools.createGeoPoint(bean.geometry)
             liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(point).toText()
-            mapController.animationHandler.animationByLonLat(point.latitude,point.longitude)
+            mapController.animationHandler.animationByLonLat(point.latitude, point.longitude)
             mapController.markerHandle.addMarker(point, markerTitle)
         }
 
@@ -165,16 +163,12 @@ class EvaluationResultViewModel @Inject constructor(
     private suspend fun captureLink(longitude: Double, latitude: Double) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val linkList = realmOperateHelper.queryLink(
-                point = GeometryTools.createPoint(
-                    longitude,
-                    latitude
-                ),
+                point = GeoPoint(latitude, longitude),
             )
 
             liveDataQsRecordBean.value?.let {
                 if (linkList.isNotEmpty()) {
-                    it.linkId =
-                        linkList[0].properties[LinkTable.linkPid] ?: ""
+                    it.linkId = linkList[0].properties[LinkTable.linkPid] ?: ""
                     mapController.lineHandler.showLine(linkList[0].geometry)
                     Log.e("jingo", "捕捉到的linkId = ${it.linkId}")
                 } else {
@@ -328,8 +322,9 @@ class EvaluationResultViewModel @Inject constructor(
             val realm = Realm.getDefaultInstance()
             Log.e("jingo", "realm hashCOde ${realm.hashCode()}")
             realm.executeTransaction {
-                val objects = it.where(QsRecordBean::class.java)
-                    .equalTo("id", liveDataQsRecordBean.value?.id).findFirst()
+                val objects =
+                    it.where(QsRecordBean::class.java).equalTo("id", liveDataQsRecordBean.value?.id)
+                        .findFirst()
                 objects?.deleteFromRealm()
             }
 //            realm.close()
@@ -354,8 +349,7 @@ class EvaluationResultViewModel @Inject constructor(
                         liveDataQsRecordBean.postValue(it.copy())
                         val p = GeometryTools.createGeoPoint(it.geometry)
                         mapController.markerHandle.addMarker(
-                            GeoPoint(p.latitude, p.longitude),
-                            markerTitle
+                            GeoPoint(p.latitude, p.longitude), markerTitle
                         )
 
                         if (it.linkId.isNotEmpty()) {
