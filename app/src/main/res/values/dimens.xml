@@ -37,4 +37,5 @@
     <!-- 相机设置窗体IV高度-->
     <dimen name="camear_dialog_iv_hight" comment="相机设置窗体高度">75dp</dimen>
     <dimen name="head_img_width">48dp</dimen>
+    <dimen name="default_btn_corner">6dp</dimen>
 </resources>

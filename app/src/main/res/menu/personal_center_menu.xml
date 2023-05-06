@@ -12,19 +12,21 @@
             android:title="离线地图" />
         <item
             android:id="@+id/personal_center_menu_obtain_data"
-            android:icon="@drawable/ic_baseline_import_export_24"
+            android:icon="@drawable/ic_baseline_generating_tokens_24"
+            android:visible="false"
             android:title="生成数据" />
         <item
             android:id="@+id/personal_center_menu_import_data"
             android:icon="@drawable/ic_baseline_import_export_24"
+            android:visible="false"
             android:title="导入数据" />
         <item
             android:id="@+id/personal_center_menu_import_yuan_data"
-            android:icon="@drawable/ic_baseline_import_export_24"
+            android:icon="@drawable/ic_baseline_scatter_plot_24"
             android:title="导入元数据" />
         <item
             android:id="@+id/personal_center_menu_realm_data_backup"
-            android:icon="@drawable/ic_baseline_import_export_24"
+            android:icon="@drawable/ic_baseline_sim_card_download_24"
             android:title="备份数据" />
     </group>
     <group
@@ -34,20 +36,21 @@
             <menu>
                 <item
                     android:id="@+id/personal_center_menu_task_list"
-                    android:icon="@drawable/baseline_person_24"
+                    android:icon="@drawable/ic_baseline_format_list_bulleted_24"
                     android:title="任务列表" />
                 <item
                     android:id="@+id/personal_center_menu_qs_record_list"
-                    android:icon="@drawable/baseline_person_24"
+                    android:icon="@drawable/ic_baseline_playlist_add_check_24"
                     android:title="我的数据" />
                 <item
                     android:id="@+id/personal_center_menu_layer_manager"
-                    android:icon="@drawable/baseline_person_24"
+                    android:icon="@drawable/ic_baseline_layers_24"
                     android:title="图层管理" />
 
                 <item
                     android:id="@+id/personal_center_menu_test"
                     android:icon="@drawable/baseline_person_24"
+                    android:visible="false"
                     android:title="测试" />
             </menu>
         </item>

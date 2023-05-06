@@ -85,14 +85,15 @@
         <item name="android:clickable">false</item>
     </style>
 
-    <style name="map_download_style_btn" comment="离线地图下载的按钮样式">
+    <style name="map_download_style_btn" comment="离线地图下载的按钮样式" parent="ThemeOverlay.Material3.AutoCompleteTextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:padding">@dimen/default_widget_padding</item>
         <item name="android:background">@drawable/fm_card_map_down_status_bg</item>
+        <item name="android:foreground">@drawable/ripple_btn_press</item>
         <item name="android:gravity">center_horizontal</item>
-        <item name="android:textColor">@color/btn_blue_white</item>
+        <item name="android:textColor">@color/selector_default_primary_press_secondary</item>
         <item name="android:textSize">15sp</item>
     </style>
 
