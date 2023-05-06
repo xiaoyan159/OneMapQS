@@ -57,7 +57,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     private lateinit var canvas: org.oscim.backend.canvas.Canvas
     private lateinit var itemizedLayer: MyItemizedLayer
     private lateinit var markerRendererFactory: MarkerRendererFactory
-    private var resId = R.mipmap.map_icon_report
+    private var resId = R.mipmap.map_icon_point_add
     private var itemListener: OnQsRecordItemClickListener? = null
 
     /**
