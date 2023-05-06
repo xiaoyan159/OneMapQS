@@ -13,7 +13,7 @@
         android:id="@+id/qs_record_index"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@mipmap/marker"
+        android:drawableLeft="@mipmap/marker2"
         android:maxLength="3"
         android:text=""
         android:layout_marginRight="@dimen/default_widget_padding"
