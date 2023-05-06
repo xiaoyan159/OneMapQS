@@ -163,7 +163,8 @@
     <color name="cv_gray_153">#999999</color>
     <color name="cvm_red">#FF3B30</color>
     <color name="btn_blue_solid">#108ee9</color>
-    <color name="titleColor">#2631DD</color>
+    <color name="highFontColor">#2631DD</color>
+    <color name="high_item_color">#FFF5F7FE</color>
     <color name="contentColor">#000000</color>
     <!-- 一键连接对话框背景色 -->
     <color name="bg_gray2">#d1d1d1</color>
@@ -171,5 +172,6 @@
     <color name="bg_dark">#999999</color>
     <color name="gray_121">#797979</color>
     <color name="gray_59">#595959</color>
+    <color name="btn_bg_blue">#FF3266F1</color>
     <color name="text_hint_gray" comment="输入框内默认字体颜色，输入框边框颜色">#c1c1c1</color>
 </resources>
