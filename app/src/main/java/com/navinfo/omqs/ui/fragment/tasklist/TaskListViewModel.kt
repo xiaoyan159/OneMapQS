@@ -22,6 +22,7 @@ import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
+
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
     private val networkService: NetworkService,
@@ -29,6 +30,9 @@ class TaskListViewModel @Inject constructor(
 ) : ViewModel() {
 
     val liveDataTaskList = MutableLiveData<List<TaskBean>>()
+
+    val colors =
+        arrayOf(Color.RED, Color.YELLOW, Color.BLUE, Color.MAGENTA, Color.GREEN, Color.CYAN)
 
     /**
      * 下载任务列表
@@ -43,7 +47,8 @@ class TaskListViewModel @Inject constructor(
                         val realm = Realm.getDefaultInstance()
                         realm.executeTransaction {
                             result.data.obj?.let { list ->
-                                for (task in list) {
+                                for (index in list.indices) {
+                                    val task = list[index]
                                     val item = realm.where(TaskBean::class.java).equalTo(
                                         "id", task.id
                                     ).findFirst()
@@ -54,14 +59,17 @@ class TaskListViewModel @Inject constructor(
                                         task.currentSize = item.currentSize
                                         task.color = item.color
                                     } else {
-                                        val random = Random()
-                                        task.color = Color.argb(
-                                            255,
-                                            random.nextInt(256),
-                                            random.nextInt(256),
-                                            random.nextInt(256)
-                                        )
-                                        Log.e("jingo", "任务颜色 ${task.color}")
+                                        if (index < 6)
+                                            task.color = colors[index]
+                                        else {
+                                            val random = Random()
+                                            task.color = Color.argb(
+                                                255,
+                                                random.nextInt(256),
+                                                random.nextInt(256),
+                                                random.nextInt(256)
+                                            )
+                                        }
                                     }
                                     realm.copyToRealmOrUpdate(task)
                                 }
@@ -105,9 +113,6 @@ class TaskListViewModel @Inject constructor(
                     mapController.lineHandler.omdbTaskLinkLayer.addLineList(item.hadLinkDvoList)
                 }
             }
-
         }
-
     }
-
 }
