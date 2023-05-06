@@ -52,7 +52,7 @@ class OmdbTaskLinkLayer(map: Map, private var style: Style) : VectorLayer(map) {
             .fillColor(color.toArgb())
             .fillAlpha(0.5f)
             .strokeColor(color.toArgb())
-            .strokeWidth(4f)
+            .strokeWidth(8f)
             .fixed(true).build()
     }
 
