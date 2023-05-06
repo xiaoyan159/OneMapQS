@@ -13,30 +13,85 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         style="@style/left_pannel_title_layout">
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/record_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:background="@drawable/selector_bg_round_button"
-            android:foreground="@drawable/ripple_btn_press"
-            style="@style/btn_round"
-            android:src="@drawable/ic_baseline_keyboard_arrow_left_24"></androidx.appcompat.widget.AppCompatImageView>
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/record_title"
-            android:layout_width="wrap_content"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/evaluation_appbar_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/left_pannel_title_font"
-            android:textStyle="bold"
-            android:text="我的数据"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"></androidx.appcompat.widget.AppCompatTextView>
+            app:layout_constraintTop_toTopOf="parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/img_back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/eight"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/btn_back_xml" />
+
+                <TextView
+                    android:id="@+id/tv_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:paddingTop="@dimen/ten"
+                    android:paddingBottom="@dimen/five"
+                    android:text="测评结果"
+                    android:textColor="@color/highFontColor"
+                    android:textSize="@dimen/default_font_size" />
+
+                <TextView
+                    android:id="@+id/tv_title_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_title"
+                    android:paddingLeft="@dimen/ten"
+                    android:layout_alignStart="@+id/tv_title"
+                    android:paddingBottom="@dimen/ten"
+                    android:textSize="@dimen/card_title_font_3size"
+                    android:text="（共0个）"
+                    android:textColor="@color/cv_gray_153" />
+
+                <ImageView
+                    android:id="@+id/img_refrush"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:padding="@dimen/eight"
+                    android:layout_centerInParent="true"
+                    android:layout_marginRight="@dimen/eight"
+                    android:background="@drawable/icon_refrush" />
+
+                <ImageView
+                    android:id="@+id/img_order"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:padding="@dimen/eight"
+                    android:layout_marginRight="@dimen/eight"
+                    android:layout_toLeftOf="@+id/img_refrush"
+                    android:background="@drawable/icon_order" />
+
+                <ImageView
+                    android:id="@+id/img_filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:padding="@dimen/eight"
+                    android:layout_marginRight="@dimen/eight"
+                    android:layout_toLeftOf="@+id/img_order"
+                    android:background="@drawable/icon_filter" />
+
+
+            </RelativeLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.cardview.widget.CardView

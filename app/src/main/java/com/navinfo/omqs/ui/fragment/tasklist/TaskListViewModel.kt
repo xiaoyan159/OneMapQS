@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.TaskBean
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
@@ -35,7 +36,7 @@ class TaskListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             var taskList: List<TaskBean> = mutableListOf()
-            when (val result = networkService.getTaskList("02911")) {
+            when (val result = networkService.getTaskList(Constant.USER_ID)) {
                 is NetResult.Success -> {
                     if (result.data != null) {
                         val realm = Realm.getDefaultInstance()

@@ -116,7 +116,7 @@ class LoginViewModel @Inject constructor(
         //文件夹初始化
         try {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_INIT)
-            createUserFolder(context, "1")
+            createUserFolder(context, "02911")
         } catch (e: IOException) {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_FAILURE)
         }

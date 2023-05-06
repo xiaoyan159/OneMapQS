@@ -39,7 +39,7 @@
                 <item
                     android:id="@+id/personal_center_menu_qs_record_list"
                     android:icon="@drawable/baseline_person_24"
-                    android:title="我的数据" />
+                    android:title="测评结果" />
                 <item
                     android:id="@+id/personal_center_menu_layer_manager"
                     android:icon="@drawable/baseline_person_24"

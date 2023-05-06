@@ -51,14 +51,18 @@ class QsRecordListAdapter(
         holder.itemView.setOnClickListener {
             itemClickListener!!.onItemClickListener(position)
         }
-        changeViews(binding, qsRecordBean)
+        changeViews(position, binding, qsRecordBean)
     }
 
-    private fun changeViews(binding: AdapterQsRecordListBinding, qsRecordBean: QsRecordBean) {
+    private fun changeViews(position: Int,binding: AdapterQsRecordListBinding, qsRecordBean: QsRecordBean) {
+        if(position<99)
+           binding.qsRecordIndex.text = (position+1).toString()
+        else
+            binding.qsRecordIndex.text = "99."
         binding.qsRecordClassType.text = qsRecordBean.classType
         binding.qsRecordProblemType.text = qsRecordBean.problemType
         binding.qsRecordPhenomenon.text = qsRecordBean.phenomenon
-        binding.qsRecordProblemLink.text = qsRecordBean.problemLink
+        binding.qsRecordTime.text = qsRecordBean.checkTime
     }
 
     override fun getItemViewRes(position: Int): Int {
