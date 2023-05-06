@@ -60,22 +60,20 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             onBackPressed()
         }
         //返回按钮点击
-        binding.evaluationBar.setNavigationOnClickListener {
+        binding.evaluationBar.setOnClickListener() {
             onBackPressed()
         }
-        //标题栏按钮
-        binding.evaluationBar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.save -> {
-                    viewModel.saveData()
-                    true
-                }
-                R.id.delete -> {
-                    viewModel.deleteData()
-                    true
-                }
-                else -> true
-            }
+
+        //保存事件
+        binding.evaluationBarSave.setOnClickListener() {
+            viewModel.saveData()
+        }
+
+        //删除事件
+        binding.evaluationBarDelete.setOnClickListener() {
+
+            viewModel.deleteData()
+
         }
 
 

@@ -28,6 +28,8 @@
     <dimen name="twenty">20dp</dimen>
     <dimen name="twenty_two">22dp</dimen>
     <dimen name="twenty_four">24dp</dimen>
+    <dimen name="fragment_margin_top">64dp</dimen>
+    <dimen name="fragment_margin_left">400dp</dimen>
     <!-- 相机设置iv距离上方间距-->
     <dimen name="camear_dialog_iv_margin_top" comment="相机设置窗体高度">25dp</dimen>
     <!-- 相机设置窗体高度-->

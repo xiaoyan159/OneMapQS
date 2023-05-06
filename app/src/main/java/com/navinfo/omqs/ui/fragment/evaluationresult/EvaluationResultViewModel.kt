@@ -329,6 +329,7 @@ class EvaluationResultViewModel @Inject constructor(
             }
 //            realm.close()
             mapController.markerHandle.removeQsRecordMark(liveDataQsRecordBean.value!!)
+            mapController.mMapView.vtmMap.updateMap(true)
             liveDataFinish.postValue(true)
         }
     }

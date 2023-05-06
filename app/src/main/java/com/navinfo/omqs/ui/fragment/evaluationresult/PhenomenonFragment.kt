@@ -102,7 +102,8 @@ class PhenomenonFragment :
 
         //中间菜单
         binding.phenomenonMiddleRecyclerview.setHasFixedSize(true)
-        binding.phenomenonMiddleRecyclerview.layoutManager = LinearLayoutManager(requireContext())
+        binding.phenomenonMiddleRecyclerview.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
         binding.phenomenonMiddleRecyclerview.adapter = middleAdapter
         //中间侧菜单查询结果监听
         viewModel.liveDataMiddleTypeList.observe(viewLifecycleOwner) {
