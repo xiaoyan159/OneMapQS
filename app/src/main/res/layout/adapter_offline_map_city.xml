@@ -6,16 +6,16 @@
     android:layout_height="wrap_content"
     android:background="@color/ivory"
     android:paddingLeft="10dp"
-    android:paddingRight="10dp"
     android:paddingTop="5dp"
+    android:paddingRight="10dp"
     tools:context="com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapCityListAdapter">
 
     <TextView
         android:id="@+id/offline_map_city_name"
+        style="@style/map_size_font_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="省市名称"
-        style="@style/map_size_font_style"
         android:textSize="@dimen/default_font_size" />
 
     <TextView
@@ -24,19 +24,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/offline_map_city_name"
-        android:drawableLeft="@mipmap/point_blue"
         android:layout_marginTop="5dp"
-        android:textColor="@color/gray_121"
-        android:text="文件大小" />
+        android:drawableLeft="@mipmap/point_blue"
+        android:text="文件大小"
+        android:textColor="@color/gray_121" />
 
 
     <TextView
         android:id="@+id/offline_map_download_btn"
         style="@style/map_download_style_btn"
         android:layout_width="60dp"
-        android:layout_alignTop="@id/offline_map_city_name"
-        android:layout_alignBottom="@id/offline_map_city_size"
         android:layout_alignParentRight="true"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
         android:shadowColor="@android:color/transparent"
         android:text="下载"
         android:textColor="@color/btn_blue_solid"
@@ -44,6 +44,7 @@
 
     <TextView
         android:id="@+id/tv_city_list_status"
+        style="@style/content_font_default_size_13sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -51,8 +52,7 @@
         android:layout_toLeftOf="@id/offline_map_download_btn"
         android:clickable="true"
         android:focusable="false"
-        android:shadowColor="@android:color/transparent"
-        style="@style/content_font_default_size_13sp" />
+        android:shadowColor="@android:color/transparent" />
 
     <com.navinfo.omqs.ui.widget.MyProgressBar
         android:id="@+id/offline_map_progress"
@@ -60,7 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="16dp"
         android:layout_below="@id/offline_map_download_btn"
-        android:progressDrawable="@drawable/progress_bg"
         android:paddingTop="10dp"
+        android:progressDrawable="@drawable/progress_bg"
         android:visibility="invisible" />
 </RelativeLayout>

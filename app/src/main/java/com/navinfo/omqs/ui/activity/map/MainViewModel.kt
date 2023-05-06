@@ -215,7 +215,8 @@ class MainViewModel @Inject constructor(
                                 elementId = element.id,
                                 linkId = linkId,
                                 geometry = element.geometry,
-                                bottomText = SignUtil.getSignBottomText(element)
+                                bottomText = SignUtil.getSignBottomText(element),
+                                elementCode = element.code
                             )
                         )
                     }

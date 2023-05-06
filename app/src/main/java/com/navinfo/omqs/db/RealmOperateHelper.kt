@@ -75,7 +75,7 @@ class RealmOperateHelper() {
                             GeometryTools.createPoint(
                                 point.longitude,
                                 point.latitude
-                            ), it
+                            ) , it
                         )
                     )
                 } else {

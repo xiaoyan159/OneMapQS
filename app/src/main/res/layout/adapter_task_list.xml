@@ -15,10 +15,9 @@
         android:id="@+id/task_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/task_download_btn"
+        android:layout_marginRight="5dp"
         android:text="任务名称"
-        android:textColor="@color/white"
-        android:textSize="@dimen/default_font_size" />
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/task_city_name"
@@ -35,9 +34,10 @@
         style="@style/map_size_font_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/task_city_name"
-        android:layout_alignTop="@id/task_city_name"
-        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_below="@id/task_city_name"
+        android:layout_toLeftOf="@id/task_upload_btn"
+        android:layout_alignParentLeft="true"
         android:text="版本号"
         android:textSize="@dimen/card_title_font_3size" />
 
@@ -46,9 +46,8 @@
         style="@style/map_size_font_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/task_city_name"
+        android:layout_below="@id/task_data_version"
         android:layout_marginTop="5dp"
-        android:drawableLeft="@mipmap/point_blue"
         android:text="路线颜色"
         android:textSize="@dimen/card_title_font_3size" />
 

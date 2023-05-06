@@ -117,11 +117,9 @@ class EvaluationResultViewModel @Inject constructor(
      * 查询数据库，获取问题分类
      */
     fun initNewData(bean: SignBean?, filePath: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            getClassTypeList()
-            getProblemLinkList()
-        }
+        //获取当前定位点
         val geoPoint = mapController.locationLayerHandler.getCurrentGeoPoint()
+        //如果不是从面板进来的
         if (bean == null) {
             geoPoint?.let {
                 liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(it).toText()
@@ -147,13 +145,17 @@ class EvaluationResultViewModel @Inject constructor(
                         }
                     }
                 }
+                val point = GeometryTools.createGeoPoint(bean.geometry)
+                this.geometry = GeometryTools.createGeometry(point).toText()
+                mapController.animationHandler.animationByLonLat(point.latitude, point.longitude)
+                mapController.markerHandle.addMarker(point, markerTitle)
             }
-            val point = GeometryTools.createGeoPoint(bean.geometry)
-            liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(point).toText()
-            mapController.animationHandler.animationByLonLat(point.latitude, point.longitude)
-            mapController.markerHandle.addMarker(point, markerTitle)
         }
-
+        //查询元数据
+        viewModelScope.launch(Dispatchers.IO) {
+            getClassTypeList(bean)
+            getProblemLinkList()
+        }
         addChatMsgEntity(filePath)
     }
 
@@ -182,18 +184,23 @@ class EvaluationResultViewModel @Inject constructor(
     /**
      *  //获取问题分类列表
      */
-    fun getClassTypeList() {
-        Log.e("jingo", "getClassTypeList S")
+    fun getClassTypeList(bean: SignBean? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             val list = roomAppDatabase.getScProblemTypeDao().findClassTypeList()
             list?.let {
                 if (list.isNotEmpty()) {
                     //通知页面更新
                     liveDataLeftTypeList.postValue(it)
-                    val classType = it[0]
+                    var classType = it[0]
+                    if (bean != null) {
+                        val classType2 = roomAppDatabase.getScProblemTypeDao()
+                            .findClassTypeByCode(bean.elementCode)
+                        if (classType2 != null)
+                            classType = classType2
+                    }
                     //如果右侧栏没数据，给个默认值
                     if (liveDataQsRecordBean.value!!.classType.isEmpty()) {
-                        Log.e("jingo", "getClassTypeList $classType")
+
                         liveDataQsRecordBean.value!!.classType = classType
                         classTypeTemp = classType
                     }
@@ -201,7 +208,6 @@ class EvaluationResultViewModel @Inject constructor(
                 }
             }
         }
-        Log.e("jingo", "getClassTypeList E")
     }
 
     /**
