@@ -4,46 +4,83 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/bg_left_pannel"
     tools:context=".ui.fragment.tasklist.TaskListFragment">
 
-    <TextView
-        android:id="@+id/task_title"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="任务列表"
-        android:gravity="center"
-        android:textSize="18sp"
-        android:textColor="@color/white"
-        android:background="@color/default_blue"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <ImageView
-        android:id="@+id/task_back"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:src="@drawable/btn_back_xml"
-        android:paddingLeft="15dp"
-        android:paddingRight="10dp"
-        app:layout_constraintLeft_toLeftOf="@id/task_title"
-        app:layout_constraintTop_toTopOf="@id/task_title"
-        app:layout_constraintBottom_toBottomOf="@id/task_title"
-        />
-    <EditText
-        android:id="@+id/task_search"
-        style="@style/input_blue_type"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/title_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="搜索"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/task_title" />
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/left_pannel_title_layout">
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/task_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@drawable/selector_bg_round_button"
+            android:foreground="@drawable/ripple_btn_press"
+            style="@style/btn_round"
+            android:src="@drawable/ic_baseline_keyboard_arrow_left_24"></androidx.appcompat.widget.AppCompatImageView>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/task_recyclerview"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/task_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/left_pannel_title_font"
+            android:textStyle="bold"
+            android:text="任务列表"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"></androidx.appcompat.widget.AppCompatTextView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/title_layout"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/task_search"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="0dp" />
+        style="@style/default_card_view">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/task_search_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:startIconDrawable="@drawable/ic_baseline_search_24"
+                app:startIconTint="@color/gray_121"
+                app:endIconMode="clear_text"
+                android:layout_marginHorizontal="@dimen/default_widget_padding"
+                app:endIconDrawable="@drawable/baseline_delete_forever_24"
+                app:endIconTint="@color/gray_121"
+                android:scrollbarAlwaysDrawHorizontalTrack="true"
+                app:layout_constraintTop_toBottomOf="@id/title_layout"
+                app:layout_constraintVertical_bias="0.4">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/task_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="输入LinkPid"
+                    android:lines="1"
+                    android:background="@drawable/login_inputlayout_bg"
+                    tools:ignore="TouchTargetSizeCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/task_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/task_search_layout" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

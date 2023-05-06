@@ -2,6 +2,7 @@ package com.navinfo.omqs.db
 
 import android.content.Context
 import android.database.Cursor.*
+import android.util.Log
 import androidx.core.database.getBlobOrNull
 import androidx.core.database.getFloatOrNull
 import androidx.core.database.getIntOrNull
@@ -129,51 +130,58 @@ class ImportOMDBHelper @AssistedInject constructor(
             // 开始解压zip文件
             val unZipFiles = ZipUtils.unzipFile(omdbZipFile, unZipFolder)
             // 将listResult数据插入到Realm数据库中
-            Realm.getDefaultInstance().beginTransaction()
-            // 遍历解压后的文件，读取该数据返回
-            for ((index, currentConfig) in importConfig.tables.withIndex()) {
-                val txtFile = unZipFiles.find {
-                    it.name == currentConfig.table
-                }
+            try {
+                Realm.getDefaultInstance().beginTransaction()
+                // 遍历解压后的文件，读取该数据返回
+                for ((index, currentConfig) in importConfig.tables.withIndex()) {
+                    val txtFile = unZipFiles.find {
+                        it.name == currentConfig.table
+                    }
 
-                val listResult = mutableListOf<Map<String, Any>>()
-                currentConfig?.let {
-                    val list = FileIOUtils.readFile2List(txtFile, "UTF-8")
-                    if (list != null) {
-                        // 将list数据转换为map
-                        for (line in list) {
-                            val map = gson.fromJson<Map<String, Any>>(line, object:TypeToken<Map<String, Any>>(){}.getType())
-                                .toMutableMap()
-                            map["qi_table"] = currentConfig.table
-                            map["qi_name"] = currentConfig.name
-                            map["qi_code"] = currentConfig.code
-                            listResult.add(map)
+                    val listResult = mutableListOf<Map<String, Any>>()
+                    currentConfig?.let {
+                        val list = FileIOUtils.readFile2List(txtFile, "UTF-8")
+                        Log.d("ImportOMDBHelper", "开始解析：${txtFile?.name}")
+                        if (list != null) {
+                            // 将list数据转换为map
+                            for ((index, line) in list.withIndex()) {
+                                Log.d("ImportOMDBHelper", "解析第：${index+1}行")
+                                val map = gson.fromJson<Map<String, Any>>(line, object:TypeToken<Map<String, Any>>(){}.getType())
+                                    .toMutableMap()
+                                map["qi_table"] = currentConfig.table
+                                map["qi_name"] = currentConfig.name
+                                map["qi_code"] = currentConfig.code
+                                listResult.add(map)
+                            }
                         }
                     }
-                }
-                for (map in listResult) { // 每一个map就是Realm的一条数据
-                    // 先查询这个mesh下有没有数据，如果有则跳过即可
+                    for (map in listResult) { // 每一个map就是Realm的一条数据
+                        // 先查询这个mesh下有没有数据，如果有则跳过即可
 //                    val meshEntity = Realm.getDefaultInstance().where(RenderEntity::class.java).equalTo("properties['mesh']", map["mesh"].toString()).findFirst()
-                    val renderEntity = RenderEntity()
-                    renderEntity.code = map["qi_code"].toString().toInt()
-                    renderEntity.name = map["qi_name"].toString()
-                    renderEntity.table = map["qi_table"].toString()
-                    // 其他数据插入到Properties中
-                    renderEntity.geometry = map["geometry"].toString()
-                    for ((key, value) in map) {
-                        when (value) {
-                            is String -> renderEntity.properties.put(key, value)
-                            is Int -> renderEntity.properties.put(key, value.toInt().toString())
-                            is Double -> renderEntity.properties.put(key, value.toDouble().toString())
-                            else -> renderEntity.properties.put(key, value.toString())
+                        val renderEntity = RenderEntity()
+                        renderEntity.code = map["qi_code"].toString().toInt()
+                        renderEntity.name = map["qi_name"].toString()
+                        renderEntity.table = map["qi_table"].toString()
+                        // 其他数据插入到Properties中
+                        renderEntity.geometry = map["geometry"].toString()
+                        for ((key, value) in map) {
+                            when (value) {
+                                is String -> renderEntity.properties.put(key, value)
+                                is Int -> renderEntity.properties.put(key, value.toInt().toString())
+                                is Double -> renderEntity.properties.put(key, value.toDouble().toString())
+                                else -> renderEntity.properties.put(key, value.toString())
+                            }
                         }
+                        Realm.getDefaultInstance().copyToRealm(renderEntity)
                     }
-                    Realm.getDefaultInstance().copyToRealm(renderEntity)
+                    // 1个文件发送一次flow流
+                    emit("${index + 1}/${importConfig.tables.size}")
                 }
-                // 1个文件发送一次flow流
-                emit("${index + 1}/${importConfig.tables.size}")
+                Realm.getDefaultInstance().commitTransaction()
+            } catch (e: Exception) {
+                Realm.getDefaultInstance().cancelTransaction()
+                throw e
             }
-            Realm.getDefaultInstance().commitTransaction()
             emit("finish")
         }
     }

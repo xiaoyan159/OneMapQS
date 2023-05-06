@@ -4,23 +4,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="@dimen/default_widget_padding"
     tools:context=".ui.fragment.offlinemap.OfflineMapCityListFragment">
 
-    <EditText
-        android:id="@+id/offline_map_search"
-        style="@style/input_blue_type"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/offline_map_search_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="搜索"
+        app:startIconDrawable="@drawable/ic_baseline_search_24"
+        app:startIconTint="@color/gray_121"
+        app:endIconMode="clear_text"
+        android:layout_marginHorizontal="@dimen/default_widget_padding"
+        app:endIconDrawable="@drawable/baseline_delete_forever_24"
+        app:endIconTint="@color/gray_121"
+        android:scrollbarAlwaysDrawHorizontalTrack="true"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/offline_map_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="搜索"
+            android:lines="1"
+            android:background="@drawable/login_inputlayout_bg"
+            tools:ignore="TouchTargetSizeCheck" />
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/offline_map_city_list_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="@dimen/default_widget_padding"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/offline_map_search"
+        app:layout_constraintTop_toBottomOf="@id/offline_map_search_layout"
         app:layout_constraintVertical_bias="0.0"
         tools:layout_editor_absoluteX="0dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

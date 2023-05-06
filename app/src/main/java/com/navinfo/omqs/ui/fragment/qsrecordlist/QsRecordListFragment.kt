@@ -56,6 +56,10 @@ class QsRecordListFragment : BaseFragment(){
                 findNavController().popBackStack()
             }
         })
+
+        binding.recordBack.setOnClickListener{
+            findNavController().navigateUp()
+        }
     }
 
     override fun onResume() {
