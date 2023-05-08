@@ -124,6 +124,9 @@ class TaskListAdapter(
             FileUploadStatus.WAITING -> {
                 binding.taskUploadBtn.text = "等待同步"
             }
+            FileUploadStatus.UPLOADING -> {
+                binding.taskUploadBtn.text = "同步中"
+            }
         }
     }
 

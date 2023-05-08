@@ -111,12 +111,13 @@ class TaskUploadScope(
 
             val bodyList: MutableList<EvaluationInfo> = ArrayList()
 
+            if (taskBean.syncStatus == FileUploadStatus.WAITING){
+                change(FileUploadStatus.UPLOADING)
+            }
+
             taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
                 val objects = realm.where(QsRecordBean::class.java)
                     .equalTo("linkId", /*"84207223282277331"*/hadLinkDvoBean.linkPid).findAll()
-                if (taskBean.syncStatus == FileUploadStatus.WAITING){
-                        change(FileUploadStatus.UPLOADING)
-                }
                 if (objects != null&&objects.size>0) {
                     val copyList = realm.copyFromRealm(objects)
                     copyList.forEach {
@@ -142,21 +143,24 @@ class TaskUploadScope(
                 }
             }
 
-            val result = uploadManager.netApi.postRequest(bodyList)// .enqueue(object :
+            if(bodyList.size>0){
+                val result = uploadManager.netApi.postRequest(bodyList)// .enqueue(object :
 //                        Callback<ResponseBody> {
-            if (result.isSuccessful) {
-                if (result.code() == 200) {
-                    taskBean.syncStatus = FileUploadStatus.DONE
-                    // handle the response
-                    change(FileUploadStatus.DONE)
+                if (result.isSuccessful) {
+                    if (result.code() == 200) {
+                        taskBean.syncStatus = FileUploadStatus.DONE
+                        // handle the response
+                        change(FileUploadStatus.DONE)
+                    } else {
+                        // handle the failure
+                        change(FileUploadStatus.ERROR)
+                    }
                 } else {
-                    // handle the failure
                     change(FileUploadStatus.ERROR)
                 }
-            } else {
-                change(FileUploadStatus.ERROR)
+            }else{
+                change(FileUploadStatus.NONE)
             }
-
         } catch (e: Throwable) {
             change(FileUploadStatus.ERROR)
             Log.e("jingo", "数据上传出错 ${e.message}")
