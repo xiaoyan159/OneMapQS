@@ -1553,20 +1553,50 @@
     </m>
 
     <m k="qi_table">
+        <!--车道数-->
+        <m v="OMDB_LANE_NUM">
+            <m k="laneNum">
+                <m v="1">
+                    <line stroke="#545D6C" width="3"/>
+                </m>
+                <m v="2">
+                    <line stroke="#545D6C" width="6"/>
+                </m>
+                <m v="3">
+                    <line stroke="#545D6C" width="9"/>
+                </m>
+                <m v="4">
+                    <line stroke="#545D6C" width="12"/>
+                </m>
+                <m v="5">
+                    <line stroke="#545D6C" width="15"/>
+                </m>
+                <m v="6">
+                    <line stroke="#545D6C" width="18"/>
+                </m>
+                <m v="7">
+                    <line stroke="#545D6C" width="21"/>
+                </m>
+                <m v="8">
+                    <line stroke="#545D6C" width="24"/>
+                </m>
+                <m v="9">
+                    <line stroke="#545D6C" width="27"/>
+                </m>
+                <m v="10">
+                    <line stroke="#545D6C" width="30"/>
+                </m>
+                <m v="11">
+                    <line stroke="#545D6C" width="33"/>
+                </m>
+                <m v="12">
+                    <line stroke="#545D6C" width="36"/>
+                </m>
+            </m>
+        </m>
         <!-- 道路线 -->
         <m v="OMDB_RD_LINK">
             <line stroke="#9c9c9c" width="1"/>
-        </m>
-        <!--道路方向-->
-        <m v="OMDB_RD_LINK_DIRECT">
-            <m k="direct">
-                <m v="2">
-                    <lineSymbol src="assets:omdb/oneway_left.svg"></lineSymbol>
-                </m>
-                <m v="3">
-                    <lineSymbol src="assets:omdb/oneway_right.svg"></lineSymbol>
-                </m>
-            </m>
         </m>
         <!--道路种别-->
         <m v="OMDB_RD_LINK_KIND">
@@ -1784,50 +1814,20 @@
         <!--可变点限速-->
         <m v="OMDB_SPEEDLIMIT_VAR">
         </m>
-        <!--车道数-->
-        <m v="OMDB_LANE_NUM">
-            <m k="laneNum">
-                <m v="1">
-                    <line stroke="#545D6C" width="3"/>
-                </m>
-                <m v="2">
-                    <line stroke="#545D6C" width="6"/>
-                </m>
-                <m v="3">
-                    <line stroke="#545D6C" width="9"/>
-                </m>
-                <m v="4">
-                    <line stroke="#545D6C" width="12"/>
-                </m>
-                <m v="5">
-                    <line stroke="#545D6C" width="15"/>
-                </m>
-                <m v="6">
-                    <line stroke="#545D6C" width="18"/>
-                </m>
-                <m v="7">
-                    <line stroke="#545D6C" width="21"/>
-                </m>
-                <m v="8">
-                    <line stroke="#545D6C" width="24"/>
-                </m>
-                <m v="9">
-                    <line stroke="#545D6C" width="27"/>
-                </m>
-                <m v="10">
-                    <line stroke="#545D6C" width="30"/>
-                </m>
-                <m v="11">
-                    <line stroke="#545D6C" width="33"/>
-                </m>
-                <m v="12">
-                    <line stroke="#545D6C" width="36"/>
-                </m>
-            </m>
-        </m>
         <!--车道中心线-->
         <m v="OMDB_LANE_LINK_LG">
             <line stroke="#ecf0f1" width="0.1" dasharray="35,35"/>
+        </m>
+        <!--道路方向-->
+        <m v="OMDB_LINK_DIRECT">
+            <m k="direct">
+                <m v="2">
+                    <lineSymbol src="assets:omdb/oneway_left.svg"></lineSymbol>
+                </m>
+                <m v="3">
+                    <lineSymbol src="assets:omdb/oneway_right.svg"></lineSymbol>
+                </m>
+            </m>
         </m>
     </m>
 </rendertheme>
