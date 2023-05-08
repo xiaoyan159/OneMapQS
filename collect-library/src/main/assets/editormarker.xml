@@ -1822,10 +1822,10 @@
         <m v="OMDB_LINK_DIRECT">
             <m k="direct">
                 <m v="2">
-                    <lineSymbol src="assets:omdb/oneway_left.svg"></lineSymbol>
+                    <lineSymbol src="assets:omdb/oneway_right.svg"></lineSymbol>
                 </m>
                 <m v="3">
-                    <lineSymbol src="assets:omdb/oneway_right.svg"></lineSymbol>
+                    <lineSymbol src="assets:omdb/oneway_left.svg"></lineSymbol>
                 </m>
             </m>
         </m>
