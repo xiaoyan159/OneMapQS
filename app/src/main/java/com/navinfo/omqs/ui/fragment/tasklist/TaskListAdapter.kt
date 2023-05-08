@@ -59,7 +59,7 @@ class TaskListAdapter(
             val taskBean = data[it.tag as Int]
             Log.e("jingo", "开始上传 ${taskBean.syncStatus}")
             when (taskBean.syncStatus) {
-                FileUploadStatus.NONE, FileUploadStatus.ERROR -> {
+                FileUploadStatus.NONE, FileUploadStatus.ERROR,FileUploadStatus.WAITING -> {
                     uploadManager.start(taskBean.id)
                 }
             }

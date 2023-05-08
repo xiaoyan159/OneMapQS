@@ -74,8 +74,6 @@ class TaskListViewModel @Inject constructor(
                                     realm.copyToRealmOrUpdate(task)
                                 }
                             }
-                            val objects = realm.where(TaskBean::class.java).findAll()
-                            taskList = realm.copyFromRealm(objects)
 
                         }
                     }
@@ -94,7 +92,9 @@ class TaskListViewModel @Inject constructor(
                 }
                 is NetResult.Loading -> {}
             }
-
+            val realm = Realm.getDefaultInstance()
+            val objects = realm.where(TaskBean::class.java).findAll()
+            taskList = realm.copyFromRealm(objects)
             for (item in taskList) {
                 FileManager.checkOMDBFileInfo(item)
             }

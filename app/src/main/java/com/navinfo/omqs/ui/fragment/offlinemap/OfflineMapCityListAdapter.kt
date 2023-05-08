@@ -68,25 +68,34 @@ class OfflineMapCityListAdapter(
         val cityBean = data[position]
         //tag 方便onclick里拿到数据
         holder.tag = cityBean.id
+
         changeViews(binding, cityBean)
         downloadManager.addTask(cityBean)
-        downloadManager.observer(cityBean.id, holder, DownloadObserver(cityBean.id, binding))
+        downloadManager.observer(cityBean.id, holder, DownloadObserver(cityBean.id, holder))
         binding.offlineMapDownloadBtn.tag = position
         binding.offlineMapDownloadBtn.setOnClickListener(downloadBtnClick)
         binding.offlineMapCityName.text = cityBean.name
         binding.offlineMapCitySize.text = cityBean.getFileSizeText()
     }
 
-    inner class DownloadObserver(val id: String, val binding: AdapterOfflineMapCityBinding) :
+    inner class DownloadObserver(val id: String, val holder: BaseViewHolder) :
         Observer<OfflineMapCityBean> {
-        override fun onChanged(t: OfflineMapCityBean?) {
-            if (id == t?.id)
-                changeViews(binding, t)
+        override fun onChanged(offlineMapCityBean: OfflineMapCityBean?) {
+            offlineMapCityBean?.let { bean ->
+                if (id == holder.tag) {
+                    val binding: AdapterOfflineMapCityBinding =
+                        holder.viewBinding as AdapterOfflineMapCityBinding
+                    Log.e("jingo", "进度条更新 $id ${bean.id} ${holder.tag} ")
+                    changeViews(binding, bean)
+                }
+            }
+
         }
     }
 
 
     private fun changeViews(binding: AdapterOfflineMapCityBinding, cityBean: OfflineMapCityBean) {
+        Log.e("jingo", "changeViews ${cityBean.status}")
         binding.offlineMapProgress.progress =
             (cityBean.currentSize * 100 / cityBean.fileSize).toInt()
         when (cityBean.status) {

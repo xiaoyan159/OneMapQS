@@ -112,57 +112,54 @@ class TaskUploadScope(
             }
 
             val realm = Realm.getDefaultInstance()
+            val bodyList: MutableList<EvaluationInfo> = ArrayList()
             taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
                 val objects = realm.where(QsRecordBean::class.java)
                     .equalTo("linkId", /*"84207223282277331"*/hadLinkDvoBean.linkPid).findAll()
-                if (objects.size == 0) {
-                    if (taskBean.syncStatus == FileUploadStatus.WAITING)
-                        change(FileUploadStatus.NONE)
-                    return
-                }
-
-                val bodyList: MutableList<EvaluationInfo> = ArrayList()
-
                 if (objects != null) {
                     val copyList = realm.copyFromRealm(objects)
                     copyList.forEach {
                         val evaluationInfo = EvaluationInfo(
-                            taskBean.id.toString(),
-                            hadLinkDvoBean.linkPid,//"84207223282277331"
-                            "已测评",
-                            hadLinkDvoBean.mesh,//"20065597"
-                            "",
-                            it.geometry,
-                            it.classType,
-                            it.problemType,
-                            it.phenomenon,
-                            it.description,
-                            it.problemLink,
-                            it.cause,
-                            it.checkUserId,
-                            it.checkTime
+                            evaluationTaskId = taskBean.id.toString(),
+                            linkPid = hadLinkDvoBean.linkPid,//"84207223282277331"
+                            linkStatus = "已测评",
+                            markId = hadLinkDvoBean.mesh,//"20065597"
+                            trackPhotoNumber = "",
+                            markGeometry = it.geometry,
+                            featureName = it.classType,
+                            problemType = it.problemType,
+                            problemPhenomenon = it.phenomenon,
+                            problemDesc = it.description,
+                            problemLink = it.problemLink,
+                            problemReason = it.cause,
+                            evaluatorName = it.checkUserId,
+                            evaluationDate = it.checkTime,
+                            evaluationWay = "现场测评"
                         )
 
                         bodyList.add(evaluationInfo)
                     }
 
-                    val result = uploadManager.netApi.postRequest(bodyList)// .enqueue(object :
-//                        Callback<ResponseBody> {
-                    if (result.isSuccessful) {
-                        if (result.code() == 200) {
-                            taskBean.syncStatus = FileUploadStatus.DONE
-                            // handle the response
-                            change(FileUploadStatus.DONE)
-                        } else {
-                            // handle the failure
-                            change(FileUploadStatus.ERROR)
-                        }
-                    } else {
-                        change(FileUploadStatus.ERROR)
-                    }
                 }
             }
-
+            if (bodyList.size == 0) {
+                if (taskBean.syncStatus == FileUploadStatus.WAITING)
+                    change(FileUploadStatus.NONE)
+                return
+            }
+            val result = uploadManager.netApi.postRequest(bodyList)// .enqueue(object :
+//                        Callback<ResponseBody> {
+            if (result.isSuccessful) {
+                if (result.code() == 200) {
+                    // handle the response
+                    change(FileUploadStatus.DONE)
+                } else {
+                    // handle the failure
+                    change(FileUploadStatus.ERROR)
+                }
+            } else {
+                change(FileUploadStatus.ERROR)
+            }
         } catch (e: Throwable) {
             change(FileUploadStatus.ERROR)
             Log.e("jingo", "数据上传出错 ${e.message}")

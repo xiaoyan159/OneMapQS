@@ -48,6 +48,6 @@ data class EvaluationInfo(
     val evaluationDate: String = "",//测评日期(yyyy-mm-dd)
 
     @SerializedName("evaluationWay")
-    val evaluationWay: String = ""//测评方式
+    val evaluationWay: String = "现场测评"//测评方式
 ) : Parcelable
 
