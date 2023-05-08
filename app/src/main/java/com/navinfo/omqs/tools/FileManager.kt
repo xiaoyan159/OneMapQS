@@ -3,7 +3,7 @@ package com.navinfo.omqs.tools
 import android.content.Context
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.OfflineMapCityBean
-import com.navinfo.omqs.bean.TaskBean
+import com.navinfo.collect.library.data.entity.TaskBean
 import java.io.File
 
 class FileManager {
@@ -27,6 +27,7 @@ class FileManager {
             const val DONE = 1 //完成
             const val ERROR = 2 //错误
             const val WAITING = 3 //等待中
+            const val UPLOADING = 4 //同步中
         }
 
         //初始化数据文件夹

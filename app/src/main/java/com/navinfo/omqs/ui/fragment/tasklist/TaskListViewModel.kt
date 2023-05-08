@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.Constant
-import com.navinfo.omqs.bean.TaskBean
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager

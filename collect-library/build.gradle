@@ -132,4 +132,10 @@ dependencies {
 //    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 //    // 协程Java8支持库
 //    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.4'
+
+    // Retrofit 网络请求相关
+    api("com.squareup.retrofit2:retrofit:2.9.0")
+    api("com.squareup.retrofit2:converter-gson:2.9.0")
+    api('com.squareup.okhttp3:okhttp:5.0.0-alpha.11')
+    api('com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11')
 }

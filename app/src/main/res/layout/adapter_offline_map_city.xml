@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/ivory"
+    android:background="@color/white"
     android:paddingLeft="10dp"
     android:paddingTop="5dp"
     android:paddingRight="10dp"
@@ -32,7 +32,7 @@
 
     <TextView
         android:id="@+id/offline_map_download_btn"
-        style="@style/map_download_style_btn"
+        style="@style/btn_default_stroke_horizontal_round"
         android:layout_width="60dp"
         android:layout_alignParentRight="true"
         android:layout_gravity="center_vertical"

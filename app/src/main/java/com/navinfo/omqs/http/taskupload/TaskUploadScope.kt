@@ -8,16 +8,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.omqs.bean.EvaluationInfo
-import com.navinfo.omqs.bean.TaskBean
-import com.navinfo.omqs.http.NetResult
-import com.navinfo.omqs.tools.FileManager
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.tools.FileManager.Companion.FileUploadStatus
 import io.realm.Realm
 import kotlinx.coroutines.*
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.*
 
 class TaskUploadScope(
@@ -67,7 +61,6 @@ class TaskUploadScope(
         }
     }
 
-
     /**
      * 更新状态
      * @param status [OfflineMapCityBean.Status]
@@ -76,10 +69,13 @@ class TaskUploadScope(
         if (taskBean.syncStatus != status) {
             taskBean.syncStatus = status
             uploadData.postValue(taskBean)
-            launch {
-                val realm = Realm.getDefaultInstance()
-                realm.executeTransaction {
-                    it.copyToRealmOrUpdate(taskBean)
+            //同步中不进行状态记录,只做界面变更显示
+            if(status!=FileUploadStatus.UPLOADING){
+                launch {
+                    val realm = Realm.getDefaultInstance()
+                    realm.executeTransaction {
+                        it.copyToRealmOrUpdate(taskBean)
+                    }
                 }
             }
         }
@@ -112,11 +108,17 @@ class TaskUploadScope(
             }
 
             val realm = Realm.getDefaultInstance()
+
             val bodyList: MutableList<EvaluationInfo> = ArrayList()
+
+            if (taskBean.syncStatus == FileUploadStatus.WAITING){
+                change(FileUploadStatus.UPLOADING)
+            }
+
             taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
                 val objects = realm.where(QsRecordBean::class.java)
                     .equalTo("linkId", /*"84207223282277331"*/hadLinkDvoBean.linkPid).findAll()
-                if (objects != null) {
+                if (objects != null&&objects.size>0) {
                     val copyList = realm.copyFromRealm(objects)
                     copyList.forEach {
                         val evaluationInfo = EvaluationInfo(
@@ -139,26 +141,26 @@ class TaskUploadScope(
 
                         bodyList.add(evaluationInfo)
                     }
-
                 }
             }
-            if (bodyList.size == 0) {
-                if (taskBean.syncStatus == FileUploadStatus.WAITING)
-                    change(FileUploadStatus.NONE)
-                return
-            }
-            val result = uploadManager.netApi.postRequest(bodyList)// .enqueue(object :
+
+            if(bodyList.size>0){
+                val result = uploadManager.netApi.postRequest(bodyList)// .enqueue(object :
 //                        Callback<ResponseBody> {
-            if (result.isSuccessful) {
-                if (result.code() == 200) {
-                    // handle the response
-                    change(FileUploadStatus.DONE)
+                if (result.isSuccessful) {
+                    if (result.code() == 200) {
+//                        taskBean.syncStatus = FileUploadStatus.DONE
+                        // handle the response
+                        change(FileUploadStatus.DONE)
+                    } else {
+                        // handle the failure
+                        change(FileUploadStatus.ERROR)
+                    }
                 } else {
-                    // handle the failure
                     change(FileUploadStatus.ERROR)
                 }
-            } else {
-                change(FileUploadStatus.ERROR)
+            }else{
+                change(FileUploadStatus.NONE)
             }
         } catch (e: Throwable) {
             change(FileUploadStatus.ERROR)

@@ -31,7 +31,7 @@ import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.bean.SignBean
-import com.navinfo.omqs.bean.TaskBean
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager

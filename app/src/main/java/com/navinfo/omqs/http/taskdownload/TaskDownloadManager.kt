@@ -4,13 +4,10 @@ import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.navinfo.collect.library.map.NIMapController
-import com.navinfo.omqs.bean.TaskBean
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
-import com.navinfo.omqs.hilt.OMDBDataBaseHiltFactory
 import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
-import dagger.hilt.android.qualifiers.ActivityContext
 import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
 
 
 /**
