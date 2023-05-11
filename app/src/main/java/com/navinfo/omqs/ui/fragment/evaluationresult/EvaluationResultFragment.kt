@@ -72,7 +72,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         //删除事件
         binding.evaluationBarDelete.setOnClickListener() {
 
-            viewModel.deleteData()
+            viewModel.deleteData(requireContext())
 
         }
 

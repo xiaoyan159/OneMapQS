@@ -36,6 +36,7 @@
                     style="@style/card_title_font_default"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/btn_back_xml"
                     android:layout_alignParentLeft="true"
                     android:text="Mark" />
 
@@ -51,7 +52,7 @@
                     android:id="@+id/evaluation_bar_delete"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingRight="5dp"
+                    android:padding="10dp"
                     android:layout_centerInParent="true"
                     android:layout_toLeftOf="@+id/evaluation_bar_save"
                     android:background="@drawable/btn_delete_xml" />
