@@ -5,7 +5,6 @@
     android:gravity="center" >
 
     <LinearLayout
-        android:id="@+id/voice_rcd_hint_rcding"
         android:layout_width="wrap_content"
         android:layout_height="140.0dip"
         android:gravity="bottom|center"
@@ -16,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:background="@drawable/drawable_bg_blue_frame_white_bg_4_radius"
+            android:background="@drawable/shape_rect_white_2dp_bg"
             android:orientation="horizontal"
             >
             <ImageView
@@ -30,7 +29,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/del_re"
             android:layout_width="140.0dip"
             android:layout_height="140.0dip"
             android:layout_marginLeft="10.0dip"
@@ -48,7 +46,6 @@
                 android:textSize="13.0dip" />
 
             <ImageView
-                android:id="@+id/sc_img1"
                 android:layout_width="75.0dip"
                 android:layout_height="75.0dip"
                 android:layout_marginTop="12.0dip"
@@ -59,7 +56,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/voice_rcd_hint_tooshort"
         android:layout_width="140.0dip"
         android:layout_height="140.0dip"
         android:background="@drawable/voice_rcd_hint_bg"

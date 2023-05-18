@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--地图主页面 地图放大按钮背景，结合[selector_zoom_in_bg]使用-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/white" />
+    <corners
+        android:bottomLeftRadius="0dp"
+        android:bottomRightRadius="0dp"
+        android:topLeftRadius="11dp"
+        android:topRightRadius="11dp" />
+</shape>
+

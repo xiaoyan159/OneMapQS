@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:hint="搜索"
             android:lines="1"
-            android:background="@drawable/login_inputlayout_bg"
+            android:background="@drawable/shape_login_inputlayout_bg"
             tools:ignore="TouchTargetSizeCheck" />
     </com.google.android.material.textfield.TextInputLayout>
 

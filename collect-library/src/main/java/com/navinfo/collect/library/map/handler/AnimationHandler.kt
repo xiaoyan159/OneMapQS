@@ -3,6 +3,7 @@ package com.navinfo.collect.library.map.handler
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.map.NIMapView
+import org.oscim.core.BoundingBox
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
 
@@ -68,4 +69,11 @@ open class AnimationHandler(context: AppCompatActivity, mapView: NIMapView) :
         mMapView.vtmMap.animator().animateTo(mapPosition)
     }
 
+    /**
+     *
+     */
+    fun animateToBox(maxX: Double, maxY: Double, minX: Double, minY: Double) {
+        val box = BoundingBox(minY, minX, maxY, maxX)
+        mMapView.vtmMap.animator().animateTo(box)
+    }
 }

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="193dp"
     android:layout_height="78dp"
-    android:background="@mipmap/bg_sign"
+    android:background="@drawable/bg_sign"
     tools:context="com.navinfo.omqs.ui.activity.map.SignAdapter">
 
     <TextView
@@ -12,7 +12,7 @@
         android:layout_height="40dp"
         android:layout_marginLeft="19dp"
         android:layout_marginTop="4dp"
-        android:background="@drawable/icon_speed_limit"
+        android:background="@drawable/shape_icon_speed_limit"
         android:gravity="center"
         android:text="80"
         android:textColor="#2F2F2F"

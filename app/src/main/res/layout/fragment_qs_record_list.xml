@@ -31,7 +31,7 @@
                     android:padding="@dimen/eight"
                     android:layout_alignParentLeft="true"
                     android:layout_centerInParent="true"
-                    android:src="@drawable/btn_back_xml" />
+                    android:src="@drawable/selector_btn_back_xml" />
 
                 <TextView
                     android:id="@+id/tv_title"
@@ -124,7 +124,7 @@
                     android:layout_height="wrap_content"
                     android:hint="输入LinkPid"
                     android:lines="1"
-                    android:background="@drawable/login_inputlayout_bg"
+                    android:background="@drawable/shape_login_inputlayout_bg"
                     tools:ignore="TouchTargetSizeCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 

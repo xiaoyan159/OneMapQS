@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/dialog_bg"
+        android:background="@drawable/shape_rect_white_2dp_bg"
         android:orientation="vertical">
 
         <LinearLayout
@@ -114,7 +114,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@drawable/dialog_bg_cancel"
+                    android:background="@drawable/shape_rect_white_2dp_bg"
                     android:gravity="center"
                     android:padding="@dimen/twelve"
                     android:text="取消"
@@ -124,7 +124,7 @@
                     android:id="@+id/middle_view"
                     android:layout_width="0.6dp"
                     android:layout_height="match_parent"
-                    android:background="@drawable/dialog_bg_cancel"
+                    android:background="@drawable/shape_rect_white_2dp_bg"
                     android:visibility="gone" />
 
                 <TextView
@@ -133,7 +133,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@drawable/dialog_bg_ok"
+                    android:background="@drawable/shape_rect_white_2dp_bg"
                     android:gravity="center"
                     android:padding="@dimen/twelve"
                     android:text="中间"
@@ -152,7 +152,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@drawable/dialog_bg_ok"
+                    android:background="@drawable/shape_rect_white_2dp_bg"
                     android:gravity="center"
                     android:padding="@dimen/twelve"
                     android:text="确定"

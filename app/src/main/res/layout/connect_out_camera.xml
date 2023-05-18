@@ -17,7 +17,6 @@
             android:src="@drawable/icon_camera_close_xml" />
 
         <LinearLayout
-            android:id="@+id/layer_connectCamera_operate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/fl_layout"

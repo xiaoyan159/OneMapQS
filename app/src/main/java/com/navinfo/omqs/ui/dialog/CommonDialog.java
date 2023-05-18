@@ -34,7 +34,6 @@ import com.navinfo.collect.library.sensor.ISensor.enmConnectionStatus;
 import com.navinfo.collect.library.sensor.ISensor.SensorWorkingMode;
 import com.navinfo.collect.library.garminvirbxe.SensorParams;
 import com.navinfo.collect.library.garminvirbxe.HostBean;
-import com.navinfo.collect.library.system.VLCApplication;
 import com.navinfo.omqs.Constant;
 import com.navinfo.omqs.R;
 import com.navinfo.omqs.ui.activity.map.MainActivity;
@@ -295,7 +294,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
                     mOneBtConnect.setPressed(false);
                     mOneBtConnect.setText("一键连接");
                     mStartOrEndTakePicture.setEnabled(false);
-                    mOneBtConnect.setBackgroundResource(R.drawable.btn_connect_bg_enabled);
+                    mOneBtConnect.setBackgroundResource(R.drawable.shape_btn_connect_bg_enabled);
                     updateCameraResources(1, getmDeviceNum());
 
                     Log.e("AAA", "未知返回");
@@ -485,7 +484,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
                 mShareUtil.setConnectstate(Constant.USER_ID, connectstate);
                 stopVideo();
                 mOneBtConnect.setPressed(true);
-                mOneBtConnect.setBackgroundResource(R.drawable.btn_red_disconnect_bg);
+                mOneBtConnect.setBackgroundResource(R.drawable.shape_btn_red_disconnect_bg);
                 mOneBtConnect.setText("断开连接！");
                 //停止获取GPS状态
                 if (getmDeviceNum() == 1)
@@ -679,7 +678,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
         if (connectstate) {
             mOneBtConnect.setPressed(true);
 
-            mOneBtConnect.setBackgroundResource(R.drawable.btn_red_disconnect_bg);
+            mOneBtConnect.setBackgroundResource(R.drawable.shape_btn_red_disconnect_bg);
 
             mOneBtConnect.setText("断开连接！");
 
@@ -857,7 +856,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
                     //停止当前活动
                     takephotoManager.StopContinuousTakePhoto(mHostBean, getmDeviceNum());
 
-                    mOneBtConnect.setBackgroundResource(R.drawable.btn_connect_bg_enabled);
+                    mOneBtConnect.setBackgroundResource(R.drawable.shape_btn_connect_bg_enabled);
 
                     mOneBtConnect.setText("一键连接！");
 
@@ -1076,7 +1075,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
         connectstate = false;
         mShareUtil.setConnectstate(Constant.USER_ID, connectstate);
         mOneBtConnect.setPressed(false);
-        mOneBtConnect.setBackgroundResource(R.drawable.btn_connect_bg_enabled);
+        mOneBtConnect.setBackgroundResource(R.drawable.shape_btn_connect_bg_enabled);
         mOneBtConnect.setText("一键连接");
         //增加按钮状态控制
         mStartOrEndTakePicture.setEnabled(false);

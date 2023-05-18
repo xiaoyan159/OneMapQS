@@ -1,3 +1,4 @@
 <resources>
     <dimen name="fab_margin">48dp</dimen>
+    <dimen name="fragment_phenomenon_width" comment="问题现象面板宽度">310dp</dimen>
 </resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--地图主页面 地图缩小按钮背景，结合[selector_zoom_out_bg]使用-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/white" />
+    <corners
+        android:bottomLeftRadius="11dp"
+        android:bottomRightRadius="11dp"
+        android:topLeftRadius="0dp"
+        android:topRightRadius="0dp" />
+</shape>
+

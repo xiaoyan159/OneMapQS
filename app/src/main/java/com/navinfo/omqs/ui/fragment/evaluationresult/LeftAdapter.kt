@@ -29,10 +29,10 @@ class LeftAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) :
         val title = data[position]
         bd.itemId.text = title
         if (selectTitle == title) {
-            bd.itemId.setBackgroundResource(R.drawable.drawable_bg_tittle_blue_bg_4_radius)
+            bd.itemId.setBackgroundResource(R.drawable.shape_rect_white_2dp_bg)
             bd.itemId.setTextColor(holder.viewBinding.root.context.getColor(R.color.highFontColor))
         } else {
-            bd.itemId.setBackgroundResource(R.drawable.drawable_bg_white_bg_4_radius)
+            bd.itemId.setBackgroundResource(R.drawable.shape_rect_white_2dp_bg)
             bd.itemId.setTextColor(holder.viewBinding.root.context.getColor(R.color.black))
         }
         bd.root.setOnClickListener {
