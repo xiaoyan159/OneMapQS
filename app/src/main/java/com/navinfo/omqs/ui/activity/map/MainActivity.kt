@@ -81,6 +81,7 @@ class MainActivity : BaseActivity() {
         )
         // 在mapController初始化前获取当前OMDB图层显隐
         viewModel.refreshOMDBLayer(LayerConfigUtils.getLayerConfigList())
+        mapController.mMapView.vtmMap.viewport().maxZoomLevel = 25
         //关联生命周期
         binding.lifecycleOwner = this
         //给xml转递对象

@@ -52,7 +52,7 @@
     <style-text style="bold" fill="#606060" id="ferry" k="name" size="12" stroke="#ffffff"
         stroke-width="2.0" />
     <!--speedlimit-->
-    <style-text fill="#000000" id="max-speed-limit" k="name" size="15" stroke="#ffffff"
+    <style-text fill="#000000" id="max-speed-limit" k="name" size="18" stroke="#000000"
         stroke-width="0.1" />
 
     <!--###### AREA styles ######-->
@@ -1572,7 +1572,7 @@
                     <line stroke="#545D6C" width="15"/>
                 </m>
                 <m v="6">
-                    <line stroke="#545D6C" width="18"/>
+                    <line stroke="#545D6C" width="18" />
                 </m>
                 <m v="7">
                     <line stroke="#545D6C" width="21"/>
@@ -1647,162 +1647,167 @@
         <m v="OMDB_SPEEDLIMIT">
             <m k="speedFlag">
                 <m v="0">
-<!--                    <circle fill="#ffffff" radius="30" scale-radius="true" stroke="#ff0000" stroke-width="4"/>-->
-<!--                    <text k="maxSpeed" use="max-speed-limit" priority="0"></text>-->
-                    <m k="maxSpeed">
-                        <m v="5">
-                            <symbol src="assets:omdb/1101/1101_5_0.png"></symbol>
-                        </m>
-                        <m v="10">
-                            <symbol src="assets:omdb/1101/1101_10_0.png"></symbol>
-                        </m>
-                        <m v="15">
-                            <symbol src="assets:omdb/1101/1101_15_0.png"></symbol>
-                        </m>
-                        <m v="20">
-                            <symbol src="assets:omdb/1101/1101_20_0.png"></symbol>
-                        </m>
-                        <m v="25">
-                            <symbol src="assets:omdb/1101/1101_25_0.png"></symbol>
-                        </m>
-                        <m v="30">
-                            <symbol src="assets:omdb/1101/1101_30_0.png"></symbol>
-                        </m>
-                        <m v="35">
-                            <symbol src="assets:omdb/1101/1101_35_0.png"></symbol>
-                        </m>
-                        <m v="40">
-                            <symbol src="assets:omdb/1101/1101_40_0.png"></symbol>
-                        </m>
-                        <m v="45">
-                            <symbol src="assets:omdb/1101/1101_45_0.png"></symbol>
-                        </m>
-                        <m v="50">
-                            <symbol src="assets:omdb/1101/1101_50_0.png"></symbol>
-                        </m>
-                        <m v="55">
-                            <symbol src="assets:omdb/1101/1101_55_0.png"></symbol>
-                        </m>
-                        <m v="60">
-                            <symbol src="assets:omdb/1101/1101_60_0.png"></symbol>
-                        </m>
-                        <m v="65">
-                            <symbol src="assets:omdb/1101/1101_65_0.png"></symbol>
-                        </m>
-                        <m v="70">
-                            <symbol src="assets:omdb/1101/1101_70_0.png"></symbol>
-                        </m>
-                        <m v="75">
-                            <symbol src="assets:omdb/1101/1101_75_0.png"></symbol>
-                        </m>
-                        <m v="80">
-                            <symbol src="assets:omdb/1101/1101_80_0.png"></symbol>
-                        </m>
-                        <m v="85">
-                            <symbol src="assets:omdb/1101/1101_85_0.png"></symbol>
-                        </m>
-                        <m v="90">
-                            <symbol src="assets:omdb/1101/1101_90_0.png"></symbol>
-                        </m>
-                        <m v="95">
-                            <symbol src="assets:omdb/1101/1101_95_0.png"></symbol>
-                        </m>
-                        <m v="100">
-                            <symbol src="assets:omdb/1101/1101_100_0.png"></symbol>
-                        </m>
-                        <m v="105">
-                            <symbol src="assets:omdb/1101/1101_105_0.png"></symbol>
-                        </m>
-                        <m v="110">
-                            <symbol src="assets:omdb/1101/1101_110_0.png"></symbol>
-                        </m>
-                        <m v="115">
-                            <symbol src="assets:omdb/1101/1101_115_0.png"></symbol>
-                        </m>
-                        <m v="120">
-                            <symbol src="assets:omdb/1101/1101_120_0.png"></symbol>
-                        </m>
-                    </m>
+<!--                    <symbol src="assets:omdb/round_speedlimit.svg" symbol-width="30" symbol-height="30"></symbol>-->
+                    <caption k="maxSpeed" fill="#000000" priority="0" size="16" stroke="#ffffff"
+                        stroke-width="1.0"></caption>
+                    <symbol src="assets:omdb/icon_4002_0.png" symbol-width="46" symbol-height="46"></symbol>
+<!--                    <circle fill="#ffffff" radius="28" scale-radius="true" stroke="#ff0000" stroke-width="6"/>-->
+<!--                    <m k="maxSpeed">-->
+<!--                        <m v="5">-->
+<!--                            <symbol src="assets:omdb/1101/1101_5_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="10">-->
+<!--                            <symbol src="assets:omdb/1101/1101_10_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="15">-->
+<!--                            <symbol src="assets:omdb/1101/1101_15_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="20">-->
+<!--                            <symbol src="assets:omdb/1101/1101_20_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="25">-->
+<!--                            <symbol src="assets:omdb/1101/1101_25_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="30">-->
+<!--                            <symbol src="assets:omdb/1101/1101_30_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="35">-->
+<!--                            <symbol src="assets:omdb/1101/1101_35_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="40">-->
+<!--                            <symbol src="assets:omdb/1101/1101_40_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="45">-->
+<!--                            <symbol src="assets:omdb/1101/1101_45_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="50">-->
+<!--                            <symbol src="assets:omdb/1101/1101_50_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="55">-->
+<!--                            <symbol src="assets:omdb/1101/1101_55_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="60">-->
+<!--                            <symbol src="assets:omdb/1101/1101_60_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="65">-->
+<!--                            <symbol src="assets:omdb/1101/1101_65_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="70">-->
+<!--                            <symbol src="assets:omdb/1101/1101_70_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="75">-->
+<!--                            <symbol src="assets:omdb/1101/1101_75_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="80">-->
+<!--                            <symbol src="assets:omdb/1101/1101_80_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="85">-->
+<!--                            <symbol src="assets:omdb/1101/1101_85_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="90">-->
+<!--                            <symbol src="assets:omdb/1101/1101_90_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="95">-->
+<!--                            <symbol src="assets:omdb/1101/1101_95_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="100">-->
+<!--                            <symbol src="assets:omdb/1101/1101_100_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="105">-->
+<!--                            <symbol src="assets:omdb/1101/1101_105_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="110">-->
+<!--                            <symbol src="assets:omdb/1101/1101_110_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="115">-->
+<!--                            <symbol src="assets:omdb/1101/1101_115_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="120">-->
+<!--                            <symbol src="assets:omdb/1101/1101_120_0.png"></symbol>-->
+<!--                        </m>-->
+<!--                    </m>-->
                     <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
                         stroke-width="1.0"></caption>
                 </m>
                 <m v="1">
-<!--                    <circle fill="#ffffff" radius="30" scale-radius="true" stroke="#00ff00" stroke-width="4"/>-->
-<!--                    <text k="maxSpeed" use="max-speed-limit"></text>-->
-                    <m k="maxSpeed">
-                        <m v="5">
-                            <symbol src="assets:omdb/1101/1101_5_1.png"></symbol>
-                        </m>
-                        <m v="10">
-                            <symbol src="assets:omdb/1101/1101_10_1.png"></symbol>
-                        </m>
-                        <m v="15">
-                            <symbol src="assets:omdb/1101/1101_15_1.png"></symbol>
-                        </m>
-                        <m v="20">
-                            <symbol src="assets:omdb/1101/1101_20_1.png"></symbol>
-                        </m>
-                        <m v="25">
-                            <symbol src="assets:omdb/1101/1101_25_1.png"></symbol>
-                        </m>
-                        <m v="30">
-                            <symbol src="assets:omdb/1101/1101_30_1.png"></symbol>
-                        </m>
-                        <m v="35">
-                            <symbol src="assets:omdb/1101/1101_35_1.png"></symbol>
-                        </m>
-                        <m v="40">
-                            <symbol src="assets:omdb/1101/1101_40_1.png"></symbol>
-                        </m>
-                        <m v="45">
-                            <symbol src="assets:omdb/1101/1101_45_1.png"></symbol>
-                        </m>
-                        <m v="50">
-                            <symbol src="assets:omdb/1101/1101_50_1.png"></symbol>
-                        </m>
-                        <m v="55">
-                            <symbol src="assets:omdb/1101/1101_55_1.png"></symbol>
-                        </m>
-                        <m v="60">
-                            <symbol src="assets:omdb/1101/1101_60_1.png"></symbol>
-                        </m>
-                        <m v="65">
-                            <symbol src="assets:omdb/1101/1101_65_1.png"></symbol>
-                        </m>
-                        <m v="70">
-                            <symbol src="assets:omdb/1101/1101_70_1.png"></symbol>
-                        </m>
-                        <m v="75">
-                            <symbol src="assets:omdb/1101/1101_75_1.png"></symbol>
-                        </m>
-                        <m v="80">
-                            <symbol src="assets:omdb/1101/1101_80_1.png"></symbol>
-                        </m>
-                        <m v="85">
-                            <symbol src="assets:omdb/1101/1101_85_1.png"></symbol>
-                        </m>
-                        <m v="90">
-                            <symbol src="assets:omdb/1101/1101_90_1.png"></symbol>
-                        </m>
-                        <m v="95">
-                            <symbol src="assets:omdb/1101/1101_95_1.png"></symbol>
-                        </m>
-                        <m v="100">
-                            <symbol src="assets:omdb/1101/1101_100_1.png"></symbol>
-                        </m>
-                        <m v="105">
-                            <symbol src="assets:omdb/1101/1101_105_1.png"></symbol>
-                        </m>
-                        <m v="110">
-                            <symbol src="assets:omdb/1101/1101_110_1.png"></symbol>
-                        </m>
-                        <m v="115">
-                            <symbol src="assets:omdb/1101/1101_115_1.png"></symbol>
-                        </m>
-                        <m v="120">
-                            <symbol src="assets:omdb/1101/1101_120_1.png"></symbol>
-                        </m>
-                    </m>
+                    <caption k="maxSpeed" fill="#000000" priority="0" size="16" stroke="#ffffff"
+                        stroke-width="1.0"></caption>
+                    <symbol src="assets:omdb/icon_4002_1.png" symbol-width="46" symbol-height="46"></symbol>
+<!--                    <circle fill="#ffffff" radius="28" scale-radius="true" stroke="#00ff00" stroke-width="6"/>-->
+<!--                    <m k="maxSpeed">-->
+<!--                        <m v="5">-->
+<!--                            <symbol src="assets:omdb/1101/1101_5_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="10">-->
+<!--                            <symbol src="assets:omdb/1101/1101_10_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="15">-->
+<!--                            <symbol src="assets:omdb/1101/1101_15_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="20">-->
+<!--                            <symbol src="assets:omdb/1101/1101_20_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="25">-->
+<!--                            <symbol src="assets:omdb/1101/1101_25_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="30">-->
+<!--                            <symbol src="assets:omdb/1101/1101_30_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="35">-->
+<!--                            <symbol src="assets:omdb/1101/1101_35_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="40">-->
+<!--                            <symbol src="assets:omdb/1101/1101_40_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="45">-->
+<!--                            <symbol src="assets:omdb/1101/1101_45_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="50">-->
+<!--                            <symbol src="assets:omdb/1101/1101_50_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="55">-->
+<!--                            <symbol src="assets:omdb/1101/1101_55_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="60">-->
+<!--                            <symbol src="assets:omdb/1101/1101_60_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="65">-->
+<!--                            <symbol src="assets:omdb/1101/1101_65_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="70">-->
+<!--                            <symbol src="assets:omdb/1101/1101_70_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="75">-->
+<!--                            <symbol src="assets:omdb/1101/1101_75_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="80">-->
+<!--                            <symbol src="assets:omdb/1101/1101_80_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="85">-->
+<!--                            <symbol src="assets:omdb/1101/1101_85_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="90">-->
+<!--                            <symbol src="assets:omdb/1101/1101_90_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="95">-->
+<!--                            <symbol src="assets:omdb/1101/1101_95_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="100">-->
+<!--                            <symbol src="assets:omdb/1101/1101_100_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="105">-->
+<!--                            <symbol src="assets:omdb/1101/1101_105_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="110">-->
+<!--                            <symbol src="assets:omdb/1101/1101_110_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="115">-->
+<!--                            <symbol src="assets:omdb/1101/1101_115_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                        <m v="120">-->
+<!--                            <symbol src="assets:omdb/1101/1101_120_1.png"></symbol>-->
+<!--                        </m>-->
+<!--                    </m>-->
                     <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
                         stroke-width="1.0"></caption>
                 </m>
@@ -1810,9 +1815,41 @@
         </m>
         <!--条件点限速-->
         <m v="OMDB_SPEEDLIMIT_COND">
+            <m k="speedFlag">
+                <m v="0">
+                    <!--                    <symbol src="assets:omdb/round_speedlimit.svg" symbol-width="30" symbol-height="30"></symbol>-->
+                    <caption k="maxSpeed" fill="#000000" priority="0" size="16" stroke="#ffffff"
+                        stroke-width="1.0"></caption>
+                    <symbol src="assets:omdb/icon_4003_0.png" symbol-width="46" symbol-height="46"></symbol>
+                    <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
+                        stroke-width="1.0"></caption>
+                </m>
+                <m v="1">
+                    <caption k="maxSpeed" fill="#000000" priority="0" size="16" stroke="#ffffff"
+                        stroke-width="1.0"></caption>
+                    <symbol src="assets:omdb/icon_4003_1.png" symbol-width="46" symbol-height="46"></symbol>
+                    <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
+                        stroke-width="1.0"></caption>
+                </m>
+            </m>
         </m>
         <!--可变点限速-->
         <m v="OMDB_SPEEDLIMIT_VAR">
+            <m v="0">
+                <!--                    <symbol src="assets:omdb/round_speedlimit.svg" symbol-width="30" symbol-height="30"></symbol>-->
+                <caption k="maxSpeed" fill="#000000" priority="0" size="16" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
+                <symbol src="assets:omdb/icon_4004_0.png" symbol-width="46" symbol-height="46"></symbol>
+                <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
+            </m>
+            <m v="1">
+                <caption k="maxSpeed" fill="#000000" priority="0" size="16" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
+                <symbol src="assets:omdb/icon_4004_1.png" symbol-width="46" symbol-height="46"></symbol>
+                <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
+            </m>
         </m>
         <!--车道中心线-->
         <m v="OMDB_LANE_LINK_LG">
