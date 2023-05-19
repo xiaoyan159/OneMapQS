@@ -12,20 +12,33 @@
         android:layout_height="40dp"
         android:layout_marginLeft="19dp"
         android:layout_marginTop="4dp"
-        android:background="@drawable/shape_icon_speed_limit"
+        android:background="@drawable/icon_speed_limit"
         android:gravity="center"
         android:text="80"
         android:textColor="#2F2F2F"
-        android:textSize="14.67sp" />
+        android:textSize="14sp" />
+
     <TextView
         android:id="@+id/sign_bottom_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:layout_alignParentBottom="true"
         android:layout_marginLeft="15dp"
         android:layout_marginBottom="5dp"
+        android:gravity="center"
         android:text="道路名"
-        android:layout_alignParentBottom="true"
         android:textColor="@color/white"
-        android:textSize="14.67sp" />
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/sign_bottom_right_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="其他信息"
+        android:layout_alignTop="@id/sign_bottom_text"
+        android:textColor="@color/white"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="15dp"
+        android:textSize="14sp"/>
 </RelativeLayout>

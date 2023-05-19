@@ -12,7 +12,7 @@ class SignUtil {
          */
         fun getSignIconText(data: RenderEntity): String {
             return when (data.code) {
-                //常规点限速
+                //常规点限速,条件点限速
                 4002, 4003 -> getSpeedLimitText(data)
 //                //道路种别
 //                2008 -> getKindCodeIcon(data)
@@ -26,8 +26,12 @@ class SignUtil {
 
         fun getSignBottomText(data: RenderEntity): String {
             return when (data.code) {
+                //可变点限速
+                4004 -> "可变点限速"
                 //常规点限速
                 4002 -> "常规点限速"
+                //常点限速
+                4003 -> "条件点限速"
                 //道路种别
                 2008 -> "道路种别"
                 //道路方向
@@ -36,6 +40,64 @@ class SignUtil {
                 2041 -> "车道数"
                 else -> ""
             }
+        }
+
+        /**
+         * 右下角文字
+         */
+        fun getSignBottomRightText(data: RenderEntity): String {
+            return when (data.code) {
+                //常点限速
+                4003 -> getConditionLimitText(data)
+                else -> ""
+            }
+        }
+
+        /**
+         * 条件点限速文字
+         */
+
+        fun getConditionLimitText(data: RenderEntity): String {
+            var stringBuffer = StringBuffer()
+            try {
+                val dependent = data.properties["speedDependent"]
+                dependent?.let {
+                    val dependentInt = it.toInt()
+                    for (i in 31 downTo 0) {
+                        val bit = (dependentInt shr i) and 1
+                        if (bit == 1) {
+                            when (i) {
+                                0 -> stringBuffer.append("学校 ")
+                                1 -> stringBuffer.append("雾 ")
+                                2 -> stringBuffer.append("雨 ")
+                                3 -> stringBuffer.append("结冰 ")
+                                4 -> stringBuffer.append("其他天气 ")
+                                5 -> stringBuffer.append("减速带 ")
+                                6 -> stringBuffer.append("时间 ")
+                                7 -> stringBuffer.append("车辆 ")
+                                8 -> stringBuffer.append("建议 ")
+                                9 -> stringBuffer.append("雪 ")
+                                10 -> stringBuffer.append("其他 ")
+                            }
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+
+            }
+            return stringBuffer.toString()
+        }
+
+        private fun isBitSet(number: Int, n: Int): Boolean {
+            // 创建一个二进制数，只有第 n 个 bit 位是 1，其他 bit 位是 0
+            val mask = 1 shl (n - 1)
+
+            // 将原始二进制数与上面创建的二进制数进行位运算
+            val result = number and mask
+
+            // 判断运算结果是否为 0
+            return result != 0
         }
 
         /**
