@@ -6,6 +6,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="mainActivity"
             type="com.navinfo.omqs.ui.activity.map.MainActivity" />
@@ -37,6 +39,20 @@
 
 
             <ImageButton
+                android:id="@+id/main_activity_camera2"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@null"
+                android:onClick="@{()->mainActivity.openCamera()}"
+                android:src="@drawable/baseline_person_24"
+                android:visibility="gone"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <ImageButton
                 android:id="@+id/main_activity_person_center"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -56,166 +72,194 @@
                 app:layout_constraintLeft_toLeftOf="@id/main_activity_person_center"
                 app:layout_constraintTop_toBottomOf="@id/main_activity_person_center" />
 
-            <LinearLayout
+            <androidx.constraintlayout.helper.widget.Flow
+                android:id="@+id/main_activity_flow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/top_right_drawer_btns_mr"
+                app:constraint_referenced_ids="main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_calc_disance,main_activity_menu"
+                app:flow_horizontalGap="6dp"
+                app:flow_wrapMode="aligned"
+                app:layout_constraintRight_toLeftOf="@id/main_activity_right_fragment"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/main_activity_menu_group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="108dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toLeftOf="@+id/main_activity_right_fragment"
-                app:layout_constraintRight_toRightOf="parent"
-                tools:ignore="MissingConstraints">
+                android:visibility="invisible"
+                app:constraint_referenced_ids="main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_calc_disance" />
 
+            <ImageButton
+                android:id="@+id/main_activity_serach"
+                style="@style/top_right_drawer_btns_style"
+                android:onClick="@{()->mainActivity.onClickSerach()}"
+                android:src="@drawable/icon_serach" />
 
-                <ImageButton
-                    android:id="@+id/main_activity_select_line"
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/selector_road_line_btn_bg"
-                    android:onClick="@{()->mainActivity.selectLineOnclick()}"
-                    android:src="@drawable/selector_road_line_src" />
+            <ImageButton
+                android:id="@+id/main_activity_2d_3d"
+                style="@style/top_right_drawer_btns_style"
+                android:onClick="@{()->mainActivity.onClick2DOr3D()}"
+                android:src="@drawable/icon_2d_3d" />
 
-                <ImageButton
-                    android:id="@+id/main_activity_voice"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@null"
-                    android:src="@drawable/icon_add_voice" />
+            <ImageButton
+                android:id="@+id/main_activity_camera"
+                style="@style/top_right_drawer_btns_style"
+                android:onClick="@{()->mainActivity.openCamera()}"
+                android:src="@drawable/icon_page_video_a1" />
 
-                <ImageButton
-                    android:id="@+id/main_activity_line"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@null"
-                    android:onClick="@{()->mainActivity.voiceOnclick()}"
-                    android:src="@drawable/icon_add_data" />
+            <ImageButton
+                android:id="@+id/main_activity_trace"
+                style="@style/top_right_drawer_btns_style"
+                android:onClick="@{()->mainActivity.onClickTrace()}"
+                android:src="@drawable/icon_trace" />
 
-                <ImageButton
-                    android:id="@+id/main_activity_location"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@null"
-                    android:onClick="@{()->viewModel.onClickLocationButton()}"
-                    android:src="@drawable/icon_location" />
+            <ImageButton
+                android:id="@+id/main_activity_calc_disance"
+                style="@style/top_right_drawer_btns_style"
+                android:onClick="@{()->mainActivity.onClickCalcDisance()}"
+                android:src="@drawable/icon_calc_disance" />
 
-            </LinearLayout>
+            <ImageButton
+                android:id="@+id/main_activity_menu"
+                android:layout_width="@dimen/top_right_drawer_wh"
+                android:layout_height="@dimen/top_right_drawer_wh"
+                android:background="@drawable/chk_icon_menu_open_close_xml"
+                android:elevation="2dp"
+                android:onClick="@{()->mainActivity.onClickMenu()}" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="end"
+                app:constraint_referenced_ids="main_activity_fragment_switch" />
+
+            <ImageButton
+                android:id="@+id/main_activity_fragment_switch"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginRight="-10dp"
+                android:background="@drawable/selector_fragment_switch"
+                android:elevation="2dp"
+                android:onClick="@{()->mainActivity.onSwitchFragment()}"
+                app:layout_constraintBottom_toBottomOf="@id/main_activity_flow"
+                app:layout_constraintRight_toLeftOf="@id/main_activity_right_fragment"
+                app:layout_constraintTop_toTopOf="@id/main_activity_flow" />
 
             <fragment
-                android:id="@+id/main_activity_middle_fragment"
-                android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_weight="6"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@+id/main_activity_right_fragment"
-                app:layout_constraintTop_toTopOf="parent"
-                app:navGraph="@navigation/middle_fragment_nav_graph" />
-
-            <fragment
-                android:id="@id/main_activity_right_fragment"
+                android:id="@+id/main_activity_right_fragment"
                 android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
+                android:elevation="3dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@id/main_activity_middle_fragment"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:navGraph="@navigation/right_fragment_nav_graph" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                app:layout_constraintRight_toLeftOf="@+id/main_activity_right_fragment"
-                android:layout_marginRight="10dp"
-                android:orientation="horizontal"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="MissingConstraints">
+            <TextView
+                android:id="@+id/main_activity_geometry"
+                android:layout_width="@dimen/main_activity_geometry_w"
+                android:layout_height="@dimen/main_activity_geometry_h"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/shape_rect_white_8dp_bg"
+                android:drawableLeft="@drawable/icon_main_geometry"
+                android:elevation="2dp"
+                android:gravity="center"
+                android:paddingLeft="9dp"
+                android:text="经纬度:116.99388424,38.8403844"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/main_activity_middle_fragment" />
 
-                <LinearLayout
-                    android:id="@+id/main_activity_menu_layout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
+            <ImageButton
+                android:id="@+id/main_activity_zoom_out"
+                android:layout_width="@dimen/zoom_btns_w"
+                android:layout_height="@dimen/zoom_btns_h"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/selector_zoom_out_bg"
+                android:elevation="2dp"
+                android:onClick="@{(view)->mainActivity.zoomOutOnclick(view)}"
+                android:padding="8dp"
+                android:src="@drawable/icon_zoom_out"
+                app:layout_constraintBottom_toTopOf="@id/main_activity_geometry"
+                app:layout_constraintRight_toRightOf="@id/main_activity_geometry" />
 
+            <ImageButton
+                android:id="@+id/main_activity_zoom_in"
+                android:layout_width="@dimen/zoom_btns_w"
+                android:layout_height="@dimen/zoom_btns_h"
+                android:background="@drawable/selector_zoom_in_bg"
+                android:elevation="2dp"
+                android:onClick="@{(view)->mainActivity.zoomInOnclick(view)}"
+                android:src="@drawable/icon_zoom_in"
+                app:layout_constraintBottom_toTopOf="@id/main_activity_zoom_out"
+                app:layout_constraintRight_toRightOf="@id/main_activity_zoom_out" />
 
-                    <ImageButton
-                        android:id="@+id/main_activity_serach"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/icon_serach"
-                        android:onClick="@{()->mainActivity.onClickSerach()}" />
+            <ImageButton
+                android:id="@+id/main_activity_location"
+                style="@style/zoom_btns_style"
+                android:layout_marginBottom="12dp"
+                android:onClick="@{()->viewModel.onClickLocationButton()}"
+                android:src="@drawable/icon_location"
+                app:layout_constraintBottom_toTopOf="@id/main_activity_zoom_in"
+                app:layout_constraintRight_toRightOf="@id/main_activity_zoom_in" />
 
-                    <ImageButton
-                        android:id="@+id/main_activity_2d_3d"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/icon_2d_3d"
-                        android:onClick="@{()->mainActivity.onClick2DOr3D()}" />
+            <ImageButton
+                android:id="@+id/main_activity_add_new"
+                style="@style/zoom_btns_style"
+                android:layout_marginBottom="12dp"
+                android:onClick="@{()->mainActivity.voiceOnclick()}"
+                android:src="@drawable/icon_add_data"
+                app:layout_constraintBottom_toTopOf="@id/main_activity_location"
+                app:layout_constraintRight_toRightOf="@id/main_activity_location" />
 
-                    <ImageButton
-                        android:id="@+id/main_activity_camera"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/icon_page_video_a1"
-                        android:onClick="@{()->mainActivity.openCamera()}" />
-
-                    <ImageButton
-                        android:id="@+id/main_activity_trace"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/icon_trace"
-                        android:onClick="@{()->mainActivity.onClickTrace()}" />
-
-                    <ImageButton
-                        android:id="@+id/main_activity_calc_disance"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/icon_calc_disance"
-                        android:onClick="@{()->mainActivity.onClickCalcDisance()}" />
-
-
-                </LinearLayout>
-
-
-                <ImageButton
-                    android:id="@+id/main_activity_menu"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:background="@drawable/chk_icon_menu_open_close_xml"
-                    android:onClick="@{()->mainActivity.onClickMenu()}" />
-
-            </LinearLayout>
-
+            <ImageButton
+                android:id="@+id/main_activity_voice"
+                style="@style/zoom_btns_style"
+                android:layout_marginBottom="12dp"
+                android:onClick="@{()->mainActivity.voiceOnclick()}"
+                android:src="@drawable/icon_add_voice"
+                app:layout_constraintBottom_toTopOf="@id/main_activity_add_new"
+                app:layout_constraintRight_toRightOf="@id/main_activity_add_new" />
 
 
             <ImageButton
-                android:id="@+id/main_activity_camera2"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="20dp"
-                android:background="@null"
-                android:onClick="@{()->mainActivity.openCamera()}"
-                android:src="@drawable/baseline_person_24"
-                android:visibility="gone"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:id="@+id/main_activity_select_line"
+                style="@style/zoom_btns_style"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/selector_road_line_bg"
+                android:onClick="@{()->mainActivity.selectLineOnclick()}"
+                android:src="@drawable/selector_road_line_src"
+                app:layout_constraintBottom_toTopOf="@id/main_activity_voice"
+                app:layout_constraintRight_toRightOf="@id/main_activity_voice" />
 
+            <fragment
+                android:id="@+id/main_activity_middle_fragment"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginRight="-1dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/main_activity_right_fragment"
+                app:layout_constraintTop_toBottomOf="@id/main_activity_flow"
+                app:navGraph="@navigation/middle_fragment_nav_graph" />
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/main_activity_fragment_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="main_activity_right_fragment,main_activity_middle_fragment" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <fragment
             android:id="@+id/main_activity_drawer_fragment"
             android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="300dp"
+            android:layout_width="323dp"
             android:layout_height="match_parent"
+            android:layout_marginTop="30dp"
             android:layout_gravity="left"
             app:navGraph="@navigation/left_drawer_nav_graph" />
 

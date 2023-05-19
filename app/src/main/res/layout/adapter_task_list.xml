@@ -4,22 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:paddingLeft="10dp"
-    android:paddingTop="5dp"
-    android:paddingRight="10dp"
-    android:paddingBottom="5dp"
+    android:background="@drawable/selector_adapter_item_select_bg"
+    android:paddingLeft="8dp"
+    android:paddingTop="6dp"
+    android:paddingRight="8dp"
+    android:paddingBottom="4dp"
     tools:context="com.navinfo.omqs.ui.fragment.tasklist.TaskListAdapter">
+
+    <ImageView
+        android:id="@+id/task_list_head"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignTop="@id/task_name"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginRight="6dp"
+        android:background="@drawable/selector_task_head" />
 
     <TextView
         android:id="@+id/task_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/task_download_btn"
+        android:layout_toRightOf="@id/task_list_head"
         android:text="任务名称"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:textSize="@dimen/default_font_size" />
+        android:textColor="#15141F"
+        android:textSize="14sp" />
 
     <TextView
         android:id="@+id/task_city_name"
@@ -27,22 +36,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/task_name"
+        android:layout_alignLeft="@id/task_name"
         android:layout_marginTop="5dp"
-        android:textColor="@color/gray_121"
         android:text="省市名称"
-        android:textSize="@dimen/card_title_font_3size" />
+        android:textColor="@color/gray_121"
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/task_data_version"
         style="@style/map_size_font_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@id/task_upload_btn"
         android:layout_below="@id/task_city_name"
-        android:textColor="@color/gray_121"
+        android:layout_alignLeft="@id/task_name"
+        android:layout_toLeftOf="@id/task_upload_btn"
         android:text="版本号"
-        android:textSize="@dimen/card_title_font_3size" />
+        android:textColor="@color/gray_121"
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/task_color"
@@ -50,8 +60,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/task_data_version"
+        android:layout_alignLeft="@id/task_name"
         android:layout_marginTop="5dp"
-        android:drawableLeft="@mipmap/point_blue"
+        android:drawableLeft="@drawable/point_blue"
         android:text="路线颜色"
         android:textSize="@dimen/card_title_font_3size" />
 
@@ -59,11 +70,10 @@
     <TextView
         android:id="@+id/task_download_btn"
         style="@style/btn_default_stroke_horizontal_round"
-        android:layout_width="60dp"
+        android:layout_width="72dp"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
+        android:layout_alignParentBottom="true"
         android:gravity="center"
-        android:shadowColor="@android:color/transparent"
         android:text="下载"
         android:textSize="@dimen/card_title_font_2size" />
 
@@ -71,11 +81,11 @@
         android:id="@+id/task_upload_btn"
         style="@style/btn_default_stroke_horizontal_round"
         android:layout_width="wrap_content"
-        android:minWidth="60dp"
         android:layout_centerVertical="true"
         android:layout_marginRight="5dp"
         android:layout_toLeftOf="@id/task_download_btn"
         android:gravity="center"
+        android:minWidth="60dp"
         android:shadowColor="@android:color/transparent"
         android:text="同步"
         android:textSize="@dimen/card_title_font_2size" />

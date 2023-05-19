@@ -11,20 +11,11 @@
     <dimen name="card_title_font_size">24sp</dimen>
     <dimen name="card_title_font_2size">13sp</dimen>
     <dimen name="card_title_font_3size">10sp</dimen>
-    <dimen name="one">1dp</dimen>
-    <dimen name="two">2dp</dimen>
     <dimen name="three">3dp</dimen>
-    <dimen name="four">4dp</dimen>
     <dimen name="five">5dp</dimen>
-    <dimen name="six">6dp</dimen>
     <dimen name="eight">8dp</dimen>
-    <dimen name="nine">9dp</dimen>
     <dimen name="ten">10dp</dimen>
     <dimen name="twelve">12dp</dimen>
-    <dimen name="twefour">14dp</dimen>
-    <dimen name="fifteen">15dp</dimen>
-    <dimen name="sixteen">16dp</dimen>
-    <dimen name="eighteen">18dp</dimen>
     <dimen name="twenty">20dp</dimen>
     <dimen name="twenty_two">22dp</dimen>
     <dimen name="twenty_four">24dp</dimen>
@@ -38,4 +29,16 @@
     <dimen name="camear_dialog_iv_hight" comment="相机设置窗体高度">75dp</dimen>
     <dimen name="head_img_width">48dp</dimen>
     <dimen name="default_btn_corner">36dp</dimen>
+
+    <dimen name="fragment_phenomenon_width" comment="问题现象面板宽度">310dp</dimen>
+    <dimen name="top_right_drawer_btns_wh" comment="地图主页右上角抽屉按钮的大小">54dp</dimen>
+    <dimen name="top_right_drawer_wh" comment="地图主页右上角抽屉的把手按钮的大小">42dp</dimen>
+    <dimen name="top_right_drawer_btns_mr" comment="地图主页右上角抽屉按钮距离右侧间距">44dp</dimen>
+    <dimen name="zoom_btns_w" comment="和zoom键一起的其他按钮大小">41dp</dimen>
+    <dimen name="zoom_btns_h" comment="两个zoom键一起的高度">47dp</dimen>
+    <dimen name="right_fragment_w" comment="右侧fragment宽度">213dp</dimen>
+    <dimen name="main_activity_geometry_w" comment="地图主页坐标框宽度">230dp</dimen>
+    <dimen name="main_activity_geometry_h" comment="地图主页坐标框高度">28dp</dimen>
+
+        
 </resources>

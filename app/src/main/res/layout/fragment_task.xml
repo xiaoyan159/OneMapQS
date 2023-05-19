@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragment.tasklist.TaskFragment">
+
+    <EditText
+        android:id="@+id/task_search"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/shape_default_inputlayout_white_bg"
+        android:hint="输入LinkPID"
+        android:imeOptions="actionDone"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:singleLine="true"
+        android:textSize="13sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/ic_baseline_search_24"
+        app:layout_constraintBottom_toBottomOf="@id/task_search"
+        app:layout_constraintLeft_toLeftOf="@id/task_search"
+        app:layout_constraintTop_toTopOf="@id/task_search" />
+
+    <ImageView
+        android:id="@+id/task_search_clear"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/icon_clear"
+        app:layout_constraintBottom_toBottomOf="@id/task_search"
+        app:layout_constraintRight_toRightOf="@id/task_search"
+        app:layout_constraintTop_toTopOf="@id/task_search" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/task_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/task_search" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

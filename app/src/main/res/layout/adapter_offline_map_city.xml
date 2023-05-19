@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/offline_map_city_name"
         android:layout_marginTop="5dp"
-        android:drawableLeft="@mipmap/point_blue"
+        android:drawableLeft="@drawable/point_blue"
         android:text="文件大小"
         android:textColor="@color/gray_121" />
 

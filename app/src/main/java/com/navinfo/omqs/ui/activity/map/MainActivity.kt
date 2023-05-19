@@ -39,6 +39,8 @@ class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel by viewModels<MainViewModel>()
 
+    var switchFragment = false
+
     //注入地图控制器
     @Inject
     lateinit var mapController: NIMapController
@@ -81,6 +83,7 @@ class MainActivity : BaseActivity() {
         )
         // 在mapController初始化前获取当前OMDB图层显隐
         viewModel.refreshOMDBLayer(LayerConfigUtils.getLayerConfigList())
+        mapController.mMapView.vtmMap.viewport().maxZoomLevel = 25
         //关联生命周期
         binding.lifecycleOwner = this
         //给xml转递对象
@@ -115,9 +118,9 @@ class MainActivity : BaseActivity() {
         viewModel.liveDataMenuState.observe(this) {
             binding.mainActivityMenu.isSelected = it
             if (it == true) {
-                binding.mainActivityMenuLayout.visibility = View.VISIBLE
+                binding.mainActivityMenuGroup.visibility = View.VISIBLE
             } else {
-                binding.mainActivityMenuLayout.visibility = View.GONE
+                binding.mainActivityMenuGroup.visibility = View.INVISIBLE
             }
 
         }
@@ -225,6 +228,32 @@ class MainActivity : BaseActivity() {
 
     }
 
+    /**
+     * zoomin
+     */
+    fun zoomInOnclick(view: View) {
+        mapController.animationHandler.zoomIn()
+    }
+
+    /**
+     * zoomOut
+     */
+    fun zoomOutOnclick(view: View) {
+        mapController.animationHandler.zoomOut()
+    }
+
+    /**
+     *
+     */
+    fun onSwitchFragment() {
+        switchFragment = !switchFragment
+        binding.mainActivityFragmentSwitch.isSelected = switchFragment
+        if (switchFragment) {
+            binding.mainActivityFragmentGroup.visibility = View.GONE
+        } else {
+            binding.mainActivityFragmentGroup.visibility = View.VISIBLE
+        }
+    }
 
     /**
      * 点击录音按钮

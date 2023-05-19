@@ -15,220 +15,212 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="256dp"
+        android:layout_width="@dimen/right_fragment_w"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@drawable/shape_right_fragment_bg"
         tools:context=".ui.fragment.evaluationresult.EvaluationResultFragment">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/evaluation_appbar_layout"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/evaluation_bar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="14dp"
+            android:text="Mark"
+            android:textColor="@color/default_blue_text_color"
+            android:textSize="16sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <RelativeLayout
-                android:focusableInTouchMode="true"
-                android:focusable="true"
-                android:clickable="true"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:padding="10dp"
-                    android:id="@+id/evaluation_bar"
-                    style="@style/card_title_font_default"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/btn_back_xml"
-                    android:layout_alignParentLeft="true"
-                    android:text="Mark" />
-
-                <ImageButton
-                    android:id="@+id/evaluation_bar_save"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:layout_alignParentRight="true"
-                    android:background="@drawable/icon_save" />
-
-                <ImageButton
-                    android:id="@+id/evaluation_bar_delete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:layout_centerInParent="true"
-                    android:layout_toLeftOf="@+id/evaluation_bar_save"
-                    android:background="@drawable/btn_delete_xml" />
-
-            </RelativeLayout>
+        <ImageButton
+            android:id="@+id/evaluation_bar_save"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="9dp"
+            android:layout_marginRight="14dp"
+            android:background="@drawable/ripple_fragment_save_botton_bg"
+            android:src="@drawable/icon_save"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
-        </com.google.android.material.appbar.AppBarLayout>
+        <ImageButton
+            android:id="@+id/evaluation_bar_cancel"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/transparent"
+            android:src="@drawable/icon_fragment_close"
+            app:layout_constraintRight_toLeftOf="@id/evaluation_bar_save"
+            app:layout_constraintTop_toTopOf="@id/evaluation_bar_save" />
+
+
+        <ImageButton
+            android:id="@+id/evaluation_bar_delete"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="5dp"
+            android:background="@color/transparent"
+            android:src="@drawable/icon_delete"
+            app:layout_constraintRight_toLeftOf="@id/evaluation_bar_cancel"
+            app:layout_constraintTop_toTopOf="@id/evaluation_bar_save" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="5dp"
-            android:padding="10dp"
+            android:layout_marginTop="6dp"
+            android:paddingLeft="11dp"
+            android:paddingTop="6dp"
+            android:paddingRight="9dp"
+            android:paddingBottom="6dp"
             app:layout_constraintBottom_toTopOf="@id/evaluation_camera"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/evaluation_appbar_layout">
+            app:layout_constraintTop_toBottomOf="@id/evaluation_bar_save">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginBottom="7dp"
                 android:orientation="vertical">
 
-            <LinearLayout
-                android:paddingBottom="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    style="@style/card_content_font_default"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="要素分类" />
-
-                <TextView
-                    android:id="@+id/evaluation_class_type"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/card_text_font_default"
-                    android:onClick="@{fragment::onClick}"
-                    android:text="@{viewModel.liveDataQsRecordBean.classType}" />
+                    android:layout_marginBottom="7dp"
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        style="@style/evaluation_fragment_title_text_style"
+                        android:text="要素分类" />
 
-            <LinearLayout
-                android:paddingBottom="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/evaluation_class_type"
+                        style="@style/evaluation_fragment_text_style"
+                        android:onClick="@{fragment::onClick}"
+                        android:text="@{viewModel.liveDataQsRecordBean.classType}" />
 
-                <TextView
-                    style="@style/card_content_font_default"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="问题类型" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/evaluation_problem_type"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/card_text_font_default"
-                    android:onClick="@{fragment::onClick}"
-                    android:text="@{viewModel.liveDataQsRecordBean.problemType}" />
+                    android:layout_marginBottom="7dp"
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        style="@style/evaluation_fragment_title_text_style"
+                        android:text="问题类型" />
 
-            <LinearLayout
-                android:paddingBottom="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/evaluation_problem_type"
+                        style="@style/evaluation_fragment_text_style"
+                        android:onClick="@{fragment::onClick}"
+                        android:text="@{viewModel.liveDataQsRecordBean.problemType}" />
 
-                <TextView
-                    style="@style/card_content_font_default"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="问题现象" />
+                </LinearLayout>
 
-            <TextView
-                    android:id="@+id/evaluation_phenomenon"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/card_text_font_default"
-                    android:onClick="@{fragment::onClick}"
-                    android:text="@{viewModel.liveDataQsRecordBean.phenomenon}" />
+                    android:layout_marginBottom="7dp"
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        style="@style/evaluation_fragment_title_text_style"
+                        android:text="问题现象" />
 
-            <LinearLayout
-                android:paddingBottom="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/evaluation_phenomenon"
+                        style="@style/evaluation_fragment_text_style"
+                        android:onClick="@{fragment::onClick}"
+                        android:text="@{viewModel.liveDataQsRecordBean.phenomenon}" />
 
-                <TextView
-                    style="@style/card_content_font_default"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="问题环节" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/evaluation_link"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/card_text_font_default"
-                    android:onClick="@{fragment::onClick}"
-                    android:text="@{viewModel.liveDataQsRecordBean.problemLink}" />
+                    android:layout_marginBottom="7dp"
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        style="@style/evaluation_fragment_title_text_style"
+                        android:text="问题环节" />
 
+                    <TextView
+                        android:id="@+id/evaluation_link"
+                        style="@style/evaluation_fragment_text_style"
+                        android:onClick="@{fragment::onClick}"
+                        android:text="@{viewModel.liveDataQsRecordBean.problemLink}" />
 
-            <LinearLayout
-                android:paddingBottom="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                </LinearLayout>
 
-                <TextView
-                    style="@style/card_content_font_default"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="问题原因" />
-
-                <TextView
-                    android:id="@+id/evaluation_cause"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/card_text_font_default"
-                    android:onClick="@{fragment::onClick}"
-                    android:text="@{viewModel.liveDataQsRecordBean.cause}" />
+                    android:layout_marginBottom="7dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/evaluation_fragment_title_text_style"
+                        android:text="问题原因" />
+
+                    <TextView
+                        android:id="@+id/evaluation_cause"
+                        style="@style/evaluation_fragment_text_style"
+                        android:onClick="@{fragment::onClick}"
+                        android:text="@{viewModel.liveDataQsRecordBean.cause}" />
 
 
-            </LinearLayout>
+                </LinearLayout>
 
-            <LinearLayout
-                android:paddingBottom="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    style="@style/card_content_font_default"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="问题描述" />
-
-                <com.navinfo.omqs.ui.widget.MyEditeText
-                    style="@style/card_text_font_default"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="start"
-                    android:hint="请输入备注信息"
-                    android:inputType="textMultiLine"
-                    android:lines="3"
-                    android:maxLines="3"
-                    android:text="@={viewModel.liveDataQsRecordBean.description}" />
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
+                    <TextView
+                        style="@style/evaluation_fragment_title_text_style"
+                        android:layout_gravity="top"
+                        android:layout_marginTop="3dp"
+                        android:text="问题描述" />
 
-            </LinearLayout>
+                    <com.navinfo.omqs.ui.widget.MyEditeText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/shape_rect_white_2dp_bg"
+                        android:elevation="2dp"
+                        android:gravity="start"
+                        android:hint="请输入备注信息"
+                        android:paddingLeft="12dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:inputType="textMultiLine"
+                        android:lines="3"
+                        android:maxLines="3"
+                        android:text="@={viewModel.liveDataQsRecordBean.description}"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_margin="5dp"
-                    android:background="@color/gray_121" />
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="26dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginRight="8dp"
+                    android:background="#D6DBF0" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/card_title_font_default"
-                    android:text="多媒体" />
+                    android:layout_marginBottom="8dp"
+                    android:text="多媒体"
+                    android:textColor="@color/default_blue_text_color"
+                    android:textSize="16sp" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/evaluation_voice_recyclerview"
@@ -238,25 +230,23 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <ImageButton
+        <ImageView
             android:id="@+id/evaluation_camera"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:background="@drawable/btn_bg_default"
             android:src="@drawable/baseline_camera_alt_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/evaluation_voice" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/evaluation_voice"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:src="@drawable/baseline_keyboard_voice_24"
-            android:background="@drawable/btn_bg_default"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toRightOf="@id/evaluation_camera"

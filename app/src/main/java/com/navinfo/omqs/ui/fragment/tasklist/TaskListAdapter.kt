@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import com.navinfo.omqs.R
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.AdapterTaskListBinding
 import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
 import com.navinfo.omqs.http.taskupload.TaskUploadManager
@@ -25,11 +25,13 @@ import com.navinfo.omqs.ui.other.BaseViewHolder
  */
 class TaskListAdapter(
     private val downloadManager: TaskDownloadManager,
-    private val uploadManager: TaskUploadManager
+    private val uploadManager: TaskUploadManager,
+    private var itemListener: ((Int, TaskBean) -> Unit?)? = null
 ) : BaseRecyclerViewAdapter<TaskBean>() {
+    private var selectPosition = -1
 
-
-    private val downloadBtnClick = View.OnClickListener() {
+    private
+    val downloadBtnClick = View.OnClickListener() {
         if (it.tag != null) {
             val taskBean = data[it.tag as Int]
             when (taskBean.status) {
@@ -53,7 +55,7 @@ class TaskListAdapter(
             val taskBean = data[it.tag as Int]
             Log.e("jingo", "开始上传 ${taskBean.syncStatus}")
             when (taskBean.syncStatus) {
-                FileUploadStatus.NONE, FileUploadStatus.ERROR,FileUploadStatus.WAITING -> {
+                FileUploadStatus.NONE, FileUploadStatus.ERROR, FileUploadStatus.WAITING -> {
                     uploadManager.start(taskBean.id)
                 }
             }
@@ -80,7 +82,7 @@ class TaskListAdapter(
         holder.tag = taskBean.id.toString()
         changeViews(binding, taskBean)
         downloadManager.addTask(taskBean)
-        downloadManager.observer(taskBean.id, holder, DownloadObserver(taskBean.id, binding))
+        downloadManager.observer(taskBean.id, holder, DownloadObserver(taskBean.id, holder))
         uploadManager.addTask(taskBean)
         uploadManager.observer(taskBean.id, holder, UploadObserver(taskBean.id, binding))
         binding.taskDownloadBtn.tag = position
@@ -91,14 +93,32 @@ class TaskListAdapter(
         binding.taskCityName.text = taskBean.cityName
         binding.taskDataVersion.text = "版本号：${taskBean.dataVersion}"
         binding.taskColor.setTextColor(taskBean.color)
-//        binding.offlineMapCitySize.text = cityBean.getFileSizeText()
+        binding.root.isSelected = selectPosition == position
+        binding.root.setOnClickListener {
+            val pos = holder.adapterPosition
+            if (selectPosition != pos) {
+                val lastPos = selectPosition
+                selectPosition = pos
+                if (lastPos > -1) {
+                    notifyItemChanged(lastPos)
+                }
+                binding.root.isSelected = true
+                itemListener?.invoke(position, taskBean)
+            }
+
+        }
     }
 
-    inner class DownloadObserver(val id: Int, val binding: AdapterTaskListBinding) :
+    inner class DownloadObserver(val id: Int, val holder: BaseViewHolder) :
         Observer<TaskBean> {
-        override fun onChanged(t: TaskBean?) {
-            if (id == t?.id)
-                changeViews(binding, t)
+        override fun onChanged(taskBean: TaskBean?) {
+            taskBean?.let { bean ->
+                if (id.toString() == holder.tag) {
+                    val binding: AdapterTaskListBinding =
+                        holder.viewBinding as AdapterTaskListBinding
+                    changeViews(binding, bean)
+                }
+            }
         }
     }
 

@@ -114,7 +114,7 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
                         .animateTo(GeoPoint(40.1012346774074730, 116.25571303257621))
                 }
                 R.id.personal_center_menu_task_list -> {
-                    findNavController().navigate(R.id.TaskListFragment)
+                    findNavController().navigate(R.id.TaskManagerFragment)
                 }
                 R.id.personal_center_menu_qs_record_list -> {
                     findNavController().navigate(R.id.QsRecordListFragment)
