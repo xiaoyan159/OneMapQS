@@ -121,26 +121,71 @@ class TaskUploadScope(
                 if (objects != null&&objects.size>0) {
                     val copyList = realm.copyFromRealm(objects)
                     copyList.forEach {
+                        var problemType = "0"
+                        if(it.problemType=="错误"){
+                            problemType = "0"
+                        }else if(it.problemType=="多余"){
+                            problemType = "1"
+                        }else if(it.problemType=="遗漏"){
+                            problemType = "2"
+                        }
+                        var evaluationWay = "2";
+/*                        if(it.evaluationWay=="生产测评"){
+                            evaluationWay = "1"
+                        }else if(it.evaluationWay=="现场测评"){
+                            evaluationWay = "2"
+                        }*/
                         val evaluationInfo = EvaluationInfo(
                             evaluationTaskId = taskBean.id.toString(),
                             linkPid = hadLinkDvoBean.linkPid,//"84207223282277331"
-                            linkStatus = "已测评",
+                            linkStatus = 1,
                             markId = hadLinkDvoBean.mesh,//"20065597"
                             trackPhotoNumber = "",
                             markGeometry = it.geometry,
                             featureName = it.classType,
-                            problemType = it.problemType,
+                            problemType = problemType,
                             problemPhenomenon = it.phenomenon,
                             problemDesc = it.description,
                             problemLink = it.problemLink,
                             problemReason = it.cause,
                             evaluatorName = it.checkUserId,
                             evaluationDate = it.checkTime,
-                            evaluationWay = "现场测评"
+                            evaluationWay = evaluationWay,
+                            roadClassfcation = "",
+                            roadFunctionGrade = "",
+                            noEvaluationreason = "",
+                            linkLength = 0.0,
+                            dataLevel = "",
+                            linstringLength = 0.0,
                         )
 
                         bodyList.add(evaluationInfo)
                     }
+                }else{
+                    val evaluationInfo = EvaluationInfo(
+                        evaluationTaskId = taskBean.id.toString(),
+                        linkPid = hadLinkDvoBean.linkPid,//"84207223282277331"
+                        linkStatus = 0,
+                        markId = hadLinkDvoBean.mesh,//"20065597"
+                        trackPhotoNumber = "",
+                        markGeometry = "",
+                        featureName = "",
+                        problemType = "",
+                        problemPhenomenon = "",
+                        problemDesc = "",
+                        problemLink = "",
+                        problemReason = "",
+                        evaluatorName = "",
+                        evaluationDate = "",
+                        evaluationWay = "",
+                        roadClassfcation = "",
+                        roadFunctionGrade = "",
+                        noEvaluationreason = "",
+                        linkLength = 0.0,
+                        dataLevel = "",
+                        linstringLength = 0.0,
+                    )
+                    bodyList.add(evaluationInfo)
                 }
             }
 

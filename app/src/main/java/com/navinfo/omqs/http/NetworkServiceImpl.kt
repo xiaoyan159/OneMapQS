@@ -2,8 +2,12 @@ package com.navinfo.omqs.http
 
 import com.navinfo.omqs.bean.OfflineMapCityBean
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.omqs.bean.LoginUserBean
+import com.navinfo.omqs.bean.SysUserBean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
+import retrofit2.Response
 import javax.inject.Inject
 
 /**
@@ -24,13 +28,13 @@ class NetworkServiceImpl @Inject constructor(
                     if (result.code() == 200) {
                         NetResult.Success(result.body())
                     } else {
-                        NetResult.Failure(result.code(), result.message())
+                        NetResult.Failure<Any>(result.code(), result.message())
                     }
                 } else {
-                    NetResult.Failure(result.code(), result.message())
+                    NetResult.Failure<Any>(result.code(), result.message())
                 }
             } catch (e: Exception) {
-                NetResult.Error(e)
+                NetResult.Error<Any>(e)
             }
         }
 
@@ -43,13 +47,32 @@ class NetworkServiceImpl @Inject constructor(
                     if (result.code() == 200) {
                         NetResult.Success(result.body())
                     } else {
-                        NetResult.Failure(result.code(), result.message())
+                        NetResult.Failure<Any>(result.code(), result.message())
                     }
                 } else {
-                    NetResult.Failure(result.code(), result.message())
+                    NetResult.Failure<Any>(result.code(), result.message())
                 }
             } catch (e: Exception) {
-                NetResult.Error(e)
+                NetResult.Error<Any>(e)
+            }
+        }
+
+    override suspend fun loginUser(loginUserBean: LoginUserBean): NetResult<DefaultUserResponse<SysUserBean>> =
+        //在IO线程中运行
+        withContext(Dispatchers.IO) {
+            return@withContext try {
+                val result = netApi.retrofitLoginUser(loginUserBean)
+                if (result.isSuccessful) {
+                    if (result.code() == 200) {
+                        NetResult.Success(result.body())
+                    } else {
+                        NetResult.Failure<Any>(result.code(), result.message())
+                    }
+                } else {
+                    NetResult.Failure<Any>(result.code(), result.message())
+                }
+            } catch (e: Exception) {
+                NetResult.Error<Any>(e)
             }
         }
 }
