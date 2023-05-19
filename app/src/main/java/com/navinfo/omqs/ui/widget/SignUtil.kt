@@ -13,7 +13,7 @@ class SignUtil {
         fun getSignIconText(data: RenderEntity): String {
             return when (data.code) {
                 //常规点限速
-                4002 -> getSpeedLimitText(data)
+                4002, 4003 -> getSpeedLimitText(data)
 //                //道路种别
 //                2008 -> getKindCodeIcon(data)
 //                //道路方向
@@ -63,13 +63,13 @@ class SignUtil {
             try {
                 //限速标志 0 限速开始 1 限速解除
                 return when (data.properties["speed_flag"]) {
-                    "1" -> return R.drawable.shape_icon_speed_limit_off
-                    else -> return R.drawable.shape_icon_speed_limit
+                    "1" -> return R.drawable.icon_speed_limit_off
+                    else -> return R.drawable.icon_speed_limit
                 }
             } catch (e: Exception) {
                 Log.e("jingo", "获取限速面板ICON出错2 $e")
             }
-            return R.drawable.shape_icon_speed_limit
+            return R.drawable.icon_speed_limit
         }
 
         /**
@@ -85,8 +85,10 @@ class SignUtil {
                 //车道数
                 2041 -> getLaneNumIcon(data)
                 //限速
-                4002 -> getSpeedLimitIcon(data)
-                else -> R.drawable.shape_icon_speed_limit
+                4002, 4003 -> getSpeedLimitIcon(data)
+                //可变点限速
+                4004 -> R.drawable.icon_change_limit
+                else -> R.drawable.icon_speed_limit
             }
 
         }
