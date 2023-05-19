@@ -328,12 +328,11 @@ class EvaluationResultViewModel @Inject constructor(
     fun deleteData(context: Context) {
         val mDialog = FirstDialog(context)
         mDialog.setTitle("提示？")
-        mDialog.setMessage("是否删除")
+        mDialog.setMessage("是否删除Mark，请确认！")
         mDialog.setPositiveButton("确定", object : FirstDialog.OnClickListener {
             override fun onClick(dialog: Dialog?, which: Int) {
                 mDialog.dismiss()
                 viewModelScope.launch(Dispatchers.IO) {
-
                     val realm = Realm.getDefaultInstance()
                     Log.e("jingo", "realm hashCOde ${realm.hashCode()}")
                     realm.executeTransaction {

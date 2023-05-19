@@ -58,7 +58,7 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="16dp"
-        android:layout_below="@id/offline_map_download_btn"
+        android:layout_below="@id/offline_map_city_size"
         android:paddingTop="10dp"
         android:progressDrawable="@drawable/progress_bg"
         android:visibility="invisible" />
