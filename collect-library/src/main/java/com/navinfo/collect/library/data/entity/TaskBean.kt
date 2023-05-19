@@ -65,7 +65,7 @@ open class TaskBean @JvmOverloads constructor(
     var color: Int = 0xFF00AA
 ) : RealmObject() {
     fun getDownLoadUrl(): String {
-        return "${Constant.SERVER_ADDRESS}devcp/download?fileStr=$id"
+        return "${Constant.SERVER_ADDRESS}devcp/downFile?fileStr=$id"
     }
 
 }
