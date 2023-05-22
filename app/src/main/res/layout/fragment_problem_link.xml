@@ -19,7 +19,7 @@
         android:paddingTop="30dp"
         android:paddingRight="10dp"
         android:paddingBottom="30dp"
-        android:src="@drawable/btn_back_xml" />
+        android:src="@drawable/selector_btn_back_xml" />
 
     <LinearLayout
         android:id="@+id/group"

@@ -12,8 +12,8 @@ class SignUtil {
          */
         fun getSignIconText(data: RenderEntity): String {
             return when (data.code) {
-                //常规点限速
-                4002 -> getSpeedLimitText(data)
+                //常规点限速,条件点限速
+                4002, 4003 -> getSpeedLimitText(data)
 //                //道路种别
 //                2008 -> getKindCodeIcon(data)
 //                //道路方向
@@ -26,8 +26,12 @@ class SignUtil {
 
         fun getSignBottomText(data: RenderEntity): String {
             return when (data.code) {
+                //可变点限速
+                4004 -> "可变点限速"
                 //常规点限速
                 4002 -> "常规点限速"
+                //常点限速
+                4003 -> "条件点限速"
                 //道路种别
                 2008 -> "道路种别"
                 //道路方向
@@ -36,6 +40,64 @@ class SignUtil {
                 2041 -> "车道数"
                 else -> ""
             }
+        }
+
+        /**
+         * 右下角文字
+         */
+        fun getSignBottomRightText(data: RenderEntity): String {
+            return when (data.code) {
+                //常点限速
+                4003 -> getConditionLimitText(data)
+                else -> ""
+            }
+        }
+
+        /**
+         * 条件点限速文字
+         */
+
+        fun getConditionLimitText(data: RenderEntity): String {
+            var stringBuffer = StringBuffer()
+            try {
+                val dependent = data.properties["speedDependent"]
+                dependent?.let {
+                    val dependentInt = it.toInt()
+                    for (i in 31 downTo 0) {
+                        val bit = (dependentInt shr i) and 1
+                        if (bit == 1) {
+                            when (i) {
+                                0 -> stringBuffer.append("学校 ")
+                                1 -> stringBuffer.append("雾 ")
+                                2 -> stringBuffer.append("雨 ")
+                                3 -> stringBuffer.append("结冰 ")
+                                4 -> stringBuffer.append("其他天气 ")
+                                5 -> stringBuffer.append("减速带 ")
+                                6 -> stringBuffer.append("时间 ")
+                                7 -> stringBuffer.append("车辆 ")
+                                8 -> stringBuffer.append("建议 ")
+                                9 -> stringBuffer.append("雪 ")
+                                10 -> stringBuffer.append("其他 ")
+                            }
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+
+            }
+            return stringBuffer.toString()
+        }
+
+        private fun isBitSet(number: Int, n: Int): Boolean {
+            // 创建一个二进制数，只有第 n 个 bit 位是 1，其他 bit 位是 0
+            val mask = 1 shl (n - 1)
+
+            // 将原始二进制数与上面创建的二进制数进行位运算
+            val result = number and mask
+
+            // 判断运算结果是否为 0
+            return result != 0
         }
 
         /**
@@ -85,7 +147,9 @@ class SignUtil {
                 //车道数
                 2041 -> getLaneNumIcon(data)
                 //限速
-                4002 -> getSpeedLimitIcon(data)
+                4002, 4003 -> getSpeedLimitIcon(data)
+                //可变点限速
+                4004 -> R.drawable.icon_change_limit
                 else -> R.drawable.icon_speed_limit
             }
 
@@ -99,24 +163,24 @@ class SignUtil {
             try {
                 val kind = data.properties["kind"]
                 return when (kind!!.toInt()) {
-                    1 -> R.mipmap.icon_kind_code_k1
-                    2 -> R.mipmap.icon_kind_code_k2
-                    3 -> R.mipmap.icon_kind_code_k3
-                    4 -> R.mipmap.icon_kind_code_k4
-                    6 -> R.mipmap.icon_kind_code_k6
-                    7 -> R.mipmap.icon_kind_code_k7
-                    8 -> R.mipmap.icon_kind_code_k8
-                    9 -> R.mipmap.icon_kind_code_k9
-                    10 -> R.mipmap.icon_kind_code_k10
-                    11 -> R.mipmap.icon_kind_code_k11
-                    13 -> R.mipmap.icon_kind_code_k13
-                    15 -> R.mipmap.icon_kind_code_k15
-                    else -> R.mipmap.icon_kind_code
+                    1 -> R.drawable.icon_kind_code_k1
+                    2 -> R.drawable.icon_kind_code_k2
+                    3 -> R.drawable.icon_kind_code_k3
+                    4 -> R.drawable.icon_kind_code_k4
+                    6 -> R.drawable.icon_kind_code_k6
+                    7 -> R.drawable.icon_kind_code_k7
+                    8 -> R.drawable.icon_kind_code_k8
+                    9 -> R.drawable.icon_kind_code_k9
+                    10 -> R.drawable.icon_kind_code_k10
+                    11 -> R.drawable.icon_kind_code_k11
+                    13 -> R.drawable.icon_kind_code_k13
+                    15 -> R.drawable.icon_kind_code_k15
+                    else -> R.drawable.icon_kind_code
                 }
             } catch (e: Exception) {
                 Log.e("jingo", "获取种别面板ICON出错 $e")
             }
-            return R.mipmap.icon_kind_code
+            return R.drawable.icon_kind_code
         }
 
         /**
@@ -126,41 +190,41 @@ class SignUtil {
             try {
                 val lineNum = data.properties["laneNum"]
                 return when (lineNum!!.toInt()) {
-                    1 -> R.mipmap.icon_lane_num1
-                    2 -> R.mipmap.icon_lane_num2
-                    3 -> R.mipmap.icon_lane_num3
-                    4 -> R.mipmap.icon_lane_num4
-                    5 -> R.mipmap.icon_lane_num5
-                    6 -> R.mipmap.icon_lane_num6
-                    7 -> R.mipmap.icon_lane_num7
-                    8 -> R.mipmap.icon_lane_num8
-                    9 -> R.mipmap.icon_lane_num9
-                    10 -> R.mipmap.icon_lane_num10
-                    11 -> R.mipmap.icon_lane_num11
-                    12 -> R.mipmap.icon_lane_num12
-                    else -> R.mipmap.icon_lane_num1
+                    1 -> R.drawable.icon_lane_num1
+                    2 -> R.drawable.icon_lane_num2
+                    3 -> R.drawable.icon_lane_num3
+                    4 -> R.drawable.icon_lane_num4
+                    5 -> R.drawable.icon_lane_num5
+                    6 -> R.drawable.icon_lane_num6
+                    7 -> R.drawable.icon_lane_num7
+                    8 -> R.drawable.icon_lane_num8
+                    9 -> R.drawable.icon_lane_num9
+                    10 -> R.drawable.icon_lane_num10
+                    11 -> R.drawable.icon_lane_num11
+                    12 -> R.drawable.icon_lane_num12
+                    else -> R.drawable.icon_lane_num1
                 }
             } catch (e: Exception) {
                 Log.e("jingo", "获取车道数面板ICON出错 $e")
             }
-            return R.mipmap.icon_road_direction
+            return R.drawable.icon_road_direction
         }
 
         fun getRoadDirection(data: RenderEntity): Int {
             try {
                 val direct = data.properties["direct"]
                 return when (direct!!.toInt()) {
-                    0 -> R.mipmap.icon_road_direction
-                    1 -> R.mipmap.icon_road_direction
-                    2 -> R.mipmap.icon_road_direction
-                    3 -> R.mipmap.icon_road_direction
-                    -99 -> R.mipmap.icon_road_direction
-                    else -> R.mipmap.icon_road_direction
+                    0 -> R.drawable.icon_road_direction
+                    1 -> R.drawable.icon_road_direction
+                    2 -> R.drawable.icon_road_direction
+                    3 -> R.drawable.icon_road_direction
+                    -99 -> R.drawable.icon_road_direction
+                    else -> R.drawable.icon_road_direction
                 }
             } catch (e: Exception) {
                 Log.e("jingo", "获取道路方向面板ICON出错 $e")
             }
-            return R.mipmap.icon_road_direction
+            return R.drawable.icon_road_direction
         }
     }
 }

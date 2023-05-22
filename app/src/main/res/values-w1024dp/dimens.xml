@@ -1,0 +1,12 @@
+<resources>
+    <dimen name="fab_margin">200dp</dimen>
+    <dimen name="top_right_drawer_btns_wh" comment="地图主页右上角抽屉按钮的大小">54dp</dimen>
+    <dimen name="top_right_drawer_wh" comment="地图主页右上角抽屉的把手按钮的大小">42dp</dimen>
+    <dimen name="top_right_drawer_btns_mr" comment="地图主页右上角抽屉按钮距离右侧间距">44dp</dimen>
+    <dimen name="zoom_btns_w" comment="和zoom键一起的其他按钮大小">41dp</dimen>
+    <dimen name="zoom_btns_h" comment="zoom键的高度">47dp</dimen>
+    <dimen name="right_fragment_w" comment="右侧fragment宽度">256dp</dimen>
+    <dimen name="main_activity_geometry_w" comment="地图主页坐标框宽度">230dp</dimen>
+    <dimen name="main_activity_geometry_h" comment="地图主页坐标框高度">28dp</dimen>
+
+</resources>

@@ -24,34 +24,63 @@
     </style>
 
     <!-- 默认字体 -->
-    <style name="card_title_font_default">
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:textSize">@dimen/card_title_font_size</item>
-        <item name="android:textColor">@color/highFontColor</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <!-- 默认字体 -->
-    <style name="card_content_font_default">
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:textSize">@dimen/card_title_font_2size</item>
-        <item name="android:textColor">@color/contentColor</item>
-        <item name="android:padding">10dp</item>
+    <style name="evaluation_fragment_title_text_style" comment="质检数据属性页面，小文字标题样式">
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#15141F</item>
+        <item name="android:layout_marginRight">12dp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
     <!-- 默认显示内容字体 -->
-    <style name="card_text_font_default">
+    <style name="evaluation_fragment_text_style" comment="质检数据属性页面，选择内容样式">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#3756DF</item>
+        <item name="android:elevation">2dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:textSize">@dimen/card_title_font_2size</item>
-        <item name="android:textColor">@color/highFontColor</item>
-        <item name="android:padding">10dp</item>
-        <item name="android:drawableRight">@drawable/icon_down_arrow</item>
-        <item name="android:background">@drawable/fm_card_map_down_status_bg</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingRight">6dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:drawableRight">@drawable/baseline_keyboard_arrow_down_12</item>
+        <item name="android:background">@drawable/shape_rect_white_2dp_bg</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">26dp</item>
+    </style>
+
+
+    <!-- 地图主页右上角抽屉按钮的style -->
+    <style name="top_right_drawer_btns_style" comment="地图主页右上角抽屉按钮的样式">
+        <item name="android:layout_width">@dimen/top_right_drawer_btns_wh</item>
+        <item name="android:layout_height">@dimen/top_right_drawer_btns_wh</item>
+        <item name="android:background">@drawable/selector_default_button_white_bg</item>
+        <item name="android:elevation">2dp</item>
+    </style>
+
+    <!-- 地图主页右上角除了抽屉里的按钮样式 -->
+    <style name="zoom_btns_style" comment="除了抽屉里的按钮样式">
+        <item name="android:layout_width">@dimen/zoom_btns_w</item>
+        <item name="android:layout_height">@dimen/zoom_btns_w</item>
+        <item name="android:background">@drawable/selector_default_button_white_bg</item>
+        <item name="android:elevation">2dp</item>
+    </style>
+    <!--地图主页面右下角的坐标显示栏样式-->
+    <style name="main_activity_geometry_style" comment="地图主页面右下角的坐标显示栏样式">
+        <item name="android:layout_width">230dp</item>
+        <item name="android:layout_height">28dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:background">@drawable/shape_rect_white_8dp_bg</item>
+        <item name="android:drawableLeft">@drawable/icon_main_geometry</item>
+        <item name="android:elevation">2dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <!--任务列表、离线地图tablayout切换栏的字体样式-->
+    <style name="TabLayoutTextStyle" comment="任务列表、离线地图tablayout切换栏的字体样式">
+        <item name="android:textSize">14sp</item>
     </style>
 
     <!-- 默认字体 -->
@@ -73,15 +102,6 @@
     </style>
 
     <!-- 输入框基本样式 -->
-    <style name="input_blue_type" parent="content_font_default">
-        <item name="android:textSize">16sp</item>
-        <item name="android:background">#FFFFFF</item>
-        <item name="android:textColor">#1890ff</item>
-        <item name="android:textColorHint">@color/text_hint_gray</item>
-        <item name="android:padding">10dp</item>
-        <item name="android:imeOptions">actionDone</item>
-        <item name="android:singleLine">true</item>
-    </style>
 
 
     <style name="map_size_font_style" comment="离线地图gdb/nds大小字体样式">
@@ -92,19 +112,6 @@
         <item name="android:textSize">9sp</item>
         <item name="android:focusable">false</item>
         <item name="android:clickable">false</item>
-    </style>
-
-    <style name="map_download_style_btn" comment="离线地图下载的按钮样式" parent="ThemeOverlay.Material3.AutoCompleteTextView">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:paddingHorizontal">@dimen/default_widget_padding</item>
-        <item name="android:paddingVertical">5dp</item>
-        <item name="android:background">@drawable/fm_card_map_down_status_bg</item>
-        <item name="android:foreground">@drawable/ripple_btn_press</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:textColor">@color/selector_default_primary_press_secondary</item>
-        <item name="android:textSize">15sp</item>
     </style>
 
     <style name="btn_default_stroke_horizontal_round" comment="左右为圆角的按钮" parent="ThemeOverlay.Material3.AutoCompleteTextView">
@@ -123,7 +130,7 @@
     <!-- 默认按钮样式 -->
     <style name="btn_default_style" parent="content_font_default">
         <item name="android:textColor">@color/btn_select_color</item>
-        <item name="android:background">@drawable/btn_bg_default</item>
+        <item name="android:background">@drawable/selector_btn_bg_default</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:gravity">center</item>
@@ -133,15 +140,6 @@
     <style name="btn_gradient_color" parent="TextAppearance.AppCompat.Button">
         <item name="android:textColor">@color/selector_default_text_color_white_enable_gray</item>
         <item name="android:background">@drawable/selector_bg_default_button</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:gravity">center</item>
-        <item name="android:paddingBottom">1dp</item>
-    </style>
-
-    <style name="checked_gradient_color" parent="TextAppearance.AppCompat.Button">
-        <item name="android:textColor">@color/selector_default_text_color_black_enable_white</item>
-        <item name="android:background">@drawable/selector_bg_gradient_checkbox</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:gravity">center</item>
@@ -181,9 +179,11 @@
     </style>
 
     <style name="default_card_view" parent="@style/CardView">
-        <item name="background">@drawable/shape_card_bg_default</item>
+        <item name="background">@drawable/shape_rect_white_6dp_bg</item>
         <item name="android:layout_margin">@dimen/default_widget_padding</item>
         <item name="cardCornerRadius">@dimen/default_widget_padding</item>
         <item name="android:padding">@dimen/default_widget_padding</item>
     </style>
+
+
 </resources>

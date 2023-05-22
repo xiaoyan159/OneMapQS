@@ -1,5 +1,6 @@
 package com.navinfo.omqs.ui.fragment.evaluationresult
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,6 +15,11 @@ import com.navinfo.omqs.ui.other.shareViewModels
 class ProblemLinkFragment : BaseFragment() {
     private var _binding: FragmentProblemLinkBinding? = null
     private val binding get() = _binding!!
+
+    /**
+     * 和[PhenomenonFragment],[ProblemLinkFragment],[EvaluationResultFragment]共用同一个viewModel
+     */
+
     private val viewModel: EvaluationResultViewModel by shareViewModels("QsRecode")
 
     override fun onCreateView(
@@ -40,11 +46,13 @@ class ProblemLinkFragment : BaseFragment() {
         }
         binding.linkRightRecyclerview.adapter = rightAdapter
         //右侧菜单增加组标题
-        binding.linkRightRecyclerview.addItemDecoration(
-            RightGroupHeaderDecoration(
-                requireContext()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            binding.linkRightRecyclerview.addItemDecoration(
+                RightGroupHeaderDecoration(
+                    requireContext()
+                )
             )
-        )
+        }
         //右侧菜单查询数据监听
         viewModel.liveDataRightTypeList.observe(viewLifecycleOwner) {
             rightAdapter.refreshData(it)

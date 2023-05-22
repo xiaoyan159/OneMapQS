@@ -14,6 +14,11 @@ open class HadLinkDvoBean @JvmOverloads constructor(
     /**
      * (几何)加偏后
      */
-    var geometry: String = ""
+    var geometry: String = "",
+
+    /**
+     * 不作业原因
+     */
+    var reason: String = ""
 
 ) : RealmObject()

@@ -50,13 +50,13 @@ interface RetrofitNetworkServiceAPI {
         @Url url: String
     ): Response<ResponseBody>
 
-    @GET("/devcp/task?evaluatType=2")
+    @GET("/devcp/getEvaluationTask?evaluatType=2")
     suspend fun retrofitGetTaskList(
         @Query("evaluatorNo") evaluatorNo: String,
     ): Response<DefaultTaskResponse<List<TaskBean>>>
 
     @Headers("Content-Type: application/json")
-    @POST("/devcp/upload")
+    @POST("/devcp/uploadSceneProblem")
     suspend fun postRequest(@Body listEvaluationInfo: List<EvaluationInfo>?): Response<ResponseBody>
 
     /**

@@ -1,6 +1,5 @@
 package com.navinfo.omqs.hilt
 
-import android.content.Context
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.db.RoomAppDatabase
@@ -12,7 +11,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
-import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 
 @InstallIn(ActivityRetainedComponent::class)

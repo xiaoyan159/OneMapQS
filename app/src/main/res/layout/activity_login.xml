@@ -18,7 +18,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@mipmap/login_bg">
+        android:background="@drawable/login_bg">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
@@ -76,7 +76,7 @@
                         android:id="@+id/login_fragment_user_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:startIconDrawable="@mipmap/login_username"
+                        app:startIconDrawable="@drawable/login_username"
                         app:startIconTint="@color/colorSecondary"
                         android:scrollbarAlwaysDrawHorizontalTrack="true"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -91,7 +91,7 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/input_user_name"
                             android:lines="1"
-                            android:background="@drawable/login_inputlayout_bg"
+                            android:background="@drawable/shape_login_inputlayout_bg"
                             android:text="@{loginUserModel.loginUser.username}"
                             tools:ignore="TouchTargetSizeCheck" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -99,7 +99,7 @@
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:startIconDrawable="@mipmap/login_password"
+                        app:startIconDrawable="@drawable/login_password"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:startIconTint="@color/colorSecondary"
@@ -112,7 +112,7 @@
                             android:hint="@string/input_password"
                             android:lines="1"
                             android:inputType="textPassword"
-                            android:background="@drawable/login_inputlayout_bg"
+                            android:background="@drawable/shape_login_inputlayout_bg"
                             android:text="@{loginUserModel.loginUser.password}"
                             tools:ignore="TouchTargetSizeCheck" />
                     </com.google.android.material.textfield.TextInputLayout>

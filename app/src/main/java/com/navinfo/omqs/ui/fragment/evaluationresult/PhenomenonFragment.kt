@@ -19,6 +19,9 @@ class PhenomenonFragment :
     BaseFragment() {
     private var _binding: FragmentPhenomenonBinding? = null
     private val binding get() = _binding!!
+    /**
+     * 和[PhenomenonFragment],[ProblemLinkFragment],[EvaluationResultFragment]共用同一个viewModel
+     */
     private val viewModel: EvaluationResultViewModel by shareViewModels("QsRecode")
 
     override fun onCreateView(
@@ -112,14 +115,14 @@ class PhenomenonFragment :
         viewModel.liveDataMiddleTypeList.observe(viewLifecycleOwner) {
             middleAdapter.refreshData(it)
         }
-        binding.phenomenonDrawer.setOnClickListener {
-            when (binding.group.visibility) {
-                View.INVISIBLE, View.GONE ->
-                    binding.group.visibility = View.VISIBLE
-                else ->
-                    binding.group.visibility = View.GONE
-            }
-        }
+//        binding.phenomenonDrawer.setOnClickListener {
+//            when (binding.group.visibility) {
+//                View.INVISIBLE, View.GONE ->
+//                    binding.group.visibility = View.VISIBLE
+//                else ->
+//                    binding.group.visibility = View.GONE
+//            }
+//        }
 
         viewModel.getClassTypeList()
     }

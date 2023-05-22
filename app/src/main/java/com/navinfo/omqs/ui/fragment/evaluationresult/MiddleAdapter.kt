@@ -32,10 +32,10 @@ class MiddleAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) 
         layoutParams.width = 115
         bd.itemLayout.layoutParams = layoutParams
         if (selectTitle == title) {
-            bd.itemId.setBackgroundResource(R.drawable.drawable_bg_blue_bg_4_radius)
+            bd.itemId.setBackgroundResource(R.drawable.shape_bg_blue_bg_4_radius)
             bd.itemId.setTextColor(holder.viewBinding.root.context.getColor(R.color.white))
         } else {
-            bd.itemId.setBackgroundResource(R.drawable.drawable_bg_white_bg_4_radius)
+            bd.itemId.setBackgroundResource(R.drawable.shape_rect_white_2dp_bg)
             bd.itemId.setTextColor(holder.viewBinding.root.context.getColor(R.color.black))
         }
         bd.root.setOnClickListener {

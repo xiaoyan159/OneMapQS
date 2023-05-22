@@ -19,6 +19,8 @@ data class SignBean(
     val geometry: String,
     //底部文字
     val bottomText: String,
+    //底部右侧文字
+    val bottomRightText: String,
     //要素code类型
     val elementCode: Int
 ) : Parcelable

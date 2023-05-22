@@ -23,6 +23,10 @@ import androidx.navigation.findNavController
 @AndroidEntryPoint
 class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentEvaluationResultBinding
+
+    /**
+     * 和[PhenomenonFragment],[ProblemLinkFragment],[EvaluationResultFragment]共用同一个viewModel
+     */
     private val viewModel by shareViewModels<EvaluationResultViewModel>("QsRecode")
 
     //    private val args:EmptyFragmentArgs by navArgs()

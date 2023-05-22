@@ -16,7 +16,7 @@
         android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/selector_bg_video_button"
+        android:background="@drawable/ripple_btn_video_normal"
         android:gravity="center_vertical"
         android:minWidth="50dp"
         android:orientation="horizontal"
