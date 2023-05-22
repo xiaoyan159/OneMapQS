@@ -2,7 +2,9 @@ package com.navinfo.omqs.db
 
 import android.content.Context
 import android.database.Cursor.*
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.database.getBlobOrNull
 import androidx.core.database.getFloatOrNull
 import androidx.core.database.getIntOrNull
@@ -14,6 +16,7 @@ import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.ImportConfig
+import com.navinfo.omqs.bean.Transform
 import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
 import com.navinfo.omqs.hilt.OMDBDataBaseHiltFactory
 import dagger.assisted.Assisted
@@ -50,6 +53,10 @@ class ImportOMDBHelper @AssistedInject constructor(
     private val configFile: File =
         File("${Constant.USER_DATA_PATH}", Constant.OMDB_CONFIG)
 
+    private val importConfig by lazy {
+        openConfigFile()
+    }
+
     /**
      * 读取config的配置文件
      * */
@@ -61,6 +68,7 @@ class ImportOMDBHelper @AssistedInject constructor(
     /**
      * 读取指定数据表的数据集
      * */
+    @RequiresApi(Build.VERSION_CODES.N)
     suspend fun getOMDBTableData(table: String): Flow<List<Map<String, Any>>> =
         withContext(Dispatchers.IO) {
             val listResult: MutableList<Map<String, Any>> = mutableListOf()
@@ -120,7 +128,6 @@ class ImportOMDBHelper @AssistedInject constructor(
      * @param configFile 对应的配置文件
      * */
     suspend fun importOmdbZipFile(omdbZipFile: File): Flow<String> = withContext(Dispatchers.IO) {
-        val importConfig = openConfigFile()
         val unZipFolder = File(omdbZipFile.parentFile, "result")
         flow {
             if (unZipFolder.exists()) {
@@ -133,7 +140,8 @@ class ImportOMDBHelper @AssistedInject constructor(
             try {
                 Realm.getDefaultInstance().beginTransaction()
                 // 遍历解压后的文件，读取该数据返回
-                for ((index, currentConfig) in importConfig.tables.withIndex()) {
+                for ((index, currentEntry) in importConfig.tableMap.entries.withIndex()) {
+                    val currentConfig = currentEntry.value
                     val txtFile = unZipFiles.find {
                         it.name == currentConfig.table
                     }
@@ -150,7 +158,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                     .toMutableMap()
                                 map["qi_table"] = currentConfig.table
                                 map["qi_name"] = currentConfig.name
-                                map["qi_code"] = currentConfig.code
+                                map["qi_code"] = if (currentConfig.code == 0) currentConfig.code else currentEntry.key
                                 listResult.add(map)
                             }
                         }
@@ -172,10 +180,12 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 else -> renderEntity.properties.put(key, value.toString())
                             }
                         }
+                        // 对renderEntity做预处理后再保存
+                        importConfig.transformProperties(renderEntity)
                         Realm.getDefaultInstance().copyToRealm(renderEntity)
                     }
                     // 1个文件发送一次flow流
-                    emit("${index + 1}/${importConfig.tables.size}")
+                    emit("${index + 1}/${importConfig.tableMap.size}")
                 }
                 Realm.getDefaultInstance().commitTransaction()
             } catch (e: Exception) {
@@ -216,11 +226,5 @@ class ImportOMDBHelper @AssistedInject constructor(
         }
         cursor.close()
         return columns
-    }
-
-    /**
-     * 预处理渲染要素，某些要素需要对数据做二次处理
-     * */
-    fun performRenderEntity(renderEntity: RenderEntity) {
     }
 }

@@ -1,7 +1,5 @@
 package com.navinfo.omqs
 
-import io.realm.Realm
-
 class Constant {
     companion object {
         /**
@@ -76,7 +74,7 @@ class Constant {
         //选择拍照或者录像
         const val SELECT_TAKEPHOTO_OR_RECORD = "select_takephoto_or_record"
 
-        const val OMDB_CONFIG = "omdb.config"
+        const val OMDB_CONFIG = "omdb_config.json"
         const val OTHER_CONFIG = "other.config"
 
         val OMDB_LAYER_VISIBLE_LIST: MutableList<String> = mutableListOf() // 记录OMDB数据显示的图层名称列表

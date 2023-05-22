@@ -18,7 +18,6 @@
         <item
             android:id="@+id/personal_center_menu_import_data"
             android:icon="@drawable/ic_baseline_import_export_24"
-            android:visible="false"
             android:title="导入数据" />
         <item
             android:id="@+id/personal_center_menu_import_yuan_data"

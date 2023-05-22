@@ -373,9 +373,12 @@ class MainViewModel @Inject constructor(
         if (layerConfigList != null && !layerConfigList.isEmpty()) {
             val omdbVisibleList = layerConfigList.filter { importConfig ->
                 importConfig.tableGroupName == "OMDB数据"
-            }.first().tables.filter { tableInfo ->
+            }.first().tableMap.filter {
+                    entry ->
+                val tableInfo = entry.value
                 !tableInfo.checked
-            }.map { tableInfo ->
+            }.map { entry ->
+                val tableInfo = entry.value
                 tableInfo.table
             }.toList()
             com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY =

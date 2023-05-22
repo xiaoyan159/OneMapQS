@@ -1,0 +1,88 @@
+{
+	"tableMap" : {
+		"2001": {
+			"table": "OMDB_RD_LINK",
+			"code": 2001,
+			"name": "道路线"
+		},
+		"2008": {
+			"table": "OMDB_RD_LINK_KIND",
+			"code": 2008,
+			"name": "道路种别"
+		},
+		"2010": {
+			"table": "OMDB_LINK_DIRECT",
+			"code": 2010,
+			"name": "道路方向"
+		},
+		"4002": {
+            "table": "OMDB_SPEEDLIMIT",
+            "code": 4002,
+            "name": "常规点限速",
+			"transformer": [
+				{
+					"k": "maxSpeed",
+					"v": "0",
+					"klib": "maxSpeed",
+					"vlib": "限"
+				}
+			]
+        },
+		"4003":{
+			"table": "OMDB_SPEEDLIMIT_COND",
+			"code": 4003,
+			"name": "条件点限速",
+			"transformer": [
+				{
+					"k": "maxSpeed",
+					"v": "0|",
+					"klib": "maxSpeed",
+					"vlib": "限"
+				}
+			]
+		},
+		"4004":{
+			"table": "OMDB_SPEEDLIMIT_VAR",
+			"code": 4004,
+			"name": "可变点限速",
+			"transformer": [
+				{
+					"k": "location",
+					"v": "1",
+					"klib": "location",
+					"vlib": "左"
+				},
+				{
+					"k": "location",
+					"v": "2",
+					"klib": "locationlib",
+					"vlib": "右"
+				},
+				{
+					"k": "location",
+					"v": "3",
+					"klib": "location",
+					"vlib": "上"
+				}
+			]
+		},
+        "5001":{
+            "table": "OMDB_LANE_LINK_LG",
+            "code": 5001,
+            "name": "车道中心线"
+        },
+        "2041":{
+            "table": "OMDB_LANE_NUM",
+            "code": 2041,
+            "name": "车道数",
+			"transformer": [
+				{
+					"k": "laneS2e",
+					"v": "~",
+					"klib": "left_00",
+					"vlib": "laneNumLeft00()"
+				}
+			]
+        }
+	}
+}
