@@ -28,21 +28,7 @@ class LeftAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) :
         val bd = holder.viewBinding as TextItemSelectBinding
         val title = data[position]
         bd.itemId.text = title
-        if (selectTitle == title) {
-            bd.itemLayout.setBackgroundColor(
-                holder.viewBinding.root.context.getColor(
-                    R.color.button_press_color,
-                )
-            )
-            bd.itemId.setTextColor(holder.viewBinding.root.context.getColor(R.color.highFontColor))
-        } else {
-            bd.itemLayout.setBackgroundColor(
-                holder.viewBinding.root.context.getColor(
-                    R.color.white,
-                )
-            )
-            bd.itemId.setTextColor(holder.viewBinding.root.context.getColor(R.color.black))
-        }
+        holder.viewBinding.root.isSelected = selectTitle == title
         bd.root.setOnClickListener {
             if (selectTitle != title) {
                 selectTitle = title

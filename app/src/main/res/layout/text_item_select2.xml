@@ -3,7 +3,7 @@
     android:id="@+id/item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:background="@drawable/selector_adapter_item_select_bg">
 
     <TextView
         android:id="@+id/item_id"
@@ -12,8 +12,8 @@
         android:layout_margin="3dp"
         android:gravity="center_vertical"
         android:padding="3dp"
-        android:drawableLeft=""
-        android:textColor="@color/black"
+        android:drawableLeft="@drawable/selector_text_drawable_left_white_blue"
+        android:textColor="@color/selector_black_blue_color"
         android:textSize="14sp"/>
 
 

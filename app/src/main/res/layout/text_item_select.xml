@@ -12,8 +12,9 @@
         android:layout_margin="3dp"
         android:gravity="center"
         android:padding="3dp"
-        android:drawableLeft="@drawable/selector_task_link_edit_icon"
-        android:textColor="@color/default_blue_text_color"
+        android:paddingLeft="0dp"
+        android:drawableLeft="@drawable/selector_text_drawable_left_white_blue"
+        android:textColor="@color/selector_black_blue_color"
         android:textSize="14sp"/>
 
 
