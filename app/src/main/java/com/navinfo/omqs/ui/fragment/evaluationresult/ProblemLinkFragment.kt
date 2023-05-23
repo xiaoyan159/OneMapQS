@@ -75,14 +75,14 @@ class ProblemLinkFragment : BaseFragment() {
             }
         })
 
-        //中间菜单
-        binding.linkMiddleRecyclerview.setHasFixedSize(true)
-        binding.linkMiddleRecyclerview.layoutManager = LinearLayoutManager(requireContext())
-        binding.linkMiddleRecyclerview.adapter = middleAdapter
+//        //中间菜单
+//        binding.linkMiddleRecyclerview.setHasFixedSize(true)
+//        binding.linkMiddleRecyclerview.layoutManager = LinearLayoutManager(requireContext())
+//        binding.linkMiddleRecyclerview.adapter = middleAdapter
         //中间侧菜单查询结果监听
-        viewModel.liveDataMiddleTypeList.observe(viewLifecycleOwner) {
-            middleAdapter.refreshData(it)
-        }
+//        viewModel.liveDataMiddleTypeList.observe(viewLifecycleOwner) {
+//            middleAdapter.refreshData(it)
+//        }
         binding.linkDrawer.setOnClickListener {
             when (binding.group.visibility) {
                 View.INVISIBLE, View.GONE ->

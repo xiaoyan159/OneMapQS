@@ -7,6 +7,7 @@ import com.navinfo.omqs.R
 class SignUtil {
     companion object {
 
+
         /**
          * 获取面板上的文字
          */
@@ -24,7 +25,7 @@ class SignUtil {
             }
         }
 
-        fun getSignBottomText(data: RenderEntity): String {
+        fun getSignNameText(data: RenderEntity): String {
             return when (data.code) {
                 //可变点限速
                 4004 -> "可变点限速"
@@ -57,7 +58,7 @@ class SignUtil {
          * 条件点限速文字
          */
 
-        fun getConditionLimitText(data: RenderEntity): String {
+        private fun getConditionLimitText(data: RenderEntity): String {
             var stringBuffer = StringBuffer()
             try {
                 val dependent = data.properties["speedDependent"]
@@ -121,7 +122,7 @@ class SignUtil {
         /**
          * 限速图标
          */
-        fun getSpeedLimitIcon(data: RenderEntity): Int {
+        private fun getSpeedLimitIcon(data: RenderEntity): Int {
             try {
                 //限速标志 0 限速开始 1 限速解除
                 return when (data.properties["speed_flag"]) {
@@ -150,7 +151,7 @@ class SignUtil {
                 4002, 4003 -> getSpeedLimitIcon(data)
                 //可变点限速
                 4004 -> R.drawable.icon_change_limit
-                else -> R.drawable.icon_speed_limit
+                else -> 0
             }
 
         }
@@ -159,7 +160,7 @@ class SignUtil {
         /**
          * 获取种别图标
          */
-        fun getKindCodeIcon(data: RenderEntity): Int {
+        private fun getKindCodeIcon(data: RenderEntity): Int {
             try {
                 val kind = data.properties["kind"]
                 return when (kind!!.toInt()) {

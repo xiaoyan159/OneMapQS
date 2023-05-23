@@ -64,7 +64,7 @@ class EvaluationResultViewModel @Inject constructor(
     /**
      * 问题类型 liveData 给[MiddleAdapter]展示的数据
      */
-    val liveDataMiddleTypeList = MutableLiveData<List<String>>()
+//    val liveDataMiddleTypeList = MutableLiveData<List<String>>()
 
     /**
      * 问题现象 liveData 给[RightGroupHeaderAdapter]展示的数据
@@ -240,7 +240,7 @@ class EvaluationResultViewModel @Inject constructor(
                         Log.e("jingo", "getProblemLinkList ${rightList[0].text}")
                     }
                     liveDataQsRecordBean.postValue(liveDataQsRecordBean.value)
-                    liveDataMiddleTypeList.postValue(middleList)
+//                    liveDataMiddleTypeList.postValue(middleList)
                     liveDataRightTypeList.postValue(rightList)
                 }
             }
@@ -272,7 +272,7 @@ class EvaluationResultViewModel @Inject constructor(
                     liveDataQsRecordBean.value!!.problemType = typeTitleList[0]
                     Log.e("jingo", "getProblemList ${typeTitleList[0]}")
                 }
-                liveDataMiddleTypeList.postValue(typeTitleList)
+//                liveDataMiddleTypeList.postValue(typeTitleList)
                 if (liveDataQsRecordBean.value!!.phenomenon.isEmpty()) {
                     liveDataQsRecordBean.value!!.phenomenon = phenomenonRightList[0].text
                     Log.e("jingo", "getProblemList ${phenomenonRightList[0].text}")

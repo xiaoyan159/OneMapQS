@@ -106,15 +106,15 @@ class PhenomenonFragment :
         })
 
 
-        //中间菜单
-        binding.phenomenonMiddleRecyclerview.setHasFixedSize(true)
-        binding.phenomenonMiddleRecyclerview.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-
-        binding.phenomenonMiddleRecyclerview.adapter = middleAdapter
+//        //中间菜单
+//        binding.phenomenonMiddleRecyclerview.setHasFixedSize(true)
+//        binding.phenomenonMiddleRecyclerview.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+//
+//        binding.phenomenonMiddleRecyclerview.adapter = middleAdapter
         //中间侧菜单查询结果监听
-        viewModel.liveDataMiddleTypeList.observe(viewLifecycleOwner) {
-            middleAdapter.refreshData(it)
-        }
+//        viewModel.liveDataMiddleTypeList.observe(viewLifecycleOwner) {
+//            middleAdapter.refreshData(it)
+//        }
 //        binding.phenomenonDrawer.setOnClickListener {
 //            when (binding.group.visibility) {
 //                View.INVISIBLE, View.GONE ->

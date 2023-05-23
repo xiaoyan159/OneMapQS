@@ -3,17 +3,17 @@
     android:id="@+id/item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selector_adapter_item_select_bg">
+    android:background="@color/white">
 
     <TextView
         android:id="@+id/item_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="3dp"
-        android:gravity="center"
+        android:gravity="center_vertical"
         android:padding="3dp"
-        android:drawableLeft="@drawable/selector_task_link_edit_icon"
-        android:textColor="@color/default_blue_text_color"
+        android:drawableLeft=""
+        android:textColor="@color/black"
         android:textSize="14sp"/>
 
 

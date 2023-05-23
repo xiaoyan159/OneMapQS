@@ -67,8 +67,11 @@ class MainViewModel @Inject constructor(
     //地图点击捕捉到的质检数据ID列表
     val liveDataQsRecordIdList = MutableLiveData<List<String>>()
 
-    //看板数据
+    //左侧看板数据
     val liveDataSignList = MutableLiveData<List<SignBean>>()
+
+    //顶部看板数据
+    val liveDataTopSignList = MutableLiveData<List<SignBean>>()
 
 //    var testPoint = GeoPoint(0, 0)
 
@@ -150,8 +153,7 @@ class MainViewModel @Inject constructor(
 //                location.latitude = testPoint.latitude
                 val geometry = GeometryTools.createGeometry(
                     GeoPoint(
-                        location.latitude,
-                        location.longitude
+                        location.latitude, location.longitude
                     )
                 )
                 val tileX = RealmSet<Int>()
@@ -176,8 +178,7 @@ class MainViewModel @Inject constructor(
             mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
 //                location.longitude = testPoint.longitude
 //                location.latitude = testPoint.latitude
-                if (!isSelectRoad())
-                    captureLink(GeoPoint(location.latitude, location.longitude))
+                if (!isSelectRoad()) captureLink(GeoPoint(location.latitude, location.longitude))
             }
         }
 
@@ -196,6 +197,8 @@ class MainViewModel @Inject constructor(
             )
             //看板数据
             val signList = mutableListOf<SignBean>()
+            val topSignList = mutableListOf<SignBean>()
+
             if (linkList.isNotEmpty()) {
                 val link = linkList[0]
                 val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
@@ -204,27 +207,36 @@ class MainViewModel @Inject constructor(
                     var elementList = realmOperateHelper.queryLinkByLinkPid(it)
                     for (element in elementList) {
                         val distance = GeometryTools.distanceToDouble(
-                            point,
-                            GeometryTools.createGeoPoint(element.geometry)
+                            point, GeometryTools.createGeoPoint(element.geometry)
                         )
-                        signList.add(
-                            SignBean(
-                                iconId = SignUtil.getSignIcon(element),
-                                iconText = SignUtil.getSignIconText(element),
-                                distance = distance.toInt(),
-                                elementId = element.id,
-                                linkId = linkId,
-                                geometry = element.geometry,
-                                bottomText = SignUtil.getSignBottomText(element),
-                                bottomRightText = SignUtil.getSignBottomRightText(element),
-                                elementCode = element.code
+
+                        val signBean = SignBean(
+                            iconId = SignUtil.getSignIcon(element),
+                            iconText = SignUtil.getSignIconText(element),
+                            distance = distance.toInt(),
+                            elementId = element.id,
+                            linkId = linkId,
+                            geometry = element.geometry,
+                            name = SignUtil.getSignNameText(element),
+                            bottomRightText = SignUtil.getSignBottomRightText(element),
+                            elementCode = element.code
+                        )
+
+                        when (element.code) {
+                            2041, 2008 -> topSignList.add(
+                                signBean
                             )
-                        )
+                            else -> signList.add(
+                                signBean
+                            )
+                        }
+
                     }
 
                 }
             }
-            liveDataSignList.postValue(signList)
+            liveDataTopSignList.postValue(topSignList.distinctBy { it.elementCode })
+            liveDataSignList.postValue(signList.distinctBy { it.elementCode })
             Log.e("jingo", "自动捕捉数据 共${signList.size}条")
         }
     }

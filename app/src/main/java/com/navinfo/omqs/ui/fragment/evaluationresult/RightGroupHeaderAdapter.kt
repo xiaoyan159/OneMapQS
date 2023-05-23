@@ -11,7 +11,7 @@ class RightGroupHeaderAdapter(private var itemListener: ((Int, RightBean) -> Uni
     BaseRecyclerViewAdapter<RightBean>() {
     private var groupTitleList = mutableListOf<String>()
     override fun getItemViewRes(position: Int): Int {
-        return R.layout.text_item_select
+        return R.layout.text_item_select2
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {

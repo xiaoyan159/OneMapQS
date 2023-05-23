@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class SignBean(
     //图标ID
-    val iconId: Int,
+    var iconId: Int = 0,
     //定位点到目标距离
     val distance: Int = 0,
     //图表中的问题
@@ -18,7 +18,7 @@ data class SignBean(
     //坐标
     val geometry: String,
     //底部文字
-    val bottomText: String,
+    val name: String,
     //底部右侧文字
     val bottomRightText: String,
     //要素code类型

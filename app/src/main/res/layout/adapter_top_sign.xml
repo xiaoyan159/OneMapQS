@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    tools:context="com.navinfo.omqs.ui.activity.map.TopSignAdapter">
+
+    <TextView
+        android:id="@+id/top_sign_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="名称"
+        android:textColor="#2F2F2F"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/top_sign_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/top_sign_name"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="道路名"
+        android:textColor="#2F2F2F"
+        android:textSize="14sp" />
+</RelativeLayout>
