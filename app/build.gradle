@@ -106,6 +106,9 @@ dependencies {
     implementation 'com.github.sevar83:android-spatialite:2.0.1'
     //fragment 传递数据
     implementation "androidx.navigation:navigation-ui-ktx:2.5.3"
+    //kotlin反射
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.7.0"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.0"
 }
 //允许引用生成的代码
 kapt {
