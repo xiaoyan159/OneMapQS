@@ -32,23 +32,25 @@ class ImportConfig {
             }
             // 开始解析key和value，并对数据进行匹配
             m@ for (k in processKeyOrValue(key)) {
-                for (v in processKeyOrValue(value)) {
-                    if ("~" == v &&renderEntity.properties.containsKey(k)) { // ~符可以匹配任意元素
-                        if (valuelib.endsWith("()")) { // 以()结尾，说明该value配置是一个function，需要通过反射调用指定方法
-                            val method = preProcess::class.declaredMemberFunctions.first { it.name == valuelib.replace("()", "") }
-                            method.call(preProcess, renderEntity)
-                        } else {
-                            renderEntity.properties[keylib] = valuelib
+                if (renderEntity.properties.containsKey(k)) { // json配置的key可以匹配到数据
+                    for (v in processKeyOrValue(value)) {
+                        if ("~" == v ) { // ~符可以匹配任意元素
+                            if (valuelib.endsWith("()")) { // 以()结尾，说明该value配置是一个function，需要通过反射调用指定方法
+                                val method = preProcess::class.declaredMemberFunctions.first { it.name == valuelib.replace("()", "") }
+                                method.call(preProcess, renderEntity)
+                            } else {
+                                renderEntity.properties[keylib] = valuelib
+                            }
+                            break@m
+                        } else if (renderEntity.properties[k] == v) { // 完全匹配
+                            if (valuelib.endsWith("()")) { // 以()结尾，说明该value配置是一个function，需要通过反射调用指定方法
+                                val method = preProcess::class.declaredMemberFunctions.first { it.name == valuelib.replace("()", "") }
+                                method.call(preProcess, renderEntity)
+                            } else {
+                                renderEntity.properties[keylib] = valuelib
+                            }
+                            break@m
                         }
-                        break@m
-                    } else if (renderEntity.properties[k] == v) {
-                        if (valuelib.endsWith("()")) { // 以()结尾，说明该value配置是一个function，需要通过反射调用指定方法
-                            val method = preProcess::class.declaredMemberFunctions.first { it.name == valuelib.replace("()", "") }
-                            method.call(preProcess, renderEntity)
-                        } else {
-                            renderEntity.properties[keylib] = valuelib
-                        }
-                        break@m
                     }
                 }
             }

@@ -25,6 +25,12 @@
 					"v": "0",
 					"klib": "maxSpeed",
 					"vlib": "限"
+				},
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "translateRight()"
 				}
 			]
         },
@@ -76,12 +82,7 @@
             "code": 2041,
             "name": "车道数",
 			"transformer": [
-				{
-					"k": "laneS2e",
-					"v": "~",
-					"klib": "left_00",
-					"vlib": "laneNumLeft00()"
-				}
+
 			]
         }
 	}

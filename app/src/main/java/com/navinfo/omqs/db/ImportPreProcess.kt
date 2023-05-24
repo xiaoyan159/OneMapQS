@@ -23,20 +23,18 @@ class ImportPreProcess {
     fun translateRight(renderEntity: RenderEntity): RenderEntity {
         // 获取当前renderEntity的geometry
         val geometry = renderEntity.wkt
-        var angle = 0.0 // geometry的角度，如果是点，获取angle，如果是线，获取最后两个点的方向
+        var radian = 0.0 // geometry的角度，如果是点，获取angle，如果是线，获取最后两个点的方向
         var point = Coordinate(geometry?.coordinate)
         if (Geometry.TYPENAME_POINT == geometry?.geometryType) {
-            angle = if(renderEntity?.properties?.get("angle") == null) 0.0 else renderEntity?.properties?.get("angle")?.toDouble()!!
+            val angle = if(renderEntity?.properties?.get("angle") == null) 0.0 else renderEntity?.properties?.get("angle")?.toDouble()!!
+            radian = Math.toRadians(angle)
         } else if (Geometry.TYPENAME_LINESTRING == geometry?.geometryType) {
             val p1: Coordinate = geometry.coordinates.get(geometry.coordinates.size - 2)
             val p2: Coordinate = geometry.coordinates.get(geometry.coordinates.size - 1)
             // 计算线段的方向
-            angle = Angle.angle(p1, p2)
+            radian = Angle.angle(p1, p2)
             point = p2
         }
-
-        // 将角度转换为弧度
-        val radian = Math.toRadians(angle)
 
         // 计算偏移距离
         val dx: Double = GeometryTools.convertDistanceToDegree(5.0, geometry?.coordinate?.y!!) * Math.cos(radian)
@@ -47,7 +45,26 @@ class ImportPreProcess {
             Coordinate(point.getX() + dy, point.getY() - dx)
 
         // 将这个点记录在数据中
-        renderEntity.properties["geometry"] = GeometryTools.createGeometry(doubleArrayOf(coord.x, coord.y)).toString()
+        val geometryTranslate: Geometry = GeometryTools.createGeometry(doubleArrayOf(coord.x, coord.y))
+        renderEntity.geometry = geometryTranslate.toString()
         return renderEntity
+    }
+
+    fun addAngleFromGeometry(renderEntity: RenderEntity): String {
+        renderEntity.properties.put("angle", "0")
+        if (renderEntity.wkt!=null) {
+            val geometry = renderEntity.wkt
+            if (geometry?.numPoints!!>=2) {
+                val p1: Coordinate = geometry?.coordinates?.get(geometry.coordinates.size - 2)!!
+                val p2: Coordinate = geometry?.coordinates?.get(geometry.coordinates.size - 1)!!
+                val angle = Angle.angle(p1, p2).toString()
+                // 计算线段的方向
+                renderEntity.properties["angle"] = angle
+                return angle
+            } else {
+                renderEntity.properties["angle"] = "90"
+            }
+        }
+        return "0"
     }
 }

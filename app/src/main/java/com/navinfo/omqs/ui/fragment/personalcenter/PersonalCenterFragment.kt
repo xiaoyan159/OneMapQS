@@ -111,7 +111,7 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
                     viewModel.readRealmData()
                     // 定位到指定位置
                     niMapController.mMapView.vtmMap.animator()
-                        .animateTo(GeoPoint(40.1012346774074730, 116.25571303257621))
+                        .animateTo(GeoPoint(30.26491197757836, 113.8408333015833 ))
                 }
                 R.id.personal_center_menu_task_list -> {
                     findNavController().navigate(R.id.TaskManagerFragment)
