@@ -51,18 +51,21 @@ class ImportPreProcess {
     }
 
     fun addAngleFromGeometry(renderEntity: RenderEntity): String {
-        renderEntity.properties.put("angle", "0")
-        if (renderEntity.wkt!=null) {
-            val geometry = renderEntity.wkt
-            if (geometry?.numPoints!!>=2) {
-                val p1: Coordinate = geometry?.coordinates?.get(geometry.coordinates.size - 2)!!
-                val p2: Coordinate = geometry?.coordinates?.get(geometry.coordinates.size - 1)!!
-                val angle = Angle.angle(p1, p2).toString()
+        if (!renderEntity.properties.containsKey("angle")) {
+            if (renderEntity.wkt!=null) {
+                val geometry = renderEntity.wkt
+                var angle: String = "90"
+                if (geometry?.numPoints!!>=2) {
+                    val p1: Coordinate = geometry?.coordinates?.get(geometry.coordinates.size - 2)!!
+                    val p2: Coordinate = geometry?.coordinates?.get(geometry.coordinates.size - 1)!!
+                    // 弧度转角度
+                    angle = Math.toDegrees(Angle.angle(p1, p2)).toString()
+                } else {
+                    angle = "90"
+                }
                 // 计算线段的方向
                 renderEntity.properties["angle"] = angle
                 return angle
-            } else {
-                renderEntity.properties["angle"] = "90"
             }
         }
         return "0"
