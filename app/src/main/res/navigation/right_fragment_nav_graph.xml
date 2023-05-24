@@ -3,24 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/right_fragment_nav_graph"
-    app:startDestination="@id/EmptyFragment">
+    app:startDestination="@id/RightEmptyFragment">
 
     <fragment
-        android:id="@+id/EmptyFragment"
+        android:id="@+id/RightEmptyFragment"
         android:name="com.navinfo.omqs.ui.fragment.empty.EmptyFragment"
-        android:label="空页面"
+        android:label="右侧空页面"
         tools:layout="@layout/fragment_empty">
-<!--        <action-->
-<!--            android:id="@+id/EmptyFragment_to_EvaluationResultFragment"-->
-<!--            app:destination="@id/EvaluationResultFragment" />-->
-<!--        <argument-->
-<!--            android:name="QsId"-->
-<!--            app:argType="string"-->
-<!--            app:nullable="true" />-->
-<!--        <argument-->
-<!--            android:name="SignBean"-->
-<!--            app:argType="com.navinfo.omqs.ui.activity.map.SignBean"-->
-<!--            />-->
+        <!--        <action-->
+        <!--            android:id="@+id/EmptyFragment_to_EvaluationResultFragment"-->
+        <!--            app:destination="@id/EvaluationResultFragment" />-->
+        <!--        <argument-->
+        <!--            android:name="QsId"-->
+        <!--            app:argType="string"-->
+        <!--            app:nullable="true" />-->
+        <!--        <argument-->
+        <!--            android:name="SignBean"-->
+        <!--            app:argType="com.navinfo.omqs.ui.activity.map.SignBean"-->
+        <!--            />-->
     </fragment>
 
     <fragment

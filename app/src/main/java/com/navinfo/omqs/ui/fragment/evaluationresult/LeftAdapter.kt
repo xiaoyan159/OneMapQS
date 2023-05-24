@@ -44,10 +44,9 @@ class LeftAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) :
         notifyDataSetChanged()
     }
 
-    fun setRightTitle(title: String) {
+    fun setSelectTitle(title: String) {
         if (title != selectTitle) {
             selectTitle = title
-            notifyDataSetChanged()
         }
     }
 }

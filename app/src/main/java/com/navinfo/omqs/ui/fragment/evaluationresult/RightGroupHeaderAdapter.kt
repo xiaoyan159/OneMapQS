@@ -3,12 +3,13 @@ package com.navinfo.omqs.ui.fragment.evaluationresult
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.navinfo.omqs.R
-import com.navinfo.omqs.databinding.TextItemSelectBinding
+import com.navinfo.omqs.databinding.TextItemSelect2Binding
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 
 class RightGroupHeaderAdapter(private var itemListener: ((Int, RightBean) -> Unit?)? = null) :
     BaseRecyclerViewAdapter<RightBean>() {
+    private var selectTitle = ""
     private var groupTitleList = mutableListOf<String>()
     override fun getItemViewRes(position: Int): Int {
         return R.layout.text_item_select2
@@ -16,14 +17,21 @@ class RightGroupHeaderAdapter(private var itemListener: ((Int, RightBean) -> Uni
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val viewBinding =
-            TextItemSelectBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            TextItemSelect2Binding.inflate(LayoutInflater.from(parent.context), parent, false)
         return BaseViewHolder(viewBinding)
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
-        val bd = holder.viewBinding as TextItemSelectBinding
-        bd.itemId.text = data[position].text
+        val bd = holder.viewBinding as TextItemSelect2Binding
+        val title = data[position].text
+        bd.itemId.text = title
+
+        holder.viewBinding.root.isSelected = selectTitle == title
         bd.root.setOnClickListener {
+            if (selectTitle != title) {
+                selectTitle = title
+                notifyDataSetChanged()
+            }
             itemListener?.invoke(position, data[position])
         }
     }
@@ -86,7 +94,6 @@ class RightGroupHeaderAdapter(private var itemListener: ((Int, RightBean) -> Uni
     }
 
     override fun refreshData(newData: List<RightBean>) {
-        super.refreshData(newData)
         groupTitleList.clear()
         for (item in newData) {
             if (groupTitleList.size > 0) {
@@ -97,7 +104,15 @@ class RightGroupHeaderAdapter(private var itemListener: ((Int, RightBean) -> Uni
                 groupTitleList.add(item.title)
             }
         }
+        super.refreshData(newData)
     }
 
-
+    /**
+     * 设置当前选中的哪条数据
+     */
+    fun setSelectTitle(title: String) {
+        if (title != selectTitle) {
+            selectTitle = title
+        }
+    }
 }

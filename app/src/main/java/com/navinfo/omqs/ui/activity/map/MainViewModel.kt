@@ -223,7 +223,7 @@ class MainViewModel @Inject constructor(
                         )
 
                         when (element.code) {
-                            2041, 2008 -> topSignList.add(
+                            2041, 2008, 2010 -> topSignList.add(
                                 signBean
                             )
                             else -> signList.add(
@@ -386,8 +386,7 @@ class MainViewModel @Inject constructor(
         if (layerConfigList != null && !layerConfigList.isEmpty()) {
             val omdbVisibleList = layerConfigList.filter { importConfig ->
                 importConfig.tableGroupName == "OMDB数据"
-            }.first().tableMap.filter {
-                    entry ->
+            }.first().tableMap.filter { entry ->
                 val tableInfo = entry.value
                 !tableInfo.checked
             }.map { entry ->
@@ -426,7 +425,7 @@ class MainViewModel @Inject constructor(
 //                }
 //            }
             when (navDestination.id) {
-                R.id.EmptyFragment -> {
+                R.id.RightEmptyFragment -> {
                     if (list.size == 1) {
                         val bundle = Bundle()
                         bundle.putString("QsId", list[0])

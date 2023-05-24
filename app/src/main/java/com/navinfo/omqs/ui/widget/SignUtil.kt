@@ -7,38 +7,72 @@ import com.navinfo.omqs.R
 class SignUtil {
     companion object {
 
-
         /**
          * 获取面板上的文字
          */
         fun getSignIconText(data: RenderEntity): String {
             return when (data.code) {
+                //道路功能等级
+                2002 -> getLinkFunctionClassText(data)
+                //道路种别
+                2008 -> getKindText(data)
+                //道路方向
+                2010 -> getRoadDirectionText(data)
+                //车道数
+                2041 -> getLaneNumText(data)
                 //常规点限速,条件点限速
                 4002, 4003 -> getSpeedLimitText(data)
-//                //道路种别
-//                2008 -> getKindCodeIcon(data)
-//                //道路方向
-//                2010 -> getRoadDirection(data)
-//                //车道数
-//                2041 -> getLaneNumIcon(data)
                 else -> ""
             }
         }
 
+        /**
+         *获取道路功能等级文字
+         */
+        private fun getLinkFunctionClassText(data: RenderEntity): String {
+            return "等级${data.properties["functionClass"]}"
+        }
+
+        /**
+         * 获取道路方向文字
+         */
+        private fun getRoadDirectionText(data: RenderEntity): String {
+            val direct = data.properties["direct"]
+            when (direct?.toInt()) {
+                0 -> return "不应用"
+                1 -> return "双方向"
+                2 -> return "顺方向"
+                3 -> return "逆方向"
+            }
+            return ""
+        }
+
+        /**
+         * 获取车道数展示文字
+         */
+        private fun getLaneNumText(data: RenderEntity): String {
+            return "${data.properties["laneNum"]}|${data.properties["laneS2e"]}|${data.properties["laneE2s"]}"
+        }
+
+        /**
+         * 获取要素名称
+         */
         fun getSignNameText(data: RenderEntity): String {
             return when (data.code) {
-                //可变点限速
-                4004 -> "可变点限速"
+                //道路功能等级
+                2002 -> "功能等级"
+                //道路种别
+                2008 -> "种别"
+                //道路方向
+                2010 -> "方向"
+                //车道数
+                2041 -> "车道数"
                 //常规点限速
                 4002 -> "常规点限速"
                 //常点限速
                 4003 -> "条件点限速"
-                //道路种别
-                2008 -> "道路种别"
-                //道路方向
-                2010 -> "道路方向"
-                //车道数
-                2041 -> "车道数"
+                //可变点限速
+                4004 -> "可变点限速"
                 else -> ""
             }
         }
@@ -57,7 +91,6 @@ class SignUtil {
         /**
          * 条件点限速文字
          */
-
         private fun getConditionLimitText(data: RenderEntity): String {
             var stringBuffer = StringBuffer()
             try {
@@ -120,6 +153,13 @@ class SignUtil {
         }
 
         /**
+         * 获取种别名称
+         */
+        private fun getKindText(data: RenderEntity): String {
+            return data.properties["kind"].toString()
+        }
+
+        /**
          * 限速图标
          */
         private fun getSpeedLimitIcon(data: RenderEntity): Int {
@@ -132,7 +172,23 @@ class SignUtil {
             } catch (e: Exception) {
                 Log.e("jingo", "获取限速面板ICON出错2 $e")
             }
-            return R.drawable.icon_speed_limit
+            return 0
+        }
+
+        /**
+         * 条件限速图标
+         */
+        private fun getConditionalSpeedLimitIcon(data: RenderEntity): Int {
+            try {
+                //限速标志 0 限速开始 1 限速解除
+                return when (data.properties["speed_flag"]) {
+                    "1" -> return R.drawable.icon_conditional_speed_limit_off
+                    else -> return R.drawable.icon_conditional_speed_limit
+                }
+            } catch (e: Exception) {
+                Log.e("jingo", "获取限速面板ICON出错2 $e")
+            }
+            return 0
         }
 
         /**
@@ -141,14 +197,16 @@ class SignUtil {
 
         fun getSignIcon(data: RenderEntity): Int {
             return when (data.code) {
-                //道路种别
-                2008 -> getKindCodeIcon(data)
-                //道路方向
-                2010 -> getRoadDirection(data)
-                //车道数
-                2041 -> getLaneNumIcon(data)
-                //限速
-                4002, 4003 -> getSpeedLimitIcon(data)
+//                //道路种别
+//                2008 -> getKindCodeIcon(data)
+//                //道路方向
+//                2010 -> getRoadDirection(data)
+//                //车道数
+//                2041 -> getLaneNumIcon(data)
+                //普通点限速
+                4002 -> getSpeedLimitIcon(data)
+                //条件点限速
+                4003 -> getConditionalSpeedLimitIcon(data)
                 //可变点限速
                 4004 -> R.drawable.icon_change_limit
                 else -> 0
@@ -187,7 +245,7 @@ class SignUtil {
         /**
          * 获取到路线
          */
-        fun getLaneNumIcon(data: RenderEntity): Int {
+        private fun getLaneNumIcon(data: RenderEntity): Int {
             try {
                 val lineNum = data.properties["laneNum"]
                 return when (lineNum!!.toInt()) {
@@ -211,7 +269,7 @@ class SignUtil {
             return R.drawable.icon_road_direction
         }
 
-        fun getRoadDirection(data: RenderEntity): Int {
+        private fun getRoadDirection(data: RenderEntity): Int {
             try {
                 val direct = data.properties["direct"]
                 return when (direct!!.toInt()) {

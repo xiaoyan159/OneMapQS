@@ -17,7 +17,7 @@ data class SignBean(
     val linkId: String,
     //坐标
     val geometry: String,
-    //底部文字
+    //名称
     val name: String,
     //底部右侧文字
     val bottomRightText: String,

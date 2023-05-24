@@ -60,7 +60,7 @@ class MainActivity : BaseActivity() {
     private val signAdapter by lazy {
         SignAdapter { position, signBean ->
             rightController.currentDestination?.let {
-                if (it.id == R.id.EmptyFragment) {
+                if (it.id == R.id.RightEmptyFragment) {
                     val bundle = Bundle()
                     bundle.putParcelable("SignBean", signBean)
                     rightController.navigate(R.id.EvaluationResultFragment, bundle)
@@ -75,7 +75,7 @@ class MainActivity : BaseActivity() {
     private val topSignAdapter by lazy {
         TopSignAdapter { position, signBean ->
             rightController.currentDestination?.let {
-                if (it.id == R.id.EmptyFragment) {
+                if (it.id == R.id.RightEmptyFragment) {
                     val bundle = Bundle()
                     bundle.putParcelable("SignBean", signBean)
                     rightController.navigate(R.id.EvaluationResultFragment, bundle)
@@ -147,9 +147,9 @@ class MainActivity : BaseActivity() {
             this,
             RecyclerView.HORIZONTAL, false
         )
-        binding.mainActivityTopSignRecyclerview.addItemDecoration(
-            RecycleViewDivider(this, LinearLayoutManager.HORIZONTAL)
-        )
+//        binding.mainActivityTopSignRecyclerview.addItemDecoration(
+//            RecycleViewDivider(this, LinearLayoutManager.HORIZONTAL)
+//        )
         binding.mainActivityTopSignRecyclerview.adapter = topSignAdapter
 
 
@@ -276,7 +276,7 @@ class MainActivity : BaseActivity() {
     }
 
     /**
-     *
+     *展开或收起右侧面板
      */
     fun onSwitchFragment() {
         switchFragment = !switchFragment
@@ -286,6 +286,13 @@ class MainActivity : BaseActivity() {
         } else {
             binding.mainActivityFragmentGroup.visibility = View.VISIBLE
         }
+    }
+
+    /**
+     * 隐藏或显示右侧展开按钮
+     */
+    fun setRightSwitchButton(visibility: Int) {
+        binding.mainActivityFragmentSwitch.visibility = visibility
     }
 
     /**
