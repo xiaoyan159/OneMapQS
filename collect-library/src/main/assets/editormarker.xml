@@ -1860,13 +1860,21 @@
             <m k="direct">
                 <m v="2">
 <!--                    <lineSymbol src="assets:omdb/oneway_right.svg"></lineSymbol>-->
-                    <symbol src="assets:omdb/oneway_right.svg" repeat-start="99.9" repeat="false" ></symbol>
+                    <symbol src="assets:omdb/oneway_right.svg" ></symbol>
                 </m>
                 <m v="3">
 <!--                    <lineSymbol src="assets:omdb/oneway_left.svg"></lineSymbol>-->
                     <lineSymbol src="assets:omdb/oneway_left.svg"></lineSymbol>
                 </m>
             </m>
+        </m>
+        <!--交通灯-->
+        <m v="OMDB_TRAFFICLIGHT">
+            <symbol src="assets:omdb/icon_4022_0.png" repeat="false" symbol-width="14" symbol-height="40" rotate="false"></symbol>
+        </m>
+        <!--普通交限-->
+        <m v="OMDB_RESTRICTION">
+            <symbol src="assets:omdb/icon_4006_0.png" repeat="false" symbol-width="46" symbol-height="46" rotate="false"></symbol>
         </m>
     </m>
 </rendertheme>

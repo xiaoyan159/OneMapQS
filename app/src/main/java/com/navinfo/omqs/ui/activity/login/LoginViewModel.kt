@@ -182,9 +182,9 @@ class LoginViewModel @Inject constructor(
         Realm.setDefaultConfiguration(config)
         // 拷贝配置文件到用户目录下
         val omdbConfigFile = File(userFolder.absolutePath, Constant.OMDB_CONFIG);
-        if (!omdbConfigFile.exists()) {
+//        if (!omdbConfigFile.exists()) {
             ResourceUtils.copyFileFromAssets(Constant.OMDB_CONFIG, omdbConfigFile.absolutePath)
-        }
+//        }
     }
 
     /**

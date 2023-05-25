@@ -51,6 +51,14 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/main_activity_top_sign_recyclerview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
                 android:id="@+id/main_activity_person_center"
@@ -136,9 +144,8 @@
 
             <ImageButton
                 android:id="@+id/main_activity_fragment_switch"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginRight="-10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:background="@drawable/selector_fragment_switch"
                 android:elevation="2dp"
                 android:onClick="@{()->mainActivity.onSwitchFragment()}"
@@ -259,8 +266,8 @@
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="323dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="30dp"
             android:layout_gravity="left"
+            android:layout_marginTop="30dp"
             app:navGraph="@navigation/left_drawer_nav_graph" />
 
     </androidx.drawerlayout.widget.DrawerLayout>

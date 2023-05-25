@@ -5,6 +5,11 @@
 			"code": 2001,
 			"name": "道路线"
 		},
+		"2002": {
+			"table": "OMDB_RD_LINK_FUNCTION_CLASS",
+			"code": 2002,
+			"name": "道路功能等级"
+		},
 		"2008": {
 			"table": "OMDB_RD_LINK_KIND",
 			"code": 2008,
@@ -14,6 +19,51 @@
 			"table": "OMDB_LINK_DIRECT",
 			"code": 2010,
 			"name": "道路方向"
+		},
+		"2019": {
+			"table": "OMDB_LINK_SPEEDLIMIT",
+			"code": 2019,
+			"name": "常规线限速"
+		},
+		"2020": {
+			"table": "OMDB_LINK_SPEEDLIMIT_COND",
+			"code": 2020,
+			"name": "条件线限速"
+		},
+		"2021": {
+			"table": "OMDB_LINK_SPEEDLIMIT_VAR",
+			"code": 2021,
+			"name": "可变线限速"
+		},
+		"2022": {
+			"table": "OMDB_CON_ACCESS",
+			"code": 2022,
+			"name": "全封闭"
+		},
+		"2037": {
+			"table": "OMDB_FORM_OF_WAY",
+			"code": 2037,
+			"name": "匝道"
+		},
+		"2040": {
+			"table": "OMDB_MULTI_DIGITIZED",
+			"code": 2040,
+			"name": "上下线分离"
+		},
+		"2041":{
+			"table": "OMDB_LANE_NUM",
+			"code": 2041,
+			"name": "车道数"
+		},
+		"2201":{
+			"table": "OMDB_BRIDGE",
+			"code": 2201,
+			"name": "桥"
+		},
+		"2202":{
+			"table": "OMDB_TUNNEL",
+			"code": 2202,
+			"name": "隧道"
 		},
 		"4002": {
             "table": "OMDB_SPEEDLIMIT",
@@ -72,18 +122,36 @@
 				}
 			]
 		},
+		"4006":{
+			"table": "OMDB_RESTRICTION",
+			"code": 4006,
+			"name": "普通交限",
+			"transformer": [
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "translateRight()"
+				}
+			]
+		},
+		"4022": {
+			"table": "OMDB_TRAFFICLIGHT",
+			"code": 4022,
+			"name": "交通灯",
+			"transformer": [
+				{
+					"k": "angle",
+					"v": "~",
+					"klib": "angle",
+					"vlib": "0"
+				}
+			]
+		},
         "5001":{
             "table": "OMDB_LANE_LINK_LG",
             "code": 5001,
             "name": "车道中心线"
-        },
-        "2041":{
-            "table": "OMDB_LANE_NUM",
-            "code": 2041,
-            "name": "车道数",
-			"transformer": [
-
-			]
         }
 	}
 }
