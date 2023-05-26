@@ -202,10 +202,10 @@ class MainActivity : BaseActivity() {
         viewModel.liveDataCenterPoint.observe(this) {
             binding.mainActivityGeometry.text = "经纬度:${
                 BigDecimal(it.longitude).setScale(
-                    6,
+                    7,
                     RoundingMode.HALF_UP
                 )
-            },${BigDecimal(it.latitude).setScale(6, RoundingMode.HALF_UP)}"
+            },${BigDecimal(it.latitude).setScale(7, RoundingMode.HALF_UP)}"
         }
 
         lifecycleScope.launch {

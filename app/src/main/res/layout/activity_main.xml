@@ -177,6 +177,7 @@
                 android:paddingLeft="9dp"
                 android:text="经纬度:116.99388424,38.8403844"
                 android:textSize="10sp"
+                android:onClick="@{()->mainActivity.jumpPosition()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toLeftOf="@id/main_activity_middle_fragment" />
 
