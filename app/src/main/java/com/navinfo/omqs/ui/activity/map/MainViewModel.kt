@@ -241,9 +241,17 @@ class MainViewModel @Inject constructor(
                             2002, 2008, 2010, 2041 -> topSignList.add(
                                 signBean
                             )
-                            4002, 4003, 4004, 4006, 4022 -> signList.add(
+                            4002, 4003, 4004, 4022 -> signList.add(
                                 signBean
                             )
+                            4006 -> {
+                                mapController.lineHandler.linksLayer.clear()
+                                val inLink = element.properties["linkIn"]
+                                val outLink = element.properties["linkOut"]
+                                if (inLink != null){
+
+                                }
+                            }
                         }
 
                     }
