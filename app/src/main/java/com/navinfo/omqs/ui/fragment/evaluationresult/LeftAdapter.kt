@@ -40,7 +40,6 @@ class LeftAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) :
 
     override fun refreshData(newData: List<String>) {
         data = newData
-        selectTitle = newData[0]
         notifyDataSetChanged()
     }
 

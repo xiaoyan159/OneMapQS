@@ -1,10 +1,15 @@
 package com.navinfo.omqs.ui.activity.map
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.PersistableBundle
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.view.WindowCompat
@@ -29,7 +34,10 @@ import com.navinfo.omqs.util.FlowEventBus
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.navinfo.omqs.ui.widget.RecyclerViewSpacesItemDecoration
+import com.navinfo.omqs.util.SpeakMode
 import org.videolan.vlc.Util
+import java.math.BigDecimal
+import java.math.RoundingMode
 import javax.inject.Inject
 
 /**
@@ -42,6 +50,17 @@ class MainActivity : BaseActivity() {
     private val viewModel by viewModels<MainViewModel>()
 
     var switchFragment = false
+
+
+    private val someActivityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                Log.e("jingo", "MainActivity someActivityResultLauncher RESULT_OK")
+            } else {
+                Log.e("jingo", "MainActivity someActivityResultLauncher ${result.resultCode}")
+            }
+        }
 
     //注入地图控制器
     @Inject
@@ -88,6 +107,13 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
+
+        val checkIntent = Intent()
+        checkIntent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
+        someActivityResultLauncher.launch(checkIntent)
+
+
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         //初始化地图
@@ -98,6 +124,7 @@ class MainActivity : BaseActivity() {
             Constant.MAP_PATH,
             Constant.USER_DATA_PATH + "/trace.sqlite"
         )
+        viewModel.speakMode = SpeakMode(this)
         // 在mapController初始化前获取当前OMDB图层显隐
         viewModel.refreshOMDBLayer(LayerConfigUtils.getLayerConfigList())
         mapController.mMapView.vtmMap.viewport().maxZoomLevel = 25
@@ -144,8 +171,7 @@ class MainActivity : BaseActivity() {
 
         //道路属性面板
         binding.mainActivityTopSignRecyclerview.layoutManager = LinearLayoutManager(
-            this,
-            RecyclerView.HORIZONTAL, false
+            this, RecyclerView.HORIZONTAL, false
         )
 //        binding.mainActivityTopSignRecyclerview.addItemDecoration(
 //            RecycleViewDivider(this, LinearLayoutManager.HORIZONTAL)
@@ -164,19 +190,28 @@ class MainActivity : BaseActivity() {
                 )
             )
         )
+        //监听要素面板变化
         viewModel.liveDataSignList.observe(this) {
             signAdapter.refreshData(it)
         }
-
+        //监听道路信息变化
         viewModel.liveDataTopSignList.observe(this) {
             topSignAdapter.refreshData(it)
+        }
+        //监听地图中点变化
+        viewModel.liveDataCenterPoint.observe(this) {
+            binding.mainActivityGeometry.text = "经纬度:${
+                BigDecimal(it.longitude).setScale(
+                    6,
+                    RoundingMode.HALF_UP
+                )
+            },${BigDecimal(it.latitude).setScale(6, RoundingMode.HALF_UP)}"
         }
 
         lifecycleScope.launch {
             // 初始化地图图层控制接收器
             FlowEventBus.subscribe<List<ImportConfig>>(
-                lifecycle,
-                Constant.EVENT_LAYER_MANAGER_CHANGE
+                lifecycle, Constant.EVENT_LAYER_MANAGER_CHANGE
             ) {
                 viewModel.refreshOMDBLayer(it)
             }
@@ -201,6 +236,7 @@ class MainActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        viewModel.speakMode?.shutdown()
         mapController.mMapView.onDestroy()
         mapController.locationLayerHandler.stopLocation()
     }

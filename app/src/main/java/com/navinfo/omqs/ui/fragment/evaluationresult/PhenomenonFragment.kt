@@ -83,7 +83,7 @@ class PhenomenonFragment :
         }
         //右侧菜单查询数据监听
         viewModel.liveDataRightTypeList.observe(viewLifecycleOwner) {
-            rightAdapter.setSelectTitle(viewModel.liveDataQsRecordBean.value!!.classType)
+            rightAdapter.setSelectTitle(viewModel.liveDataQsRecordBean.value!!.phenomenon)
             rightAdapter.refreshData(it)
         }
 
