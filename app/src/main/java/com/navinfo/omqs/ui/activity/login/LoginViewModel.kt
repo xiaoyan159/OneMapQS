@@ -10,7 +10,9 @@ import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.ResourceUtils
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.LoginUserBean
+import com.navinfo.omqs.bean.SysUserBean
 import com.navinfo.omqs.db.RoomAppDatabase
+import com.navinfo.omqs.http.DefaultUserResponse
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager
@@ -111,11 +113,32 @@ class LoginViewModel @Inject constructor(
 //        withContext(Dispatchers.IO) {
         //网络访问
         loginStatus.postValue(LoginStatus.LOGIN_STATUS_NET_LOADING)
+        var userCode = "99999";
         //登录访问
         when (val result = networkService.loginUser(LoginUserBean(userName,password))) {
             is NetResult.Success<*> ->{
                 if (result.data!=null) {
                     try {
+                        val defaultUserResponse = result.data as DefaultUserResponse<SysUserBean>
+                        if(defaultUserResponse.success){
+                            if(defaultUserResponse.obj==null|| defaultUserResponse.obj!!.userCode==null){
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(context, "服务返回用户Code信息错误", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                                loginStatus.postValue(LoginStatus.LOGIN_STATUS_CANCEL)
+                                return
+                            }else{
+                                userCode = defaultUserResponse.obj?.userCode.toString()
+                            }
+                        }else{
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(context, "${defaultUserResponse.msg}", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                            loginStatus.postValue(LoginStatus.LOGIN_STATUS_CANCEL)
+                            return
+                        }
 
                     } catch (e: IOException) {
                         loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_FAILURE)
@@ -127,12 +150,16 @@ class LoginViewModel @Inject constructor(
                     Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)
                         .show()
                 }
+                loginStatus.postValue(LoginStatus.LOGIN_STATUS_CANCEL)
+                return
             }
             is NetResult.Failure<*> ->{
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
                         .show()
                 }
+                loginStatus.postValue(LoginStatus.LOGIN_STATUS_CANCEL)
+                return
             }
             else -> {}
         }
@@ -140,7 +167,7 @@ class LoginViewModel @Inject constructor(
         //文件夹初始化
         try {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_INIT)
-            createUserFolder(context, userName)
+            createUserFolder(context, userCode)
         } catch (e: IOException) {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_FAILURE)
         }
