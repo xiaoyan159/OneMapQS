@@ -2,6 +2,10 @@ package com.navinfo.omqs.http
 
 import com.navinfo.omqs.bean.OfflineMapCityBean
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.omqs.bean.LoginUserBean
+import com.navinfo.omqs.bean.SysUserBean
+import okhttp3.ResponseBody
+import retrofit2.Response
 
 
 /**
@@ -16,4 +20,9 @@ interface NetworkService {
      * 获取任务列表
      */
     suspend fun getTaskList(evaluatorNo:String): NetResult<DefaultTaskResponse<List<TaskBean>>>
+
+    /**
+     * 登录接口
+     */
+    suspend fun loginUser(loginUserBean: LoginUserBean): NetResult<DefaultUserResponse<SysUserBean>>
 }

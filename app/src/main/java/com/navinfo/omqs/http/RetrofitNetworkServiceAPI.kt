@@ -3,6 +3,8 @@ package com.navinfo.omqs.http
 import com.navinfo.omqs.bean.EvaluationInfo
 import com.navinfo.omqs.bean.OfflineMapCityBean
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.omqs.bean.LoginUserBean
+import com.navinfo.omqs.bean.SysUserBean
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
@@ -39,6 +41,13 @@ interface RetrofitNetworkServiceAPI {
      */
     @GET("/drdc/MapDownload/maplist")
     suspend fun retrofitGetOfflineMapCityList(): Response<List<OfflineMapCityBean>>
+
+    /**
+     * 登录接口
+     */
+    @Headers("Content-Type: application/json")
+    @POST("/devcp/loginUser")
+    suspend fun retrofitLoginUser(@Body loginUserBean: LoginUserBean): Response<DefaultUserResponse<SysUserBean>>
 
     /**
      * 下载文件

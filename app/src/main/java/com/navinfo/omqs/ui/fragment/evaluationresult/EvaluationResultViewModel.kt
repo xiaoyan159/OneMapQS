@@ -1,6 +1,7 @@
 package com.navinfo.omqs.ui.fragment.evaluationresult
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.BitmapDrawable
@@ -22,12 +23,13 @@ import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.RenderEntity.Companion.LinkTable
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.GeometryTools
-import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ChatMsgEntity
+import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.db.RoomAppDatabase
+import com.navinfo.omqs.ui.dialog.FirstDialog
 import com.navinfo.omqs.util.DateTimeUtil
 import com.navinfo.omqs.util.SoundMeter
 import com.navinfo.omqs.util.SpeakMode
@@ -326,22 +328,29 @@ class EvaluationResultViewModel @Inject constructor(
         }
     }
 
-    fun deleteData() {
-        viewModelScope.launch(Dispatchers.IO) {
-
-            val realm = Realm.getDefaultInstance()
-            Log.e("jingo", "realm hashCOde ${realm.hashCode()}")
-            realm.executeTransaction {
-                val objects =
-                    it.where(QsRecordBean::class.java).equalTo("id", liveDataQsRecordBean.value?.id)
-                        .findFirst()
-                objects?.deleteFromRealm()
+    fun deleteData(context: Context) {
+        val mDialog = FirstDialog(context)
+        mDialog.setTitle("提示？")
+        mDialog.setMessage("是否删除Mark，请确认！")
+        mDialog.setPositiveButton("确定", object : FirstDialog.OnClickListener {
+            override fun onClick(dialog: Dialog?, which: Int) {
+                mDialog.dismiss()
+                viewModelScope.launch(Dispatchers.IO) {
+                    val realm = Realm.getDefaultInstance()
+                    Log.e("jingo", "realm hashCOde ${realm.hashCode()}")
+                    realm.executeTransaction {
+                        val objects = it.where(QsRecordBean::class.java)
+                            .equalTo("id", liveDataQsRecordBean.value?.id).findFirst()
+                        objects?.deleteFromRealm()
+                    }
+                    mapController.markerHandle.removeQsRecordMark(liveDataQsRecordBean.value!!)
+                    mapController.mMapView.vtmMap.updateMap(true)
+                    liveDataFinish.postValue(true)
+                }
             }
-//            realm.close()
-            mapController.markerHandle.removeQsRecordMark(liveDataQsRecordBean.value!!)
-            mapController.mMapView.vtmMap.updateMap(true)
-            liveDataFinish.postValue(true)
-        }
+        })
+        mDialog.setNegativeButton("取消", null)
+        mDialog.show()
     }
 
     /**

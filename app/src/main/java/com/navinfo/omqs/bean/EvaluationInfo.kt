@@ -12,7 +12,7 @@ data class EvaluationInfo(
     val linkPid: String = "",//Link号
 
     @SerializedName("linkStatus")
-    val linkStatus: String = "",//Link状态
+    val linkStatus: Int = 0,//Link状态
 
     @SerializedName("markId")
     val markId: String = "",//Link状态
@@ -27,7 +27,7 @@ data class EvaluationInfo(
     val featureName: String = "",//问题类型
 
     @SerializedName("problemType")
-    val problemType: String = "",//问题现象
+    val problemType: String = "",//问题现象 0错误 1多余 2遗漏  服务字段定义为Integer，使用包装类，对应无值情况为空
 
     @SerializedName("problemPhenomenon")
     val problemPhenomenon: String = "",//问题现象
@@ -48,6 +48,24 @@ data class EvaluationInfo(
     val evaluationDate: String = "",//测评日期(yyyy-mm-dd)
 
     @SerializedName("evaluationWay")
-    val evaluationWay: String = "现场测评"//测评方式
+    val evaluationWay: String = "2",//测评方式 1生产测评 2现场测评 服务字段定义为Integer，使用包装类，对应无值情况为空
+
+    @SerializedName("roadClassfcation")
+    val roadClassfcation: String = "",//道路种别
+
+    @SerializedName("roadFunctionGrade")
+    val roadFunctionGrade: String = "",//道路功能等级
+
+    @SerializedName("noEvaluationreason")
+    val noEvaluationreason: String = "",//未测评原因
+
+    @SerializedName("linkLength")
+    val linkLength: Double = 0.0,//link长度(m 保留3位小数)
+
+    @SerializedName("dataLevel")
+    val dataLevel: String = "",//数据级别
+
+    @SerializedName("linstringLength")
+    val linstringLength: Double = 0.0,//错误要素长度（m）
 ) : Parcelable
 

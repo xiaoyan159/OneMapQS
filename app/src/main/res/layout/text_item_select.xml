@@ -10,12 +10,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
+        android:drawableLeft="@drawable/selector_text_drawable_left_white_blue"
+        android:drawablePadding="10dp"
         android:gravity="center"
         android:padding="4dp"
-        android:drawablePadding="10dp"
-        android:drawableLeft="@drawable/selector_text_drawable_left_white_blue"
         android:textColor="@color/selector_black_blue_color"
-        android:textSize="14sp"/>
-
+        android:textSize="14sp" />
 
 </RelativeLayout>

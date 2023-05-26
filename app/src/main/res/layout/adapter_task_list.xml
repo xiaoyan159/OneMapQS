@@ -72,7 +72,8 @@
         style="@style/btn_default_stroke_horizontal_round"
         android:layout_width="72dp"
         android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/task_data_version"
+        android:layout_marginTop="5dp"
         android:gravity="center"
         android:text="下载"
         android:textSize="@dimen/card_title_font_2size" />
@@ -108,7 +109,7 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="16dp"
-        android:layout_below="@id/task_color"
+        android:layout_below="@id/task_download_btn"
         android:paddingTop="10dp"
         android:progressDrawable="@drawable/progress_bg"
         android:visibility="invisible" />

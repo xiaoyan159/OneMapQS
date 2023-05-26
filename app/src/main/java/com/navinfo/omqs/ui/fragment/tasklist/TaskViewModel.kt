@@ -91,13 +91,13 @@ class TaskViewModel @Inject constructor(
                         }
                     }
                 }
-                is NetResult.Error -> {
+                is NetResult.Error<*> -> {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)
                             .show()
                     }
                 }
-                is NetResult.Failure -> {
+                is NetResult.Failure<*> -> {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
                             .show()

@@ -10,8 +10,9 @@ import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.ResourceUtils
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.LoginUserBean
-import com.navinfo.omqs.db.MyRealmModule
+import com.navinfo.omqs.bean.SysUserBean
 import com.navinfo.omqs.db.RoomAppDatabase
+import com.navinfo.omqs.http.DefaultUserResponse
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager
@@ -19,6 +20,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.coroutines.*
+import retrofit2.Response
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
@@ -74,7 +76,7 @@ class LoginViewModel @Inject constructor(
     var jobLogin: Job? = null;
 
     init {
-        loginUser.value = LoginUserBean(username = "admin", password = "123456")
+        loginUser.value = LoginUserBean(userCode = "02911", passWord = "123456")
     }
 
 
@@ -82,7 +84,7 @@ class LoginViewModel @Inject constructor(
      * 处理注册按钮
      */
     fun onClick(view: View) {
-        loginUser.value!!.username = "admin2"
+        loginUser.value!!.userCode = "admin2"
         loginUser.value = loginUser.value
     }
 
@@ -111,12 +113,61 @@ class LoginViewModel @Inject constructor(
 //        withContext(Dispatchers.IO) {
         //网络访问
         loginStatus.postValue(LoginStatus.LOGIN_STATUS_NET_LOADING)
-        //假装网络访问，等待2秒
-        delay(1000)
+        var userCode = "99999";
+        //登录访问
+        when (val result = networkService.loginUser(LoginUserBean(userName,password))) {
+            is NetResult.Success<*> ->{
+                if (result.data!=null) {
+                    try {
+                        val defaultUserResponse = result.data as DefaultUserResponse<SysUserBean>
+                        if(defaultUserResponse.success){
+                            if(defaultUserResponse.obj==null|| defaultUserResponse.obj!!.userCode==null){
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(context, "服务返回用户Code信息错误", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                                loginStatus.postValue(LoginStatus.LOGIN_STATUS_CANCEL)
+                                return
+                            }else{
+                                userCode = defaultUserResponse.obj?.userCode.toString()
+                            }
+                        }else{
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(context, "${defaultUserResponse.msg}", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                            loginStatus.postValue(LoginStatus.LOGIN_STATUS_CANCEL)
+                            return
+                        }
+
+                    } catch (e: IOException) {
+                        loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_FAILURE)
+                    }
+                }
+            }
+            is NetResult.Error<*> ->{
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                loginStatus.postValue(LoginStatus.LOGIN_STATUS_CANCEL)
+                return
+            }
+            is NetResult.Failure<*> ->{
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                loginStatus.postValue(LoginStatus.LOGIN_STATUS_CANCEL)
+                return
+            }
+            else -> {}
+        }
+
         //文件夹初始化
         try {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_INIT)
-            createUserFolder(context, "02911")
+            createUserFolder(context, userCode)
         } catch (e: IOException) {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_FAILURE)
         }
@@ -134,13 +185,13 @@ class LoginViewModel @Inject constructor(
                     roomAppDatabase.getOfflineMapDao().insertOrUpdate(result.data)
                 }
             }
-            is NetResult.Error -> {
+            is NetResult.Error<*> -> {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)
                         .show()
                 }
             }
-            is NetResult.Failure -> {
+            is NetResult.Failure<*> -> {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
                         .show()

@@ -1,5 +1,6 @@
 package com.navinfo.omqs.ui.fragment.evaluationresult
 
+import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -19,6 +20,7 @@ import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.navigation.findNavController
+import com.navinfo.omqs.ui.dialog.FirstDialog
 
 @AndroidEntryPoint
 class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
@@ -65,7 +67,17 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         }
         //返回按钮点击
         binding.evaluationBar.setOnClickListener() {
-            onBackPressed()
+            val mDialog = FirstDialog(context)
+            mDialog.setTitle("提示？")
+            mDialog.setMessage("是否退出，请确认！")
+            mDialog.setPositiveButton("确定", object : FirstDialog.OnClickListener {
+                override fun onClick(dialog: Dialog?, which: Int) {
+                    mDialog.dismiss()
+                    onBackPressed()
+                }
+            })
+            mDialog.setNegativeButton("取消", null)
+            mDialog.show()
         }
 
         //保存事件
@@ -76,7 +88,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         //删除事件
         binding.evaluationBarDelete.setOnClickListener() {
 
-            viewModel.deleteData()
+            viewModel.deleteData(requireContext())
 
         }
 
