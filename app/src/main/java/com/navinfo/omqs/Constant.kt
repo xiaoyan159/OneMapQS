@@ -75,7 +75,7 @@ class Constant {
         const val SELECT_TAKEPHOTO_OR_RECORD = "select_takephoto_or_record"
 
         const val OMDB_CONFIG = "omdb_config.json"
-        const val OTHER_CONFIG = "other.config"
+        const val OTHER_CONFIG = "other_config.json"
 
         val OMDB_LAYER_VISIBLE_LIST: MutableList<String> = mutableListOf() // 记录OMDB数据显示的图层名称列表
 

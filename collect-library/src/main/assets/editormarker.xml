@@ -1730,7 +1730,7 @@
                         stroke-width="1.0"></caption>
                 </m>
                 <m v="1">
-                    <caption k="maxSpeed" fill="#000000" priority="0" size="16" stroke="#ffffff"
+                    <caption k="maxSpeed" fill="#000000" priority="0" size="14" stroke="#ffffff"
                         stroke-width="1.0"></caption>
                     <symbol src="assets:omdb/icon_4002_1.png" symbol-width="46" symbol-height="46"></symbol>
 <!--                    <circle fill="#ffffff" radius="28" scale-radius="true" stroke="#00ff00" stroke-width="6"/>-->
@@ -1818,14 +1818,14 @@
             <m k="speedFlag">
                 <m v="0">
                     <!--                    <symbol src="assets:omdb/round_speedlimit.svg" symbol-width="30" symbol-height="30"></symbol>-->
-                    <caption k="maxSpeed" fill="#000000" priority="0" size="16" stroke="#ffffff"
+                    <caption k="maxSpeed" fill="#000000" priority="0" size="14" stroke="#ffffff"
                         stroke-width="1.0"></caption>
                     <symbol src="assets:omdb/icon_4003_0.png" symbol-width="46" symbol-height="46"></symbol>
                     <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
                         stroke-width="1.0"></caption>
                 </m>
                 <m v="1">
-                    <caption k="maxSpeed" fill="#000000" priority="0" size="16" stroke="#ffffff"
+                    <caption k="maxSpeed" fill="#000000" priority="0" size="14" stroke="#ffffff"
                         stroke-width="1.0"></caption>
                     <symbol src="assets:omdb/icon_4003_1.png" symbol-width="46" symbol-height="46"></symbol>
                     <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
@@ -1837,14 +1837,14 @@
         <m v="OMDB_SPEEDLIMIT_VAR">
             <m v="0">
                 <!--                    <symbol src="assets:omdb/round_speedlimit.svg" symbol-width="30" symbol-height="30"></symbol>-->
-                <caption k="maxSpeed" fill="#000000" priority="0" size="16" stroke="#ffffff"
+                <caption k="maxSpeed" fill="#000000" priority="0" size="14" stroke="#ffffff"
                     stroke-width="1.0"></caption>
                 <symbol src="assets:omdb/icon_4004_0.png" symbol-width="46" symbol-height="46"></symbol>
                 <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
                     stroke-width="1.0"></caption>
             </m>
             <m v="1">
-                <caption k="maxSpeed" fill="#000000" priority="0" size="16" stroke="#ffffff"
+                <caption k="maxSpeed" fill="#000000" priority="0" size="14" stroke="#ffffff"
                     stroke-width="1.0"></caption>
                 <symbol src="assets:omdb/icon_4004_1.png" symbol-width="46" symbol-height="46"></symbol>
                 <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
@@ -1860,13 +1860,24 @@
             <m k="direct">
                 <m v="2">
 <!--                    <lineSymbol src="assets:omdb/oneway_right.svg"></lineSymbol>-->
-                    <symbol src="assets:omdb/oneway_right.svg" repeat-start="99.9" repeat="false" ></symbol>
+                    <lineSymbol src="assets:omdb/oneway_right.svg" ></lineSymbol>
                 </m>
                 <m v="3">
 <!--                    <lineSymbol src="assets:omdb/oneway_left.svg"></lineSymbol>-->
                     <lineSymbol src="assets:omdb/oneway_left.svg"></lineSymbol>
                 </m>
             </m>
+        </m>
+        <!--交通灯-->
+        <m v="OMDB_TRAFFICLIGHT">
+            <symbol src="assets:omdb/icon_4022_0.png" repeat="false" symbol-width="14" symbol-height="40" rotate="false"></symbol>
+        </m>
+        <!--普通交限-->
+        <m v="OMDB_RESTRICTION">
+            <symbol src="assets:omdb/icon_4006_0.png" repeat="false" symbol-width="35" symbol-height="35" rotate="true" repeat-start="0" ></symbol>
+<!--            <line stroke="#14582c" width="0.1"/>-->
+<!--            <caption k="angle" fill="#000000" priority="0" size="14" stroke="#ffffff"-->
+<!--                stroke-width="1.0"></caption>-->
         </m>
     </m>
 </rendertheme>
