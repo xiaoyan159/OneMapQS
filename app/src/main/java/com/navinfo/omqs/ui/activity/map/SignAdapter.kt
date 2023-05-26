@@ -24,7 +24,7 @@ class SignAdapter(private var itemListener: ((Int, SignBean) -> Unit?)? = null) 
         val bd = holder.viewBinding as AdapterSignBinding
         val item = data[position]
         if (item.iconId != 0)
-            bd.signMainIcon.background = holder.viewBinding.root.context.getDrawable(item.iconId)
+            bd.signMainIconBg.setImageResource(item.iconId)
         bd.signMainIcon.text = item.iconText
         bd.signBottomText.text = item.name
         bd.signBottomRightText.text = item.bottomRightText

@@ -6,13 +6,19 @@
     android:background="@drawable/bg_sign"
     tools:context="com.navinfo.omqs.ui.activity.map.SignAdapter">
 
+    <ImageView
+        android:id="@+id/sign_main_icon_bg"
+        android:layout_marginLeft="19dp"
+        android:layout_marginTop="4dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+
     <TextView
         android:id="@+id/sign_main_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginLeft="19dp"
         android:layout_marginTop="4dp"
-        android:background="@drawable/icon_speed_limit"
         android:gravity="center"
         android:text="80"
         android:textColor="#2F2F2F"

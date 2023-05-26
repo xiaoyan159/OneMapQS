@@ -1,6 +1,5 @@
 package com.navinfo.collect.library.map.handler
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.map.NIMapView
 import org.oscim.core.BoundingBox
@@ -32,7 +31,7 @@ open class AnimationHandler(context: AppCompatActivity, mapView: NIMapView) :
      * latitude： ，longitude：经纬度
      **
      */
-    fun animationByLonLat(latitude: Double, longitude: Double, time: Long = 200) {
+    fun animationByLatLon(latitude: Double, longitude: Double, time: Long = 200) {
         mMapView.vtmMap.animator().animateTo(time, GeoPoint(latitude, longitude))
     }
 
