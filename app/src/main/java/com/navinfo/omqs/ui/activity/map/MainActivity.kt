@@ -215,6 +215,7 @@ class MainActivity : BaseActivity() {
             }
         }
     }
+
     //根据输入的经纬度跳转坐标
     fun jumpPosition() {
         val view = this.layoutInflater.inflate(R.layout.dialog_view_edittext, null)
@@ -222,23 +223,26 @@ class MainActivity : BaseActivity() {
             this
         ).setTitle("标记原因").setView(view)
         var editText = view.findViewById<EditText>(R.id.dialog_edittext)
-        editText.hint = "请输入经纬度例如：116.1234567,39.1234567"
+        editText.hint = "请输入经纬度例如：\n116.1234567,39.1234567\n116.1234567 39.1234567"
         inputDialog.setNegativeButton("取消") { dialog, _ ->
             dialog.dismiss()
         }
         inputDialog.setPositiveButton("确定") { dialog, _ ->
             if (editText.text.isNotEmpty()) {
                 try {
-                    val parts = editText.text.split(",")
+                    val parts = editText.text.toString().split("[,，\\s]".toRegex())
                     if (parts.size == 2) {
                         val x = parts[0].toDouble()
                         val y = parts[0].toDouble()
                         mapController.animationHandler.animationByLatLon(y, x)
+                    }else{
+                        Toast.makeText(this, "输入格式不正确", Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
                     Toast.makeText(this, "输入格式不正确", Toast.LENGTH_SHORT).show()
                 }
             }
+            dialog.dismiss()
         }
         inputDialog.show()
     }
