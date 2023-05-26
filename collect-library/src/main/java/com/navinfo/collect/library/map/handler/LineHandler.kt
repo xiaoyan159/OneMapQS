@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.R
 import com.navinfo.collect.library.map.NIMapView
+import com.navinfo.collect.library.map.layers.MultiLinesLayer
 import com.navinfo.collect.library.map.layers.OmdbTaskLinkLayer
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.StringUtil
@@ -61,6 +62,12 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
 
 
     private val mDefaultPathLayer: PathLayer
+
+    val linksLayer by lazy {
+        val layer = MultiLinesLayer(mapView.vtmMap)
+        addLayer(layer, NIMapView.LAYER_GROUPS.VECTOR)
+        layer
+    }
 
     val omdbTaskLinkLayer by lazy {
         val omdbTaskLinkLayer = OmdbTaskLinkLayer(
@@ -375,7 +382,7 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
         }
     }
 
-    fun clean() {
+    fun clear() {
         mPathLayer.clearPath()
         mPathLayer.isEnabled = false
         mPathLayerTemp.clearPath()
@@ -385,5 +392,6 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
         mPathMakers.clear()
         editIndex = -1
         bDrawLine = false
+        omdbTaskLinkLayer.removeAll()
     }
 }
