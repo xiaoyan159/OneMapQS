@@ -4,11 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -18,9 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.blankj.utilcode.util.SPStaticUtils
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
@@ -29,12 +28,11 @@ import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.tools.LayerConfigUtils
 import com.navinfo.omqs.ui.activity.BaseActivity
-import com.navinfo.omqs.ui.widget.RecycleViewDivider
+import com.navinfo.omqs.ui.widget.RecyclerViewSpacesItemDecoration
 import com.navinfo.omqs.util.FlowEventBus
+import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import com.navinfo.omqs.ui.widget.RecyclerViewSpacesItemDecoration
-import com.navinfo.omqs.util.SpeakMode
 import org.videolan.vlc.Util
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -217,6 +215,34 @@ class MainActivity : BaseActivity() {
             }
         }
     }
+    //根据输入的经纬度跳转坐标
+    fun jumpPosition() {
+        val view = this.layoutInflater.inflate(R.layout.dialog_view_edittext, null)
+        val inputDialog = MaterialAlertDialogBuilder(
+            this
+        ).setTitle("标记原因").setView(view)
+        var editText = view.findViewById<EditText>(R.id.dialog_edittext)
+        editText.hint = "请输入经纬度例如：116.1234567,39.1234567"
+        inputDialog.setNegativeButton("取消") { dialog, _ ->
+            dialog.dismiss()
+        }
+        inputDialog.setPositiveButton("确定") { dialog, _ ->
+            if (editText.text.isNotEmpty()) {
+                try {
+                    val parts = editText.text.split(",")
+                    if (parts.size == 2) {
+                        val x = parts[0].toDouble()
+                        val y = parts[0].toDouble()
+                        mapController.animationHandler.animationByLatLon(y, x)
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(this, "输入格式不正确", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        inputDialog.show()
+    }
+
 
     override fun onStart() {
         super.onStart()
