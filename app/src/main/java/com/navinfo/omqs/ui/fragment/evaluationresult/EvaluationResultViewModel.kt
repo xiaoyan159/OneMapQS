@@ -124,7 +124,7 @@ class EvaluationResultViewModel @Inject constructor(
             geoPoint?.let {
                 liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(it).toText()
                 mapController.markerHandle.addMarker(geoPoint, markerTitle)
-                mapController.animationHandler.animationByLonLat(
+                mapController.animationHandler.animationByLatLon(
                     geoPoint.latitude, geoPoint.longitude
                 )
                 viewModelScope.launch {
@@ -147,7 +147,7 @@ class EvaluationResultViewModel @Inject constructor(
                 }
                 val point = GeometryTools.createGeoPoint(bean.geometry)
                 this.geometry = GeometryTools.createGeometry(point).toText()
-                mapController.animationHandler.animationByLonLat(point.latitude, point.longitude)
+                mapController.animationHandler.animationByLatLon(point.latitude, point.longitude)
                 mapController.markerHandle.addMarker(point, markerTitle)
             }
         }

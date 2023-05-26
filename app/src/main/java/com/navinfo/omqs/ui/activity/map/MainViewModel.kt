@@ -102,13 +102,7 @@ class MainViewModel @Inject constructor(
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
             when (e) {
                 Map.SCALE_EVENT, Map.MOVE_EVENT, Map.ROTATE_EVENT ->
-                    if (liveDataCenterPoint.value == null
-                        || liveDataCenterPoint.value!!.x != mapPosition.x
-                        || liveDataCenterPoint.value!!.y != mapPosition.y
-                    ) {
-                        liveDataCenterPoint.value = mapPosition
-                    }
-
+                    liveDataCenterPoint.value = mapPosition
             }
         })
 

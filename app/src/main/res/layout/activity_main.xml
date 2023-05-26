@@ -75,7 +75,8 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/main_activity_sign_recyclerview"
                 android:layout_width="wrap_content"
-                android:layout_height="350dp"
+                android:layout_height="wrap_content"
+                android:maxHeight="350dp"
                 android:layout_marginTop="10dp"
                 app:layout_constraintLeft_toLeftOf="@id/main_activity_person_center"
                 app:layout_constraintTop_toBottomOf="@id/main_activity_person_center" />
@@ -177,6 +178,7 @@
                 android:paddingLeft="9dp"
                 android:text="经纬度:116.99388424,38.8403844"
                 android:textSize="10sp"
+                android:onClick="@{()->mainActivity.jumpPosition()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toLeftOf="@id/main_activity_middle_fragment" />
 
