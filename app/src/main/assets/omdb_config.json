@@ -75,6 +75,12 @@
 					"v": "0",
 					"klib": "maxSpeed",
 					"vlib": "限"
+				},
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "translateRight()"
 				}
 			]
         },
@@ -119,7 +125,28 @@
 		"4006":{
 			"table": "OMDB_RESTRICTION",
 			"code": 4006,
-			"name": "普通交限"
+			"name": "普通交限",
+			"transformer": [
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "translateRightWithAngle()"
+				}
+			]
+		},
+		"4022": {
+			"table": "OMDB_TRAFFICLIGHT",
+			"code": 4022,
+			"name": "交通灯",
+			"transformer": [
+				{
+					"k": "angle",
+					"v": "~",
+					"klib": "angle",
+					"vlib": "0"
+				}
+			]
 		},
 		"4022":{
 			"table": "OMDB_TRAFFICLIGHT",
@@ -131,6 +158,5 @@
             "code": 5001,
             "name": "车道中心线"
         }
-
 	}
 }

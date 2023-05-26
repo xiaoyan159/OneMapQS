@@ -30,5 +30,46 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "OMQualityInspection"
+
 include ':app'
 include ':collect-library'
+//include ':vtm:vtm'
+//include ':vtm:vtm-android'
+//include ':vtm:vtm-android-gdx'
+//include ':vtm:vtm-android-mvt'
+//include ':vtm:vtm-extras'
+//include ':vtm:vtm-gdx'
+//include ':vtm:vtm-gdx-poi3d'
+//include ':vtm:vtm-http'
+//include ':vtm:vtm-json'
+//include ':vtm:vtm-jts'
+//include ':vtm:vtm-models'
+//include ':vtm:vtm-mvt'
+//include ':vtm:vtm-theme-comparator'
+//include ':vtm:vtm-themes'
+include ':vtm'
+include ':vtm-models'
+include ':vtm-themes'
+include ':vtm-android-mvt'
+include ':vtm-android-gdx'
+include ':vtm-android'
+include ':vtm-mvt'
+include ':vtm-gdx'
+include ':vtm-jts'
+include ':vtm-http'
+include ':vtm-json'
+include ':vtm-extras'
+include ':vtm-gdx-poi3d'
+project(':vtm').projectDir = new File(rootDir, 'vtm/vtm/')
+project(':vtm-models').projectDir = new File(rootDir, 'vtm/vtm-models/')
+project(':vtm-themes').projectDir = new File(rootDir, 'vtm/vtm-themes/')
+project(':vtm-android-mvt').projectDir = new File(rootDir, 'vtm/vtm-android-mvt/')
+project(':vtm-android-gdx').projectDir = new File(rootDir, 'vtm/vtm-android-gdx/')
+project(':vtm-android').projectDir = new File(rootDir, 'vtm/vtm-android/')
+project(':vtm-mvt').projectDir = new File(rootDir, 'vtm/vtm-mvt/')
+project(':vtm-gdx').projectDir = new File(rootDir, 'vtm/vtm-gdx/')
+project(':vtm-jts').projectDir = new File(rootDir, 'vtm/vtm-jts/')
+project(':vtm-http').projectDir = new File(rootDir, 'vtm/vtm-http/')
+project(':vtm-json').projectDir = new File(rootDir, 'vtm/vtm-json/')
+project(':vtm-extras').projectDir = new File(rootDir, 'vtm/vtm-extras/')
+project(':vtm-gdx-poi3d').projectDir = new File(rootDir, 'vtm/vtm-gdx-poi3d/')

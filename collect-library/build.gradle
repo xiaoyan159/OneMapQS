@@ -45,6 +45,12 @@ android {
     sourceSets {
         main {
             jniLibs.srcDirs = ['libs']
+            file("../vtm/vtm-android/natives").eachDir() { dir ->
+                jniLibs.srcDirs += "${dir.path}/lib"
+            }
+            file("../vtm/vtm-android-gdx/natives").eachDir() { dir ->
+                jniLibs.srcDirs += "${dir.path}/lib"
+            }
         }
     }
 }
@@ -72,25 +78,34 @@ dependencies {
     // VTM依赖
     implementation "net.sf.kxml:kxml2:2.3.0"
     implementation 'org.slf4j:slf4j-api:2.0.7'
-    api "org.mapsforge:vtm:$vtmVersion"
-    implementation "org.mapsforge:vtm-themes:$vtmVersion"
-    implementation "org.mapsforge:vtm-android:$vtmVersion"
-    runtimeOnly "org.mapsforge:vtm-android:$vtmVersion:natives-armeabi-v7a"
-    runtimeOnly "org.mapsforge:vtm-android:$vtmVersion:natives-arm64-v8a"
-    runtimeOnly "org.mapsforge:vtm-android:$vtmVersion:natives-x86"
-    runtimeOnly "org.mapsforge:vtm-android:$vtmVersion:natives-x86_64"
-    implementation "org.mapsforge:vtm-http:$vtmVersion"
+    implementation project(":vtm-themes")
+    implementation project(":vtm-android")
+    implementation project(':vtm-extras')
+    implementation project(":vtm-http")
+//    implementation "org.mapsforge:vtm-themes:$vtmVersion"
+//    implementation "org.mapsforge:vtm-android:$vtmVersion"
+//    runtimeOnly "org.mapsforge:vtm-android:$vtmVersion:natives-armeabi-v7a"
+//    runtimeOnly "org.mapsforge:vtm-android:$vtmVersion:natives-arm64-v8a"
+//    runtimeOnly "org.mapsforge:vtm-android:$vtmVersion:natives-x86"
+//    runtimeOnly "org.mapsforge:vtm-android:$vtmVersion:natives-x86_64"
+//    implementation "org.mapsforge:vtm-http:$vtmVersion"
 
-    implementation "org.mapsforge:vtm-json:$vtmVersion"
-    implementation "org.mapsforge:vtm-gdx:$vtmVersion"
-    implementation "org.mapsforge:vtm-android-mvt:$vtmVersion"
-    implementation "org.mapsforge:vtm-mvt:$vtmVersion"
+    implementation project(":vtm-json")
+//    implementation project(":vtm-gdx")
+//    implementation project(":vtm-gdx-poi3d")
+    implementation project(":vtm-android-mvt")
+    implementation project(":vtm-mvt")
+//    implementation "org.mapsforge:vtm-json:$vtmVersion"
+//    implementation "org.mapsforge:vtm-gdx:$vtmVersion"
+//    implementation "org.mapsforge:vtm-android-mvt:$vtmVersion"
+//    implementation "org.mapsforge:vtm-mvt:$vtmVersion"
 
-    runtimeOnly "org.mapsforge:vtm-android-gdx:$vtmVersion:natives-armeabi-v7a"
-    runtimeOnly "org.mapsforge:vtm-android-gdx:$vtmVersion:natives-arm64-v8a"
-    runtimeOnly "org.mapsforge:vtm-android-gdx:$vtmVersion:natives-x86"
-    runtimeOnly "org.mapsforge:vtm-android-gdx:$vtmVersion:natives-x86_64"
-    implementation "org.mapsforge:vtm-android-gdx:$vtmVersion"
+//    implementation project(":vtm-android-gdx")
+//    runtimeOnly "org.mapsforge:vtm-android-gdx:$vtmVersion:natives-armeabi-v7a"
+//    runtimeOnly "org.mapsforge:vtm-android-gdx:$vtmVersion:natives-arm64-v8a"
+//    runtimeOnly "org.mapsforge:vtm-android-gdx:$vtmVersion:natives-x86"
+//    runtimeOnly "org.mapsforge:vtm-android-gdx:$vtmVersion:natives-x86_64"
+//    implementation "org.mapsforge:vtm-android-gdx:$vtmVersion"
 
     implementation "com.google.protobuf:protobuf-java:3.6.1"
     implementation "com.wdtinc:mapbox-vector-tile:3.1.0"
@@ -98,7 +113,8 @@ dependencies {
     implementation "com.badlogicgames.gdx:gdx:1.11.0"
     implementation "com.badlogicgames.gdx:gdx-backend-android:1.11.0"
     implementation "com.caverock:androidsvg:1.4"
-    api "org.mapsforge:vtm-jts:$vtmVersion"
+//    api "org.mapsforge:vtm-jts:$vtmVersion"
+    api project(":vtm-jts")
     api 'org.locationtech.jts:jts-core:1.19.0'
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
     implementation 'com.squareup.okio:okio:3.3.0'
