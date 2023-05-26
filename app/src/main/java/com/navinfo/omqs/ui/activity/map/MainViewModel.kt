@@ -45,7 +45,10 @@ import io.realm.RealmSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.oscim.core.GeoPoint
+import org.oscim.core.MapPosition
+import org.oscim.map.Map
 import org.videolan.libvlc.LibVlcUtil
 import java.io.File
 import java.util.*
@@ -59,7 +62,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val mapController: NIMapController,
     private val traceDataBase: TraceDataBase,
-    private val realmOperateHelper: RealmOperateHelper
+    private val realmOperateHelper: RealmOperateHelper,
 ) : ViewModel() {
 
     private var mCameraDialog: CommonDialog? = null
@@ -78,7 +81,7 @@ class MainViewModel @Inject constructor(
     //语音窗体
     private var pop: PopupWindow? = null
 
-    private var mSpeakMode: SpeakMode? = null
+    var speakMode: SpeakMode? = null
 
     //录音图标
     var volume: ImageView? = null
@@ -88,12 +91,28 @@ class MainViewModel @Inject constructor(
 
     val liveDataMenuState = MutableLiveData<Boolean>()
 
+    val liveDataCenterPoint = MutableLiveData<MapPosition>()
+
     /**
      * 是不是线选择模式
      */
     private var bSelectRoad = false
 
     init {
+        mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
+            when (e) {
+                Map.SCALE_EVENT, Map.MOVE_EVENT, Map.ROTATE_EVENT ->
+                    if (liveDataCenterPoint.value == null
+                        || liveDataCenterPoint.value!!.x != mapPosition.x
+                        || liveDataCenterPoint.value!!.y != mapPosition.y
+                    ) {
+                        liveDataCenterPoint.value = mapPosition
+                    }
+
+            }
+        })
+
+        //处理质检数据点击事件
         mapController.markerHandle.setOnQsRecordItemClickListener(object :
             OnQsRecordItemClickListener {
             override fun onQsRecordList(list: MutableList<String>) {
@@ -101,9 +120,11 @@ class MainViewModel @Inject constructor(
             }
         })
         initLocation()
+        //处理地图点击操作
         viewModelScope.launch {
             mapController.onMapClickFlow.collectLatest {
 //                testPoint = it
+                //线选择状态
                 if (bSelectRoad) {
                     captureLink(it)
                 }
@@ -223,10 +244,10 @@ class MainViewModel @Inject constructor(
                         )
 
                         when (element.code) {
-                            2041, 2008, 2010 -> topSignList.add(
+                            2002, 2008, 2010, 2041 -> topSignList.add(
                                 signBean
                             )
-                            else -> signList.add(
+                            4002, 4003, 4004, 4006, 4022 -> signList.add(
                                 signBean
                             )
                         }
@@ -237,6 +258,10 @@ class MainViewModel @Inject constructor(
             }
             liveDataTopSignList.postValue(topSignList.distinctBy { it.elementCode })
             liveDataSignList.postValue(signList.distinctBy { it.elementCode })
+            val speechText = SignUtil.getRoadSpeechText(topSignList)
+            withContext(Dispatchers.Main) {
+                speakMode?.speakText(speechText)
+            }
             Log.e("jingo", "自动捕捉数据 共${signList.size}条")
         }
     }
@@ -303,10 +328,6 @@ class MainViewModel @Inject constructor(
 
     fun startSoundMetter(context: Context, v: View) {
 
-        if (mSpeakMode == null) {
-            mSpeakMode = SpeakMode(context as Activity?)
-        }
-
         //语音识别动画
         if (pop == null) {
             pop = PopupWindow()
@@ -340,12 +361,12 @@ class MainViewModel @Inject constructor(
                 if (!TextUtils.isEmpty(filePath) && File(filePath).exists()) {
                     if (File(filePath) == null || File(filePath).length() < 1600) {
                         ToastUtils.showLong("语音时间太短，无效！")
-                        mSpeakMode!!.speakText("语音时间太短，无效")
+                        speakMode?.speakText("语音时间太短，无效")
                         stopSoundMeter()
                         return
                     }
                 }
-                mSpeakMode!!.speakText("结束录音")
+                speakMode?.speakText("结束录音")
                 //获取右侧fragment容器
                 val naviController =
                     (context as Activity).findNavController(R.id.main_activity_right_fragment)
@@ -357,14 +378,14 @@ class MainViewModel @Inject constructor(
             @RequiresApi(api = Build.VERSION_CODES.Q)
             override fun onfaild(message: String?) {
                 ToastUtils.showLong("录制失败！")
-                mSpeakMode!!.speakText("录制失败")
+                speakMode?.speakText("录制失败")
                 stopSoundMeter()
             }
         })
 
         mSoundMeter!!.start(Constant.USER_DATA_ATTACHEMNT_PATH + name)
         ToastUtils.showLong("开始录音")
-        mSpeakMode!!.speakText("开始录音")
+        speakMode?.speakText("开始录音")
     }
 
     //停止语音录制

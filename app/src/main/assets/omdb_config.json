@@ -121,6 +121,11 @@
 			"code": 4006,
 			"name": "普通交限"
 		},
+		"4022":{
+			"table": "OMDB_TRAFFICLIGHT",
+			"code": 4022,
+			"name": "交通灯"
+		},
         "5001":{
             "table": "OMDB_LANE_LINK_LG",
             "code": 5001,

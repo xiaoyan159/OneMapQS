@@ -42,6 +42,9 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingRight">6dp</item>
         <item name="android:paddingLeft">10dp</item>
+        <item name="autoSizeMaxTextSize">14sp</item>
+        <item name="autoSizeMinTextSize">8sp</item>
+        <item name="autoSizeTextType">uniform</item>
         <item name="android:drawableRight">@drawable/baseline_keyboard_arrow_down_12</item>
         <item name="android:background">@drawable/shape_rect_white_2dp_bg</item>
         <item name="android:layout_width">match_parent</item>

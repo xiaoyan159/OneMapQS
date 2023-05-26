@@ -3,6 +3,7 @@ package com.navinfo.omqs.ui.widget
 import android.util.Log
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.omqs.R
+import com.navinfo.omqs.bean.SignBean
 
 class SignUtil {
     companion object {
@@ -73,6 +74,10 @@ class SignUtil {
                 4003 -> "条件点限速"
                 //可变点限速
                 4004 -> "可变点限速"
+                //普通交限
+                4006 -> "普通交限"
+                //交通灯
+                4022 -> "交通灯"
                 else -> ""
             }
         }
@@ -209,6 +214,8 @@ class SignUtil {
                 4003 -> getConditionalSpeedLimitIcon(data)
                 //可变点限速
                 4004 -> R.drawable.icon_change_limit
+                //交通灯
+                4022 -> R.drawable.icon_traffic_light
                 else -> 0
             }
 
@@ -284,6 +291,25 @@ class SignUtil {
                 Log.e("jingo", "获取道路方向面板ICON出错 $e")
             }
             return R.drawable.icon_road_direction
+        }
+
+        /**
+         * 获取道路播报语音文字
+         */
+        fun getRoadSpeechText(topSignList: MutableList<SignBean>): String {
+            if (topSignList.size == 0)
+                return ""
+            val stringBuffer = StringBuffer()
+            stringBuffer.append("当前道路")
+            for (item in topSignList) {
+                when (item.elementCode) {
+                    2002 -> stringBuffer.append("功能等级${item.iconText.substring(2)}级,")
+                    2008 -> stringBuffer.append("种别${item.iconText},")
+                    2010 -> stringBuffer.append("${item.iconText},")
+                    2041 -> stringBuffer.append("${item.iconText.substringBefore("|")}车道")
+                }
+            }
+            return stringBuffer.toString()
         }
     }
 }
