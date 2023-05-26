@@ -94,6 +94,7 @@
             <xs:enumeration value="name"/>
             <xs:enumeration value="maxSpeed"/><!--最高速度-->
             <xs:enumeration value="minSpeed"/><!--最低速度-->
+            <xs:enumeration value="angle"/><!--角度-->
             <xs:enumeration value="ref"/>
         </xs:restriction>
     </xs:simpleType>

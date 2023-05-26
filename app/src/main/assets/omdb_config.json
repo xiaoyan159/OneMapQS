@@ -131,7 +131,7 @@
 					"k": "geometry",
 					"v": "~",
 					"klib": "geometry",
-					"vlib": "translateRight()"
+					"vlib": "translateRightWithAngle()"
 				}
 			]
 		},
