@@ -17,7 +17,7 @@ class LayerManagerExpandableListAdapter(private val context: Context, val parent
     }
 
     override fun getChildrenCount(groupPosition: Int): Int {
-        return parentItems[groupPosition].tables.size
+        return parentItems[groupPosition].tableMap.size
     }
 
 
@@ -25,8 +25,8 @@ class LayerManagerExpandableListAdapter(private val context: Context, val parent
         return parentItems[groupPosition]
     }
 
-    override fun getChild(groupPosition: Int, childPosition: Int): Any {
-        return parentItems[groupPosition].tables[childPosition]
+    override fun getChild(groupPosition: Int, childPosition: Int): TableInfo? {
+        return parentItems[groupPosition].tableMap[parentItems[groupPosition].tableMap.keys.elementAt(childPosition)]
     }
 
     override fun getGroupId(groupPosition: Int): Long = groupPosition.toLong()
@@ -58,7 +58,7 @@ class LayerManagerExpandableListAdapter(private val context: Context, val parent
         viewHolder.parentCheckBox.isChecked = parentItem.checked
         viewHolder.parentCheckBox.setOnClickListener {
             parentItem.checked = !parentItem.checked
-            parentItem.tables.forEach { it.checked = parentItem.checked }
+            parentItem.tableMap.forEach { it.value.checked = parentItem.checked }
             notifyDataSetChanged()
         }
         if (isExpanded) {
@@ -93,7 +93,7 @@ class LayerManagerExpandableListAdapter(private val context: Context, val parent
         viewHolder.childCheckBox.isChecked = childItem.checked
         viewHolder.childCheckBox.setOnClickListener {
             childItem.checked = !childItem.checked
-            parentItems[groupPosition].checked = parentItems[groupPosition].tables.all { it.checked }
+            parentItems[groupPosition].checked = parentItems[groupPosition].tableMap.all { it.value.checked }
             notifyDataSetChanged()
         }
 

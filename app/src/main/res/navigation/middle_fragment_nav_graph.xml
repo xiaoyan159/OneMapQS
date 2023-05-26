@@ -2,12 +2,12 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/EmptyFragment">
+    app:startDestination="@id/MiddleEmptyFragment">
 
     <fragment
-        android:id="@+id/EmptyFragment"
+        android:id="@+id/MiddleEmptyFragment"
         android:name="com.navinfo.omqs.ui.fragment.empty.EmptyFragment"
-        android:label="空页面"
+        android:label="中间空页面"
         tools:layout="@layout/fragment_empty"></fragment>
 
     <fragment

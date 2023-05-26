@@ -40,7 +40,7 @@ class RightGroupHeaderDecoration(context: Context) : ItemDecoration() {
         mTextPaint.textSize = 46f
         mTextPaint.color = Color.WHITE
         mLinePaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        mLinePaint.color = Color.GRAY
+        mLinePaint.color = Color.WHITE
     }
 
     /**

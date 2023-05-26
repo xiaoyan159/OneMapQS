@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.blankj.utilcode.util.SPStaticUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -23,6 +24,7 @@ import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.tools.LayerConfigUtils
 import com.navinfo.omqs.ui.activity.BaseActivity
+import com.navinfo.omqs.ui.widget.RecycleViewDivider
 import com.navinfo.omqs.util.FlowEventBus
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -52,14 +54,13 @@ class MainActivity : BaseActivity() {
         findNavController(R.id.main_activity_right_fragment)
     }
 
+    /**
+     * 提前显示要素看板
+     */
     private val signAdapter by lazy {
         SignAdapter { position, signBean ->
-//            val directions =
-//                EmptyFragmentDirections.emptyFragmentToEvaluationResultFragment(
-//                )
-//            rightController.navigate(directions)
             rightController.currentDestination?.let {
-                if (it.id == R.id.EmptyFragment) {
+                if (it.id == R.id.RightEmptyFragment) {
                     val bundle = Bundle()
                     bundle.putParcelable("SignBean", signBean)
                     rightController.navigate(R.id.EvaluationResultFragment, bundle)
@@ -67,6 +68,22 @@ class MainActivity : BaseActivity() {
             }
         }
     }
+
+    /**
+     * 道路信息看板
+     */
+    private val topSignAdapter by lazy {
+        TopSignAdapter { position, signBean ->
+            rightController.currentDestination?.let {
+                if (it.id == R.id.RightEmptyFragment) {
+                    val bundle = Bundle()
+                    bundle.putParcelable("SignBean", signBean)
+                    rightController.navigate(R.id.EvaluationResultFragment, bundle)
+                }
+            }
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -125,6 +142,18 @@ class MainActivity : BaseActivity() {
 
         }
 
+        //道路属性面板
+        binding.mainActivityTopSignRecyclerview.layoutManager = LinearLayoutManager(
+            this,
+            RecyclerView.HORIZONTAL, false
+        )
+//        binding.mainActivityTopSignRecyclerview.addItemDecoration(
+//            RecycleViewDivider(this, LinearLayoutManager.HORIZONTAL)
+//        )
+        binding.mainActivityTopSignRecyclerview.adapter = topSignAdapter
+
+
+        //提前显示面板
         binding.mainActivitySignRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.mainActivitySignRecyclerview.adapter = signAdapter
         //增加4dp的间隔
@@ -137,6 +166,10 @@ class MainActivity : BaseActivity() {
         )
         viewModel.liveDataSignList.observe(this) {
             signAdapter.refreshData(it)
+        }
+
+        viewModel.liveDataTopSignList.observe(this) {
+            topSignAdapter.refreshData(it)
         }
 
         lifecycleScope.launch {
@@ -243,7 +276,7 @@ class MainActivity : BaseActivity() {
     }
 
     /**
-     *
+     *展开或收起右侧面板
      */
     fun onSwitchFragment() {
         switchFragment = !switchFragment
@@ -253,6 +286,13 @@ class MainActivity : BaseActivity() {
         } else {
             binding.mainActivityFragmentGroup.visibility = View.VISIBLE
         }
+    }
+
+    /**
+     * 隐藏或显示右侧展开按钮
+     */
+    fun setRightSwitchButton(visibility: Int) {
+        binding.mainActivityFragmentSwitch.visibility = visibility
     }
 
     /**

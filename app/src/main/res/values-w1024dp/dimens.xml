@@ -8,5 +8,5 @@
     <dimen name="right_fragment_w" comment="右侧fragment宽度">256dp</dimen>
     <dimen name="main_activity_geometry_w" comment="地图主页坐标框宽度">230dp</dimen>
     <dimen name="main_activity_geometry_h" comment="地图主页坐标框高度">28dp</dimen>
-
+    <dimen name="fragment_phenomenon_width" comment="问题现象面板宽度">360dp</dimen>
 </resources>

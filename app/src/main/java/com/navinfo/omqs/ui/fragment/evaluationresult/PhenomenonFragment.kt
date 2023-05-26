@@ -6,9 +6,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
+import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentPhenomenonBinding
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
@@ -19,6 +22,7 @@ class PhenomenonFragment :
     BaseFragment() {
     private var _binding: FragmentPhenomenonBinding? = null
     private val binding get() = _binding!!
+
     /**
      * 和[PhenomenonFragment],[ProblemLinkFragment],[EvaluationResultFragment]共用同一个viewModel
      */
@@ -50,6 +54,7 @@ class PhenomenonFragment :
         binding.phenomenonLeftRecyclerview.adapter = leftAdapter
         //左侧菜单查询结果监听
         viewModel.liveDataLeftTypeList.observe(viewLifecycleOwner) {
+            leftAdapter.setSelectTitle(viewModel.liveDataQsRecordBean.value!!.classType)
             leftAdapter.refreshData(it)
         }
 
@@ -63,6 +68,9 @@ class PhenomenonFragment :
          */
         val rightAdapter = RightGroupHeaderAdapter { _, bean ->
             viewModel.setPhenomenonMiddleBean(bean)
+            if (activity != null) {
+                requireActivity().findNavController(R.id.main_activity_middle_fragment).navigateUp()
+            }
         }
         binding.phenomenonRightRecyclerview.adapter = rightAdapter
         //右侧菜单增加组标题
@@ -75,6 +83,7 @@ class PhenomenonFragment :
         }
         //右侧菜单查询数据监听
         viewModel.liveDataRightTypeList.observe(viewLifecycleOwner) {
+            rightAdapter.setSelectTitle(viewModel.liveDataQsRecordBean.value!!.classType)
             rightAdapter.refreshData(it)
         }
 
@@ -106,15 +115,15 @@ class PhenomenonFragment :
         })
 
 
-        //中间菜单
-        binding.phenomenonMiddleRecyclerview.setHasFixedSize(true)
-        binding.phenomenonMiddleRecyclerview.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-
-        binding.phenomenonMiddleRecyclerview.adapter = middleAdapter
+//        //中间菜单
+//        binding.phenomenonMiddleRecyclerview.setHasFixedSize(true)
+//        binding.phenomenonMiddleRecyclerview.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+//
+//        binding.phenomenonMiddleRecyclerview.adapter = middleAdapter
         //中间侧菜单查询结果监听
-        viewModel.liveDataMiddleTypeList.observe(viewLifecycleOwner) {
-            middleAdapter.refreshData(it)
-        }
+//        viewModel.liveDataMiddleTypeList.observe(viewLifecycleOwner) {
+//            middleAdapter.refreshData(it)
+//        }
 //        binding.phenomenonDrawer.setOnClickListener {
 //            when (binding.group.visibility) {
 //                View.INVISIBLE, View.GONE ->

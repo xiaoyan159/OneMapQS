@@ -1,0 +1,131 @@
+{
+	"tableMap" : {
+		"2001": {
+			"table": "OMDB_RD_LINK",
+			"code": 2001,
+			"name": "道路线"
+		},
+		"2002": {
+			"table": "OMDB_RD_LINK_FUNCTION_CLASS",
+			"code": 2002,
+			"name": "道路功能等级"
+		},
+		"2008": {
+			"table": "OMDB_RD_LINK_KIND",
+			"code": 2008,
+			"name": "道路种别"
+		},
+		"2010": {
+			"table": "OMDB_LINK_DIRECT",
+			"code": 2010,
+			"name": "道路方向"
+		},
+		"2019": {
+			"table": "OMDB_LINK_SPEEDLIMIT",
+			"code": 2019,
+			"name": "常规线限速"
+		},
+		"2020": {
+			"table": "OMDB_LINK_SPEEDLIMIT_COND",
+			"code": 2020,
+			"name": "条件线限速"
+		},
+		"2021": {
+			"table": "OMDB_LINK_SPEEDLIMIT_VAR",
+			"code": 2021,
+			"name": "可变线限速"
+		},
+		"2022": {
+			"table": "OMDB_CON_ACCESS",
+			"code": 2022,
+			"name": "全封闭"
+		},
+		"2037": {
+			"table": "OMDB_FORM_OF_WAY",
+			"code": 2037,
+			"name": "匝道"
+		},
+		"2040": {
+			"table": "OMDB_MULTI_DIGITIZED",
+			"code": 2040,
+			"name": "上下线分离"
+		},
+		"2041":{
+			"table": "OMDB_LANE_NUM",
+			"code": 2041,
+			"name": "车道数"
+		},
+		"2201":{
+			"table": "OMDB_BRIDGE",
+			"code": 2201,
+			"name": "桥"
+		},
+		"2202":{
+			"table": "OMDB_TUNNEL",
+			"code": 2202,
+			"name": "隧道"
+		},
+		"4002": {
+            "table": "OMDB_SPEEDLIMIT",
+            "code": 4002,
+            "name": "常规点限速",
+			"transformer": [
+				{
+					"k": "maxSpeed",
+					"v": "0",
+					"klib": "maxSpeed",
+					"vlib": "限"
+				}
+			]
+        },
+		"4003":{
+			"table": "OMDB_SPEEDLIMIT_COND",
+			"code": 4003,
+			"name": "条件点限速",
+			"transformer": [
+				{
+					"k": "maxSpeed",
+					"v": "0|",
+					"klib": "maxSpeed",
+					"vlib": "限"
+				}
+			]
+		},
+		"4004":{
+			"table": "OMDB_SPEEDLIMIT_VAR",
+			"code": 4004,
+			"name": "可变点限速",
+			"transformer": [
+				{
+					"k": "location",
+					"v": "1",
+					"klib": "location",
+					"vlib": "左"
+				},
+				{
+					"k": "location",
+					"v": "2",
+					"klib": "locationlib",
+					"vlib": "右"
+				},
+				{
+					"k": "location",
+					"v": "3",
+					"klib": "location",
+					"vlib": "上"
+				}
+			]
+		},
+		"4006":{
+			"table": "OMDB_RESTRICTION",
+			"code": 4006,
+			"name": "普通交限"
+		},
+        "5001":{
+            "table": "OMDB_LANE_LINK_LG",
+            "code": 5001,
+            "name": "车道中心线"
+        }
+
+	}
+}

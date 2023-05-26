@@ -103,7 +103,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
          * 读取元数据
          */
 //        val id = args.qsId
-        var id: String = ""
+        var id = ""
         var signBean: SignBean? = null
         var filePath: String = ""
         arguments?.let {
@@ -235,7 +235,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
                         val controller = findNavController(R.id.main_activity_middle_fragment)
                         controller.currentDestination?.let {
                             //如果之前页面是空fragment，直接打开面板
-                            if (it.id == R.id.EmptyFragment) {
+                            if (it.id == R.id.MiddleEmptyFragment) {
                                 findNavController(
                                     R.id.main_activity_middle_fragment
                                 ).navigate(R.id.PhenomenonFragment)
@@ -258,7 +258,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
                         val controller = findNavController(R.id.main_activity_middle_fragment)
                         controller.currentDestination?.let {
                             //如果之前页面是空fragment，直接打开面板
-                            if (it.id == R.id.EmptyFragment) {
+                            if (it.id == R.id.MiddleEmptyFragment) {
                                 findNavController(
                                     R.id.main_activity_middle_fragment
                                 ).navigate(R.id.ProblemLinkFragment)
@@ -282,13 +282,13 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
     }
 
     fun voiceOnTouchStart() {
-        viewModel!!.startSoundMetter(requireActivity(), binding.evaluationVoice)
+        viewModel.startSoundMetter(requireActivity(), binding.evaluationVoice)
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     fun voiceOnTouchStop() {
         if (Constant.IS_VIDEO_SPEED) {
-            viewModel!!.stopSoundMeter()
+            viewModel.stopSoundMeter()
         }
     }
 

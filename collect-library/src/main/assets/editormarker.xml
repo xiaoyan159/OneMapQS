@@ -1859,9 +1859,11 @@
         <m v="OMDB_LINK_DIRECT">
             <m k="direct">
                 <m v="2">
-                    <lineSymbol src="assets:omdb/oneway_right.svg"></lineSymbol>
+<!--                    <lineSymbol src="assets:omdb/oneway_right.svg"></lineSymbol>-->
+                    <symbol src="assets:omdb/oneway_right.svg" repeat-start="99.9" repeat="false" ></symbol>
                 </m>
                 <m v="3">
+<!--                    <lineSymbol src="assets:omdb/oneway_left.svg"></lineSymbol>-->
                     <lineSymbol src="assets:omdb/oneway_left.svg"></lineSymbol>
                 </m>
             </m>
