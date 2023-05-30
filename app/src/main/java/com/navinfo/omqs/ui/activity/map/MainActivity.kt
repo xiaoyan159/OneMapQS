@@ -253,7 +253,7 @@ class MainActivity : BaseActivity() {
 
         //开启定位
         mapController.locationLayerHandler.startLocation()
-
+        mapController.mMapView.setLogoVisable(View.GONE)
         //启动轨迹存储
 //        viewModel.startSaveTraceThread(this)
 
