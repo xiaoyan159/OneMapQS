@@ -23,6 +23,7 @@ import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.RenderEntity
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
 import com.navinfo.collect.library.utils.GeometryTools
@@ -31,7 +32,6 @@ import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.bean.SignBean
-import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
@@ -115,7 +115,7 @@ class MainViewModel @Inject constructor(
         })
         initLocation()
         //处理地图点击操作
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             mapController.onMapClickFlow.collectLatest {
 //                testPoint = it
                 //线选择状态
@@ -146,9 +146,9 @@ class MainViewModel @Inject constructor(
                 }
                 mapController.lineHandler.omdbTaskLinkLayer.removeAll()
                 for (item in list) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        mapController.lineHandler.omdbTaskLinkLayer.setLineColor(Color.valueOf(item.color))
-                    }
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                        mapController.lineHandler.omdbTaskLinkLayer.setLineColor(Color.valueOf(item.color))
+//                    }
                     mapController.lineHandler.omdbTaskLinkLayer.addLineList(item.hadLinkDvoList)
                 }
             }
@@ -213,10 +213,11 @@ class MainViewModel @Inject constructor(
             //看板数据
             val signList = mutableListOf<SignBean>()
             val topSignList = mutableListOf<SignBean>()
-
+            mapController.lineHandler.linksLayer.clear()
             if (linkList.isNotEmpty()) {
                 val link = linkList[0]
                 val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
+                Log.e("jingo", "捕捉到的linkid $linkId ${link.geometry}")
                 mapController.lineHandler.showLine(link.geometry)
                 linkId?.let {
                     var elementList = realmOperateHelper.queryLinkByLinkPid(it)
@@ -244,19 +245,37 @@ class MainViewModel @Inject constructor(
                             4002, 4003, 4004, 4022 -> signList.add(
                                 signBean
                             )
-                            4006 -> {
-                                mapController.lineHandler.linksLayer.clear()
-                                val inLink = element.properties["linkIn"]
-                                val outLink = element.properties["linkOut"]
-                                if (inLink != null){
-
-                                }
-                            }
                         }
 
                     }
 
+                    val realm = Realm.getDefaultInstance()
+                    val entity = realm.where(RenderEntity::class.java)
+                        .equalTo("table", "OMDB_RESTRICTION")
+                        .and()
+                        .equalTo(
+                            "properties['linkIn']",
+                            it
+                        ).findFirst()
+                    if (entity != null) {
+                        val outLink = entity.properties["linkOut"]
+                        val linkOutEntity = realm.where(RenderEntity::class.java)
+                            .equalTo("table", "OMDB_RD_LINK")
+                            .and()
+                            .equalTo(
+                                "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
+                                outLink
+                            ).findFirst()
+                        if (linkOutEntity != null) {
+                            mapController.lineHandler.linksLayer.addLine(
+                                linkOutEntity.geometry,
+                                0x7DFF0000
+                            )
+                            Log.e("jingo", "捕捉到的linkid $outLink ${linkOutEntity.geometry}")
+                        }
+                    }
                 }
+
             }
             liveDataTopSignList.postValue(topSignList.distinctBy { it.elementCode })
             liveDataSignList.postValue(signList.distinctBy { it.elementCode })

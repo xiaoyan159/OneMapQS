@@ -8,7 +8,7 @@
     android:paddingLeft="8dp"
     android:paddingTop="6dp"
     android:paddingRight="8dp"
-    android:paddingBottom="4dp"
+    android:paddingBottom="8dp"
     tools:context="com.navinfo.omqs.ui.fragment.tasklist.TaskListAdapter">
 
     <ImageView
@@ -30,66 +30,57 @@
         android:textColor="#15141F"
         android:textSize="14sp" />
 
-    <TextView
-        android:id="@+id/task_city_name"
-        style="@style/map_size_font_style"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/task_name"
-        android:layout_alignLeft="@id/task_name"
-        android:layout_marginTop="5dp"
-        android:text="省市名称"
-        android:textColor="@color/gray_121"
-        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/task_data_version"
         style="@style/map_size_font_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/task_city_name"
+        android:layout_below="@id/task_name"
         android:layout_alignLeft="@id/task_name"
-        android:layout_toLeftOf="@id/task_upload_btn"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:text="版本号"
         android:textColor="@color/gray_121"
         android:textSize="13sp" />
 
     <TextView
-        android:id="@+id/task_color"
+        android:id="@+id/task_city_name"
         style="@style/map_size_font_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/task_data_version"
         android:layout_alignLeft="@id/task_name"
-        android:layout_marginTop="5dp"
-        android:drawableLeft="@drawable/point_blue"
-        android:text="路线颜色"
-        android:textSize="@dimen/card_title_font_3size" />
+        android:text="省市名称"
+        android:textColor="@color/gray_121"
+        android:textSize="13sp" />
 
-
-    <TextView
+    <com.navinfo.omqs.ui.widget.TextProgressButtonBar
         android:id="@+id/task_download_btn"
-        style="@style/btn_default_stroke_horizontal_round"
-        android:layout_width="72dp"
+        android:layout_width="75dp"
+        android:layout_height="22dp"
+        android:layout_alignBottom="@id/task_city_name"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/task_data_version"
+        android:layout_gravity="center"
         android:layout_marginTop="5dp"
-        android:gravity="center"
-        android:text="下载"
-        android:textSize="@dimen/card_title_font_2size" />
+        app:backgroundcolor="#888FB3"
+        app:text="下载"
+        app:textSize="@dimen/card_title_font_2size"
+        app:textcolor="@color/white" />
 
-    <TextView
+    <com.navinfo.omqs.ui.widget.TextProgressButtonBar
         android:id="@+id/task_upload_btn"
-        style="@style/btn_default_stroke_horizontal_round"
-        android:layout_width="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="5dp"
-        android:layout_toLeftOf="@id/task_download_btn"
-        android:gravity="center"
-        android:minWidth="60dp"
-        android:shadowColor="@android:color/transparent"
-        android:text="同步"
-        android:textSize="@dimen/card_title_font_2size" />
+        android:layout_width="75dp"
+        android:layout_height="22dp"
+        android:layout_alignBottom="@id/task_city_name"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:visibility="gone"
+        app:backgroundcolor="#888FB3"
+        app:text="未上传"
+        app:textSize="@dimen/card_title_font_2size"
+        app:textcolor="@color/white" />
 
     <TextView
         android:id="@+id/task_status"
@@ -104,13 +95,14 @@
         android:textColor="@color/white"
         android:textSize="@dimen/card_title_font_2size" />
 
-    <com.navinfo.omqs.ui.widget.MyProgressBar
-        android:id="@+id/task_progress"
+    <TextView
+        android:id="@+id/task_progress_text"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="16dp"
-        android:layout_below="@id/task_download_btn"
-        android:paddingTop="10dp"
-        android:progressDrawable="@drawable/progress_bg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/task_download_btn"
+        android:layout_alignBottom="@id/task_download_btn"
+        android:layout_toLeftOf="@id/task_download_btn"
+        android:gravity="center"
         android:visibility="invisible" />
 </RelativeLayout>

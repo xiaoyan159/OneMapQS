@@ -1,9 +1,7 @@
 package com.navinfo.omqs.ui.activity
 
-import android.app.Dialog
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.R

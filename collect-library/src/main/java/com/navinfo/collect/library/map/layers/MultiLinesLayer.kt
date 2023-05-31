@@ -28,6 +28,7 @@ class MultiLinesLayer(map: Map) : VectorLayer(map) {
                 LineDrawable(GeometryTools.createGeometry(geometry), style)
             super.add(lineDrawable)
             linkList.add(lineDrawable)
+            update()
         } catch (e: Exception) {
 
         }
@@ -39,5 +40,6 @@ class MultiLinesLayer(map: Map) : VectorLayer(map) {
             super.remove(item)
         }
         linkList.clear()
+        update()
     }
 }
