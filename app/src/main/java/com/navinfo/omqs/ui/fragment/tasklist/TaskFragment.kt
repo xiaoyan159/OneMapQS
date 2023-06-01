@@ -3,6 +3,8 @@ package com.navinfo.omqs.ui.fragment.tasklist
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,12 +66,26 @@ class TaskFragment : BaseFragment() {
         binding.taskRecyclerview.setHasFixedSize(true)
         binding.taskRecyclerview.layoutManager = layoutManager
         binding.taskRecyclerview.adapter = adapter
+        binding.taskSearchClear.setOnClickListener {
+            binding.taskSearch.setText("")
+        }
         viewModel.liveDataTaskLinks.observe(viewLifecycleOwner) {
             adapter.resetSelect()
             adapter.refreshData(it)
         }
         viewModel.getTaskList(requireContext())
+        binding.taskSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
 
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.filterTask(s.toString())
+            }
+
+        })
     }
 
     override fun onDestroyView() {

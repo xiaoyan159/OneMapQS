@@ -44,7 +44,7 @@ class TaskDownloadScope(
 
     //改进的代码
     fun start() {
-        launch{
+        launch {
             change(FileDownloadStatus.WAITING)
         }
         downloadManager.launchScope(this@TaskDownloadScope)
@@ -56,7 +56,7 @@ class TaskDownloadScope(
      */
     fun pause() {
         downloadJob?.cancel("pause")
-        launch{
+        launch {
             change(FileDownloadStatus.PAUSE)
         }
 
@@ -141,7 +141,7 @@ class TaskDownloadScope(
         } catch (e: Exception) {
             Log.e("jingo", "数据安装失败 ${e.toString()}")
             change(FileDownloadStatus.ERROR)
-        }finally {
+        } finally {
 
         }
 
@@ -167,8 +167,12 @@ class TaskDownloadScope(
 
             val fileTemp =
                 File("${Constant.DOWNLOAD_PATH}${taskBean.evaluationTaskName}_${taskBean.dataVersion}.zip")
-            val startPosition = taskBean.currentSize
-
+            var startPosition = taskBean.currentSize
+            if (fileTemp.length() > taskBean.fileSize && taskBean.fileSize > 0) {
+                fileTemp.delete()
+                fileTemp.createNewFile()
+                startPosition = 0
+            }
             if (fileTemp.length() > 0 && taskBean.fileSize > 0 && fileTemp.length() == taskBean.fileSize) {
                 importData(fileTemp)
                 return

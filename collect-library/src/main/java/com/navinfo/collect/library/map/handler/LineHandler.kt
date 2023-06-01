@@ -393,5 +393,6 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
         editIndex = -1
         bDrawLine = false
         omdbTaskLinkLayer.removeAll()
+        linksLayer.clear()
     }
 }

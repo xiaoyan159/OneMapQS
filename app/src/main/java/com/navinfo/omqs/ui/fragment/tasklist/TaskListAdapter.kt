@@ -1,5 +1,6 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -85,6 +86,27 @@ class TaskListAdapter(
         downloadManager.observer(taskBean.id, holder, DownloadObserver(taskBean.id, holder))
         uploadManager.addTask(taskBean)
         uploadManager.observer(taskBean.id, holder, UploadObserver(taskBean.id, binding))
+        if (taskBean.status == FileDownloadStatus.NONE) {
+            binding.taskDownloadBtn.setBackgroundColor(Color.WHITE)
+            binding.taskDownloadBtn.setTextColor(Color.parseColor("#888FB3"))
+        } else {
+            binding.taskDownloadBtn.setBackgroundColor(Color.parseColor("#888FB3"))
+            binding.taskDownloadBtn.setTextColor(Color.WHITE)
+        }
+        if (taskBean.status == FileDownloadStatus.DONE) {
+            binding.taskDownloadBtn.visibility = View.INVISIBLE
+            binding.taskUploadBtn.visibility = View.VISIBLE
+        } else {
+            binding.taskDownloadBtn.visibility = View.VISIBLE
+            binding.taskUploadBtn.visibility = View.INVISIBLE
+        }
+        if (taskBean.syncStatus == FileUploadStatus.DONE) {
+            binding.taskUploadBtn.setProgress(0)
+            binding.taskUploadBtn.setBackgroundColor(binding.root.resources.getColor(R.color.ripple_end_color))
+        } else {
+            binding.taskUploadBtn.setProgress(100)
+            binding.taskUploadBtn.setBackgroundColor(Color.parseColor("#888FB3"))
+        }
         binding.taskDownloadBtn.tag = position
         binding.taskDownloadBtn.setOnClickListener(downloadBtnClick)
         binding.taskUploadBtn.tag = position
@@ -92,7 +114,6 @@ class TaskListAdapter(
         binding.taskName.text = taskBean.evaluationTaskName
         binding.taskCityName.text = taskBean.cityName
         binding.taskDataVersion.text = "版本号：${taskBean.dataVersion}"
-        binding.taskColor.setTextColor(taskBean.color)
         binding.root.isSelected = selectPosition == position
         binding.root.setOnClickListener {
             val pos = holder.adapterPosition
@@ -133,87 +154,108 @@ class TaskListAdapter(
     private fun changeUploadTxtViews(binding: AdapterTaskListBinding, taskBean: TaskBean) {
         when (taskBean.syncStatus) {
             FileUploadStatus.DONE -> {
-                binding.taskUploadBtn.text = "已上传"
+                binding.taskUploadBtn.stopAnimator()
+                binding.taskUploadBtn.setText("已上传")
+                binding.taskUploadBtn.setProgress(0)
+                binding.taskUploadBtn.setBackgroundColor(binding.root.resources.getColor(R.color.ripple_end_color))
             }
             FileUploadStatus.ERROR -> {
-                binding.taskUploadBtn.text = "重新同步"
+                binding.taskUploadBtn.stopAnimator()
+                binding.taskUploadBtn.setText("重新同步")
+                binding.taskUploadBtn.setProgress(100)
             }
             FileUploadStatus.NONE -> {
-                binding.taskUploadBtn.text = "同步"
+                binding.taskUploadBtn.setText("未上传")
+                binding.taskUploadBtn.setProgress(0)
             }
             FileUploadStatus.WAITING -> {
-                binding.taskUploadBtn.text = "等待同步"
+                binding.taskUploadBtn.setText("等待同步")
+                binding.taskUploadBtn.setProgress(100)
             }
             FileUploadStatus.UPLOADING -> {
-                binding.taskUploadBtn.text = "同步中"
+                binding.taskUploadBtn.setText("上传中")
+                binding.taskUploadBtn.setProgress(100)
+                binding.taskUploadBtn.startAnimator()
             }
         }
     }
 
 
     private fun changeViews(binding: AdapterTaskListBinding, taskBean: TaskBean) {
+        if (taskBean.status == FileDownloadStatus.NONE) {
+            binding.taskDownloadBtn.setBackgroundColor(Color.WHITE)
+            binding.taskDownloadBtn.setTextColor(Color.parseColor("#888FB3"))
+        } else {
+            binding.taskDownloadBtn.setBackgroundColor(Color.parseColor("#888FB3"))
+            binding.taskDownloadBtn.setTextColor(Color.WHITE)
+        }
+
         if (taskBean.fileSize > 0L) {
-            binding.taskProgress.progress =
-                (taskBean.currentSize * 100 / taskBean.fileSize).toInt()
+            val progress = (taskBean.currentSize * 100 / taskBean.fileSize).toInt()
+            binding.taskProgressText.text =
+                "$progress%"
+            binding.taskDownloadBtn.setProgress(progress)
         }
         when (taskBean.status) {
             FileDownloadStatus.NONE -> {
-                if (binding.taskProgress.visibility == View.VISIBLE) binding.taskProgress.visibility =
+                if (binding.taskProgressText.visibility == View.VISIBLE) binding.taskProgressText.visibility =
                     View.INVISIBLE
-                binding.taskDownloadBtn.text = "下载"
+                binding.taskDownloadBtn.setText("下载")
             }
             FileDownloadStatus.WAITING -> {
-                if (binding.taskProgress.visibility != View.VISIBLE) binding.taskProgress.visibility =
+                if (binding.taskProgressText.visibility != View.VISIBLE) binding.taskProgressText.visibility =
                     View.VISIBLE
-                binding.taskDownloadBtn.text = "等待中"
+                binding.taskDownloadBtn.setText("等待中")
             }
             FileDownloadStatus.LOADING -> {
-                if (binding.taskProgress.visibility != View.VISIBLE) binding.taskProgress.visibility =
+                if (binding.taskProgressText.visibility != View.VISIBLE) binding.taskProgressText.visibility =
                     View.VISIBLE
-                binding.taskDownloadBtn.text = "暂停"
+                binding.taskDownloadBtn.setText("暂停")
             }
             FileDownloadStatus.PAUSE -> {
-                if (binding.taskProgress.visibility != View.VISIBLE) binding.taskProgress.visibility =
+                if (binding.taskProgressText.visibility != View.VISIBLE) binding.taskProgressText.visibility =
                     View.VISIBLE
-                binding.taskDownloadBtn.text = "继续"
+                binding.taskDownloadBtn.setText("继续")
             }
             FileDownloadStatus.ERROR -> {
-                if (binding.taskProgress.visibility != View.VISIBLE) binding.taskProgress.visibility =
+                if (binding.taskProgressText.visibility != View.VISIBLE) binding.taskProgressText.visibility =
                     View.VISIBLE
-                binding.taskDownloadBtn.text = "重试"
+                binding.taskDownloadBtn.setText("重试")
             }
             FileDownloadStatus.DONE -> {
-                if (binding.taskProgress.visibility == View.VISIBLE) binding.taskProgress.visibility =
+                if (binding.taskProgressText.visibility == View.VISIBLE) binding.taskProgressText.visibility =
                     View.INVISIBLE
-                binding.taskDownloadBtn.text = "已完成"
+                binding.taskDownloadBtn.setText("已完成")
+                binding.taskDownloadBtn.visibility = View.INVISIBLE
+                binding.taskUploadBtn.visibility = View.VISIBLE
             }
             FileDownloadStatus.UPDATE -> {
-                if (binding.taskProgress.visibility == View.VISIBLE) binding.taskProgress.visibility =
+                if (binding.taskProgressText.visibility == View.VISIBLE) binding.taskProgressText.visibility =
                     View.INVISIBLE
-                binding.taskDownloadBtn.text = "更新"
+                binding.taskDownloadBtn.setText("更新")
             }
             FileDownloadStatus.IMPORTING -> {
-                if (binding.taskProgress.visibility != View.VISIBLE) binding.taskProgress.visibility =
+                if (binding.taskProgressText.visibility != View.VISIBLE) binding.taskProgressText.visibility =
                     View.VISIBLE
-                binding.taskDownloadBtn.text = "安装中"
+                binding.taskDownloadBtn.setText("安装中")
                 val split = taskBean.message.split("/")
                 if (split.size == 2) {
                     try {
                         val index = split[0].toInt()
                         val count = split[1].toInt()
-                        binding.taskProgress.progress =
-                            index * 100 / count
+                        binding.taskProgressText.text =
+                            "${index * 100 / count}%"
                     } catch (e: Exception) {
                         Log.e("jingo", "更新进度条 $e")
                     }
                 } else {
-                    binding.taskProgress.progress = 0
+                    binding.taskProgressText.text = "0%"
                 }
             }
             FileDownloadStatus.IMPORT -> {
-                if (binding.taskProgress.visibility != View.VISIBLE) binding.taskProgress.visibility =
+                if (binding.taskProgressText.visibility != View.VISIBLE) binding.taskProgressText.visibility =
                     View.INVISIBLE
-                binding.taskDownloadBtn.text = "安装"
+                binding.taskDownloadBtn.setText("安装")
             }
         }
     }

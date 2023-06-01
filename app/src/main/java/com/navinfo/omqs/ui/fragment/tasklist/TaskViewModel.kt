@@ -17,17 +17,13 @@ import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.*
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 
 @HiltViewModel
 class TaskViewModel @Inject constructor(
-    private val networkService: NetworkService,
-    private val mapController: NIMapController
+    private val networkService: NetworkService, private val mapController: NIMapController
 ) : ViewModel() {
 
     /**
@@ -47,6 +43,12 @@ class TaskViewModel @Inject constructor(
      */
     private var currentSelectTaskBean: TaskBean? = null
 
+    /**
+     * 任务列表查询协程
+     */
+    private var filterTaskListJob: Job? = null
+
+    private var filterTaskJob: Job? = null
 
     /**
      * 下载任务列表
@@ -70,20 +72,21 @@ class TaskViewModel @Inject constructor(
                                         task.fileSize = item.fileSize
                                         task.status = item.status
                                         task.currentSize = item.currentSize
-                                        task.color = item.color
-                                    } else {
-                                        if (index < 6)
-                                            task.color = colors[index]
-                                        else {
-                                            val random = Random()
-                                            task.color = Color.argb(
-                                                255,
-                                                random.nextInt(256),
-                                                random.nextInt(256),
-                                                random.nextInt(256)
-                                            )
-                                        }
+//                                        task.color = item.color
                                     }
+//                                    else {
+//                                        if (index < 6)
+//                                            task.color = colors[index]
+//                                        else {
+//                                            val random = Random()
+//                                            task.color = Color.argb(
+//                                                255,
+//                                                random.nextInt(256),
+//                                                random.nextInt(256),
+//                                                random.nextInt(256)
+//                                            )
+//                                        }
+//                                    }
                                     realm.copyToRealmOrUpdate(task)
                                 }
                             }
@@ -162,10 +165,7 @@ class TaskViewModel @Inject constructor(
                 }
             }
             mapController.animationHandler.animateToBox(
-                maxX = maxX,
-                maxY = maxY,
-                minX = minX,
-                minY = minY
+                maxX = maxX, maxY = maxY, minX = minX, minY = minY
             )
         }
     }
@@ -208,6 +208,43 @@ class TaskViewModel @Inject constructor(
             realm.executeTransaction {
                 realm.copyToRealmOrUpdate(currentSelectTaskBean)
             }
+        }
+    }
+
+    /**
+     * 筛选任务列表
+     */
+    fun filterTaskList(key: String) {
+        if (filterTaskListJob != null)
+            filterTaskListJob!!.cancel()
+        filterTaskListJob = viewModelScope.launch(Dispatchers.IO) {
+            delay(500)
+            val realm = Realm.getDefaultInstance()
+            val list = realm.where(TaskBean::class.java)
+                .contains("evaluationTaskName", key)
+                .or()
+                .contains("dataVersion", key)
+                .or()
+                .contains("cityName", key)
+                .findAll()
+            liveDataTaskList.postValue(realm.copyFromRealm(list))
+        }
+    }
+
+    fun filterTask(pidKey: String) {
+        if (currentSelectTaskBean == null)
+            return
+
+        if (filterTaskJob != null)
+            filterTaskJob!!.cancel()
+        filterTaskJob = viewModelScope.launch(Dispatchers.Default) {
+            delay(500)
+            val list = mutableListOf<HadLinkDvoBean>()
+            for (item in currentSelectTaskBean!!.hadLinkDvoList) {
+                if (item.linkPid.contains(pidKey))
+                    list.add(item)
+            }
+            liveDataTaskLinks.postValue(list)
         }
     }
 }
