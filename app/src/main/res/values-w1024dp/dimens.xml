@@ -1,5 +1,5 @@
 <resources>
-    <dimen name="fab_margin">200dp</dimen>
+    <dimen name="fab_margin">48dp</dimen>
     <dimen name="top_right_drawer_btns_wh" comment="地图主页右上角抽屉按钮的大小">54dp</dimen>
     <dimen name="top_right_drawer_wh" comment="地图主页右上角抽屉的把手按钮的大小">42dp</dimen>
     <dimen name="top_right_drawer_btns_mr" comment="地图主页右上角抽屉按钮距离右侧间距">44dp</dimen>
