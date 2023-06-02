@@ -76,7 +76,7 @@ class LoginViewModel @Inject constructor(
     var jobLogin: Job? = null;
 
     init {
-        loginUser.value = LoginUserBean(userCode = "02911", passWord = "123456")
+        loginUser.value = LoginUserBean(userCode = "haofuyue00213", passWord = "123456")
     }
 
 
