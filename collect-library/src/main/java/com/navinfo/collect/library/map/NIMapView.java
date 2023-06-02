@@ -801,6 +801,17 @@ public final class NIMapView extends RelativeLayout {
     }
 
     /**
+     * 设置logo显隐
+     *
+     * @param position 按钮位置
+     */
+    public void setLogoVisable(int visable) {
+        if (logoImage != null) {
+            logoImage.setVisibility(visable);
+        }
+    }
+
+    /**
      * 设置缩放按钮位置
      *
      * @param position 按钮位置

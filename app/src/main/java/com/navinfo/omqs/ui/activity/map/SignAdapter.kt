@@ -8,7 +8,7 @@ import com.navinfo.omqs.databinding.AdapterSignBinding
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 
-class SignAdapter(private var itemListener: ((Int, SignBean) -> Unit?)? = null) :
+class SignAdapter(private var itemListener: ((Int, Boolean, SignBean) -> Unit?)? = null) :
     BaseRecyclerViewAdapter<SignBean>() {
     override fun getItemViewRes(position: Int): Int {
         return R.layout.adapter_sign
@@ -27,9 +27,12 @@ class SignAdapter(private var itemListener: ((Int, SignBean) -> Unit?)? = null) 
             bd.signMainIconBg.setImageResource(item.iconId)
         bd.signMainIcon.text = item.iconText
         bd.signBottomText.text = item.name
+        bd.signMainFastError.setOnClickListener{
+            itemListener?.invoke(position, true,item)
+        }
         bd.signBottomRightText.text = item.bottomRightText
         bd.root.setOnClickListener {
-            itemListener?.invoke(position, item)
+            itemListener?.invoke(position, false,item)
         }
     }
 }

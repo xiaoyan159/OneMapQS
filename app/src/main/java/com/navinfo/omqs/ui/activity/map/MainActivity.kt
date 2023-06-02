@@ -75,11 +75,12 @@ class MainActivity : BaseActivity() {
      * 提前显示要素看板
      */
     private val signAdapter by lazy {
-        SignAdapter { position, signBean ->
+        SignAdapter { position, autoSave,signBean ->
             rightController.currentDestination?.let {
                 if (it.id == R.id.RightEmptyFragment) {
                     val bundle = Bundle()
                     bundle.putParcelable("SignBean", signBean)
+                    bundle.putBoolean("AutoSave", autoSave)
                     rightController.navigate(R.id.EvaluationResultFragment, bundle)
                 }
             }
@@ -253,7 +254,7 @@ class MainActivity : BaseActivity() {
 
         //开启定位
         mapController.locationLayerHandler.startLocation()
-
+        mapController.mMapView.setLogoVisable(View.GONE)
         //启动轨迹存储
 //        viewModel.startSaveTraceThread(this)
 

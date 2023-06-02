@@ -1743,7 +1743,7 @@
                         <m v="2">
                             <m k="markColor">
                                 <m v="0|1">
-                                    <line stroke="#ffffff" use="boundaryType" dasharray="3,3"/>
+                                    <line stroke="#ffffff" use="boundaryType" dasharray="3,13"/>
                                 </m>
                                 <m v="2">
                                     <line stroke="#eccc68" use="boundaryType" dasharray="3,3"/>

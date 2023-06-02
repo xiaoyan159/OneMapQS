@@ -85,6 +85,7 @@ class MainViewModel @Inject constructor(
 
     //录音图标
     var volume: ImageView? = null
+
     var mSoundMeter: SoundMeter? = null
 
     var menuState: Boolean = false
@@ -97,6 +98,8 @@ class MainViewModel @Inject constructor(
      * 是不是线选择模式
      */
     private var bSelectRoad = false
+
+    private var linkIdCache = ""
 
     init {
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
@@ -210,80 +213,92 @@ class MainViewModel @Inject constructor(
             val linkList = realmOperateHelper.queryLink(
                 point = point,
             )
-            //看板数据
-            val signList = mutableListOf<SignBean>()
-            val topSignList = mutableListOf<SignBean>()
-            mapController.lineHandler.linksLayer.clear()
             if (linkList.isNotEmpty()) {
+                //看板数据
+                val signList = mutableListOf<SignBean>()
+                val topSignList = mutableListOf<SignBean>()
+                mapController.lineHandler.linksLayer.clear()
+
                 val link = linkList[0]
+
                 val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
-                Log.e("jingo", "捕捉到的linkid $linkId ${link.geometry}")
-                mapController.lineHandler.showLine(link.geometry)
-                linkId?.let {
-                    var elementList = realmOperateHelper.queryLinkByLinkPid(it)
-                    for (element in elementList) {
-                        val distance = GeometryTools.distanceToDouble(
-                            point, GeometryTools.createGeoPoint(element.geometry)
-                        )
 
-                        val signBean = SignBean(
-                            iconId = SignUtil.getSignIcon(element),
-                            iconText = SignUtil.getSignIconText(element),
-                            distance = distance.toInt(),
-                            elementId = element.id,
-                            linkId = linkId,
-                            geometry = element.geometry,
-                            name = SignUtil.getSignNameText(element),
-                            bottomRightText = SignUtil.getSignBottomRightText(element),
-                            elementCode = element.code
-                        )
+                if(linkIdCache!=linkId){
 
-                        when (element.code) {
-                            2002, 2008, 2010, 2041 -> topSignList.add(
-                                signBean
+                    Log.e("jingo", "捕捉到的linkid $linkId ${link.geometry}")
+                    mapController.lineHandler.showLine(link.geometry)
+                    linkId?.let {
+                        var elementList = realmOperateHelper.queryLinkByLinkPid(it)
+                        for (element in elementList) {
+                            val distance = GeometryTools.distanceToDouble(
+                                point, GeometryTools.createGeoPoint(element.geometry)
                             )
-                            4002, 4003, 4004, 4022 -> signList.add(
-                                signBean
+
+                            val signBean = SignBean(
+                                iconId = SignUtil.getSignIcon(element),
+                                iconText = SignUtil.getSignIconText(element),
+                                distance = distance.toInt(),
+                                elementId = element.id,
+                                linkId = linkId,
+                                geometry = element.geometry,
+                                name = SignUtil.getSignNameText(element),
+                                bottomRightText = SignUtil.getSignBottomRightText(element),
+                                elementCode = element.code
                             )
+
+                            when (element.code) {
+                                2002, 2008, 2010, 2041 -> topSignList.add(
+                                    signBean
+                                )
+                                4002, 4003, 4004, 4022 -> signList.add(
+                                    signBean
+                                )
+                            }
+
                         }
 
-                    }
-
-                    val realm = Realm.getDefaultInstance()
-                    val entity = realm.where(RenderEntity::class.java)
-                        .equalTo("table", "OMDB_RESTRICTION")
-                        .and()
-                        .equalTo(
-                            "properties['linkIn']",
-                            it
-                        ).findFirst()
-                    if (entity != null) {
-                        val outLink = entity.properties["linkOut"]
-                        val linkOutEntity = realm.where(RenderEntity::class.java)
-                            .equalTo("table", "OMDB_RD_LINK")
+                        val realm = Realm.getDefaultInstance()
+                        val entity = realm.where(RenderEntity::class.java)
+                            .equalTo("table", "OMDB_RESTRICTION")
                             .and()
                             .equalTo(
-                                "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
-                                outLink
+                                "properties['linkIn']",
+                                it
                             ).findFirst()
-                        if (linkOutEntity != null) {
-                            mapController.lineHandler.linksLayer.addLine(
-                                linkOutEntity.geometry,
-                                0x7DFF0000
-                            )
-                            Log.e("jingo", "捕捉到的linkid $outLink ${linkOutEntity.geometry}")
+                        if (entity != null) {
+                            val outLink = entity.properties["linkOut"]
+                            val linkOutEntity = realm.where(RenderEntity::class.java)
+                                .equalTo("table", "OMDB_RD_LINK")
+                                .and()
+                                .equalTo(
+                                    "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
+                                    outLink
+                                ).findFirst()
+                            if (linkOutEntity != null) {
+                                mapController.lineHandler.linksLayer.addLine(
+                                    linkOutEntity.geometry,
+                                    0x7DFF0000
+                                )
+                                Log.e("jingo", "捕捉到的linkid $outLink ${linkOutEntity.geometry}")
+                            }
                         }
+                    }
+
+                    liveDataTopSignList.postValue(topSignList.distinctBy { it.elementCode })
+                    liveDataSignList.postValue(signList.distinctBy { it.elementCode })
+                    val speechText = SignUtil.getRoadSpeechText(topSignList)
+                    withContext(Dispatchers.Main) {
+                        speakMode?.speakText(speechText)
                     }
                 }
 
+                linkIdCache = linkId ?: ""
+
+                Log.e("jingo", "自动捕捉数据 共${signList.size}条")
+
+            }else{
+                ToastUtils.showLong("未捕捉到数据")
             }
-            liveDataTopSignList.postValue(topSignList.distinctBy { it.elementCode })
-            liveDataSignList.postValue(signList.distinctBy { it.elementCode })
-            val speechText = SignUtil.getRoadSpeechText(topSignList)
-            withContext(Dispatchers.Main) {
-                speakMode?.speakText(speechText)
-            }
-            Log.e("jingo", "自动捕捉数据 共${signList.size}条")
         }
     }
 
@@ -483,6 +498,8 @@ class MainViewModel @Inject constructor(
      */
     fun setSelectRoad(select: Boolean) {
         bSelectRoad = select
+        //去掉缓存
+        linkIdCache =  ""
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mapController.lineHandler.removeLine()
             liveDataSignList.value = mutableListOf()
