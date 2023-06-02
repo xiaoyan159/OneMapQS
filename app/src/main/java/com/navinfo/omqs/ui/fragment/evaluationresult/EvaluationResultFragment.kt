@@ -102,12 +102,18 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
                         voiceOnTouchStart()//Do Something
                         Log.e("qj", "voiceOnTouchStart")
                     }
+
                     MotionEvent.ACTION_UP -> {
                         voiceOnTouchStop()//Do Something
-                        Log.e("qj", "voiceOnTouchStop")
+                        Log.e("qj", "ACTION_UP")
+                    }
+
+                    MotionEvent.ACTION_CANCEL -> {
+                        voiceOnTouchStop()//Do Something
+                        Log.e("qj", "ACTION_CANCEL")
                     }
                 }
-                return v?.onTouchEvent(event) ?: true
+                return true
             }
         })
 
@@ -117,18 +123,26 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
 //        val id = args.qsId
         var id = ""
         var signBean: SignBean? = null
+        var autoSave: Boolean = false
         var filePath: String = ""
         arguments?.let {
             id = it.getString("QsId", "")
             filePath = it.getString("filePath", "")
             try {
                 signBean = it.getParcelable("SignBean")
+                autoSave = it.getBoolean("AutoSave")
             } catch (e: java.lang.Exception) {
             }
         }
 
         if (id == null || id.isEmpty()) {
             viewModel.initNewData(signBean, filePath)
+            //增加监听，联动列表自动保存
+            viewModel.liveDataRightTypeList.observe(viewLifecycleOwner) {
+                if (autoSave) {
+                    viewModel.saveData()
+                }
+            }
         } else {
             viewModel.initData(id)
         }
@@ -288,6 +302,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
 
                     }
                 }
+
                 else -> {}
             }
         }
@@ -299,6 +314,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     fun voiceOnTouchStop() {
+        Log.e("qj", "voiceOnTouchStop====${Constant.IS_VIDEO_SPEED}")
         if (Constant.IS_VIDEO_SPEED) {
             viewModel.stopSoundMeter()
         }
