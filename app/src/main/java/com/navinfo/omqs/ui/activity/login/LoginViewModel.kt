@@ -228,7 +228,7 @@ class LoginViewModel @Inject constructor(
             .name("OMQS.realm")
             .encryptionKey(password)
 //            .modules(Realm.getDefaultModule(), MyRealmModule())
-            .schemaVersion(1)
+            .schemaVersion(2)
             .build()
         Realm.setDefaultConfiguration(config)
         // 拷贝配置文件到用户目录下
