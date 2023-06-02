@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.map.source.MapLifeNiLocationTileSource
 import com.navinfo.collect.library.map.source.NavinfoMultiMapFileTileSource
+import com.navinfo.collect.library.map.source.OMDBReferenceTileSource
 import com.navinfo.collect.library.map.source.OMDBTileSource
 import com.navinfo.collect.library.system.Constant
 import okhttp3.Cache
@@ -45,9 +46,12 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePa
      * 显示待测评OMDB数据的图层
      * */
     private lateinit var omdbVectorTileLayer: VectorTileLayer
+    private lateinit var omdbReferenceTileLayer: VectorTileLayer
     private lateinit var omdbLabelLayer: LabelLayer
+    private lateinit var omdbReferenceLabelLayer: LabelLayer
 
     private val omdbTileSource by lazy { OMDBTileSource() }
+    private val omdbReferenceTileSource by lazy { OMDBReferenceTileSource() }
 
     init {
         initMap()
@@ -99,6 +103,7 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePa
     }
 
     private fun initOMDBVectorTileLayer() {
+        // 初始化OMDB相关图层
         omdbVectorTileLayer = VectorTileLayer(mMapView.vtmMap, omdbTileSource)
         omdbLabelLayer = LabelLayer(mMapView.vtmMap, omdbVectorTileLayer, LabelTileLoaderHook(), Constant.OMDB_MIN_ZOOM)
         if(omdbVectorTileLayer!=null){
@@ -106,6 +111,16 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePa
         }
         if(omdbLabelLayer!=null){
             addLayer(omdbLabelLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
+        }
+
+        // 初始化OMDB参考相关图层
+        omdbReferenceTileLayer = VectorTileLayer(mMapView.vtmMap, omdbReferenceTileSource)
+        omdbReferenceLabelLayer = LabelLayer(mMapView.vtmMap, omdbReferenceTileLayer, LabelTileLoaderHook(), Constant.OMDB_MIN_ZOOM)
+        if(omdbReferenceTileLayer!=null){
+            addLayer(omdbReferenceTileLayer,NIMapView.LAYER_GROUPS.VECTOR_TILE)
+        }
+        if(omdbReferenceLabelLayer!=null){
+            addLayer(omdbReferenceLabelLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
         }
     }
 
