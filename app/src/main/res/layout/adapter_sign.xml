@@ -1,17 +1,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="193dp"
+    android:layout_width="wrap_content"
     android:layout_height="78dp"
-    android:background="@drawable/bg_sign"
     tools:context="com.navinfo.omqs.ui.activity.map.SignAdapter">
 
     <ImageView
+        android:id="@+id/sign_main_bg"
+        android:layout_width="193dp"
+        android:layout_height="78dp"
+        android:background="@drawable/bg_sign" />
+
+    <ImageView
         android:id="@+id/sign_main_icon_bg"
-        android:layout_marginLeft="19dp"
-        android:layout_marginTop="4dp"
         android:layout_width="40dp"
-        android:layout_height="40dp"/>
+        android:layout_height="40dp"
+        android:layout_marginLeft="19dp"
+        android:layout_marginTop="4dp" />
 
     <TextView
         android:id="@+id/sign_main_icon"
@@ -40,11 +45,21 @@
         android:id="@+id/sign_bottom_right_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="其他信息"
         android:layout_alignTop="@id/sign_bottom_text"
-        android:textColor="@color/white"
         android:layout_alignParentRight="true"
         android:layout_marginRight="15dp"
-        android:textSize="14sp"/>
+        android:gravity="center"
+        android:text="其他信息"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+
+    <ImageView
+        android:id="@+id/sign_main_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/sign_main_bg"
+        android:layout_marginLeft="2dp"
+        android:layout_toRightOf="@id/sign_main_bg"
+        android:background="@drawable/icon_sign_info"
+        android:visibility="gone" />
 </RelativeLayout>

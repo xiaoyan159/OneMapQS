@@ -3,7 +3,6 @@ package com.navinfo.omqs.ui.activity.map
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Color
 import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
@@ -16,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupWindow
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.Group
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -275,15 +275,17 @@ class MainViewModel @Inject constructor(
                         }
                     }
                 }
+                liveDataTopSignList.postValue(topSignList.distinctBy { it.elementCode })
+                liveDataSignList.postValue(signList.distinctBy { it.elementCode })
+                val speechText = SignUtil.getRoadSpeechText(topSignList)
+                withContext(Dispatchers.Main) {
+                    speakMode?.speakText(speechText)
+                }
+                Log.e("jingo", "自动捕捉数据 共${signList.size}条")
+            }else{
+                mapController.lineHandler.removeLine()
+            }
 
-            }
-            liveDataTopSignList.postValue(topSignList.distinctBy { it.elementCode })
-            liveDataSignList.postValue(signList.distinctBy { it.elementCode })
-            val speechText = SignUtil.getRoadSpeechText(topSignList)
-            withContext(Dispatchers.Main) {
-                speakMode?.speakText(speechText)
-            }
-            Log.e("jingo", "自动捕捉数据 共${signList.size}条")
         }
     }
 
@@ -445,27 +447,11 @@ class MainViewModel @Inject constructor(
     /**
      * 处理页面调转
      */
-    fun navigation(activity: MainActivity, list: List<String>) {
+    fun navigationRightFragment(activity: MainActivity, list: List<String>) {
         //获取右侧fragment容器
         val naviController = activity.findNavController(R.id.main_activity_right_fragment)
 
         naviController.currentDestination?.let { navDestination ->
-//            when (val fragment =
-//                activity.supportFragmentManager.findFragmentById(navDestination.id)) {
-//                //判断右侧的fragment是不是质检数据
-////                is EvaluationResultFragment -> {
-////                    val viewModelFragment =
-////                        ViewModelProvider(fragment)[EvaluationResultViewModel::class.java]
-////                    viewModelFragment.notifyData(list)
-////                }
-//                is EmptyFragment -> {
-//                    if (list.size == 1) {
-//                        val bundle = Bundle()
-//                        bundle.putString("QsId", list[0])
-//                        naviController.navigate(R.id.EvaluationResultFragment, bundle)
-//                    }
-//                }
-//            }
             when (navDestination.id) {
                 R.id.RightEmptyFragment -> {
                     if (list.size == 1) {

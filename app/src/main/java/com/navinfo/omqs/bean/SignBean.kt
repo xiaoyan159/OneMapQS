@@ -9,7 +9,7 @@ data class SignBean(
     var iconId: Int = 0,
     //定位点到目标距离
     val distance: Int = 0,
-    //图表中的问题
+    //左上图标中的文字
     val iconText: String = "",
     //绑定的要素id
     val elementId: String = "",
@@ -20,7 +20,11 @@ data class SignBean(
     //名称
     val name: String,
     //底部右侧文字
-    val bottomRightText: String,
+    val bottomRightText: String = "",
     //要素code类型
-    val elementCode: Int
+    val elementCode: Int,
+    //需要展示更多的内容
+    val moreText: String = "",
+    //左上角信息
+    val topRightText: String = ""
 ) : Parcelable
