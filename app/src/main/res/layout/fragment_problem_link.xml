@@ -1,51 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="@dimen/fragment_problem_link_width"
     android:layout_height="match_parent"
-    android:gravity="right|center_vertical"
-    android:orientation="horizontal"
-    android:paddingTop="@dimen/fragment_margin_top"
-    android:paddingLeft="@dimen/fragment_margin_left"
+    android:background="@drawable/shape_middle_fragment_bg"
     tools:context="com.navinfo.omqs.ui.fragment.evaluationresult.ProblemLinkFragment">
 
-    <ImageView
-        android:visibility="gone"
-        android:id="@+id/link_drawer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/progress_bg"
-        android:paddingLeft="10dp"
-        android:paddingTop="30dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="30dp"
-        android:src="@drawable/selector_btn_back_xml" />
-
-    <LinearLayout
-        android:id="@+id/group"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/link_right_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/link_middle_recyclerview"
-                android:layout_width="0dp"
-                android:visibility="invisible"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:background="@color/white" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/link_right_recyclerview"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="4"
-                android:background="@color/white" />
-        </LinearLayout>
-    </LinearLayout>
-</LinearLayout>
+        android:layout_height="match_parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
