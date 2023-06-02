@@ -223,7 +223,7 @@ class MainViewModel @Inject constructor(
 
                 val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
 
-                if(linkIdCache!=linkId){
+                if (linkIdCache != linkId) {
 
                     Log.e("jingo", "捕捉到的linkid $linkId ${link.geometry}")
                     mapController.lineHandler.showLine(link.geometry)
@@ -257,32 +257,32 @@ class MainViewModel @Inject constructor(
 
                         }
 
-                    val realm = Realm.getDefaultInstance()
-                    val entity = realm.where(RenderEntity::class.java)
-                        .equalTo("table", "OMDB_RESTRICTION")
-                        .and()
-                        .equalTo(
-                            "properties['linkIn']",
-                            it
-                        ).findFirst()
-                    if (entity != null) {
-                        val outLink = entity.properties["linkOut"]
-                        val linkOutEntity = realm.where(RenderEntity::class.java)
-                            .equalTo("table", "OMDB_RD_LINK")
+                        val realm = Realm.getDefaultInstance()
+                        val entity = realm.where(RenderEntity::class.java)
+                            .equalTo("table", "OMDB_RESTRICTION")
                             .and()
                             .equalTo(
-                                "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
-                                outLink
+                                "properties['linkIn']",
+                                it
                             ).findFirst()
-                        if (linkOutEntity != null) {
-                            mapController.lineHandler.linksLayer.addLine(
-                                linkOutEntity.geometry,
-                                0x7DFF0000
-                            )
-                            Log.e("jingo", "捕捉到的linkid $outLink ${linkOutEntity.geometry}")
+                        if (entity != null) {
+                            val outLink = entity.properties["linkOut"]
+                            val linkOutEntity = realm.where(RenderEntity::class.java)
+                                .equalTo("table", "OMDB_RD_LINK")
+                                .and()
+                                .equalTo(
+                                    "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
+                                    outLink
+                                ).findFirst()
+                            if (linkOutEntity != null) {
+                                mapController.lineHandler.linksLayer.addLine(
+                                    linkOutEntity.geometry,
+                                    0x7DFF0000
+                                )
+                                Log.e("jingo", "捕捉到的linkid $outLink ${linkOutEntity.geometry}")
+                            }
                         }
                     }
-                }
 
                     liveDataTopSignList.postValue(topSignList.distinctBy { it.elementCode })
                     liveDataSignList.postValue(signList.distinctBy { it.elementCode })
@@ -292,9 +292,10 @@ class MainViewModel @Inject constructor(
                     }
                     linkIdCache = linkId ?: ""
                     Log.e("jingo", "自动捕捉数据 共${signList.size}条")
-                }else{
+                } else {
                     mapController.lineHandler.removeLine()
                 }
+            }
         }
     }
 
@@ -479,7 +480,7 @@ class MainViewModel @Inject constructor(
     fun setSelectRoad(select: Boolean) {
         bSelectRoad = select
         //去掉缓存
-        linkIdCache =  ""
+        linkIdCache = ""
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mapController.lineHandler.removeLine()
             liveDataSignList.value = mutableListOf()
