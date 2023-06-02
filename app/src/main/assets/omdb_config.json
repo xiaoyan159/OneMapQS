@@ -20,6 +20,19 @@
 			"code": 2010,
 			"name": "道路方向"
 		},
+		"2013": {
+			"table": "OMDB_LANE_MARK_BOUNDARYTYPE",
+			"code": 2013,
+			"name": "车道边界类型",
+			"transformer": [
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "unpackingLaneBoundary()"
+				}
+			]
+		},
 		"2019": {
 			"table": "OMDB_LINK_SPEEDLIMIT",
 			"code": 2019,
@@ -54,6 +67,11 @@
 			"table": "OMDB_LANE_NUM",
 			"code": 2041,
 			"name": "车道数"
+		},
+		"2083":{
+			"table": "OMDB_RDBOUND_BOUNDARYTYPE",
+			"code": 2083,
+			"name": "道路边界类型"
 		},
 		"2201":{
 			"table": "OMDB_BRIDGE",
@@ -131,7 +149,7 @@
 					"k": "geometry",
 					"v": "~",
 					"klib": "geometry",
-					"vlib": "translateRightWithAngle()"
+					"vlib": "generateRestrictionRerference()"
 				}
 			]
 		},
