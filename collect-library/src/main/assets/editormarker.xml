@@ -1743,19 +1743,19 @@
                         <m v="2">
                             <m k="markColor">
                                 <m v="0|1">
-                                    <line stroke="#ffffff" use="boundaryType" dasharray="3,13"/>
+                                    <line stroke="#ffffff" stipple-stroke="#000000" stipple="5" use="boundaryType" dasharray="13,135"/>
                                 </m>
                                 <m v="2">
-                                    <line stroke="#eccc68" use="boundaryType" dasharray="3,3"/>
+                                    <line stroke="#eccc68" stipple-stroke="#ffffff" stipple="5" use="boundaryType" dasharray="13,135"/>
                                 </m>
                                 <m v="6">
-                                    <line stroke="#0000ff" use="boundaryType" dasharray="3,3"/>
+                                    <line stroke="#0000ff" stipple-stroke="#ffffff" stipple="5" use="boundaryType" dasharray="13,135"/>
                                 </m>
                                 <m v="7">
-                                    <line stroke="#00ff00" use="boundaryType" dasharray="3,3"/>
+                                    <line stroke="#00ff00" stipple-stroke="#ffffff" stipple="5" use="boundaryType" dasharray="13,135"/>
                                 </m>
                                 <m v="9">
-                                    <line stroke="#8e44ad" use="boundaryType" dasharray="3,3"/>
+                                    <line stroke="#8e44ad" stipple-stroke="#ffffff" stipple="5" use="boundaryType" dasharray="13,135"/>
                                 </m>
                             </m>
                         </m>
