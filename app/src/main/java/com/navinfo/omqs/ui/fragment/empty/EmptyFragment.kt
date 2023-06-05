@@ -32,6 +32,7 @@ class EmptyFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         val currentDestination = findNavController().currentDestination
+        //有右侧面板的时候
         if (currentDestination?.label == "右侧空页面") {
             currentDestinationLabel = "右侧空页面"
             (activity as MainActivity).setRightSwitchButton(View.GONE)
@@ -40,6 +41,7 @@ class EmptyFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
+        //没有有右侧面板的时候
         if (currentDestinationLabel == "右侧空页面") {
             (activity as MainActivity).setRightSwitchButton(View.VISIBLE)
         }

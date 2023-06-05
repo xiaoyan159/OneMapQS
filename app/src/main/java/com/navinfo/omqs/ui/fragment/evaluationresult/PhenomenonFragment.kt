@@ -139,10 +139,6 @@ class PhenomenonFragment :
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        Log.e("jingo", "PhenomenonFragment onDestroyView ${hashCode()}")
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
 }

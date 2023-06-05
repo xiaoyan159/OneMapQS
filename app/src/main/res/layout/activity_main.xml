@@ -76,8 +76,8 @@
                 android:id="@+id/main_activity_sign_recyclerview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxHeight="350dp"
                 android:layout_marginTop="10dp"
+                android:maxHeight="350dp"
                 app:layout_constraintLeft_toLeftOf="@id/main_activity_person_center"
                 app:layout_constraintTop_toBottomOf="@id/main_activity_person_center" />
 
@@ -175,10 +175,10 @@
                 android:drawableLeft="@drawable/icon_main_geometry"
                 android:elevation="2dp"
                 android:gravity="center"
+                android:onClick="@{()->mainActivity.jumpPosition()}"
                 android:paddingLeft="9dp"
                 android:text="经纬度:116.99388424,38.8403844"
                 android:textSize="10sp"
-                android:onClick="@{()->mainActivity.jumpPosition()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toLeftOf="@id/main_activity_middle_fragment" />
 
@@ -233,7 +233,6 @@
                 app:layout_constraintBottom_toTopOf="@id/main_activity_add_new"
                 app:layout_constraintRight_toRightOf="@id/main_activity_add_new" />
 
-
             <ImageButton
                 android:id="@+id/main_activity_select_line"
                 style="@style/zoom_btns_style"
@@ -243,6 +242,12 @@
                 android:src="@drawable/selector_road_line_src"
                 app:layout_constraintBottom_toTopOf="@id/main_activity_voice"
                 app:layout_constraintRight_toRightOf="@id/main_activity_voice" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/main_activity_right_visibility_buttons_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="main_activity_select_line,main_activity_voice,main_activity_add_new" />
 
             <fragment
                 android:id="@+id/main_activity_middle_fragment"

@@ -16,6 +16,8 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -49,7 +51,9 @@ class MainActivity : BaseActivity() {
 
     var switchFragment = false
 
-
+    /**
+     * 检测是否含有tts插件
+     */
     private val someActivityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -137,7 +141,6 @@ class MainActivity : BaseActivity() {
         binding.mainActivityVoice.setOnTouchListener(object : View.OnTouchListener {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                Log.e("qj", event?.action.toString())
                 when (event?.action) {
                     MotionEvent.ACTION_DOWN -> {
                         voiceOnTouchStart()//Do Something
@@ -148,14 +151,13 @@ class MainActivity : BaseActivity() {
                         Log.e("qj", "voiceOnTouchStop")
                     }
                 }
-
                 return v?.onTouchEvent(event) ?: true
             }
         })
 
         viewModel.liveDataQsRecordIdList.observe(this) {
             //处理页面跳转
-            viewModel.navigation(this, it)
+            viewModel.navigationRightFragment(this, it)
         }
 
         viewModel.liveDataMenuState.observe(this) {
@@ -165,7 +167,6 @@ class MainActivity : BaseActivity() {
             } else {
                 binding.mainActivityMenuGroup.visibility = View.INVISIBLE
             }
-
         }
 
         //道路属性面板
@@ -215,6 +216,16 @@ class MainActivity : BaseActivity() {
                 viewModel.refreshOMDBLayer(it)
             }
         }
+
+        findNavController(R.id.main_activity_right_fragment).addOnDestinationChangedListener { controller, destination, arguments ->
+            if (destination.id == R.id.RightEmptyFragment) {
+                binding.mainActivityRightVisibilityButtonsGroup.visibility = View.VISIBLE
+            } else {
+                binding.mainActivityRightVisibilityButtonsGroup.visibility = View.GONE
+                viewModel.setSelectRoad(false)
+                binding.mainActivitySelectLine.isSelected = false
+            }
+        }
     }
 
     //根据输入的经纬度跳转坐标
@@ -236,7 +247,7 @@ class MainActivity : BaseActivity() {
                         val x = parts[0].toDouble()
                         val y = parts[0].toDouble()
                         mapController.animationHandler.animationByLatLon(y, x)
-                    }else{
+                    } else {
                         Toast.makeText(this, "输入格式不正确", Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {

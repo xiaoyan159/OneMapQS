@@ -6,8 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentProblemLinkBinding
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
@@ -28,7 +30,6 @@ class ProblemLinkFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentProblemLinkBinding.inflate(inflater, container, false)
-        Log.e("jingo", "linkFragment onCreateView ${hashCode()}")
         return binding.root
     }
 
@@ -43,6 +44,9 @@ class ProblemLinkFragment : BaseFragment() {
         binding.linkRightRecyclerview.layoutManager = rightLayoutManager
         val rightAdapter = RightGroupHeaderAdapter { _, bean ->
             viewModel.setProblemLinkMiddleBean(bean)
+            if (activity != null) {
+                requireActivity().findNavController(R.id.main_activity_middle_fragment).navigateUp()
+            }
         }
         binding.linkRightRecyclerview.adapter = rightAdapter
         //右侧菜单增加组标题
@@ -55,6 +59,7 @@ class ProblemLinkFragment : BaseFragment() {
         }
         //右侧菜单查询数据监听
         viewModel.liveDataRightTypeList.observe(viewLifecycleOwner) {
+            rightAdapter.setSelectTitle(viewModel.liveDataQsRecordBean.value!!.cause)
             rightAdapter.refreshData(it)
         }
 
@@ -82,10 +87,5 @@ class ProblemLinkFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        Log.e("jingo", "linkFragment onDestroyView ${hashCode()}")
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 }
