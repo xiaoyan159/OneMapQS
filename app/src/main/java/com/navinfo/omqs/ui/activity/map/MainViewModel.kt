@@ -292,9 +292,10 @@ class MainViewModel @Inject constructor(
                     }
                     linkIdCache = linkId ?: ""
                     Log.e("jingo", "自动捕捉数据 共${signList.size}条")
-                } else {
-                    mapController.lineHandler.removeLine()
                 }
+            }else{
+                mapController.lineHandler.removeLine()
+                linkIdCache = ""
             }
         }
     }

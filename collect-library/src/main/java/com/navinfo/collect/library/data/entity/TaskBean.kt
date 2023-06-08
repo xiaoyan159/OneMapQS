@@ -62,6 +62,8 @@ open class TaskBean @JvmOverloads constructor(
 
     @Ignore
     var message: String = "",
+    @Ignore
+    var errMsg: String = "",
     var color: Int = 0xFF00AA
 ) : RealmObject() {
     fun getDownLoadUrl(): String {

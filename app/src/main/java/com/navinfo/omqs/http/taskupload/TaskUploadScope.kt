@@ -2,6 +2,7 @@ package com.navinfo.omqs.http.taskupload
 
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +10,8 @@ import androidx.lifecycle.Observer
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.omqs.bean.EvaluationInfo
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.omqs.bean.SysUserBean
+import com.navinfo.omqs.http.DefaultResponse
 import com.navinfo.omqs.tools.FileManager.Companion.FileUploadStatus
 import io.realm.Realm
 import kotlinx.coroutines.*
@@ -68,6 +71,7 @@ class TaskUploadScope(
     private fun change(status: Int, message: String = "") {
         if (taskBean.syncStatus != status) {
             taskBean.syncStatus = status
+            taskBean.errMsg = message
             uploadData.postValue(taskBean)
             //同步中不进行状态记录,只做界面变更显示
             if(status!=FileUploadStatus.UPLOADING){
@@ -121,15 +125,15 @@ class TaskUploadScope(
                 if (objects != null&&objects.size>0) {
                     val copyList = realm.copyFromRealm(objects)
                     copyList.forEach {
-                        var problemType = "0"
+                        var problemType = 0
                         if(it.problemType=="错误"){
-                            problemType = "0"
+                            problemType = 0
                         }else if(it.problemType=="多余"){
-                            problemType = "1"
+                            problemType = 1
                         }else if(it.problemType=="遗漏"){
-                            problemType = "2"
+                            problemType = 2
                         }
-                        var evaluationWay = "2";
+                        var evaluationWay = 2
 /*                        if(it.evaluationWay=="生产测评"){
                             evaluationWay = "1"
                         }else if(it.evaluationWay=="现场测评"){
@@ -170,14 +174,14 @@ class TaskUploadScope(
                         trackPhotoNumber = "",
                         markGeometry = "",
                         featureName = "",
-                        problemType = "",
+                        problemType = 0,
                         problemPhenomenon = "",
                         problemDesc = "",
                         problemLink = "",
                         problemReason = "",
                         evaluatorName = "",
                         evaluationDate = "",
-                        evaluationWay = "",
+                        evaluationWay = 2,
                         roadClassfcation = "",
                         roadFunctionGrade = "",
                         noEvaluationreason = "",
@@ -193,10 +197,13 @@ class TaskUploadScope(
                 val result = uploadManager.netApi.postRequest(bodyList)// .enqueue(object :
 //                        Callback<ResponseBody> {
                 if (result.isSuccessful) {
-                    if (result.code() == 200) {
-//                        taskBean.syncStatus = FileUploadStatus.DONE
-                        // handle the response
-                        change(FileUploadStatus.DONE)
+                    if (result.code() == 200&&result.body()!=null) {
+                        val defaultUserResponse = result.body() as DefaultResponse<*>
+                        if(defaultUserResponse.success){
+                            change(FileUploadStatus.DONE)
+                        }else{
+                            change(FileUploadStatus.ERROR,"${defaultUserResponse.msg}")
+                        }
                     } else {
                         // handle the failure
                         change(FileUploadStatus.ERROR)

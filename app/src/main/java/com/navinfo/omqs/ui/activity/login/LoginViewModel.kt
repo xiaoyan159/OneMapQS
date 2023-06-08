@@ -12,7 +12,7 @@ import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.LoginUserBean
 import com.navinfo.omqs.bean.SysUserBean
 import com.navinfo.omqs.db.RoomAppDatabase
-import com.navinfo.omqs.http.DefaultUserResponse
+import com.navinfo.omqs.http.DefaultResponse
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager
@@ -119,7 +119,7 @@ class LoginViewModel @Inject constructor(
             is NetResult.Success<*> ->{
                 if (result.data!=null) {
                     try {
-                        val defaultUserResponse = result.data as DefaultUserResponse<SysUserBean>
+                        val defaultUserResponse = result.data as DefaultResponse<SysUserBean>
                         if(defaultUserResponse.success){
                             if(defaultUserResponse.obj==null|| defaultUserResponse.obj!!.userCode==null){
                                 withContext(Dispatchers.Main) {

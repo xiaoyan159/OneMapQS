@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.R
@@ -56,7 +57,7 @@ class TaskListAdapter(
             val taskBean = data[it.tag as Int]
             Log.e("jingo", "开始上传 ${taskBean.syncStatus}")
             when (taskBean.syncStatus) {
-                FileUploadStatus.NONE, FileUploadStatus.ERROR, FileUploadStatus.WAITING -> {
+                FileUploadStatus.NONE, FileUploadStatus.UPLOADING,FileUploadStatus.ERROR, FileUploadStatus.WAITING -> {
                     uploadManager.start(taskBean.id)
                 }
             }
@@ -250,6 +251,10 @@ class TaskListAdapter(
                     }
                 } else {
                     binding.taskProgressText.text = "0%"
+                }
+                val errMsg = taskBean.errMsg
+                if(errMsg!=null&&errMsg.isNotEmpty()){
+                    Toast.makeText(binding.taskProgressText.context,errMsg,Toast.LENGTH_LONG)
                 }
             }
             FileDownloadStatus.IMPORT -> {

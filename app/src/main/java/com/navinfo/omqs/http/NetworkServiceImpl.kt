@@ -38,7 +38,7 @@ class NetworkServiceImpl @Inject constructor(
             }
         }
 
-    override suspend fun getTaskList(evaluatorNo: String): NetResult<DefaultTaskResponse<List<TaskBean>>> =
+    override suspend fun getTaskList(evaluatorNo: String): NetResult<DefaultResponse<List<TaskBean>>> =
         //在IO线程中运行
         withContext(Dispatchers.IO) {
             return@withContext try {
@@ -57,7 +57,7 @@ class NetworkServiceImpl @Inject constructor(
             }
         }
 
-    override suspend fun loginUser(loginUserBean: LoginUserBean): NetResult<DefaultUserResponse<SysUserBean>> =
+    override suspend fun loginUser(loginUserBean: LoginUserBean): NetResult<DefaultResponse<SysUserBean>> =
         //在IO线程中运行
         withContext(Dispatchers.IO) {
             return@withContext try {
