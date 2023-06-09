@@ -33,7 +33,6 @@
         android:id="@+id/console_fragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginRight="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/console_left_guideline"
@@ -42,6 +41,7 @@
     <ImageView
         android:id="@+id/console_layer_setting_icon_bg"
         style="@style/console_off_right_bottom_icon"
+        app:layout_constraintVertical_chainStyle="spread_inside"
         app:layout_constraintBottom_toTopOf="@id/console_offline_map_icon_bg"
         app:layout_constraintLeft_toLeftOf="@id/console_left_guideline"
         app:layout_constraintRight_toLeftOf="@id/console_camera_icon_bg"
@@ -211,11 +211,10 @@
         app:layout_constraintRight_toRightOf="@id/console_location_icon_bg"
         app:layout_constraintTop_toTopOf="@id/console_location_icon_bg" />
 
-
     <ImageView
         android:id="@+id/console_task_icon_bg"
         style="@style/console_off_right_bottom_icon"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="60dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@id/console_layer_setting_icon_bg"
         app:layout_constraintRight_toRightOf="@id/console_layer_setting_icon_bg"

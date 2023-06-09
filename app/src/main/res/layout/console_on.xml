@@ -466,8 +466,10 @@
         android:id="@+id/console_on_track_icon_bg"
         style="@style/console_off_right_bottom_icon"
         app:layout_constraintBottom_toBottomOf="@id/console_track_bg"
-        app:layout_constraintLeft_toLeftOf="@id/console_on_camera_icon_bg"
-        app:layout_constraintTop_toTopOf="@id/console_track_bg" />
+        app:layout_constraintLeft_toLeftOf="@id/console_track_bg"
+        app:layout_constraintRight_toLeftOf="@id/console_track_text"
+        app:layout_constraintTop_toTopOf="@id/console_track_bg"
+        app:layout_constraintVertical_chainStyle="spread" />
 
     <ImageView
         android:id="@+id/console_track_icon"
@@ -480,10 +482,9 @@
         app:layout_constraintTop_toTopOf="@id/console_on_track_icon_bg" />
 
     <TextView
-        android:layout_width="0dp"
+        android:id="@+id/console_track_text"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:gravity="center"
         android:text="轨迹回放"
         android:textColor="@color/white"
         android:textSize="26sp"
