@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/ConsoleEmptyFragment">
+
+    <fragment
+        android:id="@+id/ConsoleEmptyFragment"
+        android:name="com.navinfo.omqs.ui.fragment.empty.EmptyFragment"
+        android:label="中控空页面"
+        tools:layout="@layout/fragment_empty"></fragment>
+    <fragment
+        android:id="@+id/OfflineMapFragment"
+        android:name="com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapFragment"
+        android:label="离线地图"
+        tools:layout="@layout/fragment_offline_map">
+    </fragment>
+</navigation>

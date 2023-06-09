@@ -14,6 +14,7 @@ import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityLoginBinding
 import com.navinfo.omqs.ui.activity.CheckPermissionsActivity
 import com.navinfo.omqs.ui.activity.PermissionsActivity
+import com.navinfo.omqs.ui.activity.console.ConsoleActivity
 import com.navinfo.omqs.ui.activity.map.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -89,7 +90,7 @@ class LoginActivity : CheckPermissionsActivity() {
             LoginStatus.LOGIN_STATUS_SUCCESS -> {
                 loginDialog?.dismiss()
                 loginDialog = null
-                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                val intent = Intent(this@LoginActivity, ConsoleActivity::class.java)
                 startActivity(intent)
                 finish()
             }
