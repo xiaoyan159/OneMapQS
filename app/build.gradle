@@ -6,6 +6,12 @@ plugins {
     id 'kotlin-parcelize' // 序列化
     id 'androidx.navigation.safeargs.kotlin'//Safe Args传递数据
 }
+
+//定义时间
+def releaseTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
+}
+
 android {
     namespace 'com.navinfo.omqs'
     compileSdk 33
