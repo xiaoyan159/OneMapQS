@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/console_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activity.console.ConsoleActivity">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/console_left_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.33" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/console_right_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.66" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/console_horizontal_center_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.51" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/console_horizontal_top_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.18" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="快捷控制"
+        android:textColor="@color/white"
+        android:textSize="19sp"
+        app:layout_constraintBottom_toTopOf="@id/console_horizontal_top_guideline"
+        app:layout_constraintLeft_toLeftOf="@id/console_map_bg" />
+
+    <View
+        android:id="@+id/console_map_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/shape_rect_black_8dp_bg"
+        app:layout_constraintBottom_toTopOf="@id/console_horizontal_center_guideline"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@id/console_left_guideline"
+        app:layout_constraintTop_toBottomOf="@id/console_horizontal_top_guideline"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <View
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/shape_oval_gray_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_map_bg"
+        app:layout_constraintTop_toTopOf="@id/console_map_bg" />
+
+    <TextView
+        android:id="@+id/console_map_title_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:text="地图"
+        android:textColor="@color/white"
+        android:textSize="31sp"
+        app:layout_constraintBottom_toBottomOf="@id/console_map_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_map_bg"
+        app:layout_constraintTop_toTopOf="@id/console_map_bg"
+        app:layout_constraintVertical_bias="0.40" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="The map home page"
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        app:layout_constraintLeft_toLeftOf="@id/console_map_title_1"
+        app:layout_constraintTop_toBottomOf="@id/console_map_title_1" />
+
+    <ImageView
+        android:id="@+id/console_on_map_icon_bg"
+        style="@style/console_off_right_bottom_icon"
+        app:layout_constraintBottom_toBottomOf="@id/console_map_bg"
+        app:layout_constraintHorizontal_bias="0.85"
+        app:layout_constraintLeft_toLeftOf="@id/console_map_bg"
+        app:layout_constraintRight_toRightOf="@id/console_map_bg"
+        app:layout_constraintTop_toTopOf="@id/console_map_bg" />
+
+    <ImageView
+        android:id="@+id/console_map_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/icon_console_map"
+        app:layout_constraintBottom_toBottomOf="@id/console_on_map_icon_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_on_map_icon_bg"
+        app:layout_constraintRight_toRightOf="@id/console_on_map_icon_bg"
+        app:layout_constraintTop_toTopOf="@id/console_on_map_icon_bg" />
+
+    <View
+        android:id="@+id/console_task_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/shape_rect_black_8dp_bg"
+        app:layout_constraintBottom_toTopOf="@id/console_offline_map_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_map_bg"
+        app:layout_constraintRight_toLeftOf="@id/console_evaluation_bg"
+        app:layout_constraintTop_toBottomOf="@id/console_horizontal_center_guideline" />
+
+    <ImageView
+        android:id="@+id/console_task_icon"
+        style="@style/console_on_left_bottom_icon"
+        android:src="@drawable/icon_console_task"
+        app:layout_constraintBottom_toBottomOf="@id/console_task_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_task_bg"
+        app:layout_constraintTop_toTopOf="@id/console_task_bg" />
+
+    <TextView
+        style="@style/console_on_left_bottom_text"
+        android:text="测评任务"
+        app:layout_constraintBottom_toBottomOf="@id/console_task_bg"
+        app:layout_constraintRight_toRightOf="@id/console_task_bg"
+        app:layout_constraintTop_toTopOf="@id/console_task_bg" />
+
+    <View
+        android:id="@+id/console_evaluation_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="5dp"
+        android:background="@drawable/shape_rect_black_8dp_bg"
+        app:layout_constraintBottom_toBottomOf="@id/console_task_bg"
+        app:layout_constraintLeft_toRightOf="@id/console_task_bg"
+        app:layout_constraintRight_toRightOf="@id/console_map_bg"
+        app:layout_constraintTop_toTopOf="@id/console_task_bg" />
+
+    <ImageView
+        android:id="@+id/console_evaluation_icon"
+        style="@style/console_on_left_bottom_icon"
+        android:src="@drawable/icon_console_evaluation"
+        app:layout_constraintBottom_toBottomOf="@id/console_evaluation_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_evaluation_bg"
+        app:layout_constraintTop_toTopOf="@id/console_evaluation_bg" />
+
+    <TextView
+        style="@style/console_on_left_bottom_text"
+        android:text="测评结果"
+        app:layout_constraintBottom_toBottomOf="@id/console_evaluation_bg"
+        app:layout_constraintRight_toRightOf="@id/console_evaluation_bg"
+        app:layout_constraintTop_toTopOf="@id/console_evaluation_bg" />
+
+    <View
+        android:id="@+id/console_offline_map_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/shape_rect_black_8dp_bg"
+        app:layout_constraintBottom_toTopOf="@id/console_layer_setting_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_task_bg"
+        app:layout_constraintRight_toRightOf="@id/console_task_bg"
+        app:layout_constraintTop_toBottomOf="@id/console_task_bg" />
+
+    <ImageView
+        android:id="@+id/console_offline_map_icon"
+        style="@style/console_on_left_bottom_icon"
+        android:src="@drawable/icon_console_offline_map"
+        app:layout_constraintBottom_toBottomOf="@id/console_offline_map_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_offline_map_bg"
+        app:layout_constraintTop_toTopOf="@id/console_offline_map_bg" />
+
+    <TextView
+        style="@style/console_on_left_bottom_text"
+        android:text="离线地图"
+        app:layout_constraintBottom_toBottomOf="@id/console_offline_map_bg"
+        app:layout_constraintRight_toRightOf="@id/console_offline_map_bg"
+        app:layout_constraintTop_toTopOf="@id/console_offline_map_bg" />
+
+    <View
+        android:id="@+id/console_route_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/shape_rect_black_8dp_bg"
+        app:layout_constraintBottom_toBottomOf="@id/console_offline_map_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_evaluation_bg"
+        app:layout_constraintRight_toRightOf="@id/console_evaluation_bg"
+        app:layout_constraintTop_toTopOf="@id/console_offline_map_bg" />
+
+    <ImageView
+        android:id="@+id/console_route_icon"
+        style="@style/console_on_left_bottom_icon"
+        android:src="@drawable/icon_console_route"
+        app:layout_constraintBottom_toBottomOf="@id/console_route_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_route_bg"
+        app:layout_constraintTop_toTopOf="@id/console_route_bg" />
+
+    <TextView
+        style="@style/console_on_left_bottom_text"
+        android:text="路径规划"
+        app:layout_constraintBottom_toBottomOf="@id/console_route_bg"
+        app:layout_constraintRight_toRightOf="@id/console_route_bg"
+        app:layout_constraintTop_toTopOf="@id/console_route_bg" />
+
+    <View
+        android:id="@+id/console_layer_setting_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="60dp"
+        android:background="@drawable/shape_rect_black_8dp_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@id/console_offline_map_bg"
+        app:layout_constraintRight_toRightOf="@id/console_offline_map_bg"
+        app:layout_constraintTop_toBottomOf="@id/console_offline_map_bg" />
+
+    <ImageView
+        android:id="@+id/console_layer_setting_icon"
+        style="@style/console_on_left_bottom_icon"
+        android:src="@drawable/icon_console_layer_setting"
+        app:layout_constraintBottom_toBottomOf="@id/console_layer_setting_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_layer_setting_bg"
+        app:layout_constraintTop_toTopOf="@id/console_layer_setting_bg" />
+
+    <TextView
+        style="@style/console_on_left_bottom_text"
+        android:text="图层设置"
+        app:layout_constraintBottom_toBottomOf="@id/console_layer_setting_bg"
+        app:layout_constraintRight_toRightOf="@id/console_layer_setting_bg"
+        app:layout_constraintTop_toTopOf="@id/console_layer_setting_bg" />
+
+    <View
+        android:id="@+id/console_personal_center_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/shape_rect_black_8dp_bg"
+        app:layout_constraintBottom_toBottomOf="@id/console_layer_setting_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_route_bg"
+        app:layout_constraintRight_toRightOf="@id/console_route_bg"
+        app:layout_constraintTop_toTopOf="@id/console_layer_setting_bg" />
+
+    <ImageView
+        android:id="@+id/console_personal_center_icon"
+        style="@style/console_on_left_bottom_icon"
+        android:src="@drawable/icon_console_personal_center"
+        app:layout_constraintBottom_toBottomOf="@id/console_personal_center_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_personal_center_bg"
+        app:layout_constraintTop_toTopOf="@id/console_personal_center_bg" />
+
+    <TextView
+        style="@style/console_on_left_bottom_text"
+        android:text="个人中心"
+        app:layout_constraintBottom_toBottomOf="@id/console_personal_center_bg"
+        app:layout_constraintRight_toRightOf="@id/console_personal_center_bg"
+        app:layout_constraintTop_toTopOf="@id/console_personal_center_bg" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="消息中心"
+        android:textColor="@color/white"
+        android:textSize="19sp"
+        app:layout_constraintBottom_toTopOf="@id/console_horizontal_top_guideline"
+        app:layout_constraintLeft_toLeftOf="@id/console_task_count_bg" />
+
+    <View
+        android:id="@+id/console_task_count_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/shape_rect_black_8dp_bg"
+        app:layout_constraintBottom_toTopOf="@id/console_evaluation_count_bg"
+        app:layout_constraintLeft_toRightOf="@id/console_left_guideline"
+        app:layout_constraintRight_toLeftOf="@id/console_right_guideline"
+        app:layout_constraintTop_toBottomOf="@id/console_horizontal_top_guideline" />
+
+    <View
+        android:id="@+id/console_task_count_icon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/shape_oval_gray_bg"
+        app:layout_constraintBottom_toBottomOf="@id/console_task_count_text_title"
+        app:layout_constraintLeft_toLeftOf="@id/console_task_count_bg"
+        app:layout_constraintTop_toTopOf="@id/console_task_count_text_title" />
+
+    <TextView
+        android:id="@+id/console_task_count_text_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="当前测评任务"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toRightOf="@id/console_task_count_icon"
+        app:layout_constraintTop_toTopOf="@id/console_task_count_bg" />
+
+    <TextView
+        android:id="@+id/console_task_count_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:text="共 387 条"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@id/console_task_count_bg"
+        app:layout_constraintRight_toRightOf="@id/console_task_count_bg" />
+
+    <View
+        android:id="@+id/console_evaluation_count_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/shape_rect_black_8dp_bg"
+        app:layout_constraintBottom_toTopOf="@id/console_horizontal_center_guideline"
+        app:layout_constraintLeft_toRightOf="@id/console_left_guideline"
+        app:layout_constraintRight_toRightOf="@id/console_task_count_bg"
+        app:layout_constraintTop_toBottomOf="@id/console_task_count_bg" />
+
+    <View
+        android:id="@+id/console_evaluation_count_icon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/shape_oval_gray_bg"
+        app:layout_constraintBottom_toBottomOf="@id/console_evaluation_count_text_title"
+        app:layout_constraintLeft_toLeftOf="@id/console_evaluation_count_bg"
+        app:layout_constraintTop_toTopOf="@id/console_evaluation_count_text_title" />
+
+    <TextView
+        android:id="@+id/console_evaluation_count_text_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="测评结果"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toRightOf="@id/console_evaluation_count_icon"
+        app:layout_constraintTop_toTopOf="@id/console_evaluation_count_bg" />
+
+    <TextView
+        android:id="@+id/console_evaluation_count_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:text="共 387 条"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@id/console_evaluation_count_bg"
+        app:layout_constraintRight_toRightOf="@id/console_evaluation_count_bg" />
+
+    <View
+        android:id="@+id/console_search_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/shape_console_search_bg"
+        app:layout_constraintBottom_toTopOf="@id/console_placeholder"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toRightOf="@id/console_right_guideline"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/console_horizontal_top_guideline" />
+
+    <androidx.constraintlayout.widget.Placeholder
+        android:id="@+id/console_placeholder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@id/console_track_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_search_bg"
+        app:layout_constraintRight_toRightOf="@id/console_search_bg"
+        app:layout_constraintTop_toBottomOf="@id/console_search_bg" />
+
+    <View
+        android:id="@+id/console_on_camera_icon_bg"
+        style="@style/console_off_right_bottom_icon"
+        app:layout_constraintBottom_toBottomOf="@id/console_placeholder"
+        app:layout_constraintLeft_toLeftOf="@id/console_placeholder"
+        app:layout_constraintRight_toLeftOf="@id/console_on_location_icon_bg"
+        app:layout_constraintTop_toTopOf="@id/console_placeholder" />
+
+    <ImageView
+        android:id="@+id/console_camera_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/icon_console_camera"
+        app:layout_constraintBottom_toBottomOf="@id/console_on_camera_icon_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_on_camera_icon_bg"
+        app:layout_constraintRight_toRightOf="@id/console_on_camera_icon_bg"
+        app:layout_constraintTop_toTopOf="@id/console_on_camera_icon_bg" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="外接相机"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toLeftOf="@id/console_on_camera_icon_bg"
+        app:layout_constraintRight_toRightOf="@id/console_on_camera_icon_bg"
+        app:layout_constraintTop_toBottomOf="@id/console_on_camera_icon_bg" />
+
+    <ImageView
+        android:id="@+id/console_on_location_icon_bg"
+        style="@style/console_off_right_bottom_icon"
+        app:layout_constraintBottom_toBottomOf="@id/console_on_camera_icon_bg"
+        app:layout_constraintLeft_toRightOf="@id/console_on_camera_icon_bg"
+        app:layout_constraintRight_toRightOf="@id/console_placeholder"
+        app:layout_constraintTop_toTopOf="@id/console_on_camera_icon_bg" />
+
+    <ImageView
+        android:id="@+id/console_location_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/icon_console_location"
+        app:layout_constraintBottom_toBottomOf="@id/console_on_location_icon_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_on_location_icon_bg"
+        app:layout_constraintRight_toRightOf="@id/console_on_location_icon_bg"
+        app:layout_constraintTop_toTopOf="@id/console_on_location_icon_bg" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="定位设备"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toLeftOf="@id/console_on_location_icon_bg"
+        app:layout_constraintRight_toRightOf="@id/console_on_location_icon_bg"
+        app:layout_constraintTop_toBottomOf="@id/console_on_location_icon_bg" />
+
+    <View
+        android:id="@+id/console_track_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/shape_console_track_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@id/console_search_bg"
+        app:layout_constraintRight_toRightOf="@id/console_search_bg"
+        app:layout_constraintTop_toBottomOf="@id/console_placeholder" />
+
+    <ImageView
+        android:id="@+id/console_on_track_icon_bg"
+        style="@style/console_off_right_bottom_icon"
+        app:layout_constraintBottom_toBottomOf="@id/console_track_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_on_camera_icon_bg"
+        app:layout_constraintTop_toTopOf="@id/console_track_bg" />
+
+    <ImageView
+        android:id="@+id/console_track_icon"
+        android:layout_width="28dp"
+        android:layout_height="22dp"
+        android:src="@drawable/icon_console_track"
+        app:layout_constraintBottom_toBottomOf="@id/console_on_track_icon_bg"
+        app:layout_constraintLeft_toLeftOf="@id/console_on_track_icon_bg"
+        app:layout_constraintRight_toRightOf="@id/console_on_track_icon_bg"
+        app:layout_constraintTop_toTopOf="@id/console_on_track_icon_bg" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:gravity="center"
+        android:text="轨迹回放"
+        android:textColor="@color/white"
+        android:textSize="26sp"
+        app:layout_constraintBottom_toBottomOf="@id/console_track_bg"
+        app:layout_constraintLeft_toRightOf="@id/console_on_track_icon_bg"
+        app:layout_constraintRight_toRightOf="@id/console_track_bg"
+        app:layout_constraintTop_toTopOf="@id/console_track_bg" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

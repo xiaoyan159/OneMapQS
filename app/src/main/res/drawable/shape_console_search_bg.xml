@@ -4,11 +4,10 @@
         android:bottomLeftRadius="8dp"
         android:bottomRightRadius="8dp"
         android:topLeftRadius="8dp"
-        android:topRightRadius="0dp" />
+        android:topRightRadius="8dp" />
     <gradient
-        android:centerX="0.5"
-        android:centerY="0.5"
-        android:endColor="#ff6d0bbd"
-        android:startColor="#ff445ff5"
+        android:angle="315"
+        android:endColor="#C228D7"
+        android:startColor="#FF9A27"
         android:type="linear" />
 </shape>
