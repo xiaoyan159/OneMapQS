@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -224,6 +225,8 @@ public final class NIMapView extends RelativeLayout {
         getVtmMap().events.bind(new Map.UpdateListener() {
             @Override
             public void onMapEvent(Event e, MapPosition mapPosition) {
+                //Log.e("qj",Thread.currentThread()+"");
+
                 //旋转
                 if (mLastRotateZ != mapPosition.bearing) {
                     mRotateAnimation.startRotationZ(mLastRotateZ, mapPosition.bearing);

@@ -200,7 +200,7 @@ class TaskUploadScope(
                     if (result.code() == 200&&result.body()!=null) {
                         val defaultUserResponse = result.body() as DefaultResponse<*>
                         if(defaultUserResponse.success){
-                            change(FileUploadStatus.DONE)
+                            change(FileUploadStatus.DONE,"上传成功")
                         }else{
                             change(FileUploadStatus.ERROR,"${defaultUserResponse.msg}")
                         }
