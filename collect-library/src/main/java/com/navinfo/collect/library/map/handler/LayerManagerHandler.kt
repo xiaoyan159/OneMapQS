@@ -103,16 +103,6 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePa
     }
 
     private fun initOMDBVectorTileLayer() {
-        // 初始化OMDB相关图层
-        omdbVectorTileLayer = VectorTileLayer(mMapView.vtmMap, omdbTileSource)
-        omdbLabelLayer = LabelLayer(mMapView.vtmMap, omdbVectorTileLayer, LabelTileLoaderHook(), Constant.OMDB_MIN_ZOOM)
-        if(omdbVectorTileLayer!=null){
-            addLayer(omdbVectorTileLayer,NIMapView.LAYER_GROUPS.VECTOR_TILE)
-        }
-        if(omdbLabelLayer!=null){
-            addLayer(omdbLabelLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
-        }
-
         // 初始化OMDB参考相关图层
         omdbReferenceTileLayer = VectorTileLayer(mMapView.vtmMap, omdbReferenceTileSource)
         omdbReferenceLabelLayer = LabelLayer(mMapView.vtmMap, omdbReferenceTileLayer, LabelTileLoaderHook(), Constant.OMDB_MIN_ZOOM)
@@ -121,6 +111,16 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePa
         }
         if(omdbReferenceLabelLayer!=null){
             addLayer(omdbReferenceLabelLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
+        }
+
+        // 初始化OMDB相关图层
+        omdbVectorTileLayer = VectorTileLayer(mMapView.vtmMap, omdbTileSource)
+        omdbLabelLayer = LabelLayer(mMapView.vtmMap, omdbVectorTileLayer, LabelTileLoaderHook(), Constant.OMDB_MIN_ZOOM)
+        if(omdbVectorTileLayer!=null){
+            addLayer(omdbVectorTileLayer,NIMapView.LAYER_GROUPS.VECTOR_TILE)
+        }
+        if(omdbLabelLayer!=null){
+            addLayer(omdbLabelLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
         }
     }
 

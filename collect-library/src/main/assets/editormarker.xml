@@ -1793,13 +1793,19 @@
         <m v="OMDB_RESTRICTION">
             <m k="angle">
                 <symbol src="assets:omdb/icon_4006_0.png" repeat="false" symbol-width="35" symbol-height="35" rotate="false" repeat-start="0" ></symbol>
+                <symbol src="assets:omdb/icon_4004_0.png" repeat="false" symbol-width="35" symbol-height="35" rotate="false" repeat-start="0" ></symbol>
+                <symbol src="assets:omdb/icon_4004_1.png" repeat="false" symbol-width="35" symbol-height="35" rotate="false" repeat-start="0" ></symbol>
             </m>
-            <m k="type" v="angle">
-                <symbol src="assets:omdb/icon_arrow_right.png" repeat-start="0" repeat-gap="2000" symbol-percent="45" repeat="false" rotate="true"></symbol>
-            </m>
-            <m k="type" v="s_2_e">
-                <line stroke="#14582c" width="0.1" dasharray="1,1" repeat-gap="3" repeat-start="0"/>
-            </m>
+<!--            <m k="type" v="angle">-->
+<!--                <symbol src="assets:omdb/icon_arrow_right.png" repeat-start="0" repeat-gap="2000" symbol-percent="45" repeat="false" rotate="true"></symbol>-->
+<!--            </m>-->
+<!--            <m k="type" v="s_2_e">-->
+<!--                <line stroke="#14582c" width="0.1" dasharray="1,1" repeat-gap="3" repeat-start="0"/>-->
+<!--            </m>-->
+        </m>
+        <!--交通灯-->
+        <m v="OMDB_AREA">
+            <area stroke="#ff0000" stroke-width="2" src="assets:omdb/area_test.jpg"></area>
         </m>
     </m>
 </rendertheme>
