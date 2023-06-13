@@ -11,6 +11,7 @@ import com.baidu.location.LocationClientOption
 import com.baidu.location.LocationClientOption.LocationMode
 import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.map.NIMapView
+import com.navinfo.collect.library.utils.DateUtils
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
@@ -195,6 +196,7 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
             niLocation.address = mCurrentLocation!!.addrStr
             niLocation.street = mCurrentLocation!!.street
             niLocation.town = mCurrentLocation!!.town
+            niLocation.speed = mCurrentLocation!!.speed
             niLocation.streetNumber = mCurrentLocation!!.streetNumber
             niLocation.errorCode = mCurrentLocation!!.locType.toString()
             return niLocation

@@ -4,7 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentController
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.blankj.utilcode.util.SPStaticUtils
@@ -30,7 +33,9 @@ class LayermanagerFragment : BaseFragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val adapter = LayerManagerExpandableListAdapter(requireContext(), viewModel.getLayerConfigList())
+
         binding.elvLayerManager.setAdapter(adapter)
         // 默认显示第一个父项下的子类
         binding.elvLayerManager.expandGroup(0)
@@ -43,15 +48,15 @@ class LayermanagerFragment : BaseFragment(){
             }
         }
 
+        binding.imgConfirm.setOnClickListener {
+            viewModel.saveLayerConfigList(requireContext(),adapter.parentItems)
+        }
+
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
 
-        binding.tvTitle.text = findNavController().currentDestination?.label
-
-        binding.imgConfirm.setOnClickListener {  // 用户点击确认，重新设置当前的图层显隐控制
-            viewModel.saveLayerConfigList(adapter.parentItems)
-        }
+        binding.tvTitle.text = "图层管理"
     }
 
     override fun onDestroyView() {

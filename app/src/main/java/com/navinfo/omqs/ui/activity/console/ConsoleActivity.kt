@@ -1,6 +1,7 @@
 package com.navinfo.omqs.ui.activity.console
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -199,7 +200,7 @@ class ConsoleActivity : BaseActivity(), OnClickListener {
                  * 图层设置
                  */
                 R.id.console_layer_setting_bg, R.id.console_layer_setting_icon_bg -> {
-/*                    if (sceneFlag) {
+                    if (sceneFlag) {
                         mFragment = LayermanagerFragment()
                         sceneFlag = false
                         TransitionManager.go(bScene, bTransition)
@@ -210,7 +211,7 @@ class ConsoleActivity : BaseActivity(), OnClickListener {
                                 .replace(fragmentId, mFragment!!).commit()
                         }
                         return
-                    }*/
+                    }
                 }
                 /**
                  * 测评结果列表

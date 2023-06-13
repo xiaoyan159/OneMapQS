@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.navinfo.collect.library.data.entity.NiLocation;
@@ -18,7 +19,7 @@ import com.tencent.wcdb.repair.RecoverKit;
 import com.tencent.wcdb.room.db.WCDBDatabase;
 import com.tencent.wcdb.room.db.WCDBOpenHelperFactory;
 
-@Database(entities = { NiLocation.class},version = 1, exportSchema = false)
+@Database(entities = { NiLocation.class},version = 2, exportSchema = false)
 public abstract class TraceDataBase extends RoomDatabase {
     // marking the instance as volatile to ensure atomic access to the variable
     /**
@@ -63,13 +64,25 @@ public abstract class TraceDataBase extends RoomDatabase {
                             // Wipes and rebuilds instead of migrating if no Migration object.
                             // Migration is not part of this codelab.
                             .fallbackToDestructiveMigration()
-                            .addCallback(sRoomDatabaseCallback)
+                            .addCallback(sRoomDatabaseCallback).addMigrations(MIGRATION_1_2)
                             .build();
                 }
             }
         }
         return INSTANCE;
     }
+
+    /**
+     *扩充字段
+     */
+    public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            // 增加字段
+            database.execSQL("ALTER TABLE niLocation " + " ADD COLUMN groupId " + " TEXT");
+            database.execSQL("ALTER TABLE niLocation " + " ADD COLUMN timeStamp " + " TEXT");
+        }
+    };
 
     /**
      * Override the onOpen method to populate the database.

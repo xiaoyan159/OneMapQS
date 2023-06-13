@@ -61,6 +61,11 @@ public class NiLocation extends Feature{
     private int tilex;
     @ColumnInfo(name = "tiley")
     private int tiley;
+    @ColumnInfo(name = "groupId")
+    private String groupId;
+    @ColumnInfo(name = "timeStamp")
+    private String timeStamp;
+
     private boolean isAccouracy;
     private boolean isSpeed;
     private boolean isAltitude;
@@ -296,5 +301,21 @@ public class NiLocation extends Feature{
 
     public void setErrorCode(String errorCode) {
         this.errorCode = errorCode;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }

@@ -1,6 +1,11 @@
 package com.navinfo.omqs
 
+import android.app.Activity
 import android.app.Application
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
+import android.view.Surface
+import android.view.WindowManager
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import com.navinfo.omqs.util.NetUtils
@@ -23,5 +28,4 @@ class OMQSApplication : Application() {
         val hashBytes = messageDigest.digest(inputString.toByteArray())
         return hashBytes.joinToString("") { "%02x".format(it) };
     }
-
 }
