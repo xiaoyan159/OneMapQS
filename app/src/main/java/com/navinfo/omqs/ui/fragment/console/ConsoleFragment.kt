@@ -1,27 +1,30 @@
-package com.navinfo.omqs.ui.activity.console
+package com.navinfo.omqs.ui.fragment.console
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.transition.AutoTransition
 import androidx.transition.Scene
 import androidx.transition.TransitionManager
 import com.navinfo.omqs.R
-import com.navinfo.omqs.databinding.ActivityConsoleBinding
-import com.navinfo.omqs.ui.activity.BaseActivity
+import com.navinfo.omqs.databinding.FragmentConsoleBinding
 import com.navinfo.omqs.ui.activity.map.MainActivity
-import com.navinfo.omqs.ui.fragment.layermanager.LayermanagerFragment
+import com.navinfo.omqs.ui.fragment.BaseFragment
+import com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultFragment
+import com.navinfo.omqs.ui.fragment.layermanager.LayerManagerFragment
 import com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapFragment
 import com.navinfo.omqs.ui.fragment.personalcenter.PersonalCenterFragment
+import com.navinfo.omqs.ui.fragment.qsrecordlist.QsRecordListFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ConsoleActivity : BaseActivity(), OnClickListener {
+class ConsoleFragment : BaseFragment(), OnClickListener {
 
-    private var _binding: ActivityConsoleBinding? = null
+    private var _binding: FragmentConsoleBinding? = null
     private val binding get() = _binding!!
     private var sceneFlag = true
     private val aTransition = AutoTransition()
@@ -32,14 +35,14 @@ class ConsoleActivity : BaseActivity(), OnClickListener {
     // 创建a场景
     private val aScene by lazy {
         Scene.getSceneForLayout(
-            binding.consoleRoot, R.layout.console_on, this
+            binding.consoleRoot, R.layout.console_on, requireContext()
         )
     }
 
     // 创建b场景
     private val bScene by lazy {
         Scene.getSceneForLayout(
-            binding.consoleRoot, R.layout.console_off, this
+            binding.consoleRoot, R.layout.console_off, requireContext()
         )
     }
 
@@ -48,18 +51,21 @@ class ConsoleActivity : BaseActivity(), OnClickListener {
 //            .inflateTransitionManager(R.transition.transitionmanager_console, binding.consoleRoot)
 //    }
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentConsoleBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        _binding = ActivityConsoleBinding.inflate(layoutInflater)
-        setContentView(_binding!!.root)
-//        mTransitionAManager.setTransition(bScene, transition)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         aTransition.addListener(object : androidx.transition.Transition.TransitionListener {
             override fun onTransitionStart(transition: androidx.transition.Transition) {
+                sceneFlag = true
                 if (mFragment != null) {
                     Log.e("jingo", "动画开始B mFragment 不为null")
-                    supportFragmentManager.beginTransaction().remove(mFragment!!).commit()
+                    childFragmentManager.beginTransaction().remove(mFragment!!).commit()
                     mFragment = null
                 }
             }
@@ -81,9 +87,10 @@ class ConsoleActivity : BaseActivity(), OnClickListener {
         })
         bTransition.addListener(object : androidx.transition.Transition.TransitionListener {
             override fun onTransitionStart(transition: androidx.transition.Transition) {
+                sceneFlag = false
                 if (mFragment != null) {
                     Log.e("jingo", "动画开始A mFragment 不为null")
-                    supportFragmentManager.beginTransaction().replace(fragmentId, mFragment!!)
+                    childFragmentManager.beginTransaction().replace(fragmentId, mFragment!!)
                         .commit()
                 }
             }
@@ -104,6 +111,7 @@ class ConsoleActivity : BaseActivity(), OnClickListener {
         })
         initOnClickListener()
     }
+
 
     /**
      * 设置点击事件
@@ -142,8 +150,12 @@ class ConsoleActivity : BaseActivity(), OnClickListener {
          */
         binding.consoleRoot.findViewById<View>(R.id.console_evaluation_icon_bg)
             ?.setOnClickListener(this)
-        binding.consoleRoot.findViewById<View>(R.id.console_evaluation_bg)
-            ?.setOnClickListener(this)
+        binding.consoleRoot.findViewById<View>(R.id.console_evaluation_bg)?.setOnClickListener(this)
+        /**
+         * 评测任务
+         */
+        binding.consoleRoot.findViewById<View>(R.id.console_task_bg)?.setOnClickListener(this)
+        binding.consoleRoot.findViewById<View>(R.id.console_task_icon_bg)?.setOnClickListener(this)
     }
 
     override fun onDestroy() {
@@ -158,39 +170,37 @@ class ConsoleActivity : BaseActivity(), OnClickListener {
                  *   地图点击事件
                  */
                 R.id.console_map_bg, R.id.console_map_icon_bg -> {
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
+                    activity?.let { a ->
+                        a.supportFragmentManager.beginTransaction().remove(this).commit()
+                    }
                 }
                 /**
                  * 离线地图点击
                  */
                 R.id.console_offline_map_icon_bg, R.id.console_offline_map_bg -> {
-                    if (sceneFlag) {
-                        mFragment = OfflineMapFragment()
-                        sceneFlag = false
-                        TransitionManager.go(bScene, bTransition)
-                    } else {
-                        if (mFragment !is OfflineMapFragment) {
-                            mFragment = OfflineMapFragment()
-                            supportFragmentManager.beginTransaction()
-                                .replace(fragmentId, mFragment!!).commit()
-                        }
-                        return
+                    activity?.let { a ->
+                        a.supportFragmentManager.beginTransaction().remove(this).commit()
+                        (a as MainActivity).onClickOfflineMapFragment()
                     }
+
                 }
                 /**
                  * 个人中心点击
                  */
                 R.id.console_personal_center_bg, R.id.console_personal_center_icon_bg -> {
                     if (sceneFlag) {
-                        mFragment = PersonalCenterFragment()
+                        mFragment = PersonalCenterFragment {
+                            TransitionManager.go(aScene, aTransition)
+                        }
                         sceneFlag = false
                         TransitionManager.go(bScene, bTransition)
                     } else {
                         if (mFragment !is PersonalCenterFragment) {
-                            mFragment = PersonalCenterFragment()
-                            supportFragmentManager.beginTransaction()
-                                .replace(fragmentId, mFragment!!).commit()
+                            mFragment = PersonalCenterFragment {
+                                TransitionManager.go(aScene, aTransition)
+                            }
+                            childFragmentManager.beginTransaction().replace(fragmentId, mFragment!!)
+                                .commit()
                         }
                         return
                     }
@@ -199,36 +209,38 @@ class ConsoleActivity : BaseActivity(), OnClickListener {
                  * 图层设置
                  */
                 R.id.console_layer_setting_bg, R.id.console_layer_setting_icon_bg -> {
-/*                    if (sceneFlag) {
-                        mFragment = LayermanagerFragment()
+                    if (sceneFlag) {
+                        mFragment = LayerManagerFragment {
+                            TransitionManager.go(aScene, aTransition)
+                        }
                         sceneFlag = false
                         TransitionManager.go(bScene, bTransition)
                     } else {
-                        if (mFragment !is LayermanagerFragment) {
-                            mFragment = LayermanagerFragment()
-                            supportFragmentManager.beginTransaction()
-                                .replace(fragmentId, mFragment!!).commit()
+                        if (mFragment !is LayerManagerFragment) {
+                            mFragment = LayerManagerFragment {
+                                TransitionManager.go(aScene, aTransition)
+                            }
+                            childFragmentManager.beginTransaction().replace(fragmentId, mFragment!!)
+                                .commit()
                         }
                         return
-                    }*/
+                    }
                 }
                 /**
                  * 测评结果列表
                  */
-                R.id.console_evaluation_icon_bg,
-                R.id.console_evaluation_bg -> {
-//                    if (sceneFlag) {
-//                        mFragment = LayermanagerFragment()
-//                        sceneFlag = false
-//                        TransitionManager.go(bScene, bTransition)
-//                    } else {
-//                        if (mFragment !is LayermanagerFragment) {
-//                            mFragment = LayermanagerFragment()
-//                            supportFragmentManager.beginTransaction()
-//                                .replace(fragmentId, mFragment!!).commit()
-//                        }
-//                        return
-//                    }
+                R.id.console_evaluation_icon_bg, R.id.console_evaluation_bg -> {
+                    activity?.let { a ->
+                        a.supportFragmentManager.beginTransaction().remove(this).commit()
+                        (a as MainActivity).onClickResFragment()
+                    }
+                }
+                R.id.console_task_icon_bg, R.id.console_task_bg -> {
+                    activity?.let { a ->
+                        a.supportFragmentManager.beginTransaction().remove(this).commit()
+                        (a as MainActivity).onClickTaskFragment()
+                    }
+
                 }
                 else -> {}
             }

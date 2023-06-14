@@ -12,12 +12,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
-import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,6 +27,10 @@ import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.tools.LayerConfigUtils
 import com.navinfo.omqs.ui.activity.BaseActivity
+import com.navinfo.omqs.ui.fragment.console.ConsoleFragment
+import com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapFragment
+import com.navinfo.omqs.ui.fragment.qsrecordlist.QsRecordListFragment
+import com.navinfo.omqs.ui.fragment.tasklist.TaskManagerFragment
 import com.navinfo.omqs.ui.widget.RecyclerViewSpacesItemDecoration
 import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.SpeakMode
@@ -49,6 +50,14 @@ class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel by viewModels<MainViewModel>()
 
+    /**
+     * 左侧fragment
+     */
+    private var leftFragment: Fragment? = null
+
+    /**
+     * 是否开启右侧面板
+     */
     var switchFragment = false
 
     /**
@@ -79,7 +88,7 @@ class MainActivity : BaseActivity() {
      * 提前显示要素看板
      */
     private val signAdapter by lazy {
-        SignAdapter { position, autoSave,signBean ->
+        SignAdapter { _, autoSave, signBean ->
             rightController.currentDestination?.let {
                 if (it.id == R.id.RightEmptyFragment) {
                     val bundle = Bundle()
@@ -95,7 +104,7 @@ class MainActivity : BaseActivity() {
      * 道路信息看板
      */
     private val topSignAdapter by lazy {
-        TopSignAdapter { position, signBean ->
+        TopSignAdapter { _, signBean ->
             rightController.currentDestination?.let {
                 if (it.id == R.id.RightEmptyFragment) {
                     val bundle = Bundle()
@@ -108,7 +117,6 @@ class MainActivity : BaseActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
         val checkIntent = Intent()
@@ -138,22 +146,19 @@ class MainActivity : BaseActivity() {
         //给xml传递viewModel对象
         binding.viewModel = viewModel
 
-        binding.mainActivityVoice.setOnTouchListener(object : View.OnTouchListener {
-            @RequiresApi(Build.VERSION_CODES.Q)
-            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                when (event?.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        voiceOnTouchStart()//Do Something
-                        Log.e("qj", "voiceOnTouchStart")
-                    }
-                    MotionEvent.ACTION_UP -> {
-                        voiceOnTouchStop()//Do Something
-                        Log.e("qj", "voiceOnTouchStop")
-                    }
+        binding.mainActivityVoice.setOnTouchListener { v, event ->
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    voiceOnTouchStart()//Do Something
+                    Log.e("qj", "voiceOnTouchStart")
                 }
-                return v?.onTouchEvent(event) ?: true
+                MotionEvent.ACTION_UP -> {
+                    voiceOnTouchStop()//Do Something
+                    Log.e("qj", "voiceOnTouchStop")
+                }
             }
-        })
+            v?.onTouchEvent(event) ?: true
+        }
 
         viewModel.liveDataQsRecordIdList.observe(this) {
             //处理页面跳转
@@ -217,7 +222,7 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        findNavController(R.id.main_activity_right_fragment).addOnDestinationChangedListener { controller, destination, arguments ->
+        findNavController(R.id.main_activity_right_fragment).addOnDestinationChangedListener { _, destination, arguments ->
             if (destination.id == R.id.RightEmptyFragment) {
                 binding.mainActivityRightVisibilityButtonsGroup.visibility = View.VISIBLE
             } else {
@@ -226,6 +231,9 @@ class MainActivity : BaseActivity() {
                 binding.mainActivitySelectLine.isSelected = false
             }
         }
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.console_fragment_layout, ConsoleFragment()).commit()
     }
 
     //根据输入的经纬度跳转坐标
@@ -292,7 +300,15 @@ class MainActivity : BaseActivity() {
      * 打开个人中菜单
      */
     fun openMenu() {
-        binding.mainActivityDrawer.open()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.console_fragment_layout, ConsoleFragment()).commit()
+        if (leftFragment != null) {
+            supportFragmentManager.beginTransaction().remove(leftFragment!!).commit()
+            leftFragment = null
+            binding.mainActivityBottomSheetGroup.visibility = View.GONE
+            binding.mainActivityLeftFragment.visibility = View.GONE
+        }
+//        binding.mainActivityDrawer.open()
     }
 
     /**
@@ -328,7 +344,7 @@ class MainActivity : BaseActivity() {
     /**
      * 点击搜索
      */
-    fun onClickSerach() {
+    fun onClickSearch() {
 
     }
 
@@ -389,18 +405,89 @@ class MainActivity : BaseActivity() {
         binding.mainActivitySelectLine.isSelected = viewModel.isSelectRoad()
     }
 
-    fun voiceOnTouchStart() {
-        viewModel.startSoundMetter(this, binding.mainActivityVoice)
-    }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun voiceOnTouchStop() {
-        if (Constant.IS_VIDEO_SPEED) {
-            viewModel.stopSoundMeter()
+    /**
+     * 打开或关闭底部导航栏
+     */
+    fun onSwitchSheet() {
+        if (binding.mainActivityBottomSheetGroup.visibility == View.VISIBLE) {
+            binding.mainActivityBottomSheetGroup.visibility = View.GONE
+        } else {
+            binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
         }
     }
 
-//    override fun onBackPressed() {
-//        super.onBackPressed()
-//    }
+    private fun voiceOnTouchStart() {
+        viewModel.startSoundMetter(this, binding.mainActivityVoice)
+    }
+
+    private fun voiceOnTouchStop() {
+        if (Constant.IS_VIDEO_SPEED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                viewModel.stopSoundMeter()
+            }
+        }
+    }
+
+    /**
+     * 打开测评任务面板
+     */
+    fun onClickTaskFragment() {
+        if (leftFragment !is TaskManagerFragment) {
+            if (leftFragment == null) {
+                binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
+                binding.mainActivityLeftFragment.visibility = View.VISIBLE
+            }
+            leftFragment = TaskManagerFragment {
+                binding.mainActivityLeftFragment.visibility = View.GONE
+                supportFragmentManager.beginTransaction()
+                    .remove(leftFragment!!).commit()
+                leftFragment = null
+                null
+            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_activity_left_fragment, leftFragment!!).commit()
+        }
+    }
+
+    /**
+     * 打开测评结果面板
+     */
+    fun onClickResFragment() {
+        if (leftFragment !is QsRecordListFragment) {
+            if (leftFragment == null) {
+                binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
+                binding.mainActivityLeftFragment.visibility = View.VISIBLE
+            }
+            leftFragment = QsRecordListFragment {
+                binding.mainActivityLeftFragment.visibility = View.GONE
+                supportFragmentManager.beginTransaction()
+                    .remove(leftFragment!!).commit()
+                leftFragment = null
+                null
+            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_activity_left_fragment, leftFragment!!).commit()
+        }
+    }
+    /**
+     * 打开离线地图
+     */
+    fun onClickOfflineMapFragment(){
+        if (leftFragment !is OfflineMapFragment) {
+            if (leftFragment == null) {
+                binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
+                binding.mainActivityLeftFragment.visibility = View.VISIBLE
+            }
+            leftFragment = OfflineMapFragment {
+                binding.mainActivityLeftFragment.visibility = View.GONE
+                supportFragmentManager.beginTransaction()
+                    .remove(leftFragment!!).commit()
+                leftFragment = null
+                null
+            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_activity_left_fragment, leftFragment!!).commit()
+        }
+    }
 }

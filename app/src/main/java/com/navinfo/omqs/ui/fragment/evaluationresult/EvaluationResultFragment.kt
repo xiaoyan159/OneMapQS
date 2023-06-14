@@ -93,29 +93,26 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         }
 
 
-        binding.evaluationVoice.setOnTouchListener(object : View.OnTouchListener {
-            @RequiresApi(Build.VERSION_CODES.Q)
-            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                Log.e("qj", event?.action.toString())
-                when (event?.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        voiceOnTouchStart()//Do Something
-                        Log.e("qj", "voiceOnTouchStart")
-                    }
-
-                    MotionEvent.ACTION_UP -> {
-                        voiceOnTouchStop()//Do Something
-                        Log.e("qj", "ACTION_UP")
-                    }
-
-                    MotionEvent.ACTION_CANCEL -> {
-                        voiceOnTouchStop()//Do Something
-                        Log.e("qj", "ACTION_CANCEL")
-                    }
+        binding.evaluationVoice.setOnTouchListener { _, event ->
+            Log.e("qj", event?.action.toString())
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    voiceOnTouchStart()//Do Something
+                    Log.e("qj", "voiceOnTouchStart")
                 }
-                return true
+
+                MotionEvent.ACTION_UP -> {
+                    voiceOnTouchStop()//Do Something
+                    Log.e("qj", "ACTION_UP")
+                }
+
+                MotionEvent.ACTION_CANCEL -> {
+                    voiceOnTouchStop()//Do Something
+                    Log.e("qj", "ACTION_CANCEL")
+                }
             }
-        })
+            true
+        }
 
         /**
          * 读取元数据
@@ -308,15 +305,16 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    fun voiceOnTouchStart() {
+    private fun voiceOnTouchStart() {
         viewModel.startSoundMetter(requireActivity(), binding.evaluationVoice)
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun voiceOnTouchStop() {
+    private fun voiceOnTouchStop() {
         Log.e("qj", "voiceOnTouchStop====${Constant.IS_VIDEO_SPEED}")
         if (Constant.IS_VIDEO_SPEED) {
-            viewModel.stopSoundMeter()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                viewModel.stopSoundMeter()
+            }
         }
     }
 

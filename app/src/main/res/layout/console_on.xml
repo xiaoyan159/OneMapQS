@@ -5,7 +5,7 @@
     android:id="@+id/console_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activity.console.ConsoleActivity">
+    tools:context=".ui.fragment.console.ConsoleFragment">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/console_left_guideline"

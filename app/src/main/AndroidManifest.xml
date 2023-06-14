@@ -63,17 +63,6 @@
             android:launchMode="singleTask"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.OMQualityInspection" />
-
-        <activity
-            android:name=".ui.activity.console.ConsoleActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme.OMQualityInspection">
-
-        </activity>
-
         <meta-data
             android:name="ScopedStorage"
             android:value="true" />

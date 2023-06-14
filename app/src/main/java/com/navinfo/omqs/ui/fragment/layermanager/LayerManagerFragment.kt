@@ -4,17 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.blankj.utilcode.util.SPStaticUtils
-import com.navinfo.omqs.Constant
-import com.navinfo.omqs.databinding.FragmentEmptyBinding
 import com.navinfo.omqs.databinding.FragmentLayerManagerBinding
 import com.navinfo.omqs.ui.fragment.BaseFragment
-import com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapCityListViewModel
 
-class LayermanagerFragment : BaseFragment(){
+class LayerManagerFragment(private var backListener: (() -> Unit?)? = null) : BaseFragment(){
     private var _binding: FragmentLayerManagerBinding? = null
 
     private val binding get() = _binding!!
@@ -44,13 +39,14 @@ class LayermanagerFragment : BaseFragment(){
         }
 
         binding.imgBack.setOnClickListener {
-            findNavController().navigateUp()
+           backListener?.invoke()
         }
 
-        binding.tvTitle.text = findNavController().currentDestination?.label
+        binding.tvTitle.text = "图层设置"//findNavController().currentDestination?.label
 
         binding.imgConfirm.setOnClickListener {  // 用户点击确认，重新设置当前的图层显隐控制
             viewModel.saveLayerConfigList(adapter.parentItems)
+            backListener?.invoke()
         }
     }
 

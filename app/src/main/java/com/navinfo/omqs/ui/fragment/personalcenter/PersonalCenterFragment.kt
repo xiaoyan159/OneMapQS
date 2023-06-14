@@ -29,7 +29,8 @@ import javax.inject.Inject
  * 个人中心
  */
 @AndroidEntryPoint
-class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
+class PersonalCenterFragment(private var backListener: (() -> Unit?)? = null) : BaseFragment(),
+    FSAFActivityCallbacks {
 
     private var _binding: FragmentPersonalCenterBinding? = null
     private val binding get() = _binding!!
@@ -111,7 +112,7 @@ class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
                     viewModel.readRealmData()
                     // 定位到指定位置
                     niMapController.mMapView.vtmMap.animator()
-                        .animateTo(GeoPoint(40.031657799200346, 116.32207834810715  ))
+                        .animateTo(GeoPoint(40.031657799200346, 116.32207834810715))
                 }
                 R.id.personal_center_menu_task_list -> {
                     findNavController().navigate(R.id.TaskManagerFragment)
