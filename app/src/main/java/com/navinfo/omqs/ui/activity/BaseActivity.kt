@@ -13,12 +13,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 open class BaseActivity : AppCompatActivity() {
     private var loadingDialog: AlertDialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
         super.onCreate(savedInstanceState)
     }
 
     override fun onResume() {
         super.onResume()
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
     }
 
 

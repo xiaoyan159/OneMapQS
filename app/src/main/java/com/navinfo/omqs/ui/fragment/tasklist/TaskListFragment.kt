@@ -6,8 +6,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.navinfo.omqs.databinding.FragmentTaskListBinding
 import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
@@ -35,7 +34,10 @@ class TaskListFragment : BaseFragment() {
     private val adapter: TaskListAdapter by lazy {
         TaskListAdapter(
             downloadManager, uploadManager
-        ) { position, taskBean ->
+        ) { _, taskBean ->
+            if(taskBean.hadLinkDvoList.isEmpty()){
+                Toast.makeText(context, "数据错误，无Link数据！", Toast.LENGTH_SHORT).show()
+            }
             viewModel.setSelectTaskBean(taskBean)
         }
     }

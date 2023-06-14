@@ -34,7 +34,7 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/task_manager_tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="26dp"
+        android:layout_height="@dimen/fragment_tabLayout_height"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="11dp"
         android:layout_marginRight="8dp"

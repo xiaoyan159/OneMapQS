@@ -19,6 +19,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import kotlin.math.max
 
 
 @HiltViewModel
@@ -143,30 +144,37 @@ class TaskViewModel @Inject constructor(
         liveDataTaskLinks.value = taskBean.hadLinkDvoList
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mapController.lineHandler.omdbTaskLinkLayer.removeAll()
-            mapController.lineHandler.omdbTaskLinkLayer.addLineList(taskBean.hadLinkDvoList)
-            var maxX = 0.0
-            var maxY = 0.0
-            var minX = 0.0
-            var minY = 0.0
-            for (item in taskBean.hadLinkDvoList) {
-                val geometry = GeometryTools.createGeometry(item.geometry)
-                val envelope = geometry.envelopeInternal
-                if (envelope.maxX > maxX) {
-                    maxX = envelope.maxX
+            if(taskBean.hadLinkDvoList.isNotEmpty()){
+                mapController.lineHandler.omdbTaskLinkLayer.addLineList(taskBean.hadLinkDvoList)
+                var maxX = 0.0
+                var maxY = 0.0
+                var minX = 0.0
+                var minY = 0.0
+                for (item in taskBean.hadLinkDvoList) {
+                    val geometry = GeometryTools.createGeometry(item.geometry)
+                    if(geometry!=null){
+                        val envelope = geometry.envelopeInternal
+                        if (envelope.maxX > maxX) {
+                            maxX = envelope.maxX
+                        }
+                        if (envelope.maxY > maxY) {
+                            maxY = envelope.maxY
+                        }
+                        if (envelope.minX < minX || minX == 0.0) {
+                            minX = envelope.minX
+                        }
+                        if (envelope.minY < minY || minY == 0.0) {
+                            minY = envelope.minY
+                        }
+                    }
                 }
-                if (envelope.maxY > maxY) {
-                    maxY = envelope.maxY
-                }
-                if (envelope.minX < minX || minX == 0.0) {
-                    minX = envelope.minX
-                }
-                if (envelope.minY < minY || minY == 0.0) {
-                    minY = envelope.minY
+                //增加异常数据判断
+                if(maxX!=0.0&&maxY!=0.0&&minX!=0.0&&minY!=0.0){
+                    mapController.animationHandler.animateToBox(
+                        maxX = maxX, maxY = maxY, minX = minX, minY = minY
+                    )
                 }
             }
-            mapController.animationHandler.animateToBox(
-                maxX = maxX, maxY = maxY, minX = minX, minY = minY
-            )
         }
     }
 
@@ -177,13 +185,15 @@ class TaskViewModel @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mapController.lineHandler.omdbTaskLinkLayer.showSelectLine(link)
             val geometry = GeometryTools.createGeometry(link.geometry)
-            val envelope = geometry.envelopeInternal
-            mapController.animationHandler.animateToBox(
-                maxX = envelope.maxX,
-                maxY = envelope.maxY,
-                minX = envelope.minX,
-                minY = envelope.minY
-            )
+            if(geometry!=null){
+                val envelope = geometry.envelopeInternal
+                mapController.animationHandler.animateToBox(
+                    maxX = envelope.maxX,
+                    maxY = envelope.maxY,
+                    minX = envelope.minX,
+                    minY = envelope.minY
+                )
+            }
         }
     }
 

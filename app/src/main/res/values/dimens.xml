@@ -40,5 +40,5 @@
     <dimen name="main_activity_geometry_w" comment="地图主页坐标框宽度">230dp</dimen>
     <dimen name="main_activity_geometry_h" comment="地图主页坐标框高度">28dp</dimen>
     <dimen name="fragment_problem_link_width" comment="问题原因面板宽度">213dp</dimen>
-
+    <dimen name="fragment_tabLayout_height">32dp</dimen>
 </resources>

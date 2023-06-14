@@ -200,12 +200,19 @@ class MainActivity : BaseActivity() {
         }
         //监听地图中点变化
         viewModel.liveDataCenterPoint.observe(this) {
-            binding.mainActivityGeometry.text = "经纬度:${
-                BigDecimal(it.longitude).setScale(
-                    7,
-                    RoundingMode.HALF_UP
-                )
-            },${BigDecimal(it.latitude).setScale(7, RoundingMode.HALF_UP)}"
+            Log.e("qj","${it.longitude}")
+            try{
+                if(it!=null&&it.longitude!=null&&it.latitude!=null){
+                    binding.mainActivityGeometry.text = "经纬度:${
+                        BigDecimal(it.longitude).setScale(
+                            7,
+                            RoundingMode.HALF_UP
+                        )
+                    },${BigDecimal(it.latitude).setScale(7, RoundingMode.HALF_UP)}"
+                }
+            }catch (e:Exception){
+                Log.e("qj","异常")
+            }
         }
 
         lifecycleScope.launch {
@@ -266,9 +273,6 @@ class MainActivity : BaseActivity() {
         //开启定位
         mapController.locationLayerHandler.startLocation()
         mapController.mMapView.setLogoVisable(View.GONE)
-        //启动轨迹存储
-//        viewModel.startSaveTraceThread(this)
-
     }
 
     override fun onPause() {
@@ -399,8 +403,4 @@ class MainActivity : BaseActivity() {
             viewModel.stopSoundMeter()
         }
     }
-
-//    override fun onBackPressed() {
-//        super.onBackPressed()
-//    }
 }
