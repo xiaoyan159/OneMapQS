@@ -1,5 +1,7 @@
 package com.navinfo.omqs.ui.fragment.layermanager
 
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.FileIOUtils
@@ -10,7 +12,9 @@ import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.tools.LayerConfigUtils
 import com.navinfo.omqs.util.FlowEventBus
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class LayerManagerViewModel(): ViewModel() {
@@ -21,11 +25,15 @@ class LayerManagerViewModel(): ViewModel() {
         return LayerConfigUtils.getLayerConfigList()
     }
 
-    fun saveLayerConfigList(listData: List<ImportConfig>) {
+    fun saveLayerConfigList(context: Context, listData: List<ImportConfig>) {
         SPStaticUtils.put(Constant.EVENT_LAYER_MANAGER_CHANGE, gson.toJson(listData))
         // 发送新的配置数据
         viewModelScope.launch {
             FlowEventBus.post(Constant.EVENT_LAYER_MANAGER_CHANGE, listData)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "设置成功", Toast.LENGTH_SHORT)
+                    .show()
+            }
         }
     }
 

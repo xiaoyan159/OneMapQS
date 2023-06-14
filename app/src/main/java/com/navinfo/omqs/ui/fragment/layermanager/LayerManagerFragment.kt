@@ -4,6 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentController
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.navinfo.omqs.databinding.FragmentLayerManagerBinding
@@ -38,11 +42,15 @@ class LayerManagerFragment(private var backListener: (() -> Unit?)? = null) : Ba
             }
         }
 
+        binding.imgConfirm.setOnClickListener {
+            viewModel.saveLayerConfigList(requireContext(),adapter.parentItems)
+        }
+
         binding.imgBack.setOnClickListener {
            backListener?.invoke()
         }
 
-        binding.tvTitle.text = "图层设置"//findNavController().currentDestination?.label
+        binding.tvTitle.text = "图层管理"//findNavController().currentDestination?.label
 
         binding.imgConfirm.setOnClickListener {  // 用户点击确认，重新设置当前的图层显隐控制
             viewModel.saveLayerConfigList(adapter.parentItems)
