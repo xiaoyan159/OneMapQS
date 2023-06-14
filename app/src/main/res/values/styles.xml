@@ -1,5 +1,10 @@
 <resources>
 
+    <style name="main_activity_bottom_sheet_icon" comment="主控页面下方按钮样式">
+        <item name="android:layout_width">36dp</item>
+        <item name="android:layout_height">36dp</item>
+    </style>
+
     <style name="console_on_left_bottom_icon" comment="主控页面左侧右下角按钮样式">
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>

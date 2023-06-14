@@ -15,7 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
  * 评测任务viewpager管理页面
  */
 @AndroidEntryPoint
-class TaskManagerFragment : BaseFragment() {
+class TaskManagerFragment(private var backListener: ((TaskManagerFragment) -> Unit?)? = null) : BaseFragment() {
     private var _binding: FragmentTaskManagerBinding? = null
 
     private val binding get() = _binding!!
@@ -53,7 +53,7 @@ class TaskManagerFragment : BaseFragment() {
         }.attach()
         viewModel.getTaskList(requireContext())
         binding.taskBack.setOnClickListener {
-            findNavController().navigateUp()
+            backListener?.invoke(this)
         }
     }
 

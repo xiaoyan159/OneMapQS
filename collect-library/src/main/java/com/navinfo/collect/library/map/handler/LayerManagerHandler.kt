@@ -22,10 +22,11 @@ import java.io.File
 /**
  * Layer 操作
  */
-class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePath: String) : BaseHandler(context, mapView) {
+class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, tracePath: String) :
+    BaseHandler(context, mapView) {
     private var baseGroupLayer // 用于盛放所有基础底图的图层组，便于统一管理
             : GroupLayer? = null
-    private val mTracePath:String = tracePath
+    private val mTracePath: String = tracePath
 
     /**
      * 轨迹渲染图层
@@ -70,12 +71,13 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePa
 
         vectorNiLocationTileLayer = VectorTileLayer(mMapView.vtmMap, mapLifeNiLocationTileSource)
 
-        labelNiLocationLayer = LabelLayer(mMapView.vtmMap, vectorNiLocationTileLayer, LabelTileLoaderHook(), 15)
+        labelNiLocationLayer =
+            LabelLayer(mMapView.vtmMap, vectorNiLocationTileLayer, LabelTileLoaderHook(), 15)
 
-        if(vectorNiLocationTileLayer!=null){
-            addLayer(vectorNiLocationTileLayer,NIMapView.LAYER_GROUPS.BASE)
+        if (vectorNiLocationTileLayer != null) {
+            addLayer(vectorNiLocationTileLayer, NIMapView.LAYER_GROUPS.BASE)
         }
-        if(labelNiLocationLayer!=null){
+        if (labelNiLocationLayer != null) {
             addLayer(labelNiLocationLayer, NIMapView.LAYER_GROUPS.BASE)
         }
 
@@ -92,7 +94,7 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePa
         mMapView.vtmMap.events.bind(UpdateListener { e, mapPosition ->
             if (e == org.oscim.map.Map.SCALE_EVENT) {
                 // 测评数据图层在指定Zoom后开始显示
-                val isOmdbZoom = mapPosition.zoomLevel>=Constant.OMDB_MIN_ZOOM
+                val isOmdbZoom = mapPosition.zoomLevel >= Constant.OMDB_MIN_ZOOM
                 baseGroupLayer?.layers?.forEach {
                     it.isEnabled = !isOmdbZoom
                 }
@@ -103,25 +105,36 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView,tracePa
     }
 
     private fun initOMDBVectorTileLayer() {
-        // 初始化OMDB相关图层
-        omdbVectorTileLayer = VectorTileLayer(mMapView.vtmMap, omdbTileSource)
-        omdbLabelLayer = LabelLayer(mMapView.vtmMap, omdbVectorTileLayer, LabelTileLoaderHook(), Constant.OMDB_MIN_ZOOM)
-        if(omdbVectorTileLayer!=null){
-            addLayer(omdbVectorTileLayer,NIMapView.LAYER_GROUPS.VECTOR_TILE)
-        }
-        if(omdbLabelLayer!=null){
-            addLayer(omdbLabelLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
-        }
 
         // 初始化OMDB参考相关图层
         omdbReferenceTileLayer = VectorTileLayer(mMapView.vtmMap, omdbReferenceTileSource)
-        omdbReferenceLabelLayer = LabelLayer(mMapView.vtmMap, omdbReferenceTileLayer, LabelTileLoaderHook(), Constant.OMDB_MIN_ZOOM)
-        if(omdbReferenceTileLayer!=null){
-            addLayer(omdbReferenceTileLayer,NIMapView.LAYER_GROUPS.VECTOR_TILE)
+        omdbReferenceLabelLayer = LabelLayer(
+            mMapView.vtmMap,
+            omdbReferenceTileLayer,
+            LabelTileLoaderHook(),
+            Constant.OMDB_MIN_ZOOM
+        )
+        if (omdbReferenceTileLayer != null) {
+            addLayer(omdbReferenceTileLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
         }
-        if(omdbReferenceLabelLayer!=null){
-            addLayer(omdbReferenceLabelLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
+        if (omdbReferenceLabelLayer != null) {
+            addLayer(omdbReferenceLabelLayer, NIMapView.LAYER_GROUPS.LABEL)
         }
+        // 初始化OMDB相关图层
+        omdbVectorTileLayer = VectorTileLayer(mMapView.vtmMap, omdbTileSource)
+        omdbLabelLayer = LabelLayer(
+            mMapView.vtmMap,
+            omdbVectorTileLayer,
+            LabelTileLoaderHook(),
+            Constant.OMDB_MIN_ZOOM
+        )
+        if (omdbVectorTileLayer != null) {
+            addLayer(omdbVectorTileLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
+        }
+        if (omdbLabelLayer != null) {
+            addLayer(omdbLabelLayer, NIMapView.LAYER_GROUPS.LABEL)
+        }
+
     }
 
     /**

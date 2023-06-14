@@ -13,7 +13,8 @@ import com.navinfo.omqs.ui.fragment.BaseFragment
 /**
  * 离线地图总页面
  */
-class OfflineMapFragment : BaseFragment() {
+class OfflineMapFragment(private var backListener: (() -> Unit?)? = null) :
+    BaseFragment() {
 
     private var _binding: FragmentOfflineMapBinding? = null
 
@@ -48,7 +49,7 @@ class OfflineMapFragment : BaseFragment() {
 
         //处理返回按钮
         binding.offlineMapBack.setOnClickListener {
-            findNavController().popBackStack()
+            backListener?.invoke()
         }
     }
 
