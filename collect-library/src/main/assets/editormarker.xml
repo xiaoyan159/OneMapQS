@@ -1603,46 +1603,34 @@
         </m>
         <!--道路种别-->
         <m v="OMDB_RD_LINK_KIND">
-            <m k="kind">
-                <m v="1">
-                    <line stroke="#fcacd4" width="1"/>
-                </m>
-                <m v="2">
-                    <line stroke="#dcacfc" width="1"/>
-                </m>
-                <m v="3">
-                    <line stroke="#fc9c9c" width="1"/>
-                </m>
-                <m v="4">
-                    <line stroke="#fcd484" width="1"/>
-                </m>
-                <m v="5">
-                    <line stroke="#ecfccc" width="1"/>
-                </m>
-                <m v="6">
-                    <line stroke="#acec84" width="1"/>
-                </m>
-                <m v="7">
-                    <line stroke="#806048" width="1"/>
-                </m>
-                <m v="8">
-                    <line stroke="#fcfc7c" width="1"/>
-                </m>
-                <m v="9">
-                    <line stroke="#acc4fc" width="1"/>
-                </m>
-                <m v="10">
-                    <line stroke="#8cc8e0" width="1"/>
-                </m>
-                <m v="11">
-                    <line stroke="#64ecdc" width="1"/>
-                </m>
-                <m v="13">
-                    <line stroke="#585080" width="1"/>
-                </m>
-                <m v="15">
-                    <line stroke="#647430" width="1"/>
-                </m>
+            <outline-layer id="kind0" stroke="#44000000" width="0.1" />
+            <outline-layer id="kind1" stroke="#aa807040" width="0.1" />
+            <m k="kind" v="1">
+                <line outline="kind0" blur="0.3" use="highway:z11" />
+            </m>
+            <m k="kind" v="2|3">
+                <line outline="kind0" use="trunk" />
+            </m>
+            <m k="kind" v="4">
+                <line outline="kind0" use="primary:z11" />
+            </m>
+            <m k="kind" v="5|6">
+                <line outline="kind0" use="secondary:z11" />
+            </m>
+            <m k="kind" v="7">
+                <line outline="kind0" use="tertiary" />
+            </m>
+            <m k="kind" v="8">
+                <line outline="kind0" use="residential" />
+            </m>
+            <m k="kind" v="9|10">
+                <line outline="kind0" use="footway:z17" />
+            </m>
+            <m k="kind" v="11|13">
+                <line outline="kind0" use="ferry" />
+            </m>
+            <m k="kind" v="15">
+                <line outline="kind0" use="highway:cycleway" />
             </m>
         </m>
 
@@ -1668,22 +1656,20 @@
         </m>
         <!--条件点限速-->
         <m v="OMDB_SPEEDLIMIT_COND">
-            <m k="speedFlag">
-                <m v="0">
+            <m k="speedFlag" v="0">
                     <!--                    <symbol src="assets:omdb/round_speedlimit.svg" symbol-width="30" symbol-height="30"></symbol>-->
                     <caption k="maxSpeed" fill="#000000" priority="0" size="14" stroke="#ffffff"
                         stroke-width="1.0"></caption>
                     <symbol src="assets:omdb/icon_4003_0.png" symbol-width="46" symbol-height="46"></symbol>
                     <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
                         stroke-width="1.0"></caption>
-                </m>
-                <m v="1">
-                    <caption k="maxSpeed" fill="#000000" priority="0" size="14" stroke="#ffffff"
-                        stroke-width="1.0"></caption>
-                    <symbol src="assets:omdb/icon_4003_1.png" symbol-width="46" symbol-height="46"></symbol>
-                    <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
-                        stroke-width="1.0"></caption>
-                </m>
+            </m>
+            <m k="speedFlag" v="0">
+                <caption k="maxSpeed" fill="#000000" priority="0" size="14" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
+                <symbol src="assets:omdb/icon_4003_1.png" symbol-width="46" symbol-height="46"></symbol>
+                <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
             </m>
         </m>
         <!--可变点限速-->
