@@ -29,7 +29,8 @@ import javax.inject.Inject
  * 个人中心
  */
 @AndroidEntryPoint
-class PersonalCenterFragment : BaseFragment(), FSAFActivityCallbacks {
+class PersonalCenterFragment(private var backListener: (() -> Unit?)? = null) : BaseFragment(),
+    FSAFActivityCallbacks {
 
     private var _binding: FragmentPersonalCenterBinding? = null
     private val binding get() = _binding!!

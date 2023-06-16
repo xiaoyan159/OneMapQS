@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -40,7 +41,11 @@ class TaskFragment : BaseFragment() {
     private val adapter: TaskAdapter by lazy {
         TaskAdapter(object : TaskAdapterCallback {
             override fun itemOnClick(bean: HadLinkDvoBean) {
-                viewModel.showCurrentLink(bean)
+                if(bean!=null){
+                    viewModel.showCurrentLink(bean)
+                }else{
+                    Toast.makeText(context, "数据错误，无法显示！", Toast.LENGTH_SHORT).show()
+                }
             }
 
             override fun editOnclick(position: Int, bean: HadLinkDvoBean) {

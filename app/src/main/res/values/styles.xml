@@ -1,5 +1,32 @@
 <resources>
 
+    <style name="main_activity_bottom_sheet_icon" comment="主控页面下方按钮样式">
+        <item name="android:layout_width">36dp</item>
+        <item name="android:layout_height">36dp</item>
+    </style>
+
+    <style name="console_on_left_bottom_icon" comment="主控页面左侧右下角按钮样式">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="console_off_right_bottom_icon" comment="主控页面右侧按钮样式">
+        <item name="android:layout_width">57dp</item>
+        <item name="android:layout_height">57dp</item>
+        <item name="android:padding">15dp</item>
+        <item name="android:background">@drawable/shape_oval_gray_hex_bg</item>
+    </style>
+
+    <style name="console_on_left_bottom_text" comment="主控页面左侧右下角按钮样式">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:layout_margin">5dp</item>
+    </style>
+
     <style name="title_default_style" comment="默认顶标题样式">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">20dp</item>

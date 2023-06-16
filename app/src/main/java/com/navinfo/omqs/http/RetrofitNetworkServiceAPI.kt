@@ -47,7 +47,7 @@ interface RetrofitNetworkServiceAPI {
      */
     @Headers("Content-Type: application/json")
     @POST("/devcp/loginUser")
-    suspend fun retrofitLoginUser(@Body loginUserBean: LoginUserBean): Response<DefaultUserResponse<SysUserBean>>
+    suspend fun retrofitLoginUser(@Body loginUserBean: LoginUserBean): Response<DefaultResponse<SysUserBean>>
 
     /**
      * 下载文件
@@ -62,11 +62,11 @@ interface RetrofitNetworkServiceAPI {
     @GET("/devcp/getEvaluationTask?evaluatType=2")
     suspend fun retrofitGetTaskList(
         @Query("evaluatorNo") evaluatorNo: String,
-    ): Response<DefaultTaskResponse<List<TaskBean>>>
+    ): Response<DefaultResponse<List<TaskBean>>>
 
     @Headers("Content-Type: application/json")
     @POST("/devcp/uploadSceneProblem")
-    suspend fun postRequest(@Body listEvaluationInfo: List<EvaluationInfo>?): Response<ResponseBody>
+    suspend fun postRequest(@Body listEvaluationInfo: List<EvaluationInfo>?): Response<DefaultResponse<*>>
 
     /**
      * @FormUrlEncoded 请求格式注解，请求实体是一个From表单，每个键值对需要使用@Field注解

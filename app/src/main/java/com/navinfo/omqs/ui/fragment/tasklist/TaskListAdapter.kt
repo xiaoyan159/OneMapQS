@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.R
@@ -35,18 +36,24 @@ class TaskListAdapter(
     val downloadBtnClick = View.OnClickListener() {
         if (it.tag != null) {
             val taskBean = data[it.tag as Int]
-            when (taskBean.status) {
-                FileDownloadStatus.NONE, FileDownloadStatus.UPDATE, FileDownloadStatus.PAUSE, FileDownloadStatus.IMPORT, FileDownloadStatus.ERROR -> {
-                    Log.e("jingo", "开始下载 ${taskBean.status}")
-                    downloadManager.start(taskBean.id)
+            if (taskBean.hadLinkDvoList.isNotEmpty()) {
+                when (taskBean.status) {
+                    FileDownloadStatus.NONE, FileDownloadStatus.UPDATE, FileDownloadStatus.PAUSE, FileDownloadStatus.IMPORT, FileDownloadStatus.ERROR -> {
+                        Log.e("jingo", "开始下载 ${taskBean.status}")
+                        downloadManager.start(taskBean.id)
+                    }
+
+                    FileDownloadStatus.LOADING, FileDownloadStatus.WAITING -> {
+                        Log.e("jingo", "暂停 ${taskBean.status}")
+                        downloadManager.pause(taskBean.id)
+                    }
+
+                    else -> {
+                        Log.e("jingo", "暂停 ${taskBean.status}")
+                    }
                 }
-                FileDownloadStatus.LOADING, FileDownloadStatus.WAITING -> {
-                    Log.e("jingo", "暂停 ${taskBean.status}")
-                    downloadManager.pause(taskBean.id)
-                }
-                else -> {
-                    Log.e("jingo", "暂停 ${taskBean.status}")
-                }
+            } else {
+                Toast.makeText(downloadManager.context, "数据错误，无Link信息，无法执行下载！", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -55,10 +62,14 @@ class TaskListAdapter(
         if (it.tag != null) {
             val taskBean = data[it.tag as Int]
             Log.e("jingo", "开始上传 ${taskBean.syncStatus}")
-            when (taskBean.syncStatus) {
-                FileUploadStatus.NONE, FileUploadStatus.ERROR, FileUploadStatus.WAITING -> {
-                    uploadManager.start(taskBean.id)
+            if (taskBean.hadLinkDvoList.isNotEmpty()) {
+                when (taskBean.syncStatus) {
+                    FileUploadStatus.NONE, FileUploadStatus.UPLOADING, FileUploadStatus.ERROR, FileUploadStatus.WAITING -> {
+                        uploadManager.start(taskBean.id)
+                    }
                 }
+            }else{
+                Toast.makeText(uploadManager.context, "数据错误，无Link信息，无法执行同步！", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -159,19 +170,23 @@ class TaskListAdapter(
                 binding.taskUploadBtn.setProgress(0)
                 binding.taskUploadBtn.setBackgroundColor(binding.root.resources.getColor(R.color.ripple_end_color))
             }
+
             FileUploadStatus.ERROR -> {
                 binding.taskUploadBtn.stopAnimator()
                 binding.taskUploadBtn.setText("重新同步")
                 binding.taskUploadBtn.setProgress(100)
             }
+
             FileUploadStatus.NONE -> {
                 binding.taskUploadBtn.setText("未上传")
                 binding.taskUploadBtn.setProgress(0)
             }
+
             FileUploadStatus.WAITING -> {
                 binding.taskUploadBtn.setText("等待同步")
                 binding.taskUploadBtn.setProgress(100)
             }
+
             FileUploadStatus.UPLOADING -> {
                 binding.taskUploadBtn.setText("上传中")
                 binding.taskUploadBtn.setProgress(100)
@@ -202,26 +217,31 @@ class TaskListAdapter(
                     View.INVISIBLE
                 binding.taskDownloadBtn.setText("下载")
             }
+
             FileDownloadStatus.WAITING -> {
                 if (binding.taskProgressText.visibility != View.VISIBLE) binding.taskProgressText.visibility =
                     View.VISIBLE
                 binding.taskDownloadBtn.setText("等待中")
             }
+
             FileDownloadStatus.LOADING -> {
                 if (binding.taskProgressText.visibility != View.VISIBLE) binding.taskProgressText.visibility =
                     View.VISIBLE
                 binding.taskDownloadBtn.setText("暂停")
             }
+
             FileDownloadStatus.PAUSE -> {
                 if (binding.taskProgressText.visibility != View.VISIBLE) binding.taskProgressText.visibility =
                     View.VISIBLE
                 binding.taskDownloadBtn.setText("继续")
             }
+
             FileDownloadStatus.ERROR -> {
                 if (binding.taskProgressText.visibility != View.VISIBLE) binding.taskProgressText.visibility =
                     View.VISIBLE
                 binding.taskDownloadBtn.setText("重试")
             }
+
             FileDownloadStatus.DONE -> {
                 if (binding.taskProgressText.visibility == View.VISIBLE) binding.taskProgressText.visibility =
                     View.INVISIBLE
@@ -229,11 +249,13 @@ class TaskListAdapter(
                 binding.taskDownloadBtn.visibility = View.INVISIBLE
                 binding.taskUploadBtn.visibility = View.VISIBLE
             }
+
             FileDownloadStatus.UPDATE -> {
                 if (binding.taskProgressText.visibility == View.VISIBLE) binding.taskProgressText.visibility =
                     View.INVISIBLE
                 binding.taskDownloadBtn.setText("更新")
             }
+
             FileDownloadStatus.IMPORTING -> {
                 if (binding.taskProgressText.visibility != View.VISIBLE) binding.taskProgressText.visibility =
                     View.VISIBLE
@@ -251,7 +273,12 @@ class TaskListAdapter(
                 } else {
                     binding.taskProgressText.text = "0%"
                 }
+                val errMsg = taskBean.errMsg
+                if (errMsg != null && errMsg.isNotEmpty()) {
+                    Toast.makeText(binding.taskProgressText.context, errMsg, Toast.LENGTH_LONG).show()
+                }
             }
+
             FileDownloadStatus.IMPORT -> {
                 if (binding.taskProgressText.visibility != View.VISIBLE) binding.taskProgressText.visibility =
                     View.INVISIBLE

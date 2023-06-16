@@ -19,10 +19,10 @@ interface NetworkService {
     /**
      * 获取任务列表
      */
-    suspend fun getTaskList(evaluatorNo:String): NetResult<DefaultTaskResponse<List<TaskBean>>>
+    suspend fun getTaskList(evaluatorNo:String): NetResult<DefaultResponse<List<TaskBean>>>
 
     /**
      * 登录接口
      */
-    suspend fun loginUser(loginUserBean: LoginUserBean): NetResult<DefaultUserResponse<SysUserBean>>
+    suspend fun loginUser(loginUserBean: LoginUserBean): NetResult<DefaultResponse<SysUserBean>>
 }

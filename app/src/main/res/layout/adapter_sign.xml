@@ -27,7 +27,7 @@
         android:gravity="center"
         android:text="80"
         android:textColor="#2F2F2F"
-        android:textSize="14sp" />
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/sign_bottom_text"
@@ -65,9 +65,8 @@
 
     <ImageView
         android:id="@+id/sign_main_fast_error"
-        android:layout_marginRight="4dp"
+        android:layout_marginLeft="172dp"
         android:layout_marginTop="4dp"
-        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:background="@drawable/icon_evaluation"
         android:layout_width="wrap_content"

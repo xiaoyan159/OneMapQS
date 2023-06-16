@@ -16,7 +16,7 @@ import com.navinfo.omqs.ui.fragment.tasklist.QsRecordListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class QsRecordListFragment : BaseFragment(){
+class QsRecordListFragment(private var backListener: (() -> Unit?)? = null) : BaseFragment() {
     private var _binding: FragmentQsRecordListBinding? = null
     private val viewModel by viewModels<QsRecordListViewModel>()
     private val binding get() = _binding!!
@@ -44,7 +44,7 @@ class QsRecordListFragment : BaseFragment(){
         binding.qsRecyclerview.adapter = adapter
         viewModel.liveDataQSList.observe(viewLifecycleOwner) {
             adapter.refreshData(it)
-            binding.tvTitleCount.text = "共"+adapter.data.size+"条"
+            binding.tvTitleCount.text = "共" + adapter.data.size + "条"
         }
         val itemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         itemDecoration.setDrawable(resources.getDrawable(R.drawable.separator))
@@ -53,13 +53,13 @@ class QsRecordListFragment : BaseFragment(){
         // itemClick
         adapter.setOnKotlinItemClickListener(object : QsRecordListAdapter.IKotlinItemClickListener {
             override fun onItemClickListener(position: Int) {
-                viewModel.onItemClickListener(activity as MainActivity,position)
-                findNavController().popBackStack()
+                viewModel.onItemClickListener(activity as MainActivity, position)
+                backListener?.invoke()
             }
         })
 
-        binding.imgBack.setOnClickListener{
-            findNavController().navigateUp()
+        binding.imgBack.setOnClickListener {
+            backListener?.invoke()
         }
     }
 

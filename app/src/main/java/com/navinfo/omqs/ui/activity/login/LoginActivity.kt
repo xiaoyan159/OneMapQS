@@ -13,7 +13,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityLoginBinding
 import com.navinfo.omqs.ui.activity.CheckPermissionsActivity
-import com.navinfo.omqs.ui.activity.PermissionsActivity
 import com.navinfo.omqs.ui.activity.map.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 

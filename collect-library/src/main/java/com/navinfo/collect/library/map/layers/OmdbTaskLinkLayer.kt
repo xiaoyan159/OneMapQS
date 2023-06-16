@@ -84,5 +84,6 @@ class OmdbTaskLinkLayer(map: Map, private var style: Style) : VectorLayer(map) {
         }
         lineMap.clear()
         clearSelectLine()
+        update()
     }
 }

@@ -1636,54 +1636,52 @@
 
         <!--常规点限速-->
         <m v="OMDB_SPEEDLIMIT">
-            <m k="speedFlag">
-                <m v="0">
+            <m k="speedFlag" v="0">
 <!--                    <symbol src="assets:omdb/round_speedlimit.svg" symbol-width="30" symbol-height="30"></symbol>-->
-                    <caption k="maxSpeed" fill="#000000" priority="0" size="16" stroke="#ffffff"
+                    <caption k="maxSpeed" fill="#000000" priority="0" size="12" stroke="#ffffff"
                         stroke-width="1.0"></caption>
-                    <symbol src="assets:omdb/icon_4002_0.png" symbol-width="46" symbol-height="46"></symbol>
+                    <symbol src="assets:omdb/icon_4002_0.svg" symbol-width="46" symbol-height="46"></symbol>
                     <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
                         stroke-width="1.0"></caption>
-                </m>
-                <m v="1">
-                    <caption k="maxSpeed" fill="#000000" priority="0" size="14" stroke="#ffffff"
-                        stroke-width="1.0"></caption>
-                    <symbol src="assets:omdb/icon_4002_1.png" symbol-width="46" symbol-height="46"></symbol>
-                    <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
-                        stroke-width="1.0"></caption>
-                </m>
+            </m>
+            <m k="speedFlag" v="1">
+                <caption k="maxSpeed" fill="#000000" priority="0" size="12" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
+                <symbol src="assets:omdb/icon_4002_1.svg" symbol-width="46" symbol-height="46"></symbol>
+                <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
             </m>
         </m>
         <!--条件点限速-->
         <m v="OMDB_SPEEDLIMIT_COND">
             <m k="speedFlag" v="0">
                     <!--                    <symbol src="assets:omdb/round_speedlimit.svg" symbol-width="30" symbol-height="30"></symbol>-->
-                    <caption k="maxSpeed" fill="#000000" priority="0" size="14" stroke="#ffffff"
+                    <caption k="maxSpeed" fill="#000000" priority="0" size="12" stroke="#ffffff"
                         stroke-width="1.0"></caption>
-                    <symbol src="assets:omdb/icon_4003_0.png" symbol-width="46" symbol-height="46"></symbol>
+                    <symbol src="assets:omdb/icon_4003_0.svg" symbol-width="46" symbol-height="46"></symbol>
                     <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
                         stroke-width="1.0"></caption>
             </m>
-            <m k="speedFlag" v="0">
-                <caption k="maxSpeed" fill="#000000" priority="0" size="14" stroke="#ffffff"
+            <m k="speedFlag" v="1">
+                <caption k="maxSpeed" fill="#000000" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4003_1.png" symbol-width="46" symbol-height="46"></symbol>
+                <symbol src="assets:omdb/icon_4003_1.svg" symbol-width="46" symbol-height="46"></symbol>
                 <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
                     stroke-width="1.0"></caption>
             </m>
         </m>
         <!--可变点限速-->
         <m v="OMDB_SPEEDLIMIT_VAR">
-            <m v="0">
+            <m k="speedFlag"  v="0">
                 <!--                    <symbol src="assets:omdb/round_speedlimit.svg" symbol-width="30" symbol-height="30"></symbol>-->
-                <caption k="maxSpeed" fill="#000000" priority="0" size="14" stroke="#ffffff"
+                <caption k="maxSpeed" fill="#000000" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4004_0.png" symbol-width="46" symbol-height="46"></symbol>
+                <symbol src="assets:omdb/icon_4004_0.svg" symbol-width="46" symbol-height="46"></symbol>
                 <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
                     stroke-width="1.0"></caption>
             </m>
-            <m v="1">
-                <caption k="maxSpeed" fill="#000000" priority="0" size="14" stroke="#ffffff"
+            <m k="speedFlag" v="1">
+                <caption k="maxSpeed" fill="#000000" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
                 <symbol src="assets:omdb/icon_4004_1.png" symbol-width="46" symbol-height="46"></symbol>
                 <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
@@ -1773,25 +1771,19 @@
         </m>
         <!--交通灯-->
         <m v="OMDB_TRAFFICLIGHT">
-            <symbol src="assets:omdb/icon_4022_0.png" repeat="false" symbol-width="14" symbol-height="40" rotate="false"></symbol>
+            <symbol src="assets:omdb/icon_4022_0.svg" repeat="false" symbol-width="46" symbol-height="46" rotate="false"></symbol>
         </m>
         <!--普通交限-->
         <m v="OMDB_RESTRICTION">
             <m k="angle">
-                <symbol src="assets:omdb/icon_4006_0.png" repeat="false" symbol-width="35" symbol-height="35" rotate="false" repeat-start="0" ></symbol>
-                <symbol src="assets:omdb/icon_4004_0.png" repeat="false" symbol-width="35" symbol-height="35" rotate="false" repeat-start="0" ></symbol>
-                <symbol src="assets:omdb/icon_4004_1.png" repeat="false" symbol-width="35" symbol-height="35" rotate="false" repeat-start="0" ></symbol>
+                <symbol src="assets:omdb/icon_4006_0.svg" repeat="false" symbol-width="46" symbol-height="46" rotate="false" repeat-start="0" ></symbol>
             </m>
-<!--            <m k="type" v="angle">-->
-<!--                <symbol src="assets:omdb/icon_arrow_right.png" repeat-start="0" repeat-gap="2000" symbol-percent="45" repeat="false" rotate="true"></symbol>-->
-<!--            </m>-->
-<!--            <m k="type" v="s_2_e">-->
-<!--                <line stroke="#14582c" width="0.1" dasharray="1,1" repeat-gap="3" repeat-start="0"/>-->
-<!--            </m>-->
-        </m>
-        <!--交通灯-->
-        <m v="OMDB_AREA">
-            <area stroke="#ff0000" stroke-width="2" src="assets:omdb/area_test.jpg"></area>
+            <m k="type" v="angle">
+                <symbol src="assets:omdb/icon_arrow_right.svg" repeat-start="0" repeat-gap="2000" symbol-percent="45" repeat="false" rotate="true"></symbol>
+            </m>
+            <m k="type" v="s_2_e">
+                <line stroke="#14582c" width="0.1" dasharray="1,1" repeat-gap="3" repeat-start="0"/>
+            </m>
         </m>
     </m>
 </rendertheme>

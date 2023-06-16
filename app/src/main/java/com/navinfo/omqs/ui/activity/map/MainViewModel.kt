@@ -78,6 +78,9 @@ class MainViewModel @Inject constructor(
 
 //    var testPoint = GeoPoint(0, 0)
 
+    //uuid标识，用于记录轨迹组
+    val uuid = UUID.randomUUID().toString()
+
     //语音窗体
     private var pop: PopupWindow? = null
 
@@ -160,15 +163,9 @@ class MainViewModel @Inject constructor(
     }
 
     private fun initLocation() {
-        //        mapController.locationLayerHandler.setNiLocationListener(NiLocationListener {
-//            addSaveTrace(it)
-//
-//        })
         //用于定位点存储到数据库
         viewModelScope.launch(Dispatchers.Default) {
             mapController.locationLayerHandler.niLocationFlow.collect { location ->
-//                location.longitude = testPoint.longitude
-//                location.latitude = testPoint.latitude
                 val geometry = GeometryTools.createGeometry(
                     GeoPoint(
                         location.latitude, location.longitude
@@ -186,7 +183,13 @@ class MainViewModel @Inject constructor(
                         location.tiley = y
                     }
                 }
-                Log.e("jingo", "定位点插入 ${Thread.currentThread().name}")
+                Log.e("jingo", "定位点插入 ${location.longitude}")
+                location.groupId = uuid
+                try {
+                    location.timeStamp = DateTimeUtil.getTime(location.time).toString()
+                }catch (e: Exception){
+
+                }
                 traceDataBase.niLocationDao.insert(location)
                 mapController.mMapView.vtmMap.updateMap(true)
             }
@@ -194,8 +197,6 @@ class MainViewModel @Inject constructor(
         //用于定位点捕捉道路
         viewModelScope.launch(Dispatchers.Default) {
             mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
-//                location.longitude = testPoint.longitude
-//                location.latitude = testPoint.latitude
                 if (!isSelectRoad()) captureLink(GeoPoint(location.latitude, location.longitude))
             }
         }
@@ -292,9 +293,10 @@ class MainViewModel @Inject constructor(
                     }
                     linkIdCache = linkId ?: ""
                     Log.e("jingo", "自动捕捉数据 共${signList.size}条")
-                } else {
-                    mapController.lineHandler.removeLine()
                 }
+            }else{
+                mapController.lineHandler.removeLine()
+                linkIdCache = ""
             }
         }
     }
