@@ -423,6 +423,7 @@
             android:background="@drawable/icon_main_bottom_route"
             app:layout_constraintBottom_toTopOf="@id/main_bottom_route_text"
             app:layout_constraintLeft_toRightOf="@id/main_bottom_offline_map"
+            android:onClick="@{()->mainActivity.onClickRouteFragment()}"
             app:layout_constraintRight_toRightOf="@id/main_activity_bottom_sheet_bg"
             app:layout_constraintTop_toTopOf="@id/main_bottom_task"
             app:layout_constraintVertical_chainStyle="packed" />
@@ -434,6 +435,7 @@
             android:text="路径规划"
             android:textColor="@color/blue"
             android:textSize="10sp"
+            android:onClick="@{()->mainActivity.onClickRouteFragment()}"
             app:layout_constraintBottom_toBottomOf="@id/main_activity_bottom_sheet_bg"
             app:layout_constraintLeft_toLeftOf="@id/main_bottom_route"
             app:layout_constraintRight_toRightOf="@id/main_bottom_route"

@@ -440,6 +440,12 @@ class MainActivity : BaseActivity() {
      */
     fun onSwitchSheet() {
         if (binding.mainActivityBottomSheetGroup.visibility == View.VISIBLE) {
+            leftFragment?.let {
+                supportFragmentManager.beginTransaction().remove(it).commit()
+                leftFragment = null
+                binding.mainActivityLeftFragment.visibility = View.GONE
+            }
+
             binding.mainActivityBottomSheetGroup.visibility = View.GONE
         } else {
             binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
@@ -498,6 +504,13 @@ class MainActivity : BaseActivity() {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.main_activity_left_fragment, leftFragment!!).commit()
         }
+    }
+
+    /**
+     * 路径规划
+     */
+    fun onClickRouteFragment() {
+        Toast.makeText(this, "功能开发中", Toast.LENGTH_SHORT).show()
     }
 
     /**
