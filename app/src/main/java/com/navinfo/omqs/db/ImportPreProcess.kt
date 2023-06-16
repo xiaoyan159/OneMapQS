@@ -119,13 +119,27 @@ class ImportPreProcess {
      * 解析车道边线数据二级属性
      * */
     fun unpackingLaneBoundary(renderEntity: RenderEntity) {
+        var shape:JSONObject = JSONObject(mapOf(
+            "lateralOffset" to 0,
+            "markType" to 1,
+            "markColor" to 0,
+            "markMaterial" to 1,
+            "markSeqNum" to 1,
+            "markWidth" to 10,
+            "markingCount" to 1
+        ))
         if (renderEntity.code == 2013&&!renderEntity.properties["shapeList"].isNullOrEmpty()&&renderEntity.properties["shapeList"]!="null") {
             // 解析shapeList，将数组中的属性放会properties
             val shapeList = JSONArray(renderEntity.properties["shapeList"])
-            val shape = shapeList.getJSONObject(0)
-            for (key in shape.keys()) {
-                renderEntity.properties[key] = shape[key].toString()
+            for (i in 0 until shapeList.length()) {
+                shape = shapeList.getJSONObject(i)
+                if (shape.optInt("lateralOffset", 0) == 0) {
+                    break
+                }
             }
+        }
+        for (key in shape.keys()) {
+            renderEntity.properties[key] = shape[key].toString()
         }
     }
 

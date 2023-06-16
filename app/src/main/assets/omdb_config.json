@@ -170,6 +170,11 @@
             "table": "OMDB_LANE_LINK_LG",
             "code": 5001,
             "name": "车道中心线"
-        }
+        },
+		"5002":{
+			"table": "OMDB_AREA",
+			"code": 5002,
+			"name": "面测试"
+		}
 	}
 }
