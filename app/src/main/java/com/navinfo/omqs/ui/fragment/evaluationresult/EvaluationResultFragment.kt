@@ -98,17 +98,14 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
                     voiceOnTouchStart()//Do Something
-                    Log.e("qj", "voiceOnTouchStart")
                 }
 
                 MotionEvent.ACTION_UP -> {
                     voiceOnTouchStop()//Do Something
-                    Log.e("qj", "ACTION_UP")
                 }
 
                 MotionEvent.ACTION_CANCEL -> {
                     voiceOnTouchStop()//Do Something
-                    Log.e("qj", "ACTION_CANCEL")
                 }
             }
             true

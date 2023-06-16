@@ -34,15 +34,12 @@ class OfflineMapCityListAdapter(
             val cityBean = data[it.tag as Int]
             when (cityBean.status) {
                 FileDownloadStatus.NONE, FileDownloadStatus.UPDATE, FileDownloadStatus.PAUSE, FileDownloadStatus.ERROR -> {
-                    Log.e("jingo", "开始下载 ${cityBean.status}")
                     downloadManager.start(cityBean.id)
                 }
                 FileDownloadStatus.LOADING, FileDownloadStatus.WAITING -> {
-                    Log.e("jingo", "暂停 ${cityBean.status}")
                     downloadManager.pause(cityBean.id)
                 }
                 else -> {
-                    Log.e("jingo", "暂停 ${cityBean.status}")
                 }
             }
         }
@@ -85,7 +82,6 @@ class OfflineMapCityListAdapter(
                 if (id == holder.tag) {
                     val binding: AdapterOfflineMapCityBinding =
                         holder.viewBinding as AdapterOfflineMapCityBinding
-                    Log.e("jingo", "进度条更新 $id ${bean.id} ${holder.tag} ")
                     changeViews(binding, bean)
                 }
             }
@@ -95,7 +91,6 @@ class OfflineMapCityListAdapter(
 
 
     private fun changeViews(binding: AdapterOfflineMapCityBinding, cityBean: OfflineMapCityBean) {
-        Log.e("jingo", "changeViews ${cityBean.status}")
         binding.offlineMapProgress.progress =
             (cityBean.currentSize * 100 / cityBean.fileSize).toInt()
         when (cityBean.status) {

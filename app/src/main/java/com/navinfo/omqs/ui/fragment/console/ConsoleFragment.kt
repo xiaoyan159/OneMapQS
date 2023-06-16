@@ -64,14 +64,12 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
             override fun onTransitionStart(transition: androidx.transition.Transition) {
                 sceneFlag = true
                 if (mFragment != null) {
-                    Log.e("jingo", "动画开始B mFragment 不为null")
                     childFragmentManager.beginTransaction().remove(mFragment!!).commit()
                     mFragment = null
                 }
             }
 
             override fun onTransitionEnd(transition: androidx.transition.Transition) {
-                Log.e("jingo", "动画A结束")
                 initOnClickListener()
             }
 
@@ -89,7 +87,6 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
             override fun onTransitionStart(transition: androidx.transition.Transition) {
                 sceneFlag = false
                 if (mFragment != null) {
-                    Log.e("jingo", "动画开始A mFragment 不为null")
                     childFragmentManager.beginTransaction().replace(fragmentId, mFragment!!)
                         .commit()
                 }

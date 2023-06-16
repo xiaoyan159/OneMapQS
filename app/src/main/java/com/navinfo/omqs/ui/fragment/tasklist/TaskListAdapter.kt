@@ -39,17 +39,14 @@ class TaskListAdapter(
             if (taskBean.hadLinkDvoList.isNotEmpty()) {
                 when (taskBean.status) {
                     FileDownloadStatus.NONE, FileDownloadStatus.UPDATE, FileDownloadStatus.PAUSE, FileDownloadStatus.IMPORT, FileDownloadStatus.ERROR -> {
-                        Log.e("jingo", "开始下载 ${taskBean.status}")
                         downloadManager.start(taskBean.id)
                     }
 
                     FileDownloadStatus.LOADING, FileDownloadStatus.WAITING -> {
-                        Log.e("jingo", "暂停 ${taskBean.status}")
                         downloadManager.pause(taskBean.id)
                     }
 
                     else -> {
-                        Log.e("jingo", "暂停 ${taskBean.status}")
                     }
                 }
             } else {
@@ -61,7 +58,6 @@ class TaskListAdapter(
     private val uploadBtnClick = View.OnClickListener() {
         if (it.tag != null) {
             val taskBean = data[it.tag as Int]
-            Log.e("jingo", "开始上传 ${taskBean.syncStatus}")
             if (taskBean.hadLinkDvoList.isNotEmpty()) {
                 when (taskBean.syncStatus) {
                     FileUploadStatus.NONE, FileUploadStatus.UPLOADING, FileUploadStatus.ERROR, FileUploadStatus.WAITING -> {

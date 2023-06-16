@@ -263,7 +263,6 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         mContext.lifecycleScope.launch(Dispatchers.IO) {
             var list = mutableListOf<QsRecordBean>()
             val realm = Realm.getDefaultInstance()
-            Log.e("jingo", "realm hashCOde ${realm.hashCode()}")
             realm.executeTransaction {
                 val objects = realm.where<QsRecordBean>().findAll()
                 list = realm.copyFromRealm(objects)

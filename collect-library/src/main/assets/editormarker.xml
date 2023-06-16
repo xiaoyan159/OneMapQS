@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rendertheme xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" map-background="#f4f4f4"
-    version="1" xmlns="http://opensciencemap.org/rendertheme"
-    xsi:schemaLocation="http://opensciencemap.org/rendertheme
+    version="1" xmlns="http://opensciencemap.org/rendertheme" xsi:schemaLocation="http://opensciencemap.org/rendertheme
     https://raw.githubusercontent.com/mapsforge/vtm/master/resources/rendertheme.xsd">
 
     <!--###### TRANSFORM tags ######-->
@@ -46,8 +45,8 @@
     <!--references-->
     <style-text style="bold" fill="#606060" id="ref" k="ref" priority="2" size="12" stroke="#ffffff"
         stroke-width="2.0" />
-    <style-text caption="true" style="bold" fill="#ffffff" id="ref-caption" k="ref" priority="2"
-        size="12" bg-fill="#45a976" />
+    <style-text style="bold" bg-fill="#45a976" caption="true" fill="#ffffff" id="ref-caption" k="ref"
+        priority="2" size="12" />
     <!--ferry-->
     <style-text style="bold" fill="#606060" id="ferry" k="name" size="12" stroke="#ffffff"
         stroke-width="2.0" />
@@ -174,7 +173,7 @@
     <style-symbol id="oneway" repeat="true" src="assets:symbols/oneway.svg" />
 
     <!-- omdb -->
-    <style-line id="boundaryType" width="0.1" stipple-width="0.1"  />
+    <style-line id="boundaryType" stipple-width="0.1" width="0.1" />
 
     <!--###### ASSIGNMENT ######-->
 
@@ -1480,18 +1479,19 @@
     </m>
 
     <!-- 自定义渲染样式 -->
-    <m k="navi_type" zoom-min="15" zoom-max="22">
+    <m k="navi_type" zoom-max="22" zoom-min="15">
         <!-- 车道中心线 -->
         <m v="had_lane_link">
-            <line stroke="#ff0000" stipple-stroke="#00000000" dasharray="20,20" fix="true" width="0.3"  />
+            <line dasharray="20,20" fix="true" stipple-stroke="#00000000" stroke="#ff0000"
+                width="0.3" />
         </m>
         <!-- 车道边线 -->
         <m v="had_lane_mark_link">
-            <line stroke="#0000ff" width="0.1" stipple-width="0.5"/>
+            <line stipple-width="0.5" stroke="#0000ff" width="0.1" />
         </m>
         <!--道路箭头 objectArrow-->
         <m v="object_arrow">
-            <area fill="#88aaaa00" stroke="#ff0000" stroke-width="0.1" fade="5"></area>
+            <area fade="5" fill="#88aaaa00" stroke="#ff0000" stroke-width="0.1"></area>
         </m>
         <!--人行横道 objectcrosswalk-->
         <m v="object_crosswalk">
@@ -1503,7 +1503,7 @@
         </m>
         <!--杆状物 objectpole-->
         <m v="object_pole">
-            <line stroke="#8800aaaa" width="0.1" stipple-width="0.5"/>
+            <line stipple-width="0.5" stroke="#8800aaaa" width="0.1" />
         </m>
         <!--对象标志 objectsymbol-->
         <m v="object_symbol">
@@ -1514,7 +1514,7 @@
             <area fill="#8800cc00" stroke="#00cc00" stroke-width="0.2"></area>
         </m>
 
-        <m zoom-min="15" zoom-max="19">
+        <m zoom-max="19" zoom-min="15">
             <text use="ferry" />
         </m>
 
@@ -1538,19 +1538,20 @@
 
     <m k="nav_style">
         <m v="symbol_object_line">
-            <m k="rule" zoom-min="15" zoom-max="22">
+            <m k="rule" zoom-max="22" zoom-min="15">
                 <!-- 蓝色黑色间隔线 -->
                 <m v="blue_link">
-                    <line stroke="#00000000" stipple-stroke="#00000000" dasharray="20,20" fix="true" width="0.1"  />
+                    <line dasharray="20,20" fix="true" stipple-stroke="#00000000" stroke="#00000000"
+                        width="0.1" />
                 </m>
                 <!-- 黄色线 -->
                 <m v="yellow_link">
-                    <line stroke="#f4ea2a" width="0.1" stipple-width="0.1"/>
+                    <line stipple-width="0.1" stroke="#f4ea2a" width="0.1" />
                 </m>
             </m>
-            <line stroke="#33aaaa" width="0.3" stipple-width="0.5"/>
+            <line stipple-width="0.5" stroke="#33aaaa" width="0.3" />
         </m>
-        <m v="symbol_track_point" zoom-min="10" zoom-max="25">
+        <m v="symbol_track_point" zoom-max="25" zoom-min="10">
             <symbol src="assets:symbols/dot_blue.svg" />
         </m>
     </m>
@@ -1560,88 +1561,88 @@
         <m v="OMDB_LANE_NUM">
             <m k="laneNum">
                 <m v="1">
-                    <line stroke="#545D6C" width="3"/>
+                    <line stroke="#545D6C" width="3" />
                 </m>
                 <m v="2">
-                    <line stroke="#545D6C" width="6"/>
+                    <line stroke="#545D6C" width="6" />
                 </m>
                 <m v="3">
-                    <line stroke="#545D6C" width="9"/>
+                    <line stroke="#545D6C" width="9" />
                 </m>
                 <m v="4">
-                    <line stroke="#545D6C" width="12"/>
+                    <line stroke="#545D6C" width="12" />
                 </m>
                 <m v="5">
-                    <line stroke="#545D6C" width="15"/>
+                    <line stroke="#545D6C" width="15" />
                 </m>
                 <m v="6">
                     <line stroke="#545D6C" width="18" />
                 </m>
                 <m v="7">
-                    <line stroke="#545D6C" width="21"/>
+                    <line stroke="#545D6C" width="21" />
                 </m>
                 <m v="8">
-                    <line stroke="#545D6C" width="24"/>
+                    <line stroke="#545D6C" width="24" />
                 </m>
                 <m v="9">
-                    <line stroke="#545D6C" width="27"/>
+                    <line stroke="#545D6C" width="27" />
                 </m>
                 <m v="10">
-                    <line stroke="#545D6C" width="30"/>
+                    <line stroke="#545D6C" width="30" />
                 </m>
                 <m v="11">
-                    <line stroke="#545D6C" width="33"/>
+                    <line stroke="#545D6C" width="33" />
                 </m>
                 <m v="12">
-                    <line stroke="#545D6C" width="36"/>
+                    <line stroke="#545D6C" width="36" />
                 </m>
             </m>
         </m>
         <!-- 道路线 -->
         <m v="OMDB_RD_LINK">
-            <line stroke="#9c9c9c" width="1"/>
+            <line stroke="#9c9c9c" width="1" />
         </m>
         <!--道路种别-->
         <m v="OMDB_RD_LINK_KIND">
             <m k="kind">
                 <m v="1">
-                    <line stroke="#fcacd4" width="1"/>
+                    <line stroke="#fcacd4" width="1" />
                 </m>
                 <m v="2">
-                    <line stroke="#dcacfc" width="1"/>
+                    <line stroke="#dcacfc" width="1" />
                 </m>
                 <m v="3">
-                    <line stroke="#fc9c9c" width="1"/>
+                    <line stroke="#fc9c9c" width="1" />
                 </m>
                 <m v="4">
-                    <line stroke="#fcd484" width="1"/>
+                    <line stroke="#fcd484" width="1" />
                 </m>
                 <m v="5">
-                    <line stroke="#ecfccc" width="1"/>
+                    <line stroke="#ecfccc" width="1" />
                 </m>
                 <m v="6">
-                    <line stroke="#acec84" width="1"/>
+                    <line stroke="#acec84" width="1" />
                 </m>
                 <m v="7">
-                    <line stroke="#806048" width="1"/>
+                    <line stroke="#806048" width="1" />
                 </m>
                 <m v="8">
-                    <line stroke="#fcfc7c" width="1"/>
+                    <line stroke="#fcfc7c" width="1" />
                 </m>
                 <m v="9">
-                    <line stroke="#acc4fc" width="1"/>
+                    <line stroke="#acc4fc" width="1" />
                 </m>
                 <m v="10">
-                    <line stroke="#8cc8e0" width="1"/>
+                    <line stroke="#8cc8e0" width="1" />
                 </m>
                 <m v="11">
-                    <line stroke="#64ecdc" width="1"/>
+                    <line stroke="#64ecdc" width="1" />
                 </m>
                 <m v="13">
-                    <line stroke="#585080" width="1"/>
+                    <line stroke="#585080" width="1" />
                 </m>
                 <m v="15">
-                    <line stroke="#647430" width="1"/>
+                    <line stroke="#647430" width="1" />
                 </m>
             </m>
         </m>
@@ -1650,67 +1651,71 @@
         <m v="OMDB_SPEEDLIMIT">
             <m k="speedFlag">
                 <m v="0">
-<!--                    <symbol src="assets:omdb/round_speedlimit.svg" symbol-width="30" symbol-height="30"></symbol>-->
-                    <caption k="maxSpeed" fill="#000000" priority="0" size="12" stroke="#ffffff"
+                    <!--                    <symbol src="assets:omdb/round_speedlimit.svg" symbol-width="30" symbol-height="30"></symbol>-->
+                    <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                         stroke-width="1.0"></caption>
-                    <symbol src="assets:omdb/icon_4002_0.svg" symbol-width="46" symbol-height="46"></symbol>
-                    <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
-                        stroke-width="1.0"></caption>
+                    <symbol src="assets:omdb/icon_4002_0.svg" symbol-height="46"
+                        symbol-width="46"></symbol>
+                    <!--                    <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"-->
+                    <!--                        stroke-width="1.0"></caption>-->
                 </m>
                 <m v="1">
-                    <caption k="maxSpeed" fill="#000000" priority="0" size="12" stroke="#ffffff"
+                    <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                         stroke-width="1.0"></caption>
-                    <symbol src="assets:omdb/icon_4002_1.svg" symbol-width="46" symbol-height="46"></symbol>
-                    <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
-                        stroke-width="1.0"></caption>
+                    <symbol src="assets:omdb/icon_4002_1.svg" symbol-height="46"
+                        symbol-width="46"></symbol>
+                    <!--                    <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"-->
+                    <!--                        stroke-width="1.0"></caption>-->
                 </m>
             </m>
         </m>
         <!--条件点限速-->
         <m v="OMDB_SPEEDLIMIT_COND">
-            <m k="speedFlag">
-                <m v="0">
-                    <!--                    <symbol src="assets:omdb/round_speedlimit.svg" symbol-width="30" symbol-height="30"></symbol>-->
-                    <caption k="maxSpeed" fill="#000000" priority="0" size="12" stroke="#ffffff"
-                        stroke-width="1.0"></caption>
-                    <symbol src="assets:omdb/icon_4003_0.svg" symbol-width="46" symbol-height="46"></symbol>
-                    <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
-                        stroke-width="1.0"></caption>
-                </m>
-                <m v="1">
-                    <caption k="maxSpeed" fill="#000000" priority="0" size="12" stroke="#ffffff"
-                        stroke-width="1.0"></caption>
-                    <symbol src="assets:omdb/icon_4003_1.svg" symbol-width="46" symbol-height="46"></symbol>
-                    <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
-                        stroke-width="1.0"></caption>
-                </m>
+            <m k="speedFlag" v="0">
+                <!--                    <symbol src="assets:omdb/round_speedlimit.svg" symbol-width="30" symbol-height="30"></symbol>-->
+                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
+                <symbol src="assets:omdb/icon_4003_0.svg" symbol-height="46"
+                    symbol-width="46"></symbol>
+                <!--                    <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"-->
+                <!--                        stroke-width="1.0"></caption>-->
+            </m>
+            <m k="speedFlag" v="1">
+                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
+                <symbol src="assets:omdb/icon_4003_1.svg" symbol-height="46"
+                    symbol-width="46"></symbol>
+                <!--                    <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"-->
+                <!--                        stroke-width="1.0"></caption>-->
             </m>
         </m>
         <!--可变点限速-->
         <m v="OMDB_SPEEDLIMIT_VAR">
             <m v="0">
                 <!--                    <symbol src="assets:omdb/round_speedlimit.svg" symbol-width="30" symbol-height="30"></symbol>-->
-                <caption k="maxSpeed" fill="#000000" priority="0" size="12" stroke="#ffffff"
+                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4004_0.svg" symbol-width="46" symbol-height="46"></symbol>
-                <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
-                    stroke-width="1.0"></caption>
+                <symbol src="assets:omdb/icon_4004_0.svg" symbol-height="46"
+                    symbol-width="46"></symbol>
+                <caption dy="-28" fill="#000000" k="minSpeed" priority="0" size="14"
+                    stroke="#ffffff" stroke-width="1.0"></caption>
             </m>
             <m v="1">
-                <caption k="maxSpeed" fill="#000000" priority="0" size="12" stroke="#ffffff"
+                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4004_1.png" symbol-width="46" symbol-height="46"></symbol>
-                <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"
-                    stroke-width="1.0"></caption>
+                <symbol src="assets:omdb/icon_4004_1.svg" symbol-height="46"
+                    symbol-width="46"></symbol>
+                <caption dy="-28" fill="#000000" k="minSpeed" priority="0" size="14"
+                    stroke="#ffffff" stroke-width="1.0"></caption>
             </m>
         </m>
         <!--车道中心线-->
         <m v="OMDB_LANE_LINK_LG">
-            <line stroke="#ecf0f1" width="0.1" dasharray="35,35"/>
+            <line dasharray="35,35" stroke="#ecf0f1" width="0.1" />
         </m>
         <!-- 道路边界类型 -->
         <m v="OMDB_RDBOUND_BOUNDARYTYPE">
-            <line stroke="#ffffff" width="0.1"/>
+            <line stroke="#ffffff" width="0.1" />
         </m>
         <!-- 车道边界类型 -->
         <m v="OMDB_LANE_MARK_BOUNDARYTYPE">
@@ -1723,19 +1728,19 @@
                         <m v="0|1">
                             <m k="markColor">
                                 <m v="0|1">
-                                    <line stroke="#ffffff" use="boundaryType"/>
+                                    <line stroke="#ffffff" use="boundaryType" />
                                 </m>
                                 <m v="2">
-                                    <line stroke="#eccc68" use="boundaryType"/>
+                                    <line stroke="#eccc68" use="boundaryType" />
                                 </m>
                                 <m v="6">
-                                    <line stroke="#0000ff" use="boundaryType"/>
+                                    <line stroke="#0000ff" use="boundaryType" />
                                 </m>
                                 <m v="7">
-                                    <line stroke="#00ff00" use="boundaryType"/>
+                                    <line stroke="#00ff00" use="boundaryType" />
                                 </m>
                                 <m v="9">
-                                    <line stroke="#8e44ad" use="boundaryType"/>
+                                    <line stroke="#8e44ad" use="boundaryType" />
                                 </m>
                             </m>
                         </m>
@@ -1743,31 +1748,32 @@
                         <m v="2">
                             <m k="markColor">
                                 <m v="0|1">
-                                    <line stroke="#ffffff" use="boundaryType" dasharray="3,13"/>
+                                    <line dasharray="3,13" stroke="#ffffff" use="boundaryType" />
                                 </m>
                                 <m v="2">
-                                    <line stroke="#eccc68" use="boundaryType" dasharray="3,3"/>
+                                    <line dasharray="3,3" stroke="#eccc68" use="boundaryType" />
                                 </m>
                                 <m v="6">
-                                    <line stroke="#0000ff" use="boundaryType" dasharray="3,3"/>
+                                    <line dasharray="3,3" stroke="#0000ff" use="boundaryType" />
                                 </m>
                                 <m v="7">
-                                    <line stroke="#00ff00" use="boundaryType" dasharray="3,3"/>
+                                    <line dasharray="3,3" stroke="#00ff00" use="boundaryType" />
                                 </m>
                                 <m v="9">
-                                    <line stroke="#8e44ad" use="boundaryType" dasharray="3,3"/>
+                                    <line dasharray="3,3" stroke="#8e44ad" use="boundaryType" />
                                 </m>
                             </m>
                         </m>
                         <!--导流区边线-->
                         <m v="4">
                             <line outline="boundary" stroke="#545D6C"></line>
-                            <lineSymbol src="assets:omdb/icon_right.png" repeat-start="0" repeat-gap="0.5"/>
+                            <lineSymbol repeat-gap="0.5" repeat-start="0"
+                                src="assets:omdb/icon_right.png" />
                         </m>
-<!--                        &lt;!&ndash;铺设路面边缘&ndash;&gt;-->
-<!--                        <m v="5">-->
-<!--                            <line outline="#ffffff" fix="true" src="assets:omdb/icon_close.png" stroke="#ffffffff" use="boundaryType"/>-->
-<!--                        </m>-->
+                        <!--                        &lt;!&ndash;铺设路面边缘&ndash;&gt;-->
+                        <!--                        <m v="5">-->
+                        <!--                            <line outline="#ffffff" fix="true" src="assets:omdb/icon_close.png" stroke="#ffffffff" use="boundaryType"/>-->
+                        <!--                        </m>-->
                     </m>
                 </m>
             </m>
@@ -1776,29 +1782,33 @@
         <m v="OMDB_LINK_DIRECT">
             <m k="direct">
                 <m v="2">
-<!--                    <lineSymbol src="assets:omdb/oneway_right.svg"></lineSymbol>-->
-                    <lineSymbol src="assets:omdb/oneway_right.svg" ></lineSymbol>
+                    <!--                    <lineSymbol src="assets:omdb/oneway_right.svg"></lineSymbol>-->
+                    <lineSymbol src="assets:omdb/oneway_right.svg"></lineSymbol>
                 </m>
                 <m v="3">
-<!--                    <lineSymbol src="assets:omdb/oneway_left.svg"></lineSymbol>-->
+                    <!--                    <lineSymbol src="assets:omdb/oneway_left.svg"></lineSymbol>-->
                     <lineSymbol src="assets:omdb/oneway_left.svg"></lineSymbol>
                 </m>
             </m>
         </m>
         <!--交通灯-->
         <m v="OMDB_TRAFFICLIGHT">
-            <symbol src="assets:omdb/icon_4022_0.svg" repeat="false" symbol-width="46" symbol-height="46" rotate="false"></symbol>
+            <symbol repeat="false" rotate="false" src="assets:omdb/icon_4022_0.svg"
+                symbol-height="69" symbol-width="69"></symbol>
         </m>
         <!--普通交限-->
         <m v="OMDB_RESTRICTION">
             <m k="angle">
-                <symbol src="assets:omdb/icon_4006_0.svg" repeat="false" symbol-width="46" symbol-height="46" rotate="false" repeat-start="0" ></symbol>
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_4006_0.svg" symbol-height="69" symbol-width="69"></symbol>
             </m>
             <m k="type" v="angle">
-                <symbol src="assets:omdb/icon_arrow_right.svg" repeat-start="0" repeat-gap="2000" symbol-percent="45" repeat="false" rotate="true"></symbol>
+                <symbol repeat="false" repeat-gap="2000" repeat-start="0"
+                    rotate="true" src="assets:omdb/icon_arrow_right.svg" symbol-height="76" symbol-width="76"></symbol>
             </m>
             <m k="type" v="s_2_e">
-                <line stroke="#14582c" width="0.1" dasharray="1,1" repeat-gap="3" repeat-start="0"/>
+                <line dasharray="1,1" repeat-gap="3" repeat-start="0" stroke="#14582c"
+                    width="0.1" />
             </m>
         </m>
     </m>

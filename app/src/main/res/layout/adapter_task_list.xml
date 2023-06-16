@@ -97,7 +97,6 @@
 
     <TextView
         android:id="@+id/task_progress_text"
-        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/task_download_btn"
