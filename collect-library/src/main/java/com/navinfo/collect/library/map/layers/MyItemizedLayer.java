@@ -89,7 +89,6 @@ public class MyItemizedLayer extends ItemizedLayer {
     private boolean activateSelectedItems(MotionEvent event, ActiveItem task) {
         int size = this.mItemList.size();
 
-        Log.e("jingo", "地图点击 size =" + size);
         if (size == 0) {
             return false;
         } else {

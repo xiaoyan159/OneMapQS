@@ -128,12 +128,16 @@
         android:src="@drawable/icon_console_task"
         app:layout_constraintBottom_toBottomOf="@id/console_task_bg"
         app:layout_constraintLeft_toLeftOf="@id/console_task_bg"
-        app:layout_constraintTop_toTopOf="@id/console_task_bg" />
+        app:layout_constraintRight_toLeftOf="@id/console_task_icon_text"
+        app:layout_constraintTop_toTopOf="@id/console_task_bg"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
+        android:id="@+id/console_task_icon_text"
         style="@style/console_on_left_bottom_text"
         android:text="测评任务"
         app:layout_constraintBottom_toBottomOf="@id/console_task_bg"
+        app:layout_constraintLeft_toRightOf="@id/console_task_icon"
         app:layout_constraintRight_toRightOf="@id/console_task_bg"
         app:layout_constraintTop_toTopOf="@id/console_task_bg" />
 
@@ -154,12 +158,16 @@
         android:src="@drawable/icon_console_evaluation"
         app:layout_constraintBottom_toBottomOf="@id/console_evaluation_bg"
         app:layout_constraintLeft_toLeftOf="@id/console_evaluation_bg"
-        app:layout_constraintTop_toTopOf="@id/console_evaluation_bg" />
+        app:layout_constraintRight_toLeftOf="@id/console_evaluation_icon_text"
+        app:layout_constraintTop_toTopOf="@id/console_evaluation_bg"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
+        android:id="@+id/console_evaluation_icon_text"
         style="@style/console_on_left_bottom_text"
         android:text="测评结果"
         app:layout_constraintBottom_toBottomOf="@id/console_evaluation_bg"
+        app:layout_constraintLeft_toRightOf="@id/console_evaluation_icon"
         app:layout_constraintRight_toRightOf="@id/console_evaluation_bg"
         app:layout_constraintTop_toTopOf="@id/console_evaluation_bg" />
 
@@ -180,12 +188,16 @@
         android:src="@drawable/icon_console_offline_map"
         app:layout_constraintBottom_toBottomOf="@id/console_offline_map_bg"
         app:layout_constraintLeft_toLeftOf="@id/console_offline_map_bg"
-        app:layout_constraintTop_toTopOf="@id/console_offline_map_bg" />
+        app:layout_constraintRight_toLeftOf="@id/console_offline_map_icon_text"
+        app:layout_constraintTop_toTopOf="@id/console_offline_map_bg"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
+        android:id="@+id/console_offline_map_icon_text"
         style="@style/console_on_left_bottom_text"
         android:text="离线地图"
         app:layout_constraintBottom_toBottomOf="@id/console_offline_map_bg"
+        app:layout_constraintLeft_toRightOf="@id/console_offline_map_icon"
         app:layout_constraintRight_toRightOf="@id/console_offline_map_bg"
         app:layout_constraintTop_toTopOf="@id/console_offline_map_bg" />
 
@@ -205,12 +217,16 @@
         android:src="@drawable/icon_console_route"
         app:layout_constraintBottom_toBottomOf="@id/console_route_bg"
         app:layout_constraintLeft_toLeftOf="@id/console_route_bg"
-        app:layout_constraintTop_toTopOf="@id/console_route_bg" />
+        app:layout_constraintRight_toLeftOf="@id/console_route_icon_text"
+        app:layout_constraintTop_toTopOf="@id/console_route_bg"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
+        android:id="@+id/console_route_icon_text"
         style="@style/console_on_left_bottom_text"
         android:text="路径规划"
         app:layout_constraintBottom_toBottomOf="@id/console_route_bg"
+        app:layout_constraintLeft_toRightOf="@id/console_route_icon"
         app:layout_constraintRight_toRightOf="@id/console_route_bg"
         app:layout_constraintTop_toTopOf="@id/console_route_bg" />
 
@@ -232,12 +248,16 @@
         android:src="@drawable/icon_console_layer_setting"
         app:layout_constraintBottom_toBottomOf="@id/console_layer_setting_bg"
         app:layout_constraintLeft_toLeftOf="@id/console_layer_setting_bg"
-        app:layout_constraintTop_toTopOf="@id/console_layer_setting_bg" />
+        app:layout_constraintRight_toLeftOf="@id/console_layer_setting_icon_text"
+        app:layout_constraintTop_toTopOf="@id/console_layer_setting_bg"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
+        android:id="@+id/console_layer_setting_icon_text"
         style="@style/console_on_left_bottom_text"
         android:text="图层设置"
         app:layout_constraintBottom_toBottomOf="@id/console_layer_setting_bg"
+        app:layout_constraintLeft_toRightOf="@id/console_layer_setting_icon"
         app:layout_constraintRight_toRightOf="@id/console_layer_setting_bg"
         app:layout_constraintTop_toTopOf="@id/console_layer_setting_bg" />
 
@@ -257,12 +277,16 @@
         android:src="@drawable/icon_console_personal_center"
         app:layout_constraintBottom_toBottomOf="@id/console_personal_center_bg"
         app:layout_constraintLeft_toLeftOf="@id/console_personal_center_bg"
-        app:layout_constraintTop_toTopOf="@id/console_personal_center_bg" />
+        app:layout_constraintRight_toLeftOf="@id/console_personal_center_icon_text"
+        app:layout_constraintTop_toTopOf="@id/console_personal_center_bg"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
+        android:id="@+id/console_personal_center_icon_text"
         style="@style/console_on_left_bottom_text"
         android:text="个人中心"
         app:layout_constraintBottom_toBottomOf="@id/console_personal_center_bg"
+        app:layout_constraintLeft_toRightOf="@id/console_personal_center_icon"
         app:layout_constraintRight_toRightOf="@id/console_personal_center_bg"
         app:layout_constraintTop_toTopOf="@id/console_personal_center_bg" />
 
@@ -469,7 +493,7 @@
         app:layout_constraintLeft_toLeftOf="@id/console_track_bg"
         app:layout_constraintRight_toLeftOf="@id/console_track_text"
         app:layout_constraintTop_toTopOf="@id/console_track_bg"
-        app:layout_constraintVertical_chainStyle="spread" />
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <ImageView
         android:id="@+id/console_track_icon"

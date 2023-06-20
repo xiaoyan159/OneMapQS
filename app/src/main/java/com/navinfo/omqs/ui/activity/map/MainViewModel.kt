@@ -183,11 +183,10 @@ class MainViewModel @Inject constructor(
                         location.tiley = y
                     }
                 }
-                Log.e("jingo", "定位点插入 ${location.longitude}")
                 location.groupId = uuid
                 try {
                     location.timeStamp = DateTimeUtil.getTime(location.time).toString()
-                }catch (e: Exception){
+                } catch (e: Exception) {
 
                 }
                 traceDataBase.niLocationDao.insert(location)
@@ -244,7 +243,8 @@ class MainViewModel @Inject constructor(
                                 geometry = element.geometry,
                                 name = SignUtil.getSignNameText(element),
                                 bottomRightText = SignUtil.getSignBottomRightText(element),
-                                elementCode = element.code
+                                elementCode = element.code,
+                                moreText = SignUtil.getMoreInfoText(element)
                             )
 
                             when (element.code) {
@@ -292,9 +292,8 @@ class MainViewModel @Inject constructor(
                         speakMode?.speakText(speechText)
                     }
                     linkIdCache = linkId ?: ""
-                    Log.e("jingo", "自动捕捉数据 共${signList.size}条")
                 }
-            }else{
+            } else {
                 mapController.lineHandler.removeLine()
                 linkIdCache = ""
             }

@@ -23,6 +23,7 @@ import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
+import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.tools.LayerConfigUtils
@@ -67,9 +68,7 @@ class MainActivity : BaseActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
-                Log.e("jingo", "MainActivity someActivityResultLauncher RESULT_OK")
             } else {
-                Log.e("jingo", "MainActivity someActivityResultLauncher ${result.resultCode}")
             }
         }
 
@@ -88,16 +87,44 @@ class MainActivity : BaseActivity() {
      * 提前显示要素看板
      */
     private val signAdapter by lazy {
-        SignAdapter { _, autoSave, signBean ->
-            rightController.currentDestination?.let {
-                if (it.id == R.id.RightEmptyFragment) {
-                    val bundle = Bundle()
-                    bundle.putParcelable("SignBean", signBean)
-                    bundle.putBoolean("AutoSave", autoSave)
-                    rightController.navigate(R.id.EvaluationResultFragment, bundle)
+        SignAdapter(object : OnSignAdapterClickListener {
+            override fun onItemClick(signBean: SignBean) {
+                rightController.currentDestination?.let {
+                    if (it.id == R.id.RightEmptyFragment) {
+                        val bundle = Bundle()
+                        bundle.putParcelable("SignBean", signBean)
+                        bundle.putBoolean("AutoSave", false)
+                        rightController.navigate(R.id.EvaluationResultFragment, bundle)
+                    }
                 }
             }
-        }
+
+            override fun onMoreInfoClick(selectTag: String, tag: String, signBean: SignBean) {
+                if (binding.mainActivitySignMoreInfoGroup.visibility != View.VISIBLE || selectTag != tag) {
+                    binding.mainActivitySignMoreInfoGroup.visibility = View.VISIBLE
+                    binding.mainActivitySignMoreInfoTitle.text = signBean.name
+                    binding.mainActivitySignMoreInfoText1.text = signBean.bottomRightText
+                    binding.mainActivitySignMoreInfoText2.text = signBean.moreText
+                } else {
+                    binding.mainActivitySignMoreInfoGroup.visibility = View.GONE
+                }
+            }
+
+            override fun onErrorClick(signBean: SignBean) {
+                rightController.currentDestination?.let {
+                    if (it.id == R.id.RightEmptyFragment) {
+                        val bundle = Bundle()
+                        bundle.putParcelable("SignBean", signBean)
+                        bundle.putBoolean("AutoSave", true)
+                        rightController.navigate(R.id.EvaluationResultFragment, bundle)
+                    }
+                }
+            }
+
+            override fun onHideMoreInfoView() {
+                binding.mainActivitySignMoreInfoGroup.visibility = View.GONE
+            }
+        })
     }
 
     /**
@@ -150,11 +177,9 @@ class MainActivity : BaseActivity() {
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
                     voiceOnTouchStart()//Do Something
-                    Log.e("qj", "voiceOnTouchStart")
                 }
                 MotionEvent.ACTION_UP -> {
                     voiceOnTouchStop()//Do Something
-                    Log.e("qj", "voiceOnTouchStop")
                 }
             }
             v?.onTouchEvent(event) ?: true
@@ -205,9 +230,9 @@ class MainActivity : BaseActivity() {
         }
         //监听地图中点变化
         viewModel.liveDataCenterPoint.observe(this) {
-            Log.e("qj","${it.longitude}")
-            try{
-                if(it!=null&&it.longitude!=null&&it.latitude!=null){
+            Log.e("qj", "${it.longitude}")
+            try {
+                if (it != null && it.longitude != null && it.latitude != null) {
                     binding.mainActivityGeometry.text = "经纬度:${
                         BigDecimal(it.longitude).setScale(
                             7,
@@ -215,8 +240,8 @@ class MainActivity : BaseActivity() {
                         )
                     },${BigDecimal(it.latitude).setScale(7, RoundingMode.HALF_UP)}"
                 }
-            }catch (e:Exception){
-                Log.e("qj","异常")
+            } catch (e: Exception) {
+                Log.e("qj", "异常 $e")
             }
         }
 
@@ -248,7 +273,7 @@ class MainActivity : BaseActivity() {
         val view = this.layoutInflater.inflate(R.layout.dialog_view_edittext, null)
         val inputDialog = MaterialAlertDialogBuilder(
             this
-        ).setTitle("标记原因").setView(view)
+        ).setTitle("坐标定位").setView(view)
         var editText = view.findViewById<EditText>(R.id.dialog_edittext)
         editText.hint = "请输入经纬度例如：\n116.1234567,39.1234567\n116.1234567 39.1234567"
         inputDialog.setNegativeButton("取消") { dialog, _ ->
@@ -260,7 +285,7 @@ class MainActivity : BaseActivity() {
                     val parts = editText.text.toString().split("[,，\\s]".toRegex())
                     if (parts.size == 2) {
                         val x = parts[0].toDouble()
-                        val y = parts[0].toDouble()
+                        val y = parts[1].toDouble()
                         mapController.animationHandler.animationByLatLon(y, x)
                     } else {
                         Toast.makeText(this, "输入格式不正确", Toast.LENGTH_SHORT).show()
@@ -415,6 +440,12 @@ class MainActivity : BaseActivity() {
      */
     fun onSwitchSheet() {
         if (binding.mainActivityBottomSheetGroup.visibility == View.VISIBLE) {
+            leftFragment?.let {
+                supportFragmentManager.beginTransaction().remove(it).commit()
+                leftFragment = null
+                binding.mainActivityLeftFragment.visibility = View.GONE
+            }
+
             binding.mainActivityBottomSheetGroup.visibility = View.GONE
         } else {
             binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
@@ -474,10 +505,18 @@ class MainActivity : BaseActivity() {
                 .replace(R.id.main_activity_left_fragment, leftFragment!!).commit()
         }
     }
+
+    /**
+     * 路径规划
+     */
+    fun onClickRouteFragment() {
+        Toast.makeText(this, "功能开发中", Toast.LENGTH_SHORT).show()
+    }
+
     /**
      * 打开离线地图
      */
-    fun onClickOfflineMapFragment(){
+    fun onClickOfflineMapFragment() {
         if (leftFragment !is OfflineMapFragment) {
             if (leftFragment == null) {
                 binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE

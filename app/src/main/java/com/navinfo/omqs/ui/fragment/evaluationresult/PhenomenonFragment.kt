@@ -34,7 +34,6 @@ class PhenomenonFragment :
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPhenomenonBinding.inflate(inflater, container, false)
-        Log.e("jingo", "PhenomenonFragment onCreateView ${hashCode()}")
         return binding.root
     }
 

@@ -97,7 +97,6 @@ class EvaluationResultViewModel @Inject constructor(
 
     init {
         liveDataQsRecordBean.value = QsRecordBean(id = UUID.randomUUID().toString())
-        Log.e("jingo", "EvaluationResultViewModel 创建了 ${hashCode()}")
         viewModelScope.launch {
             mapController.onMapClickFlow.collect {
                 liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(it).toText()
@@ -111,7 +110,6 @@ class EvaluationResultViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        Log.e("jingo", "EvaluationResultViewModel 销毁了 ${hashCode()}")
         mapController.markerHandle.removeMarker(markerTitle)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             mapController.lineHandler.removeLine()
@@ -223,7 +221,6 @@ class EvaluationResultViewModel @Inject constructor(
      * 获取问题环节列表和初步问题
      */
     fun getProblemLinkList() {
-        Log.e("jingo", "getProblemLinkList S")
         viewModelScope.launch(Dispatchers.IO) {
             val list = roomAppDatabase.getScRootCauseAnalysisDao().findAllData()
             list?.let { tl ->
@@ -242,11 +239,9 @@ class EvaluationResultViewModel @Inject constructor(
                     }
                     if (liveDataQsRecordBean.value!!.problemLink.isEmpty()) {
                         liveDataQsRecordBean.value!!.problemLink = middleList[0]
-                        Log.e("jingo", "getProblemLinkList ${middleList[0]}")
                     }
                     if (liveDataQsRecordBean.value!!.cause.isEmpty()) {
                         liveDataQsRecordBean.value!!.cause = rightList[0].text
-                        Log.e("jingo", "getProblemLinkList ${rightList[0].text}")
                     }
                     liveDataQsRecordBean.postValue(liveDataQsRecordBean.value)
 //                    liveDataMiddleTypeList.postValue(middleList)
@@ -254,14 +249,12 @@ class EvaluationResultViewModel @Inject constructor(
                 }
             }
         }
-        Log.e("jingo", "getProblemLinkList E")
     }
 
     /**
      * 获取问题类型列表和问题现象
      */
     private suspend fun getProblemList(classType: String) {
-        Log.e("jingo", "getProblemList S")
         val typeList = roomAppDatabase.getScProblemTypeDao().findProblemTypeList(classType)
         typeList?.let { tl ->
             if (tl.isNotEmpty()) {
@@ -279,18 +272,15 @@ class EvaluationResultViewModel @Inject constructor(
                 }
                 if (liveDataQsRecordBean.value!!.problemType.isEmpty()) {
                     liveDataQsRecordBean.value!!.problemType = typeTitleList[0]
-                    Log.e("jingo", "getProblemList ${typeTitleList[0]}")
                 }
 //                liveDataMiddleTypeList.postValue(typeTitleList)
                 if (liveDataQsRecordBean.value!!.phenomenon.isEmpty()) {
                     liveDataQsRecordBean.value!!.phenomenon = phenomenonRightList[0].text
-                    Log.e("jingo", "getProblemList ${phenomenonRightList[0].text}")
                 }
                 liveDataQsRecordBean.postValue(liveDataQsRecordBean.value)
                 liveDataRightTypeList.postValue(phenomenonRightList)
             }
         }
-        Log.e("jingo", "getProblemList E")
     }
 
     /**
@@ -341,7 +331,6 @@ class EvaluationResultViewModel @Inject constructor(
                 mDialog.dismiss()
                 viewModelScope.launch(Dispatchers.IO) {
                     val realm = Realm.getDefaultInstance()
-                    Log.e("jingo", "realm hashCOde ${realm.hashCode()}")
                     realm.executeTransaction {
                         val objects = it.where(QsRecordBean::class.java)
                             .equalTo("id", liveDataQsRecordBean.value?.id).findFirst()
