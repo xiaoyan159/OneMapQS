@@ -1,5 +1,7 @@
 package com.navinfo.omqs
 
+import com.navinfo.omqs.bean.ImportConfig
+
 class Constant {
     companion object {
         /**
@@ -44,6 +46,11 @@ class Constant {
          * 下载目录
          */
         lateinit var DOWNLOAD_PATH: String
+
+        /**
+         * 图层管理对应的配置
+         * */
+        var LAYER_CONFIG_LIST: List<ImportConfig>? = null
 
         const val DEBUG = true
 

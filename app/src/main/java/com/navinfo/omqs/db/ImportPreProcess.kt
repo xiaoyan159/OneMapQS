@@ -190,4 +190,31 @@ class ImportPreProcess {
         angleReference.properties["type"] = "angle"
         Realm.getDefaultInstance().insert(angleReference)
     }
+
+    fun generateRoadName(renderEntity: RenderEntity) {
+        // LinkName的真正名称数据，是保存在properties的shapeList中的，因此需要解析shapeList数据
+        var shape :JSONObject? = null
+        if (renderEntity.properties.containsKey("shapeList")) {
+            val shapeListJsonArray: JSONArray = JSONArray(renderEntity.properties["shapeList"])
+            for (i in 0 until shapeListJsonArray.length()) {
+                val shapeJSONObject = shapeListJsonArray.getJSONObject(i)
+                if (shapeJSONObject["nameClass"]==1) {
+                    if (shape == null) {
+                        shape = shapeJSONObject
+                    }
+                    // 获取第一官方名
+                    //("名称分类"NAME_CLASS =“1 官方名”，且名称序号SEQ_NUM 最小者）
+                    if (shapeJSONObject["seqNum"].toString().toInt()< shape!!["seqNum"].toString().toInt()) {
+                        shape = shapeJSONObject
+                    }
+                }
+            }
+        }
+        // 获取最小的shape值，将其记录增加记录在properties的name属性下
+        if(shape!=null) {
+            renderEntity.properties["name"] = shape["name"].toString()
+        } else {
+            renderEntity.properties["name"] = ""
+        }
+    }
 }

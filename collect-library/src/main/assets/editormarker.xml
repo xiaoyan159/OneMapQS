@@ -1785,5 +1785,9 @@
                 <line stroke="#14582c" width="0.1" dasharray="1,1" repeat-gap="3" repeat-start="0"/>
             </m>
         </m>
+        <!-- 道路名 -->
+        <m v="OMDB_LINK_NAME">
+            <text use="road"></text>
+        </m>
     </m>
 </rendertheme>

@@ -23,7 +23,7 @@ class LayerManagerViewModel() : ViewModel() {
     }
 
     fun saveLayerConfigList(context: Context, listData: List<ImportConfig>) {
-        SPStaticUtils.put(Constant.EVENT_LAYER_MANAGER_CHANGE, gson.toJson(listData))
+        Constant.LAYER_CONFIG_LIST = listData
         // 发送新的配置数据
         viewModelScope.launch {
             FlowEventBus.post(Constant.EVENT_LAYER_MANAGER_CHANGE, listData)
