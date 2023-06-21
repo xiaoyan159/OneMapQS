@@ -1,9 +1,12 @@
 package com.navinfo.omqs.ui.widget
 
 import android.util.Log
+import com.google.gson.Gson
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.omqs.R
+import com.navinfo.omqs.bean.RoadNameBean
 import com.navinfo.omqs.bean.SignBean
+import org.json.JSONArray
 
 class SignUtil {
     companion object {
@@ -328,6 +331,44 @@ class SignUtil {
                 }
             }
             return stringBuffer.toString()
+        }
+
+
+        fun getRoadNameList(data: RenderEntity): MutableList<RoadNameBean> {
+            val list = mutableListOf<RoadNameBean>()
+            if (data.code == 2011) {
+                try {
+                    val shapeStr = data.properties["shapeList"]
+                    val array = JSONArray(shapeStr)
+                    for (i in 0 until array.length()) {
+                        val jsonObject = array.getJSONObject(0)
+                        val name = jsonObject.optString("name", "")
+                        val type = jsonObject.optInt("nameType", 0)
+                        val seqNum = jsonObject.optInt("seqNum", 1)
+                        val nameClass = jsonObject.optInt("nameClass", 1)
+                        val bean = RoadNameBean(
+                            name = name,
+                            type = type,
+                            seqNum = seqNum,
+                            nameClass = nameClass
+                        )
+                        list.add(bean)
+                    }
+                    /**
+                     * 排序
+                     */
+                    list.sortWith { n1, n2 ->
+                        if (n1.nameClass != n2.nameClass) {
+                            n1.nameClass.compareTo(n2.nameClass)
+                        } else {
+                            n1.seqNum.compareTo(n2.seqNum)
+                        }
+                    }
+                } catch (e: Exception) {
+
+                }
+            }
+            return list
         }
     }
 }

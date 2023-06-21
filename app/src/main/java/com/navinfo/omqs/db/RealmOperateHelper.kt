@@ -44,7 +44,7 @@ class RealmOperateHelper() {
         )
         // 根据polygon查询相交的tile号
         val tileXSet = mutableSetOf<Int>()
-        tileXSet.toString()
+
         GeometryToolsKt.getTileXByGeometry(polygon.toString(), tileXSet)
         val tileYSet = mutableSetOf<Int>()
         GeometryToolsKt.getTileYByGeometry(polygon.toString(), tileYSet)

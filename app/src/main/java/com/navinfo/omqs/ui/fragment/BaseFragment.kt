@@ -50,7 +50,7 @@ abstract class BaseFragment : Fragment() {
 //    ): View
 
     fun onBackPressed(): Boolean{
-        findNavController().navigateUp()
+//        findNavController().navigateUp()
         return true
     }
 

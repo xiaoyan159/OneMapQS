@@ -31,6 +31,7 @@ import com.navinfo.omqs.ui.activity.BaseActivity
 import com.navinfo.omqs.ui.fragment.console.ConsoleFragment
 import com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapFragment
 import com.navinfo.omqs.ui.fragment.qsrecordlist.QsRecordListFragment
+import com.navinfo.omqs.ui.fragment.sign.RoadNameInfoFragment
 import com.navinfo.omqs.ui.fragment.tasklist.TaskManagerFragment
 import com.navinfo.omqs.ui.widget.RecyclerViewSpacesItemDecoration
 import com.navinfo.omqs.util.FlowEventBus
@@ -55,6 +56,7 @@ class MainActivity : BaseActivity() {
      * 左侧fragment
      */
     private var leftFragment: Fragment? = null
+
 
     /**
      * 是否开启右侧面板
@@ -150,8 +152,6 @@ class MainActivity : BaseActivity() {
         checkIntent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
         someActivityResultLauncher.launch(checkIntent)
 
-
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         //初始化地图
@@ -184,18 +184,29 @@ class MainActivity : BaseActivity() {
             }
             v?.onTouchEvent(event) ?: true
         }
-
+        //捕捉列表变化回调
         viewModel.liveDataQsRecordIdList.observe(this) {
             //处理页面跳转
             viewModel.navigationRightFragment(this, it)
         }
-
+        //右上角菜单是否被点击
         viewModel.liveDataMenuState.observe(this) {
             binding.mainActivityMenu.isSelected = it
             if (it == true) {
                 binding.mainActivityMenuGroup.visibility = View.VISIBLE
             } else {
                 binding.mainActivityMenuGroup.visibility = View.INVISIBLE
+            }
+        }
+        //道路绑定，名称变化
+        viewModel.liveDataRoadName.observe(this) {
+            if (it != null && it.isNotEmpty()) {
+                binding.mainActivityRoadName.text = it[0].name
+                if (binding.mainActivityRoadName.visibility != View.VISIBLE)
+                    binding.mainActivityRoadName.visibility = View.VISIBLE
+            } else {
+                if (binding.mainActivityRoadName.visibility != View.GONE)
+                    binding.mainActivityRoadName.visibility = View.GONE
             }
         }
 
@@ -228,6 +239,7 @@ class MainActivity : BaseActivity() {
         viewModel.liveDataTopSignList.observe(this) {
             topSignAdapter.refreshData(it)
         }
+
         //监听地图中点变化
         viewModel.liveDataCenterPoint.observe(this) {
             Log.e("qj", "${it.longitude}")
@@ -531,6 +543,19 @@ class MainActivity : BaseActivity() {
             }
             supportFragmentManager.beginTransaction()
                 .replace(R.id.main_activity_left_fragment, leftFragment!!).commit()
+        }
+    }
+
+    /**
+     * 打开道路名称属性看板
+     */
+    fun openRoadNameFragment() {
+        val fragment =
+            supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
+        if (fragment !is RoadNameInfoFragment) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_activity_sign_more_info_fragment, RoadNameInfoFragment())
+                .commit()
         }
     }
 }

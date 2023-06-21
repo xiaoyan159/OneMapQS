@@ -20,6 +20,11 @@
 			"code": 2010,
 			"name": "道路方向"
 		},
+		"2011": {
+			"table": "OMDB_LINK_NAME",
+			"code": 2011,
+			"name": "道路名"
+		},
 		"2013": {
 			"table": "OMDB_LANE_MARK_BOUNDARYTYPE",
 			"code": 2013,
