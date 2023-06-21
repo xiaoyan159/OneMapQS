@@ -45,6 +45,11 @@ class Constant {
          */
         lateinit var DOWNLOAD_PATH: String
 
+        /**
+         * 室内整理工具IP
+         */
+        lateinit var INDOOR_IPS: String
+
         const val DEBUG = true
 
         var IS_VIDEO_SPEED by kotlin.properties.Delegates.notNull<Boolean>()

@@ -4,6 +4,7 @@ import com.navinfo.omqs.bean.EvaluationInfo
 import com.navinfo.omqs.bean.OfflineMapCityBean
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.bean.LoginUserBean
+import com.navinfo.omqs.bean.QRCodeBean
 import com.navinfo.omqs.bean.SysUserBean
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -63,6 +64,14 @@ interface RetrofitNetworkServiceAPI {
     suspend fun retrofitGetTaskList(
         @Query("evaluatorNo") evaluatorNo: String,
     ): Response<DefaultResponse<List<TaskBean>>>
+
+
+
+    /**
+     * 获取离线地图城市列表
+     */
+    @GET("/drdc/MapDownload/maplist")
+    suspend fun retrofitConnectIndoorTools(@Url url: String): Response<DefaultResponse<QRCodeBean>>
 
     @Headers("Content-Type: application/json")
     @POST("/devcp/uploadSceneProblem")

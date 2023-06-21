@@ -23,6 +23,10 @@
             android:icon="@drawable/ic_baseline_scatter_plot_24"
             android:title="导入元数据" />
         <item
+            android:id="@+id/personal_center_menu_scan_qr_code"
+            android:icon="@drawable/ic_baseline_scatter_plot_24"
+            android:title="扫一扫" />
+        <item
             android:icon="@drawable/ic_baseline_sim_card_download_24"
             android:title="备份数据" />
     </group>

@@ -123,8 +123,6 @@ class MainActivity : BaseActivity() {
         checkIntent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
         someActivityResultLauncher.launch(checkIntent)
 
-
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         //初始化地图

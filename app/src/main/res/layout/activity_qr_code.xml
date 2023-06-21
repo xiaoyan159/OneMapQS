@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.activity.scan.QRCodeActivity">
+
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="activity"
+            type="com.navinfo.omqs.ui.activity.scan.QRCodeActivity" />
+
+        <variable
+            name="qrCodeModel"
+            type="com.navinfo.omqs.ui.activity.scan.QRCodeViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.helper.widget.Layer
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:constraint_referenced_ids="previewView,scanView"
+            tools:ignore="MissingConstraints">
+
+        </androidx.constraintlayout.helper.widget.Layer>
+
+
+        <androidx.camera.view.PreviewView
+            android:id="@+id/previewView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.navinfo.omqs.ui.widget.ScanView
+            android:id="@+id/scanView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent" />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
