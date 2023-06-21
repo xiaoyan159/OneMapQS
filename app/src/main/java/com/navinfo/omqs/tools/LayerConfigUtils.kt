@@ -15,16 +15,20 @@ class LayerConfigUtils {
         private val gson = Gson()
 
         fun getLayerConfigList(): List<ImportConfig> {
-            // 首先读取Shared文件，如果存在则直接返回，否则读取config文件
-            return SPStaticUtils.getString(Constant.EVENT_LAYER_MANAGER_CHANGE, null).let {
-                if (it != null) {
-                    val result: List<ImportConfig> =
-                        gson.fromJson(it, object : TypeToken<List<ImportConfig>>() {}.type)
-                    result
-                } else {
-                    LayerConfigUtils.getLayerConfigListFromAssetsFile()
-                }
+            // 首先读取全局变量的数据，如果存在则直接返回，否则读取config文件
+            if (Constant.LAYER_CONFIG_LIST == null) {
+                Constant.LAYER_CONFIG_LIST = getLayerConfigListFromAssetsFile()
             }
+            return Constant.LAYER_CONFIG_LIST!!
+//            return SPStaticUtils.getString(Constant.EVENT_LAYER_MANAGER_CHANGE, null).let {
+//                if (it != null) {
+//                    val result: List<ImportConfig> =
+//                        gson.fromJson(it, object : TypeToken<List<ImportConfig>>() {}.type)
+//                    result
+//                } else {
+//                    LayerConfigUtils.getLayerConfigListFromAssetsFile()
+//                }
+//            }
         }
 
         private fun getLayerConfigListFromAssetsFile(): List<ImportConfig> {

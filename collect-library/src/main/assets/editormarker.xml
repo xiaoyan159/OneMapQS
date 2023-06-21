@@ -1803,5 +1803,9 @@
                     width="0.1" />
             </m>
         </m>
+        <!-- 道路名 -->
+        <m v="OMDB_LINK_NAME">
+            <text use="road"></text>
+        </m>
     </m>
 </rendertheme>

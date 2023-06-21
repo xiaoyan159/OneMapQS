@@ -23,7 +23,15 @@
 		"2011": {
 			"table": "OMDB_LINK_NAME",
 			"code": 2011,
-			"name": "道路名"
+			"name": "道路名",
+			"transformer": [
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateRoadName()"
+				}
+			]
 		},
 		"2013": {
 			"table": "OMDB_LANE_MARK_BOUNDARYTYPE",
@@ -88,6 +96,14 @@
 			"code": 2202,
 			"name": "隧道"
 		},
+		"4001": {
+            "table": "OMDB_INTERSECTION",
+            "code": 4001,
+            "name": "路口",
+			"transformer": [
+
+			]
+        },
 		"4002": {
             "table": "OMDB_SPEEDLIMIT",
             "code": 4002,
@@ -158,6 +174,14 @@
 				}
 			]
 		},
+		"4010":{
+			"table": "OMDB_ELECTRONICEYE",
+			"code": 4010,
+			"name": "电子眼",
+			"transformer": [
+
+			]
+		},
 		"4022": {
 			"table": "OMDB_TRAFFICLIGHT",
 			"code": 4022,
@@ -169,6 +193,14 @@
 					"klib": "angle",
 					"vlib": "0"
 				}
+			]
+		},
+		"4601":{
+			"table": "OMDB_LANEINFO",
+			"code": 4601,
+			"name": "车信",
+			"transformer": [
+
 			]
 		},
         "5001":{
