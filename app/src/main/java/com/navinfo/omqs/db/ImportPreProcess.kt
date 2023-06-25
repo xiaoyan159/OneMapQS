@@ -1,5 +1,6 @@
 package com.navinfo.omqs.db
 
+import android.util.Log
 import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.utils.GeometryTools
@@ -14,6 +15,23 @@ import org.oscim.core.GeoPoint
 
 class ImportPreProcess {
     val code2NameMap = Code2NameMap()
+    lateinit var cacheRdLink: Map<String?, RenderEntity>
+
+    fun checkCircleRoad(renderEntity: RenderEntity): Boolean {
+        val linkInId  = renderEntity.properties["linkIn"]
+        val linkOutId  = renderEntity.properties["linkOut"]
+        // 根据linkIn和linkOut获取对应的link数据
+        val linkInEntity = cacheRdLink[linkInId]
+        val linkOutEntity = cacheRdLink[linkOutId]
+        Log.d("checkCircleRoad", "LinkInEntity: ${linkInId}- ${linkInEntity?.properties?.get("snodePid")}，LinkOutEntity: ${linkOutId}- ${linkOutEntity?.properties?.get("enodePid")}")
+        // 查询linkIn的sNode和linkOut的eNode是否相同，如果相同，认为数据是环形路口，返回false
+        if (linkInEntity!=null&&linkOutEntity!=null) {
+            if ((linkInEntity.properties["snodePid"] == linkOutEntity.properties["enodePid"]) || linkInEntity.properties["enodePid"] == linkOutEntity.properties["snodePid"]
+                || linkInEntity.properties["snodePid"] == linkOutEntity.properties["snodePid"]|| linkInEntity.properties["enodePid"] == linkOutEntity.properties["enodePid"])
+            return false
+        }
+        return true
+    }
     /**
      * 计算指定数据指定方向的坐标
      * @param direction 判断当前数据是否为逆向，给定的应该是一个a=b的表达式，a为对应的properties的key，b为对应的值

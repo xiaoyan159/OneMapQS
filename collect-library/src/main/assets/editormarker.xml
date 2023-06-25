@@ -1804,7 +1804,7 @@
             </m>
         </m>
         <!--电子眼-->
-        <m v="OMDB_RESTRICTION">
+        <m v="OMDB_ELECTRONICEYE">
             <m k="angle">
                 <symbol repeat="false" repeat-start="0" rotate="false"
                     src="assets:symbols/volcano.svg" symbol-height="69" symbol-width="69"></symbol>

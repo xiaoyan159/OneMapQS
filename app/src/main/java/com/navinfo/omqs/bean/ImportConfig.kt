@@ -13,7 +13,7 @@ class ImportConfig {
     var checked : Boolean = true
     val preProcess: ImportPreProcess = ImportPreProcess()
 
-    fun transformProperties(renderEntity: RenderEntity): RenderEntity {
+    fun transformProperties(renderEntity: RenderEntity): RenderEntity? {
         val transformList = tableMap[renderEntity.code.toString()]?.transformer
         if (transformList.isNullOrEmpty()) {
             return renderEntity
@@ -31,6 +31,7 @@ class ImportConfig {
             // 如果key和value都为空，说明当前数据需要增加一个新字段
             if (key.isNullOrEmpty()&&value.isNullOrEmpty()&&!renderEntity.properties.containsKey(keylib)) {
                 renderEntity.properties[keylib] = valuelib
+                continue
             }
             // 开始解析key和value，并对数据进行匹配
             m@ for (k in processKeyOrValue(key)) {
@@ -54,7 +55,12 @@ class ImportConfig {
                                         callByParams[methodParams[index+1]] = value
                                     }
                                 }
-                                method.callBy(callByParams)
+                                when(val result = method.callBy(callByParams)) { // 如果方法返回的数据类型是boolean，且返回为false，则该数据不处理
+                                    is Boolean ->
+                                        if (!result) {
+                                            return null
+                                        }
+                                }
                             } else {
                                 renderEntity.properties[keylib] = valuelib
                             }
@@ -77,7 +83,12 @@ class ImportConfig {
                                         callByParams[methodParams[index+1]] = value
                                     }
                                 }
-                                method.callBy(callByParams)
+                                when(val result = method.callBy(callByParams)) {
+                                    is Boolean ->
+                                        if (!result) {
+                                            return null
+                                        }
+                                }
                             } else {
                                 renderEntity.properties[keylib] = valuelib
                             }

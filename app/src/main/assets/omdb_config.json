@@ -175,6 +175,12 @@
 					"k": "geometry",
 					"v": "~",
 					"klib": "geometry",
+					"vlib": "checkCircleRoad()"
+				},
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
 					"vlib": "translateBack()"
 				},
 				{
