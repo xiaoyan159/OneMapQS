@@ -2,6 +2,7 @@ package com.navinfo.omqs.http
 
 import com.navinfo.omqs.bean.OfflineMapCityBean
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.omqs.bean.IndoorConnectionInfoBean
 import com.navinfo.omqs.bean.LoginUserBean
 import com.navinfo.omqs.bean.QRCodeBean
 import com.navinfo.omqs.bean.SysUserBean
@@ -82,6 +83,25 @@ class NetworkServiceImpl @Inject constructor(
         withContext(Dispatchers.IO) {
             return@withContext try {
                 val result = netApi.retrofitConnectIndoorTools(url = url)
+                if (result.isSuccessful) {
+                    if (result.code() == 200) {
+                        NetResult.Success(result.body())
+                    } else {
+                        NetResult.Failure<Any>(result.code(), result.message())
+                    }
+                } else {
+                    NetResult.Failure<Any>(result.code(), result.message())
+                }
+            } catch (e: Exception) {
+                NetResult.Error<Any>(e)
+            }
+        }
+
+    override suspend fun updateServerInfo(url: String,indoorConnectionInfoBean: IndoorConnectionInfoBean): NetResult<QRCodeBean> =
+        //在IO线程中运行
+        withContext(Dispatchers.IO) {
+            return@withContext try {
+                val result = netApi.retrofitUpdateServerInfo(url,indoorConnectionInfoBean)
                 if (result.isSuccessful) {
                     if (result.code() == 200) {
                         NetResult.Success(result.body())

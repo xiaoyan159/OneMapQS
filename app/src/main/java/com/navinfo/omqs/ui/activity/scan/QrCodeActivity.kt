@@ -59,6 +59,9 @@ class QrCodeActivity : BaseActivity() {
             QrCodeStatus.QR_CODE_STATUS_NET_FAILURE -> {
 
             }
+            QrCodeStatus.QR_CODE_STATUS_SERVER_INFO_SUCCESS -> {
+
+            }
         }
     }
 

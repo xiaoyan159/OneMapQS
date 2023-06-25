@@ -3,6 +3,7 @@ package com.navinfo.omqs.http
 import com.navinfo.omqs.bean.EvaluationInfo
 import com.navinfo.omqs.bean.OfflineMapCityBean
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.omqs.bean.IndoorConnectionInfoBean
 import com.navinfo.omqs.bean.LoginUserBean
 import com.navinfo.omqs.bean.QRCodeBean
 import com.navinfo.omqs.bean.SysUserBean
@@ -73,6 +74,13 @@ interface RetrofitNetworkServiceAPI {
     @Streaming
     @GET
     suspend fun retrofitConnectIndoorTools(@Url url: String): Response<QRCodeBean>
+
+    /**
+     * 登录接口
+     */
+    @Headers("Content-Type: application/json")
+    @POST
+    suspend fun retrofitUpdateServerInfo(@Url url: String,@Body indoorConnectionInfoBean: IndoorConnectionInfoBean): Response<QRCodeBean>
 
     @Headers("Content-Type: application/json")
     @POST("/devcp/uploadSceneProblem")

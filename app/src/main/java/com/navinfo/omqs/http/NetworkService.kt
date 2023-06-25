@@ -2,6 +2,7 @@ package com.navinfo.omqs.http
 
 import com.navinfo.omqs.bean.OfflineMapCityBean
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.omqs.bean.IndoorConnectionInfoBean
 import com.navinfo.omqs.bean.LoginUserBean
 import com.navinfo.omqs.bean.QRCodeBean
 import com.navinfo.omqs.bean.SysUserBean
@@ -32,4 +33,9 @@ interface NetworkService {
      * 连接室内整理工具
      */
     suspend fun connectIndoorTools(url: String): NetResult<QRCodeBean>
+
+    /**
+     * 更新用户信息
+     */
+    suspend fun updateServerInfo(url: String,indoorConnectionInfoBean: IndoorConnectionInfoBean): NetResult<QRCodeBean>
 }

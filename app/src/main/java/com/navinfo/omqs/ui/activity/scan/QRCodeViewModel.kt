@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.omqs.Constant
+import com.navinfo.omqs.bean.IndoorConnectionInfoBean
 import com.navinfo.omqs.bean.QRCodeBean
 import com.navinfo.omqs.bean.SysUserBean
 import com.navinfo.omqs.http.DefaultResponse
@@ -26,12 +27,17 @@ enum class QrCodeStatus {
      * 网络访问失败
      */
     QR_CODE_STATUS_NET_FAILURE,
+
     /**
      * 成功
      */
-    QR_CODE_STATUS_SUCCESS
-}
+    QR_CODE_STATUS_SUCCESS,
 
+    /**
+     * 信息更新成功
+     */
+    QR_CODE_STATUS_SERVER_INFO_SUCCESS,
+}
 
 @HiltViewModel
 class QrCodeViewModel @Inject constructor(
@@ -80,7 +86,7 @@ class QrCodeViewModel @Inject constructor(
 
                                     val defaultUserResponse = result.data as QRCodeBean
 
-                                    if (defaultUserResponse.errcode==0) {
+                                    if (defaultUserResponse.errcode == 0) {
 
                                         Constant.INDOOR_IP = ipTemp
 
@@ -146,6 +152,102 @@ class QrCodeViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * 扫一扫按钮
+     */
+    fun updateServerInfo(context: Context) {
+
+        if (TextUtils.isEmpty(Constant.INDOOR_IP)) {
+            Toast.makeText(context, "获取ip失败！", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.Default) {
+            val url = "http://${Constant.INDOOR_IP}:8080/sensor/service/connection"
+            when (val result = networkService.updateServerInfo(
+                url = url,
+                indoorConnectionInfoBean = IndoorConnectionInfoBean(
+                    Constant.USER_ID,
+                    Constant.USER_ID,
+                    Constant.USER_ID,
+                    Constant.USER_ID,
+                    com.navinfo.collect.library.system.Constant.SERVER_ADDRESS,
+                    Constant.USER_ID,
+                    "Android"
+                )
+            )) {
+                is NetResult.Success<*> -> {
+
+                    if (result.data != null) {
+                        try {
+
+                            val defaultUserResponse = result.data as QRCodeBean
+
+                            if (defaultUserResponse.errcode == 0) {
+
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "信息更新成功。",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    qrCodeStatus.postValue(QrCodeStatus.QR_CODE_STATUS_SERVER_INFO_SUCCESS)
+                                }
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "${defaultUserResponse.msg}",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                            }
+
+                        } catch (e: IOException) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    context,
+                                    "${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+                }
+
+                is NetResult.Error<*> -> {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "${result.exception.message}",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+                    qrCodeStatus.postValue(QrCodeStatus.QR_CODE_STATUS_NET_FAILURE)
+                }
+
+                is NetResult.Failure<*> -> {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "${result.code}:${result.msg}",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+                    qrCodeStatus.postValue(QrCodeStatus.QR_CODE_STATUS_NET_FAILURE)
+                }
+
+                else -> {}
+            }
+
+        }
+
+    }
+
 
     override fun onCleared() {
         super.onCleared()
