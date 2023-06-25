@@ -31,5 +31,5 @@ interface NetworkService {
     /**
      * 连接室内整理工具
      */
-    suspend fun connectIndoorTools(url: String): NetResult<DefaultResponse<QRCodeBean>>
+    suspend fun connectIndoorTools(url: String): NetResult<QRCodeBean>
 }

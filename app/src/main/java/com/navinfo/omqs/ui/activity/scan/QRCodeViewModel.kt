@@ -6,11 +6,13 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.QRCodeBean
 import com.navinfo.omqs.bean.SysUserBean
 import com.navinfo.omqs.http.DefaultResponse
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
+import com.navinfo.omqs.ui.activity.login.LoginStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -19,54 +21,28 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
 
-enum class QRCodeStatus {
-    /**
-     * 访问服务器登陆中
-     */
-    LOGIN_STATUS_NET_LOADING,
-
-    /**
-     * 访问离线地图列表
-     */
-    LOGIN_STATUS_NET_OFFLINE_MAP,
-
-    /**
-     * 初始化文件夹
-     */
-    LOGIN_STATUS_FOLDER_INIT,
-
-    /**
-     * 创建文件夹失败
-     */
-    LOGIN_STATUS_FOLDER_FAILURE,
-
+enum class QrCodeStatus {
     /**
      * 网络访问失败
      */
-    LOGIN_STATUS_NET_FAILURE,
-
+    QR_CODE_STATUS_NET_FAILURE,
     /**
      * 成功
      */
-    LOGIN_STATUS_SUCCESS,
-
-    /**
-     * 取消
-     */
-    LOGIN_STATUS_CANCEL,
+    QR_CODE_STATUS_SUCCESS
 }
 
+
 @HiltViewModel
-class QRCodeViewModel @Inject constructor(
+class QrCodeViewModel @Inject constructor(
     private val networkService: NetworkService
 ) : ViewModel() {
     //用户信息
     val qrCodeBean: MutableLiveData<QRCodeBean> = MutableLiveData()
 
     //是不是连接成功
-    val qrCodeStatus: MutableLiveData<QRCodeStatus> = MutableLiveData()
+    val qrCodeStatus: MutableLiveData<QrCodeStatus> = MutableLiveData()
 
-    var jobQRCodeStatus: Job? = null;
 
     init {
         qrCodeBean.value = QRCodeBean()
@@ -98,12 +74,25 @@ class QRCodeViewModel @Inject constructor(
                     val url = "http://$ipTemp:8080/sensor/service/keepalive"
                     when (val result = networkService.connectIndoorTools(url)) {
                         is NetResult.Success<*> -> {
+
                             if (result.data != null) {
                                 try {
-                                    val defaultUserResponse =
-                                        result.data as DefaultResponse<SysUserBean>
-                                    if (defaultUserResponse.success) {
 
+                                    val defaultUserResponse = result.data as QRCodeBean
+
+                                    if (defaultUserResponse.errcode==0) {
+
+                                        Constant.INDOOR_IP = ipTemp
+
+                                        qrCodeStatus.postValue(QrCodeStatus.QR_CODE_STATUS_SUCCESS)
+
+                                        withContext(Dispatchers.Main) {
+                                            Toast.makeText(
+                                                context,
+                                                "连接室内整理工具成功。",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
                                     } else {
                                         withContext(Dispatchers.Main) {
                                             Toast.makeText(
@@ -116,6 +105,13 @@ class QRCodeViewModel @Inject constructor(
                                     }
 
                                 } catch (e: IOException) {
+                                    withContext(Dispatchers.Main) {
+                                        Toast.makeText(
+                                            context,
+                                            "${e.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
                                 }
                             }
                         }
@@ -129,6 +125,7 @@ class QRCodeViewModel @Inject constructor(
                                 )
                                     .show()
                             }
+                            qrCodeStatus.postValue(QrCodeStatus.QR_CODE_STATUS_NET_FAILURE)
                         }
 
                         is NetResult.Failure<*> -> {
@@ -140,6 +137,7 @@ class QRCodeViewModel @Inject constructor(
                                 )
                                     .show()
                             }
+                            qrCodeStatus.postValue(QrCodeStatus.QR_CODE_STATUS_NET_FAILURE)
                         }
 
                         else -> {}
@@ -148,4 +146,9 @@ class QRCodeViewModel @Inject constructor(
             }
         }
     }
+
+    override fun onCleared() {
+        super.onCleared()
+    }
+
 }

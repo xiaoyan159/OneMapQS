@@ -68,10 +68,11 @@ interface RetrofitNetworkServiceAPI {
 
 
     /**
-     * 获取离线地图城市列表
+     * 连接室内整理工具
      */
-    @GET("/drdc/MapDownload/maplist")
-    suspend fun retrofitConnectIndoorTools(@Url url: String): Response<DefaultResponse<QRCodeBean>>
+    @Streaming
+    @GET
+    suspend fun retrofitConnectIndoorTools(@Url url: String): Response<QRCodeBean>
 
     @Headers("Content-Type: application/json")
     @POST("/devcp/uploadSceneProblem")

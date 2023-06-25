@@ -1,39 +1,35 @@
 package com.navinfo.omqs.ui.activity.scan
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.ImageCapture
 import androidx.camera.view.LifecycleCameraController
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.viewModelScope
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityQrCodeBinding
-import com.navinfo.omqs.ui.activity.login.LoginViewModel
+import com.navinfo.omqs.ui.activity.BaseActivity
 import com.navinfo.omqs.ui.listener.QRCodeAnalyser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import androidx.lifecycle.Observer
+import com.navinfo.omqs.ui.activity.login.LoginStatus
 
 /**
- * date:2021/6/18
- * author:zhangteng
+ * date:2023/6/18
+ * author:qj
  * description:二维码扫描
  */
-class QRCodeActivity : AppCompatActivity() {
+@AndroidEntryPoint
+class QrCodeActivity : BaseActivity() {
     private lateinit var binding: ActivityQrCodeBinding
     private lateinit var lifecycleCameraController: LifecycleCameraController
     private lateinit var cameraExecutor: ExecutorService
-    private val viewModel by viewModels<QRCodeViewModel>()
-
+    private val viewModel by viewModels<QrCodeViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -43,7 +39,27 @@ class QRCodeActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.activity = this
 
+        initView()
         initController()
+    }
+
+    private fun initView() {
+        //登录校验，初始化成功
+        viewModel.qrCodeStatus.observe(this, qrCodeObserve)
+    }
+
+    /*
+    * 监听扫描结果
+    * */
+    private val qrCodeObserve = Observer<QrCodeStatus> {
+        when (it) {
+            QrCodeStatus.QR_CODE_STATUS_SUCCESS -> {
+                finish()
+            }
+            QrCodeStatus.QR_CODE_STATUS_NET_FAILURE -> {
+
+            }
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility", "UnsafeOptInUsageError")
@@ -92,14 +108,17 @@ class QRCodeActivity : AppCompatActivity() {
     }
 
     private fun intentToResult(result: String) {
-        viewModel.connect(this, result)
 
         Log.e("qj", "QRCodeActivity === $result")
+
+        viewModel.connect(this, result)
+
         /*        val intent = Intent(this, QRCodeResultActivity::class.java)
                 intent.putExtra(QRCodeResultActivity.RESULT_KEY, result)
                 startActivity(intent)
                 finish()*/
     }
+
 
     private var scaleX = 0f
     private var scaleY = 0f

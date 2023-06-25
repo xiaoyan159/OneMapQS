@@ -22,7 +22,7 @@ import com.navinfo.omqs.db.ImportOMDBHelper
 import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
 import com.navinfo.omqs.tools.CoroutineUtils
 import com.navinfo.omqs.ui.fragment.BaseFragment
-import com.navinfo.omqs.ui.activity.scan.QRCodeActivity
+import com.navinfo.omqs.ui.activity.scan.QrCodeActivity
 import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 import org.oscim.core.GeoPoint
@@ -142,7 +142,7 @@ class PersonalCenterFragment(private var backListener: (() -> Unit?)? = null) : 
     }
 
     private fun intentTOQRCode() {
-        var intent = Intent(context, QRCodeActivity::class.java);
+        var intent = Intent(context, QrCodeActivity::class.java);
         startActivity(intent)
     }
 

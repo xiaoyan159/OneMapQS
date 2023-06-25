@@ -7,15 +7,13 @@
 
     <data>
 
-        <import type="android.view.View" />
-
         <variable
             name="activity"
-            type="com.navinfo.omqs.ui.activity.scan.QRCodeActivity" />
+            type="com.navinfo.omqs.ui.activity.scan.QrCodeActivity" />
 
         <variable
             name="qrCodeModel"
-            type="com.navinfo.omqs.ui.activity.scan.QRCodeViewModel" />
+            type="com.navinfo.omqs.ui.activity.scan.QrCodeViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

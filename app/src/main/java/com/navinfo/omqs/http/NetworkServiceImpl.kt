@@ -77,11 +77,11 @@ class NetworkServiceImpl @Inject constructor(
             }
         }
 
-    override suspend fun connectIndoorTools(url: String): NetResult<DefaultResponse<QRCodeBean>> =
+    override suspend fun connectIndoorTools(url: String): NetResult<QRCodeBean> =
         //在IO线程中运行
         withContext(Dispatchers.IO) {
             return@withContext try {
-                val result = netApi.retrofitConnectIndoorTools(url)
+                val result = netApi.retrofitConnectIndoorTools(url = url)
                 if (result.isSuccessful) {
                     if (result.code() == 200) {
                         NetResult.Success(result.body())

@@ -65,6 +65,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.activity.map.MainActivity"
             android:exported="false"
@@ -73,10 +74,13 @@
             android:theme="@style/Theme.OMQualityInspection" />
 
         <activity
-            android:name=".ui.activity.scan.QRCodeActivity"
+            android:name=".ui.activity.scan.QrCodeActivity"
+            android:theme="@style/Theme.OMQualityInspection"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".ui.activity.scan.QRCodeResultActivity"
+            android:theme="@style/Theme.OMQualityInspection"
             android:screenOrientation="portrait" />
 
         <meta-data
