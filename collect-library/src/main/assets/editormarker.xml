@@ -174,7 +174,8 @@
 
     <!-- omdb -->
     <style-line id="boundaryType" stipple-width="0.1" width="0.1" />
-
+    <style-line id="s2e" dasharray="1,1" repeat-gap="3" repeat-start="0" stroke="#14582c"
+        width="0.1" />
     <!--###### ASSIGNMENT ######-->
 
     <m e="way" k="natural" v="issea|sea">
@@ -1799,12 +1800,40 @@
                     symbol-width="76"></symbol>
             </m>
             <m k="type" v="s_2_e">
-                <line dasharray="1,1" repeat-gap="3" repeat-start="0" stroke="#14582c"
-                    width="0.1" />
+                <line use="s2e" />
+            </m>
+        </m>
+        <!--电子眼-->
+        <m v="OMDB_RESTRICTION">
+            <m k="angle">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:symbols/volcano.svg" symbol-height="69" symbol-width="69"></symbol>
+            </m>
+            <m k="type" v="angle">
+                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
+                    src="assets:omdb/icon_arrow_right.svg" symbol-height="76"
+                    symbol-width="76"></symbol>
+            </m>
+            <m k="type" v="s_2_e">
+                <line use="s2e" />
+            </m>
+            <text use="road" dy="30"></text>
+        </m>
+        <!-- 路口 -->
+        <m v="OMDB_INTERSECTION">
+            <m k="type" v="node">
+                <symbol src="assets:symbols/dot_blue_dark.svg"></symbol>
+            </m>
+            <m k="intersectionPid">
+                <symbol src="assets:symbols/dot_magenta.svg"></symbol>
             </m>
         </m>
         <!-- 道路名 -->
         <m v="OMDB_LINK_NAME">
+            <text use="road"></text>
+        </m>
+        <!-- 车信 -->
+        <m v="OMDB_LANEINFO">
             <text use="road"></text>
         </m>
     </m>

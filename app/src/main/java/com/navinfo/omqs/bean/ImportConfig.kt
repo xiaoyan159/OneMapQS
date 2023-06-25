@@ -2,6 +2,8 @@ package com.navinfo.omqs.bean
 
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.omqs.db.ImportPreProcess
+import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
 import kotlin.reflect.full.declaredMemberFunctions
 
 
@@ -36,16 +38,46 @@ class ImportConfig {
                     for (v in processKeyOrValue(value)) {
                         if ("~" == v ) { // ~符可以匹配任意元素
                             if (valuelib.endsWith("()")) { // 以()结尾，说明该value配置是一个function，需要通过反射调用指定方法
-                                val method = preProcess::class.declaredMemberFunctions.first { it.name == valuelib.replace("()", "") }
-                                method.call(preProcess, renderEntity)
+                                // 获取方法名
+                                val methodName = valuelib.substringBefore("(")
+                                // 获取参数
+                                val params: List<String> = valuelib.substringAfter("(").substringBefore(")").split(",").filter{ it.isNotEmpty() }.map { it.trim() }
+                                val method = preProcess::class.members.filter { it.name == methodName }.first() as KFunction<*>
+
+                                val methodParams = method.parameters
+                                val callByParams = mutableMapOf<KParameter, Any>(
+                                    methodParams[0] to preProcess,
+                                    methodParams[1] to renderEntity
+                                )
+                                for ((index, value) in params.withIndex()) {
+                                    if (methodParams.size>index+1) {
+                                        callByParams[methodParams[index+1]] = value
+                                    }
+                                }
+                                method.callBy(callByParams)
                             } else {
                                 renderEntity.properties[keylib] = valuelib
                             }
                             break@m
                         } else if (renderEntity.properties[k] == v) { // 完全匹配
                             if (valuelib.endsWith("()")) { // 以()结尾，说明该value配置是一个function，需要通过反射调用指定方法
-                                val method = preProcess::class.declaredMemberFunctions.first { it.name == valuelib.replace("()", "") }
-                                method.call(preProcess, renderEntity)
+                                // 获取方法名
+                                val methodName = valuelib.substringBefore("(")
+                                // 获取参数
+                                val params: List<String> = valuelib.substringAfter("(").substringBefore(")").split(",").filter{ it.isNotEmpty() }.map { it.trim() }
+                                val method = preProcess::class.members.filter { it.name == methodName }.first() as KFunction<*>
+
+                                val methodParams = method.parameters
+                                val callByParams = mutableMapOf<KParameter, Any>(
+                                    methodParams[0] to preProcess,
+                                    methodParams[1] to renderEntity
+                                )
+                                for ((index, value) in params.withIndex()) {
+                                    if (methodParams.size>index+1) {
+                                        callByParams[methodParams[index+1]] = value
+                                    }
+                                }
+                                method.callBy(callByParams)
                             } else {
                                 renderEntity.properties[keylib] = valuelib
                             }

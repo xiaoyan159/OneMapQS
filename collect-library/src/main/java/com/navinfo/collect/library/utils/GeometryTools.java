@@ -293,7 +293,7 @@ public class GeometryTools {
      * @param coords []
      * @return Geometry
      */
-    public LineString createLineString(Coordinate[] coords) {
+    public static LineString createLineString(Coordinate[] coords) {
         LineString lineString = null;
         GeometryFactory factory = new GeometryFactory();
         lineString = factory.createLineString(coords);
