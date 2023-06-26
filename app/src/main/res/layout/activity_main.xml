@@ -63,6 +63,61 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/main_activity_sign_more_info_bg"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="260dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/main_sign_moreinfo_bg"
+            android:minHeight="140dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/main_activity_top_sign_recyclerview" />
+
+        <TextView
+            android:id="@+id/main_activity_sign_more_info_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:drawableLeft="@drawable/icon_main_moreinfo_text_left"
+            android:drawablePadding="4dp"
+            android:text="条件点限速"
+            android:textColor="@color/orange"
+            app:layout_constraintLeft_toLeftOf="@id/main_activity_sign_more_info_bg"
+            app:layout_constraintTop_toTopOf="@id/main_activity_sign_more_info_bg" />
+
+        <TextView
+            android:id="@+id/main_activity_sign_more_info_text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:text="条件点限速"
+            android:textColor="@color/white"
+            app:layout_constraintRight_toRightOf="@id/main_activity_sign_more_info_bg"
+            app:layout_constraintTop_toBottomOf="@id/main_activity_sign_more_info_title" />
+
+        <TextView
+            android:id="@+id/main_activity_sign_more_info_text2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:singleLine="false"
+            android:text="条件点限速"
+            android:textColor="@color/white"
+            app:layout_constraintLeft_toLeftOf="@id/main_activity_sign_more_info_bg"
+            app:layout_constraintRight_toRightOf="@id/main_activity_sign_more_info_bg"
+            app:layout_constraintTop_toBottomOf="@id/main_activity_sign_more_info_text1" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/main_activity_sign_more_info_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="main_activity_sign_more_info_bg,main_activity_sign_more_info_text2,main_activity_sign_more_info_text1,main_activity_sign_more_info_title" />
+
         <androidx.constraintlayout.helper.widget.Flow
             android:id="@+id/main_activity_flow"
             android:layout_width="0dp"
@@ -408,8 +463,8 @@
         <ImageView
             android:id="@+id/main_bottom_offline_map"
             style="@style/main_activity_bottom_sheet_icon"
-            android:onClick="@{()->mainActivity.onClickOfflineMapFragment()}"
             android:background="@drawable/icon_main_bottom_offline_map"
+            android:onClick="@{()->mainActivity.onClickOfflineMapFragment()}"
             app:layout_constraintBottom_toTopOf="@id/main_bottom_offline_map_text"
             app:layout_constraintLeft_toRightOf="@id/main_bottom_home"
             app:layout_constraintRight_toLeftOf="@id/main_bottom_route"
@@ -420,10 +475,10 @@
             android:id="@+id/main_bottom_offline_map_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{()->mainActivity.onClickOfflineMapFragment()}"
             android:text="离线地图"
             android:textColor="@color/blue"
             android:textSize="10sp"
-            android:onClick="@{()->mainActivity.onClickOfflineMapFragment()}"
             app:layout_constraintBottom_toBottomOf="@id/main_activity_bottom_sheet_bg"
             app:layout_constraintLeft_toLeftOf="@id/main_bottom_offline_map"
             app:layout_constraintRight_toRightOf="@id/main_bottom_offline_map"
@@ -435,6 +490,7 @@
             android:background="@drawable/icon_main_bottom_route"
             app:layout_constraintBottom_toTopOf="@id/main_bottom_route_text"
             app:layout_constraintLeft_toRightOf="@id/main_bottom_offline_map"
+            android:onClick="@{()->mainActivity.onClickRouteFragment()}"
             app:layout_constraintRight_toRightOf="@id/main_activity_bottom_sheet_bg"
             app:layout_constraintTop_toTopOf="@id/main_bottom_task"
             app:layout_constraintVertical_chainStyle="packed" />
@@ -446,6 +502,7 @@
             android:text="路径规划"
             android:textColor="@color/blue"
             android:textSize="10sp"
+            android:onClick="@{()->mainActivity.onClickRouteFragment()}"
             app:layout_constraintBottom_toBottomOf="@id/main_activity_bottom_sheet_bg"
             app:layout_constraintLeft_toLeftOf="@id/main_bottom_route"
             app:layout_constraintRight_toRightOf="@id/main_bottom_route"
@@ -455,7 +512,7 @@
             android:id="@+id/main_activity_bottom_sheet_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="visible"
+            android:visibility="gone"
             app:constraint_referenced_ids="
             main_bottom_route_text,
             main_bottom_offline_map_text,
@@ -476,5 +533,4 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </layout>

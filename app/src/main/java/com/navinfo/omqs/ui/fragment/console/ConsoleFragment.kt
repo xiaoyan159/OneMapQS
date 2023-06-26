@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.transition.AutoTransition
 import androidx.transition.Scene
@@ -64,14 +65,12 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
             override fun onTransitionStart(transition: androidx.transition.Transition) {
                 sceneFlag = true
                 if (mFragment != null) {
-                    Log.e("jingo", "动画开始B mFragment 不为null")
                     childFragmentManager.beginTransaction().remove(mFragment!!).commit()
                     mFragment = null
                 }
             }
 
             override fun onTransitionEnd(transition: androidx.transition.Transition) {
-                Log.e("jingo", "动画A结束")
                 initOnClickListener()
             }
 
@@ -89,7 +88,6 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
             override fun onTransitionStart(transition: androidx.transition.Transition) {
                 sceneFlag = false
                 if (mFragment != null) {
-                    Log.e("jingo", "动画开始A mFragment 不为null")
                     childFragmentManager.beginTransaction().replace(fragmentId, mFragment!!)
                         .commit()
                 }
@@ -156,6 +154,11 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
          */
         binding.consoleRoot.findViewById<View>(R.id.console_task_bg)?.setOnClickListener(this)
         binding.consoleRoot.findViewById<View>(R.id.console_task_icon_bg)?.setOnClickListener(this)
+        /**
+         * 路径规划
+         */
+        binding.consoleRoot.findViewById<View>(R.id.console_route_bg)?.setOnClickListener(this)
+        binding.consoleRoot.findViewById<View>(R.id.console_route_icon_bg)?.setOnClickListener(this)
     }
 
     override fun onDestroy() {
@@ -235,12 +238,21 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
                         (a as MainActivity).onClickResFragment()
                     }
                 }
+                /**
+                 * 任务列表
+                 */
                 R.id.console_task_icon_bg, R.id.console_task_bg -> {
                     activity?.let { a ->
                         a.supportFragmentManager.beginTransaction().remove(this).commit()
                         (a as MainActivity).onClickTaskFragment()
                     }
 
+                }
+                /**
+                 * 路径规划
+                 */
+                R.id.console_route_bg, R.id.console_route_icon_bg -> {
+                    Toast.makeText(requireContext(), "功能开发中", Toast.LENGTH_SHORT).show()
                 }
                 else -> {}
             }

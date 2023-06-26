@@ -188,7 +188,6 @@ class TaskDownloadScope(
             responseBody ?: throw IOException("jingo ResponseBody is null")
             if (startPosition == 0L) {
                 taskBean.fileSize = responseBody.contentLength()
-                Log.e("jingo", "当前文件大小 ${taskBean.fileSize}")
             }
             change(FileDownloadStatus.LOADING)
             //写入文件

@@ -87,10 +87,28 @@ class SignUtil {
          */
         fun getSignBottomRightText(data: RenderEntity): String {
             return when (data.code) {
-                //常点限速
+                //条件点限速
                 4003 -> getConditionLimitText(data)
                 else -> ""
             }
+        }
+
+        /**
+         * 更多信息展示文字
+         */
+        fun getMoreInfoText(data: RenderEntity): String {
+            return when (data.code) {
+                //条件点限速
+                4003 -> getConditionLimitMoreInfoText(data)
+                else -> ""
+            }
+        }
+
+        /**
+         * 条件点限速更多信息
+         */
+        private fun getConditionLimitMoreInfoText(data: RenderEntity): String {
+            return data.properties["validPeriod"].toString()
         }
 
         /**
@@ -170,7 +188,7 @@ class SignUtil {
         private fun getSpeedLimitIcon(data: RenderEntity): Int {
             try {
                 //限速标志 0 限速开始 1 限速解除
-                return when (data.properties["speed_flag"]) {
+                return when (data.properties["speedFlag"]) {
                     "1" -> return R.drawable.icon_speed_limit_off
                     else -> return R.drawable.icon_speed_limit
                 }
@@ -186,7 +204,7 @@ class SignUtil {
         private fun getConditionalSpeedLimitIcon(data: RenderEntity): Int {
             try {
                 //限速标志 0 限速开始 1 限速解除
-                return when (data.properties["speed_flag"]) {
+                return when (data.properties["speedFlag"]) {
                     "1" -> return R.drawable.icon_conditional_speed_limit_off
                     else -> return R.drawable.icon_conditional_speed_limit
                 }

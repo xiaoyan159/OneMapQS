@@ -46,10 +46,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/sign_bottom_text"
-        android:layout_alignParentRight="true"
         android:layout_marginRight="15dp"
         android:gravity="center"
         android:text="其他信息"
+        android:layout_alignRight="@id/sign_main_bg"
         android:textColor="@color/white"
         android:textSize="14sp" />
 

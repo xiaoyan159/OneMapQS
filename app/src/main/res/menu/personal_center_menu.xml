@@ -33,18 +33,18 @@
     <group android:checkableBehavior="single">
         <item android:title="小标题">
             <menu>
-                <item
-                    android:id="@+id/personal_center_menu_task_list"
-                    android:icon="@drawable/ic_baseline_format_list_bulleted_24"
-                    android:title="任务列表" />
-                <item
-                    android:id="@+id/personal_center_menu_qs_record_list"
-                    android:icon="@drawable/ic_baseline_playlist_add_check_24"
-                    android:title="测评结果" />
-                <item
-                    android:id="@+id/personal_center_menu_layer_manager"
-                    android:icon="@drawable/ic_baseline_layers_24"
-                    android:title="图层管理" />
+<!--                <item-->
+<!--                    android:id="@+id/personal_center_menu_task_list"-->
+<!--                    android:icon="@drawable/ic_baseline_format_list_bulleted_24"-->
+<!--                    android:title="任务列表" />-->
+<!--                <item-->
+<!--                    android:id="@+id/personal_center_menu_qs_record_list"-->
+<!--                    android:icon="@drawable/ic_baseline_playlist_add_check_24"-->
+<!--                    android:title="测评结果" />-->
+<!--                <item-->
+<!--                    android:id="@+id/personal_center_menu_layer_manager"-->
+<!--                    android:icon="@drawable/ic_baseline_layers_24"-->
+<!--                    android:title="图层管理" />-->
 
                 <item
                     android:id="@+id/personal_center_menu_test"

@@ -119,13 +119,27 @@ class ImportPreProcess {
      * 解析车道边线数据二级属性
      * */
     fun unpackingLaneBoundary(renderEntity: RenderEntity) {
+        var shape:JSONObject = JSONObject(mapOf(
+            "lateralOffset" to 0,
+            "markType" to 1,
+            "markColor" to 0,
+            "markMaterial" to 1,
+            "markSeqNum" to 1,
+            "markWidth" to 10,
+            "markingCount" to 1
+        ))
         if (renderEntity.code == 2013&&!renderEntity.properties["shapeList"].isNullOrEmpty()&&renderEntity.properties["shapeList"]!="null") {
             // 解析shapeList，将数组中的属性放会properties
             val shapeList = JSONArray(renderEntity.properties["shapeList"])
-            val shape = shapeList.getJSONObject(0)
-            for (key in shape.keys()) {
-                renderEntity.properties[key] = shape[key].toString()
+            for (i in 0 until shapeList.length()) {
+                shape = shapeList.getJSONObject(i)
+                if (shape.optInt("lateralOffset", 0) == 0) {
+                    break
+                }
             }
+        }
+        for (key in shape.keys()) {
+            renderEntity.properties[key] = shape[key].toString()
         }
     }
 
@@ -175,5 +189,32 @@ class ImportPreProcess {
         angleReference.properties["qi_table"] = renderEntity.table
         angleReference.properties["type"] = "angle"
         Realm.getDefaultInstance().insert(angleReference)
+    }
+
+    fun generateRoadName(renderEntity: RenderEntity) {
+        // LinkName的真正名称数据，是保存在properties的shapeList中的，因此需要解析shapeList数据
+        var shape :JSONObject? = null
+        if (renderEntity.properties.containsKey("shapeList")) {
+            val shapeListJsonArray: JSONArray = JSONArray(renderEntity.properties["shapeList"])
+            for (i in 0 until shapeListJsonArray.length()) {
+                val shapeJSONObject = shapeListJsonArray.getJSONObject(i)
+                if (shapeJSONObject["nameClass"]==1) {
+                    if (shape == null) {
+                        shape = shapeJSONObject
+                    }
+                    // 获取第一官方名
+                    //("名称分类"NAME_CLASS =“1 官方名”，且名称序号SEQ_NUM 最小者）
+                    if (shapeJSONObject["seqNum"].toString().toInt()< shape!!["seqNum"].toString().toInt()) {
+                        shape = shapeJSONObject
+                    }
+                }
+            }
+        }
+        // 获取最小的shape值，将其记录增加记录在properties的name属性下
+        if(shape!=null) {
+            renderEntity.properties["name"] = shape["name"].toString()
+        } else {
+            renderEntity.properties["name"] = ""
+        }
     }
 }

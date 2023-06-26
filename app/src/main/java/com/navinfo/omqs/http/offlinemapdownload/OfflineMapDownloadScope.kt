@@ -149,11 +149,9 @@ class OfflineMapDownloadScope(
                 }
             }
 
-            Log.e("jingo", "文件下载完成 ${cityBean.currentSize} == ${cityBean.fileSize}")
             if (cityBean.currentSize == cityBean.fileSize) {
                 val res =
                     fileTemp.renameTo(File("${Constant.OFFLINE_MAP_PATH}${cityBean.fileName}"))
-                Log.e("jingo", "文件下载完成 修改文件 $res")
                 change(FileDownloadStatus.DONE)
                 withContext(Dispatchers.Main) {
                     downloadManager.mapController.layerManagerHandler.loadBaseMap()

@@ -105,7 +105,6 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
     }
 
     private fun initOMDBVectorTileLayer() {
-
         // 初始化OMDB参考相关图层
         omdbReferenceTileLayer = VectorTileLayer(mMapView.vtmMap, omdbReferenceTileSource)
         omdbReferenceLabelLayer = LabelLayer(

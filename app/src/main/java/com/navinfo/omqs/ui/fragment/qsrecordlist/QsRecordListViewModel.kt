@@ -26,7 +26,6 @@ class QsRecordListViewModel @Inject constructor(
     fun getList(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val realm = Realm.getDefaultInstance()
-            Log.e("jingo","realm hashCOde ${realm.hashCode()}")
             val objects = realm.where(QsRecordBean::class.java).findAll()
             liveDataQSList.postValue(realm.copyFromRealm(objects))
         }
