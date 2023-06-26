@@ -1809,6 +1809,7 @@
                 <symbol repeat="false" repeat-start="0" rotate="false"
                     src="assets:symbols/volcano.svg" symbol-height="69" symbol-width="69"></symbol>
             </m>
+            <caption k="name" fill="#000000" priority="0" size="14" stroke="#ffffff" stroke-width="1.0" dy="-30"></caption>
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
                     src="assets:omdb/icon_arrow_right.svg" symbol-height="76"
@@ -1817,9 +1818,8 @@
             <m k="type" v="s_2_e">
                 <line use="s2e" />
             </m>
-            <text use="road" dy="30"></text>
-        </m>
-        <!-- 路口 -->
+    </m>
+    <!-- 路口 -->
         <m v="OMDB_INTERSECTION">
             <m k="type" v="node">
                 <symbol src="assets:symbols/dot_blue_dark.svg"></symbol>

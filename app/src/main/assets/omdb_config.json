@@ -224,7 +224,7 @@
 					"k": "geometry",
 					"v": "~",
 					"klib": "geometry",
-					"vlib": "generateDirectReferenceLine()"
+					"vlib": "generateDirectReferenceLine(direct=3)"
 				},
 				{
 					"k": "geometry",
@@ -239,12 +239,6 @@
 			"code": 4022,
 			"name": "交通灯",
 			"transformer": [
-				{
-					"k": "angle",
-					"v": "~",
-					"klib": "angle",
-					"vlib": "0"
-				}
 			]
 		},
 		"4601":{

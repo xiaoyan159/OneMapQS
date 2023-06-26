@@ -230,7 +230,7 @@ class MainActivity : BaseActivity() {
         }
         //监听地图中点变化
         viewModel.liveDataCenterPoint.observe(this) {
-            Log.e("qj", "${it.longitude}")
+//            Log.e("qj", "${it.longitude}")
             try {
                 if (it != null && it.longitude != null && it.latitude != null) {
                     binding.mainActivityGeometry.text = "经纬度:${

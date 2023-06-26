@@ -38,7 +38,7 @@ class ImportConfig {
                 if (renderEntity.properties.containsKey(k)) { // json配置的key可以匹配到数据
                     for (v in processKeyOrValue(value)) {
                         if ("~" == v ) { // ~符可以匹配任意元素
-                            if (valuelib.endsWith("()")) { // 以()结尾，说明该value配置是一个function，需要通过反射调用指定方法
+                            if (valuelib.endsWith(")")) { // 以()结尾，说明该value配置是一个function，需要通过反射调用指定方法
                                 // 获取方法名
                                 val methodName = valuelib.substringBefore("(")
                                 // 获取参数
@@ -51,8 +51,9 @@ class ImportConfig {
                                     methodParams[1] to renderEntity
                                 )
                                 for ((index, value) in params.withIndex()) {
-                                    if (methodParams.size>index+1) {
-                                        callByParams[methodParams[index+1]] = value
+                                    // 前2个参数确定为对象本身和RenderEntity，因此自定义参数从index+2开始设置
+                                    if (methodParams.size>index+2) {
+                                        callByParams[methodParams[index+2]] = value
                                     }
                                 }
                                 when(val result = method.callBy(callByParams)) { // 如果方法返回的数据类型是boolean，且返回为false，则该数据不处理
@@ -66,7 +67,7 @@ class ImportConfig {
                             }
                             break@m
                         } else if (renderEntity.properties[k] == v) { // 完全匹配
-                            if (valuelib.endsWith("()")) { // 以()结尾，说明该value配置是一个function，需要通过反射调用指定方法
+                            if (valuelib.endsWith(")")) { // 以()结尾，说明该value配置是一个function，需要通过反射调用指定方法
                                 // 获取方法名
                                 val methodName = valuelib.substringBefore("(")
                                 // 获取参数
@@ -79,8 +80,9 @@ class ImportConfig {
                                     methodParams[1] to renderEntity
                                 )
                                 for ((index, value) in params.withIndex()) {
-                                    if (methodParams.size>index+1) {
-                                        callByParams[methodParams[index+1]] = value
+                                    // 前2个参数确定为对象本身和RenderEntity，因此自定义参数从index+2开始设置
+                                    if (methodParams.size>index+2) {
+                                        callByParams[methodParams[index+2]] = value
                                     }
                                 }
                                 when(val result = method.callBy(callByParams)) {

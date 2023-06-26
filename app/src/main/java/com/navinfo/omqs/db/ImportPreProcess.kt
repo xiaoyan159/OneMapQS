@@ -26,7 +26,7 @@ class ImportPreProcess {
         Log.d("checkCircleRoad", "LinkInEntity: ${linkInId}- ${linkInEntity?.properties?.get("snodePid")}，LinkOutEntity: ${linkOutId}- ${linkOutEntity?.properties?.get("enodePid")}")
         // 查询linkIn的sNode和linkOut的eNode是否相同，如果相同，认为数据是环形路口，返回false
         if (linkInEntity!=null&&linkOutEntity!=null) {
-            if ((linkInEntity.properties["snodePid"] == linkOutEntity.properties["enodePid"]) || linkInEntity.properties["enodePid"] == linkOutEntity.properties["snodePid"]
+            if (linkInEntity.properties["snodePid"] == linkOutEntity.properties["enodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["snodePid"]
                 || linkInEntity.properties["snodePid"] == linkOutEntity.properties["snodePid"]|| linkInEntity.properties["enodePid"] == linkOutEntity.properties["enodePid"])
             return false
         }
@@ -48,11 +48,13 @@ class ImportPreProcess {
                 isReverse = true;
             }
         }
-        if (Geometry.TYPENAME_POINT == geometry?.geometryType) {
+        if (Geometry.TYPENAME_POINT == geometry?.geometryType) { // angle为与正北方向的顺时针夹角
             var angle = if(renderEntity?.properties?.get("angle") == null) 0.0 else renderEntity?.properties?.get("angle")?.toDouble()!!
             if (isReverse) {
                 angle += 180
             }
+            // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
+            angle=(450-angle)%360
             radian = Math.toRadians(angle)
         } else if (Geometry.TYPENAME_LINESTRING == geometry?.geometryType) {
             var coordinates = geometry.coordinates
@@ -99,6 +101,8 @@ class ImportPreProcess {
             if (isReverse) {
                 angle += 180
             }
+            // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
+            angle=(450-angle)%360
             radian = Math.toRadians(angle)
         } else if (Geometry.TYPENAME_LINESTRING == geometry?.geometryType) {
             var coordinates = geometry.coordinates
@@ -169,6 +173,8 @@ class ImportPreProcess {
             if (isReverse) {
                 angle += 180
             }
+            // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
+            angle=(450-angle)%360
             radian = Math.toRadians(angle)
         } else if (Geometry.TYPENAME_LINESTRING == geometry?.geometryType) {
             var coordinates = geometry.coordinates
@@ -186,7 +192,7 @@ class ImportPreProcess {
         val dx: Double = GeometryTools.convertDistanceToDegree(3.0, geometry?.coordinate?.y!!) * Math.cos(radian)
         val dy: Double = GeometryTools.convertDistanceToDegree(3.0, geometry?.coordinate?.y!!) * Math.sin(radian)
 
-        val coorEnd = Coordinate(point.getX() + dy, point.getY() - dx)
+        val coorEnd = Coordinate(point.getX() + dx, point.getY() + dy)
 
         val angleReference = ReferenceEntity()
         angleReference.renderEntityId = renderEntity.id
@@ -248,102 +254,6 @@ class ImportPreProcess {
         }
     }
 
-
-    /**
-     * 自动生成普通交限的参考数据
-     * */
-    fun generateRestrictionRerference(renderEntity: RenderEntity) {
-        // 获取当前renderEntity的geometry
-        val geometry = renderEntity.wkt
-        var radian = 0.0 // geometry的角度，如果是点，获取angle，如果是线，获取最后两个点的方向
-        var point = Coordinate(geometry?.coordinate)
-        if (Geometry.TYPENAME_POINT == geometry?.geometryType) {
-            var angle = if(renderEntity?.properties?.get("angle") == null) 0.0 else renderEntity?.properties?.get("angle")?.toDouble()!!
-            radian = Math.toRadians(angle)
-        }
-
-        // 计算偏移距离
-        val dx: Double = GeometryTools.convertDistanceToDegree(3.0, geometry?.coordinate?.y!!) * Math.sin(radian)
-        val dy: Double = GeometryTools.convertDistanceToDegree(3.0, geometry?.coordinate?.y!!) * Math.cos(radian)
-
-        // 计算偏移后的点
-        val pointTranS =
-            GeoPoint(point.getY() - dx, point.getX() + dy) // 向右偏移的点
-
-        // 计算与原有方向平行的终点坐标
-        val pointTranE = GeoPoint(pointTranS.latitude + dy, pointTranS.longitude + dx)
-
-        renderEntity.geometry = GeometryTools.createGeometry(pointTranS).toString()
-
-        // 将这个点记录在数据中
-        val startEndReference = ReferenceEntity()
-        startEndReference.renderEntityId = renderEntity.id
-        startEndReference.name = "普通交限参考线"
-        startEndReference.table = renderEntity.table
-        // 起终点坐标组成的线
-        startEndReference.geometry = GeometryTools.createLineString(listOf(GeoPoint(point.y, point.x), pointTranS)).toString()
-        startEndReference.properties["qi_table"] = renderEntity.table
-        startEndReference.properties["type"] = "s_2_e"
-        Realm.getDefaultInstance().insert(startEndReference)
-
-        val angleReference = ReferenceEntity()
-        angleReference.renderEntityId = renderEntity.id
-        angleReference.name = "普通交限参考方向"
-        angleReference.table = renderEntity.table
-        // 与原有方向指向平行的线
-        angleReference.geometry = GeometryTools.createLineString(listOf(pointTranS, pointTranE)).toString()
-        angleReference.properties["qi_table"] = renderEntity.table
-        angleReference.properties["type"] = "angle"
-        Realm.getDefaultInstance().insert(angleReference)
-    }
-
-    /**
-     * 自动生成电子眼的参考数据
-     * */
-    fun generateElectronicEyeRerference(renderEntity: RenderEntity) {
-        // 获取当前renderEntity的geometry
-        val geometry = renderEntity.wkt
-        var radian = 0.0 // geometry的角度，如果是点，获取angle，如果是线，获取最后两个点的方向
-        var point = Coordinate(geometry?.coordinate)
-        if (Geometry.TYPENAME_POINT == geometry?.geometryType) {
-            var angle = if(renderEntity?.properties?.get("angle") == null) 0.0 else renderEntity?.properties?.get("angle")?.toDouble()!!
-            radian = Math.toRadians(angle)
-        }
-
-        // 计算偏移距离
-        val dx: Double = GeometryTools.convertDistanceToDegree(3.0, geometry?.coordinate?.y!!) * Math.sin(radian)
-        val dy: Double = GeometryTools.convertDistanceToDegree(3.0, geometry?.coordinate?.y!!) * Math.cos(radian)
-
-        // 计算偏移后的点
-        val pointTranS =
-            GeoPoint(point.getY() - dx, point.getX() + dy) // 向右偏移的点
-
-        // 计算与原有方向平行的终点坐标
-        val pointTranE = GeoPoint(pointTranS.latitude + dy, pointTranS.longitude + dx)
-
-        renderEntity.geometry = GeometryTools.createGeometry(pointTranS).toString()
-
-        // 记录参考数据，绘制电子眼方向
-        val startEndReference = ReferenceEntity()
-        startEndReference.renderEntityId = renderEntity.id
-        startEndReference.name = "电子眼参考线"
-        startEndReference.table = renderEntity.table
-        // 起终点坐标组成的线
-        startEndReference.geometry = GeometryTools.createLineString(listOf(GeoPoint(point.y, point.x), pointTranS)).toString()
-        startEndReference.properties["qi_table"] = renderEntity.table
-        startEndReference.properties["type"] = "s_2_e"
-        Realm.getDefaultInstance().insert(startEndReference)
-
-        val angleReference = ReferenceEntity()
-        angleReference.renderEntityId = renderEntity.id
-        angleReference.name = "电子眼参考方向"
-        angleReference.table = renderEntity.table
-        // 与原有方向指向平行的线
-        angleReference.geometry = GeometryTools.createLineString(listOf(pointTranS, pointTranE)).toString()
-        angleReference.properties["qi_table"] = renderEntity.table
-        angleReference.properties["type"] = "angle"
-        Realm.getDefaultInstance().insert(angleReference)
-    }
 
 
     /**
