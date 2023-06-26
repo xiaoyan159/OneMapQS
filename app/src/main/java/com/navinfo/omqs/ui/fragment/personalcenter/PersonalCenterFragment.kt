@@ -126,12 +126,12 @@ class PersonalCenterFragment(private var backListener: (() -> Unit?)? = null) : 
 //                R.id.personal_center_menu_layer_manager -> { // 图层管理
 //                    findNavController().navigate(R.id.QsLayerManagerFragment)
 //                }
-                R.id.personal_center_menu_qs_record_list -> {
+/*                R.id.personal_center_menu_qs_record_list -> {
                     findNavController().navigate(R.id.QsRecordListFragment)
                 }
                 R.id.personal_center_menu_layer_manager -> { // 图层管理
                     findNavController().navigate(R.id.QsLayerManagerFragment)
-                }
+                }*/
                 R.id.personal_center_menu_scan_qr_code -> {
                     //跳转二维码扫描界面
                     checkPermission()
