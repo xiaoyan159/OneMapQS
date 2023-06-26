@@ -119,6 +119,73 @@
             android:elevation="2dp"
             android:onClick="@{()->mainActivity.onClickMenu()}" />
 
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/main_activity_flow_indoor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/top_right_drawer_btns_mr"
+            app:constraint_referenced_ids="main_activity_snapshot_finish,main_activity_trace_snapshot_points,main_activity_snapshot_media_flag,main_activity_snapshot_rewind,main_activity_snapshot_pause,main_activity_snapshot_next,main_activity_menu_indoor_group"
+            app:flow_horizontalGap="6dp"
+            app:flow_wrapMode="aligned"
+            app:layout_constraintRight_toLeftOf="@id/main_activity_right_fragment"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/main_activity_menu_indoor_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="main_activity_snapshot_finish,main_activity_trace_snapshot_points,main_activity_snapshot_media_flag,main_activity_snapshot_rewind,main_activity_snapshot_pause,main_activity_snapshot_next" />
+
+        <ImageButton
+            android:id="@+id/main_activity_snapshot_finish"
+            style="@style/top_right_drawer_btns_style"
+            android:clickable="true"
+            android:enabled="false"
+            android:focusable="true"
+            android:src="@drawable/map_trace_finish"
+            tools:ignore="MissingConstraints" />
+
+        <ImageButton
+            android:id="@+id/main_activity_trace_snapshot_points"
+            style="@style/top_right_drawer_btns_style"
+            android:focusable="true"
+            android:src="@drawable/map_trace_select_point"
+            tools:ignore="MissingConstraints" />
+
+        <ImageButton
+            android:id="@+id/main_activity_snapshot_media_flag"
+            style="@style/top_right_drawer_btns_style"
+            android:enabled="false"
+            android:focusable="true"
+            android:src="@drawable/map_trace_mediaflag"
+            tools:ignore="MissingConstraints" />
+
+        <ImageButton
+            android:id="@+id/main_activity_snapshot_rewind"
+            style="@style/top_right_drawer_btns_style"
+            android:enabled="false"
+            android:focusable="true"
+            android:src="@drawable/map_trace_forward"
+            tools:ignore="MissingConstraints" />
+
+        <ImageButton
+            android:id="@+id/main_activity_snapshot_pause"
+            style="@style/top_right_drawer_btns_style"
+            android:enabled="false"
+            android:focusable="true"
+            android:src="@drawable/map_trace_pause"
+            tools:ignore="DuplicateIds,MissingConstraints" />
+
+        <ImageButton
+            android:id="@+id/main_activity_snapshot_next"
+            style="@style/top_right_drawer_btns_style"
+            android:enabled="false"
+            android:focusable="true"
+            android:src="@drawable/map_trace_next"
+            tools:ignore="DuplicateIds,MissingConstraints" />
+
         <androidx.constraintlayout.widget.Barrier
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
