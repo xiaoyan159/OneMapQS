@@ -1,13 +1,8 @@
 package com.navinfo.omqs.ui.fragment
 
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 
 abstract class BaseFragment : Fragment() {
 //    override fun onCreateView(
@@ -49,7 +44,7 @@ abstract class BaseFragment : Fragment() {
 //        savedInstanceState: Bundle?
 //    ): View
 
-    fun onBackPressed(): Boolean{
+    open fun onBackPressed(): Boolean{
 //        findNavController().navigateUp()
         return true
     }

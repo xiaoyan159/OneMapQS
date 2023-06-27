@@ -78,7 +78,13 @@ class MainViewModel @Inject constructor(
     val liveDataTopSignList = MutableLiveData<List<SignBean>>()
 
     //道路名
-    val liveDataRoadName = MutableLiveData<List<RoadNameBean>?>()
+    val liveDataRoadName = MutableLiveData<RenderEntity?>()
+
+    /**
+     * 当前选中的要展示的详细信息的要素
+     */
+    val liveDataSignMoreInfo = MutableLiveData<RenderEntity>()
+
 //    var testPoint = GeoPoint(0, 0)
 
     //uuid标识，用于记录轨迹组
@@ -95,6 +101,7 @@ class MainViewModel @Inject constructor(
     var mSoundMeter: SoundMeter? = null
 
     var menuState: Boolean = false
+
 
     val liveDataMenuState = MutableLiveData<Boolean>()
 
@@ -236,7 +243,7 @@ class MainViewModel @Inject constructor(
 
                             if (element.code == 2011) {
                                 hisRoadName = true
-                                liveDataRoadName.postValue(SignUtil.getRoadNameList(element))
+                                liveDataRoadName.postValue(element)
                                 continue
                             }
 
@@ -248,20 +255,18 @@ class MainViewModel @Inject constructor(
                                 iconId = SignUtil.getSignIcon(element),
                                 iconText = SignUtil.getSignIconText(element),
                                 distance = distance.toInt(),
-                                elementId = element.id,
                                 linkId = linkId,
-                                geometry = element.geometry,
                                 name = SignUtil.getSignNameText(element),
                                 bottomRightText = SignUtil.getSignBottomRightText(element),
-                                elementCode = element.code,
-                                moreText = SignUtil.getMoreInfoText(element)
+                                renderEntity = element,
+                                isMoreInfo = SignUtil.isMoreInfo(element)
                             )
                             Log.e("jingo", "捕捉到的数据code ${element.code}")
                             when (element.code) {
                                 2002, 2008, 2010, 2041 -> topSignList.add(
                                     signBean
                                 )
-                                4002, 4003, 4004, 4022 -> signList.add(
+                                4002, 4003, 4004, 4010, 4022, 4601 -> signList.add(
                                     signBean
                                 )
                             }
@@ -288,8 +293,8 @@ class MainViewModel @Inject constructor(
                         }
                     }
 
-                    liveDataTopSignList.postValue(topSignList.distinctBy { it.elementCode })
-                    liveDataSignList.postValue(signList.distinctBy { it.elementCode })
+                    liveDataTopSignList.postValue(topSignList.distinctBy { it.distance })
+                    liveDataSignList.postValue(signList.sortedBy { it.distance })
                     val speechText = SignUtil.getRoadSpeechText(topSignList)
                     withContext(Dispatchers.Main) {
                         speakMode?.speakText(speechText)
@@ -495,8 +500,19 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 是否开启了线选择
+     */
     fun isSelectRoad(): Boolean {
         return bSelectRoad
+    }
+
+    /**
+     * 要展示的要素详细信息
+     */
+
+    fun showSignMoreInfo(data: RenderEntity) {
+        liveDataSignMoreInfo.value = data
     }
 
 }

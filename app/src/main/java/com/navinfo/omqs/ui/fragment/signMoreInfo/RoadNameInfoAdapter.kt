@@ -1,4 +1,4 @@
-package com.navinfo.omqs.ui.fragment.sign
+package com.navinfo.omqs.ui.fragment.signMoreInfo
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,9 +9,6 @@ import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 
 class RoadNameInfoAdapter : BaseRecyclerViewAdapter<RoadNameBean>() {
-    override fun getItemViewRes(position: Int): Int {
-        return R.layout.adapter_road_name
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val viewBinding =
