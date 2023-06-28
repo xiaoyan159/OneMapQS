@@ -31,6 +31,7 @@ import com.navinfo.omqs.ui.activity.BaseActivity
 import com.navinfo.omqs.ui.fragment.console.ConsoleFragment
 import com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapFragment
 import com.navinfo.omqs.ui.fragment.qsrecordlist.QsRecordListFragment
+import com.navinfo.omqs.ui.fragment.signMoreInfo.SignMoreInfoFragment
 import com.navinfo.omqs.ui.fragment.tasklist.TaskManagerFragment
 import com.navinfo.omqs.ui.widget.RecyclerViewSpacesItemDecoration
 import com.navinfo.omqs.util.FlowEventBus
@@ -56,10 +57,11 @@ class MainActivity : BaseActivity() {
      */
     private var leftFragment: Fragment? = null
 
+
     /**
      * 是否开启右侧面板
      */
-    var switchFragment = false
+    private var switchFragment = false
 
     /**
      * 检测是否含有tts插件
@@ -88,6 +90,7 @@ class MainActivity : BaseActivity() {
      */
     private val signAdapter by lazy {
         SignAdapter(object : OnSignAdapterClickListener {
+            //点击看板进去问题反馈面板
             override fun onItemClick(signBean: SignBean) {
                 rightController.currentDestination?.let {
                     if (it.id == R.id.RightEmptyFragment) {
@@ -99,14 +102,15 @@ class MainActivity : BaseActivity() {
                 }
             }
 
+            //点击详细信息
             override fun onMoreInfoClick(selectTag: String, tag: String, signBean: SignBean) {
-                if (binding.mainActivitySignMoreInfoGroup.visibility != View.VISIBLE || selectTag != tag) {
-                    binding.mainActivitySignMoreInfoGroup.visibility = View.VISIBLE
-                    binding.mainActivitySignMoreInfoTitle.text = signBean.name
-                    binding.mainActivitySignMoreInfoText1.text = signBean.bottomRightText
-                    binding.mainActivitySignMoreInfoText2.text = signBean.moreText
-                } else {
-                    binding.mainActivitySignMoreInfoGroup.visibility = View.GONE
+                viewModel.showSignMoreInfo(signBean.renderEntity)
+                val fragment =
+                    supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
+                if (fragment == null) {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment())
+                        .commit()
                 }
             }
 
@@ -119,10 +123,6 @@ class MainActivity : BaseActivity() {
                         rightController.navigate(R.id.EvaluationResultFragment, bundle)
                     }
                 }
-            }
-
-            override fun onHideMoreInfoView() {
-                binding.mainActivitySignMoreInfoGroup.visibility = View.GONE
             }
         })
     }
@@ -182,18 +182,29 @@ class MainActivity : BaseActivity() {
             }
             v?.onTouchEvent(event) ?: true
         }
-
+        //捕捉列表变化回调
         viewModel.liveDataQsRecordIdList.observe(this) {
             //处理页面跳转
             viewModel.navigationRightFragment(this, it)
         }
-
+        //右上角菜单是否被点击
         viewModel.liveDataMenuState.observe(this) {
             binding.mainActivityMenu.isSelected = it
             if (it == true) {
                 binding.mainActivityMenuGroup.visibility = View.VISIBLE
             } else {
                 binding.mainActivityMenuGroup.visibility = View.INVISIBLE
+            }
+        }
+        //道路绑定，名称变化
+        viewModel.liveDataRoadName.observe(this) {
+            if (it != null) {
+                binding.mainActivityRoadName.text = it.properties["name"]
+                if (binding.mainActivityRoadName.visibility != View.VISIBLE) binding.mainActivityRoadName.visibility =
+                    View.VISIBLE
+            } else {
+                if (binding.mainActivityRoadName.visibility != View.GONE) binding.mainActivityRoadName.visibility =
+                    View.GONE
             }
         }
 
@@ -226,20 +237,29 @@ class MainActivity : BaseActivity() {
         viewModel.liveDataTopSignList.observe(this) {
             topSignAdapter.refreshData(it)
         }
+
         //监听地图中点变化
         viewModel.liveDataCenterPoint.observe(this) {
-            Log.e("qj", "${it.longitude}")
             try {
                 if (it != null && it.longitude != null && it.latitude != null) {
                     binding.mainActivityGeometry.text = "经纬度:${
                         BigDecimal(it.longitude).setScale(
-                            7,
-                            RoundingMode.HALF_UP
+                            7, RoundingMode.HALF_UP
                         )
                     },${BigDecimal(it.latitude).setScale(7, RoundingMode.HALF_UP)}"
                 }
             } catch (e: Exception) {
                 Log.e("qj", "异常 $e")
+            }
+        }
+
+        viewModel.liveDataSignMoreInfo.observe(this){
+            val fragment =
+                supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
+            if (fragment == null) {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment())
+                    .commit()
             }
         }
 
@@ -473,8 +493,7 @@ class MainActivity : BaseActivity() {
             }
             leftFragment = TaskManagerFragment {
                 binding.mainActivityLeftFragment.visibility = View.GONE
-                supportFragmentManager.beginTransaction()
-                    .remove(leftFragment!!).commit()
+                supportFragmentManager.beginTransaction().remove(leftFragment!!).commit()
                 leftFragment = null
                 null
             }
@@ -494,8 +513,7 @@ class MainActivity : BaseActivity() {
             }
             leftFragment = QsRecordListFragment {
                 binding.mainActivityLeftFragment.visibility = View.GONE
-                supportFragmentManager.beginTransaction()
-                    .remove(leftFragment!!).commit()
+                supportFragmentManager.beginTransaction().remove(leftFragment!!).commit()
                 leftFragment = null
                 null
             }
@@ -522,13 +540,21 @@ class MainActivity : BaseActivity() {
             }
             leftFragment = OfflineMapFragment {
                 binding.mainActivityLeftFragment.visibility = View.GONE
-                supportFragmentManager.beginTransaction()
-                    .remove(leftFragment!!).commit()
+                supportFragmentManager.beginTransaction().remove(leftFragment!!).commit()
                 leftFragment = null
                 null
             }
             supportFragmentManager.beginTransaction()
                 .replace(R.id.main_activity_left_fragment, leftFragment!!).commit()
+        }
+    }
+
+    /**
+     * 打开道路名称属性看板，选择的道路在viewmodel里记录，不用
+     */
+    fun openRoadNameFragment() {
+        if (viewModel.liveDataRoadName.value != null) {
+            viewModel.showSignMoreInfo(viewModel.liveDataRoadName.value!!)
         }
     }
 }

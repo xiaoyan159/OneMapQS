@@ -20,6 +20,7 @@ import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.navinfo.omqs.ui.dialog.FirstDialog
 
 @AndroidEntryPoint
@@ -70,12 +71,12 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             val mDialog = FirstDialog(context)
             mDialog.setTitle("提示？")
             mDialog.setMessage("是否退出，请确认！")
-            mDialog.setPositiveButton("确定", object : FirstDialog.OnClickListener {
-                override fun onClick(dialog: Dialog?, which: Int) {
-                    mDialog.dismiss()
-                    onBackPressed()
-                }
-            })
+            mDialog.setPositiveButton(
+                "确定"
+            ) { _, _ ->
+                mDialog.dismiss()
+                onBackPressed()
+            }
             mDialog.setNegativeButton("取消", null)
             mDialog.show()
         }
@@ -313,6 +314,11 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
                 viewModel.stopSoundMeter()
             }
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        findNavController().navigateUp()
+        return true
     }
 
 }

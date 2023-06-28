@@ -58,9 +58,6 @@ class TaskAdapter(
         }
     }
 
-    override fun getItemViewRes(position: Int): Int {
-        return R.layout.adapter_task
-    }
 
     fun resetSelect() {
         selectPosition = -1

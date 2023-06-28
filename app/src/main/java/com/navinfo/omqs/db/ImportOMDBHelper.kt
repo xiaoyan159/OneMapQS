@@ -146,7 +146,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                         it.name == currentConfig.table
                     }
 
-                    val listResult = mutableListOf<Map<String, Any>>()
+                    val listResult = mutableListOf<RenderEntity>()
                     currentConfig?.let {
                         val list = FileIOUtils.readFile2List(txtFile, "UTF-8")
                         Log.d("ImportOMDBHelper", "开始解析：${txtFile?.name}")
@@ -159,33 +159,38 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 map["qi_table"] = currentConfig.table
                                 map["qi_name"] = currentConfig.name
                                 map["qi_code"] = if (currentConfig.code == 0) currentConfig.code else currentEntry.key
-                                listResult.add(map)
+
+                                // 先查询这个mesh下有没有数据，如果有则跳过即可
+                                // val meshEntity = Realm.getDefaultInstance().where(RenderEntity::class.java).equalTo("properties['mesh']", map["mesh"].toString()).findFirst()
+                                val renderEntity = RenderEntity()
+                                renderEntity.code = map["qi_code"].toString().toInt()
+                                renderEntity.name = map["qi_name"].toString()
+                                renderEntity.table = map["qi_table"].toString()
+                                // 其他数据插入到Properties中
+                                renderEntity.geometry = map["geometry"].toString()
+                                for ((key, value) in map) {
+                                    when (value) {
+                                        is String -> renderEntity.properties.put(key, value)
+                                        is Int -> renderEntity.properties.put(key, value.toInt().toString())
+                                        is Double -> renderEntity.properties.put(key, value.toDouble().toString())
+                                        else -> renderEntity.properties.put(key, value.toString())
+                                    }
+                                }
+                                listResult.add(renderEntity)
+                                // 对renderEntity做预处理后再保存
+                                val resultEntity = importConfig.transformProperties(renderEntity)
+                                if (resultEntity!=null) {
+                                    Realm.getDefaultInstance().insert(renderEntity)
+                                }
                             }
                         }
-                    }
-                    for (map in listResult) { // 每一个map就是Realm的一条数据
-                        // 先查询这个mesh下有没有数据，如果有则跳过即可
-//                    val meshEntity = Realm.getDefaultInstance().where(RenderEntity::class.java).equalTo("properties['mesh']", map["mesh"].toString()).findFirst()
-                        val renderEntity = RenderEntity()
-                        renderEntity.code = map["qi_code"].toString().toInt()
-                        renderEntity.name = map["qi_name"].toString()
-                        renderEntity.table = map["qi_table"].toString()
-                        // 其他数据插入到Properties中
-                        renderEntity.geometry = map["geometry"].toString()
-                        for ((key, value) in map) {
-                            when (value) {
-                                is String -> renderEntity.properties.put(key, value)
-                                is Int -> renderEntity.properties.put(key, value.toInt().toString())
-                                is Double -> renderEntity.properties.put(key, value.toDouble().toString())
-                                else -> renderEntity.properties.put(key, value.toString())
-                            }
-                        }
-                        // 对renderEntity做预处理后再保存
-                        importConfig.transformProperties(renderEntity)
-                        Realm.getDefaultInstance().copyToRealm(renderEntity)
                     }
                     // 1个文件发送一次flow流
                     emit("${index + 1}/${importConfig.tableMap.size}")
+                    // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
+                    if (currentConfig.table == "OMDB_RD_LINK") {
+                        importConfig.preProcess.cacheRdLink = listResult.associateBy { it.properties["linkPid"] }
+                    }
                 }
                 Realm.getDefaultInstance().commitTransaction()
             } catch (e: Exception) {

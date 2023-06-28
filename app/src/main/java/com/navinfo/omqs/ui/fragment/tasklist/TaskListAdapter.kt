@@ -282,10 +282,6 @@ class TaskListAdapter(
             }
         }
     }
-
-    override fun getItemViewRes(position: Int): Int {
-        return R.layout.adapter_task_list
-    }
 }
 
 

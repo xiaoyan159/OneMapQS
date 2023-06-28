@@ -131,10 +131,6 @@ class OfflineMapCityListAdapter(
             }
         }
     }
-
-    override fun getItemViewRes(position: Int): Int {
-        return R.layout.adapter_offline_map_city
-    }
 }
 
 

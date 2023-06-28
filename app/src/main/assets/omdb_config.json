@@ -101,7 +101,12 @@
             "code": 4001,
             "name": "路口",
 			"transformer": [
-
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateIntersectionReference()"
+				}
 			]
         },
 		"4002": {
@@ -170,7 +175,31 @@
 					"k": "geometry",
 					"v": "~",
 					"klib": "geometry",
-					"vlib": "generateRestrictionRerference()"
+					"vlib": "checkCircleRoad()"
+				},
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "translateBack()"
+				},
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "translateRight()"
+				},
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateS2EReferenceLine()"
+				},
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateDirectReferenceLine()"
 				}
 			]
 		},
@@ -179,7 +208,30 @@
 			"code": 4010,
 			"name": "电子眼",
 			"transformer": [
-
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "translateRight()"
+				},
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateS2EReferenceLine()"
+				},
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateDirectReferenceLine(direct=3)"
+				},
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateElectronName()"
+				}
 			]
 		},
 		"4022": {
@@ -187,12 +239,6 @@
 			"code": 4022,
 			"name": "交通灯",
 			"transformer": [
-				{
-					"k": "angle",
-					"v": "~",
-					"klib": "angle",
-					"vlib": "0"
-				}
 			]
 		},
 		"4601":{
@@ -200,7 +246,24 @@
 			"code": 4601,
 			"name": "车信",
 			"transformer": [
-
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "translateBack()"
+				},
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "translateRight()"
+				},
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateDirectReferenceLine()"
+				}
 			]
 		},
         "5001":{

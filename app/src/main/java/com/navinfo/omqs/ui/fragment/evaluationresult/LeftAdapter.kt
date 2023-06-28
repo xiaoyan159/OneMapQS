@@ -13,9 +13,6 @@ class LeftAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) :
     BaseRecyclerViewAdapter<String>() {
     private var selectTitle = ""
 
-    override fun getItemViewRes(position: Int): Int {
-        return R.layout.text_item_select
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val viewBinding =

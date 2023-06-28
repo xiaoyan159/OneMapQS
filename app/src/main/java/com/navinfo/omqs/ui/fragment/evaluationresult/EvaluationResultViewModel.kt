@@ -137,7 +137,7 @@ class EvaluationResultViewModel @Inject constructor(
             }
         } else {
             liveDataQsRecordBean.value?.run {
-                elementId = bean.elementId
+                elementId = bean.renderEntity.code.toString()
                 linkId = bean.linkId
                 if (linkId.isNotEmpty()) {
                     viewModelScope.launch {
@@ -149,7 +149,7 @@ class EvaluationResultViewModel @Inject constructor(
                         }
                     }
                 }
-                val point = GeometryTools.createGeoPoint(bean.geometry)
+                val point = GeometryTools.createGeoPoint(bean.renderEntity.geometry)
                 this.geometry = GeometryTools.createGeometry(point).toText()
                 mapController.animationHandler.animationByLatLon(point.latitude, point.longitude)
                 mapController.markerHandle.addMarker(point, markerTitle)
@@ -198,7 +198,7 @@ class EvaluationResultViewModel @Inject constructor(
                     liveDataLeftTypeList.postValue(it)
                     if (bean != null) {
                         val classType2 = roomAppDatabase.getScProblemTypeDao()
-                            .findClassTypeByCode(bean.elementCode)
+                            .findClassTypeByCode(bean.renderEntity.code)
                         if (classType2 != null) {
                             classType = classType2
                         }

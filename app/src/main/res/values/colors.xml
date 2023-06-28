@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="lane_info_0" comment="车信普通道路">#FF2271FF</color>
+    <color name="lane_info_1" comment="车信附加道路">#FF00C800</color>
+    <color name="lane_info_2" comment="车信公交道路">#FFFFB400</color>
+
     <color name="white" comment="主要按钮，背景等颜色">#FFFFFF</color> <!--白色 -->
     <color name="button_press_color" comment="默认的按钮按下去时的背景颜色">#F1EBEB</color>
     <color name="default_button_blue_color" comment="蓝色到紫色的渐变开始颜色">#4954ED</color>
