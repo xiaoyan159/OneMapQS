@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -95,18 +96,21 @@ class TaskViewModel @Inject constructor(
                         }
                     }
                 }
+
                 is NetResult.Error<*> -> {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)
                             .show()
                     }
                 }
+
                 is NetResult.Failure<*> -> {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
                             .show()
                     }
                 }
+
                 is NetResult.Loading -> {}
             }
             val realm = Realm.getDefaultInstance()
@@ -139,41 +143,42 @@ class TaskViewModel @Inject constructor(
     /**
      * 设置当前选择的任务，并高亮当前任务的所有link
      */
+    @RequiresApi(Build.VERSION_CODES.M)
     fun setSelectTaskBean(taskBean: TaskBean) {
         currentSelectTaskBean = taskBean
+
         liveDataTaskLinks.value = taskBean.hadLinkDvoList
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mapController.lineHandler.omdbTaskLinkLayer.removeAll()
-            if(taskBean.hadLinkDvoList.isNotEmpty()){
-                mapController.lineHandler.omdbTaskLinkLayer.addLineList(taskBean.hadLinkDvoList)
-                var maxX = 0.0
-                var maxY = 0.0
-                var minX = 0.0
-                var minY = 0.0
-                for (item in taskBean.hadLinkDvoList) {
-                    val geometry = GeometryTools.createGeometry(item.geometry)
-                    if(geometry!=null){
-                        val envelope = geometry.envelopeInternal
-                        if (envelope.maxX > maxX) {
-                            maxX = envelope.maxX
-                        }
-                        if (envelope.maxY > maxY) {
-                            maxY = envelope.maxY
-                        }
-                        if (envelope.minX < minX || minX == 0.0) {
-                            minX = envelope.minX
-                        }
-                        if (envelope.minY < minY || minY == 0.0) {
-                            minY = envelope.minY
-                        }
+
+        mapController.lineHandler.omdbTaskLinkLayer.removeAll()
+        if (taskBean.hadLinkDvoList.isNotEmpty()) {
+            mapController.lineHandler.omdbTaskLinkLayer.addLineList(taskBean.hadLinkDvoList)
+            var maxX = 0.0
+            var maxY = 0.0
+            var minX = 0.0
+            var minY = 0.0
+            for (item in taskBean.hadLinkDvoList) {
+                val geometry = GeometryTools.createGeometry(item.geometry)
+                if (geometry != null) {
+                    val envelope = geometry.envelopeInternal
+                    if (envelope.maxX > maxX) {
+                        maxX = envelope.maxX
+                    }
+                    if (envelope.maxY > maxY) {
+                        maxY = envelope.maxY
+                    }
+                    if (envelope.minX < minX || minX == 0.0) {
+                        minX = envelope.minX
+                    }
+                    if (envelope.minY < minY || minY == 0.0) {
+                        minY = envelope.minY
                     }
                 }
-                //增加异常数据判断
-                if(maxX!=0.0&&maxY!=0.0&&minX!=0.0&&minY!=0.0){
-                    mapController.animationHandler.animateToBox(
-                        maxX = maxX, maxY = maxY, minX = minX, minY = minY
-                    )
-                }
+            }
+            //增加异常数据判断
+            if (maxX != 0.0 && maxY != 0.0 && minX != 0.0 && minY != 0.0) {
+                mapController.animationHandler.animateToBox(
+                    maxX = maxX, maxY = maxY, minX = minX, minY = minY
+                )
             }
         }
     }
@@ -181,20 +186,20 @@ class TaskViewModel @Inject constructor(
     /**
      * 高亮当前选中的link
      */
+    @RequiresApi(Build.VERSION_CODES.M)
     fun showCurrentLink(link: HadLinkDvoBean) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mapController.lineHandler.omdbTaskLinkLayer.showSelectLine(link)
-            val geometry = GeometryTools.createGeometry(link.geometry)
-            if(geometry!=null){
-                val envelope = geometry.envelopeInternal
-                mapController.animationHandler.animateToBox(
-                    maxX = envelope.maxX,
-                    maxY = envelope.maxY,
-                    minX = envelope.minX,
-                    minY = envelope.minY
-                )
-            }
+        mapController.lineHandler.omdbTaskLinkLayer.showSelectLine(link)
+        val geometry = GeometryTools.createGeometry(link.geometry)
+        if (geometry != null) {
+            val envelope = geometry.envelopeInternal
+            mapController.animationHandler.animateToBox(
+                maxX = envelope.maxX,
+                maxY = envelope.maxY,
+                minX = envelope.minX,
+                minY = envelope.minY
+            )
         }
+
     }
 
     override fun onCleared() {

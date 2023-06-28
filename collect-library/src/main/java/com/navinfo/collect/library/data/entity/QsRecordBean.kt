@@ -50,6 +50,7 @@ open class QsRecordBean @JvmOverloads constructor(
      * 问题环节
      */
     var problemLink: String = "",
+
     /**
      * 问题原因
      *    根本原因（RCA）
