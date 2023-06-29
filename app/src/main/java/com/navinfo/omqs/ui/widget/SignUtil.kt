@@ -24,12 +24,21 @@ class SignUtil {
                 2008 -> getKindText(data)
                 //道路方向
                 2010 -> getRoadDirectionText(data)
+                //常规线限速
+                2019 -> getLineSpeedLimitText(data)
                 //车道数
                 2041 -> getLaneNumText(data)
                 //常规点限速,条件点限速
                 4002, 4003 -> getSpeedLimitMaxText(data)
                 else -> ""
             }
+        }
+
+        /**
+         * 常规线限速值
+         */
+        private fun getLineSpeedLimitText(data: RenderEntity): String {
+            return "${data.properties["maxSpeed"]}"
         }
 
         /**
@@ -71,6 +80,8 @@ class SignUtil {
                 2008 -> "种别"
                 //道路方向
                 2010 -> "方向"
+                //常规线限速
+                2019 -> "线限速"
                 //车道数
                 2041 -> "车道数"
                 //常规点限速
@@ -96,8 +107,11 @@ class SignUtil {
          */
         fun getSignBottomRightText(data: RenderEntity): String {
             return when (data.code) {
+
                 //条件点限速
                 4003 -> getConditionLimitText(data)
+                //电子眼
+                4010 -> data.properties["name"].toString()
                 else -> ""
             }
         }
@@ -438,7 +452,6 @@ class SignUtil {
                 4010 -> true
                 else -> false
             }
-            Log.e("jingo", "更多信息：${element.code} $isMore")
             return isMore
         }
 
@@ -584,7 +597,6 @@ class SignUtil {
                             val itemObject = itemArray[i]
                             val type = typeArray[i]
                             var laneInfo = "laneinfo_${itemObject.toString().replace(",", "_")}"
-                            Log.e("jingo", "车信图标 $laneInfo")
                             list.add(
                                 LaneInfoItem(
                                     id = getResId(
@@ -612,6 +624,20 @@ class SignUtil {
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
                 R.drawable.laneinfo_0
+            }
+        }
+
+        /**
+         * 道路信息排序用的
+         */
+        fun getRoadInfoIndex(element: RenderEntity): Int {
+            return when (element.code) {
+                2041 -> 0
+                2008 -> 1
+                2002 -> 2
+                2019 -> 3
+                2010 -> 4
+                else -> 999
             }
         }
     }

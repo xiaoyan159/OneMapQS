@@ -21,5 +21,7 @@ data class SignBean(
     //底部右侧文字
     val bottomRightText: String = "",
     //捕捉数据
-    val renderEntity: RenderEntity
+    val renderEntity: RenderEntity,
+    //道路信息排序用的字段
+    val index: Int = 0
 ) : Parcelable

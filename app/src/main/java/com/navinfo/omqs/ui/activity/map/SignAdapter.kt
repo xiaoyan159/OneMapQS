@@ -83,6 +83,9 @@ class SignAdapter(private var listener: OnSignAdapterClickListener?) :
                     bd.signSecondIcon.text = minSpeed
                 }
             }
+            bd.signMainBg.setOnClickListener {
+                listener?.onItemClick(item)
+            }
         } else if (holder.viewBinding is AdapterSignLaneinfoBinding) {
             val bd = holder.viewBinding
             bd.signMoreIconsLayout.removeAllViews()
@@ -123,10 +126,11 @@ class SignAdapter(private var listener: OnSignAdapterClickListener?) :
             lineViewE.layoutParams = ViewGroup.LayoutParams(24, 80)
             lineViewE.background = context.getDrawable(R.drawable.shape_vertical_dashed_line)
             bd.signMoreIconsLayout.addView(lineViewE, lineViewE.layoutParams)
+            bd.root.setOnClickListener {
+                listener?.onItemClick(item)
+            }
         }
-        holder.viewBinding.root.setOnClickListener {
-            listener?.onItemClick(item)
-        }
+
         holder.tag = item.name + position
     }
 

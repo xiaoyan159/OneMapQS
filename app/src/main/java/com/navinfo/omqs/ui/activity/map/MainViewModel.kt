@@ -259,11 +259,13 @@ class MainViewModel @Inject constructor(
                                 name = SignUtil.getSignNameText(element),
                                 bottomRightText = SignUtil.getSignBottomRightText(element),
                                 renderEntity = element,
-                                isMoreInfo = SignUtil.isMoreInfo(element)
+                                isMoreInfo = SignUtil.isMoreInfo(element),
+                                index = SignUtil.getRoadInfoIndex(element)
                             )
                             Log.e("jingo", "捕捉到的数据code ${element.code}")
                             when (element.code) {
-                                2002, 2008, 2010, 2041 -> topSignList.add(
+                                //车道数，种别，功能等级,线限速,道路方向
+                                2041, 2008, 2002, 2019, 2010 -> topSignList.add(
                                     signBean
                                 )
                                 4002, 4003, 4004, 4010, 4022, 4601 -> signList.add(
@@ -293,7 +295,8 @@ class MainViewModel @Inject constructor(
                         }
                     }
 
-                    liveDataTopSignList.postValue(topSignList.distinctBy { it.distance })
+                    liveDataTopSignList.postValue(topSignList.distinctBy { it.name }.sortedBy { it.index })
+
                     liveDataSignList.postValue(signList.sortedBy { it.distance })
                     val speechText = SignUtil.getRoadSpeechText(topSignList)
                     withContext(Dispatchers.Main) {

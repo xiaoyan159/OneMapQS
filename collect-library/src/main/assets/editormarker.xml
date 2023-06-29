@@ -174,7 +174,7 @@
 
     <!-- omdb -->
     <style-line id="boundaryType" stipple-width="0.1" width="0.1" />
-    <style-line id="s2e" dasharray="1,1" repeat-gap="3" repeat-start="0" stroke="#14582c"
+    <style-line dasharray="1,1" id="s2e" repeat-gap="3" repeat-start="0" stroke="#14582c"
         width="0.1" />
     <!--###### ASSIGNMENT ######-->
 
@@ -1479,83 +1479,83 @@
         </m>
     </m>
 
-<!--    &lt;!&ndash; 自定义渲染样式 &ndash;&gt;-->
-<!--    <m k="navi_type" zoom-max="22" zoom-min="15">-->
-<!--        &lt;!&ndash; 车道中心线 &ndash;&gt;-->
-<!--        <m v="had_lane_link">-->
-<!--            <line dasharray="20,20" fix="true" stipple-stroke="#00000000" stroke="#ff0000"-->
-<!--                width="0.3" />-->
-<!--        </m>-->
-<!--        &lt;!&ndash; 车道边线 &ndash;&gt;-->
-<!--        <m v="had_lane_mark_link">-->
-<!--            <line stipple-width="0.5" stroke="#0000ff" width="0.1" />-->
-<!--        </m>-->
-<!--        &lt;!&ndash;道路箭头 objectArrow&ndash;&gt;-->
-<!--        <m v="object_arrow">-->
-<!--            <area fade="5" fill="#88aaaa00" stroke="#ff0000" stroke-width="0.1"></area>-->
-<!--        </m>-->
-<!--        &lt;!&ndash;人行横道 objectcrosswalk&ndash;&gt;-->
-<!--        <m v="object_crosswalk">-->
-<!--            <area fill="#88800080" stroke="#ff0000" stroke-width="0.2"></area>-->
-<!--            <caption style="bold" dy="12" fill="#4D2F08" k="name" size="14" stroke="#ffffff"-->
-<!--                stroke-width="2.0" />-->
-<!--            <caption style="bold" dy="-12" fill="#4D2F08" k="ele" size="12" stroke="#ffffff"-->
-<!--                stroke-width="2.0" />-->
-<!--        </m>-->
-<!--        &lt;!&ndash;杆状物 objectpole&ndash;&gt;-->
-<!--        <m v="object_pole">-->
-<!--            <line stipple-width="0.5" stroke="#8800aaaa" width="0.1" />-->
-<!--        </m>-->
-<!--        &lt;!&ndash;对象标志 objectsymbol&ndash;&gt;-->
-<!--        <m v="object_symbol">-->
-<!--            <area fill="#880000cc" stroke="#0000cc" stroke-width="0.2"></area>-->
-<!--        </m>-->
-<!--        &lt;!&ndash;交通信号灯 objectTrfficLights&ndash;&gt;-->
-<!--        <m v="object_trrfic">-->
-<!--            <area fill="#8800cc00" stroke="#00cc00" stroke-width="0.2"></area>-->
-<!--        </m>-->
+    <!--    &lt;!&ndash; 自定义渲染样式 &ndash;&gt;-->
+    <!--    <m k="navi_type" zoom-max="22" zoom-min="15">-->
+    <!--        &lt;!&ndash; 车道中心线 &ndash;&gt;-->
+    <!--        <m v="had_lane_link">-->
+    <!--            <line dasharray="20,20" fix="true" stipple-stroke="#00000000" stroke="#ff0000"-->
+    <!--                width="0.3" />-->
+    <!--        </m>-->
+    <!--        &lt;!&ndash; 车道边线 &ndash;&gt;-->
+    <!--        <m v="had_lane_mark_link">-->
+    <!--            <line stipple-width="0.5" stroke="#0000ff" width="0.1" />-->
+    <!--        </m>-->
+    <!--        &lt;!&ndash;道路箭头 objectArrow&ndash;&gt;-->
+    <!--        <m v="object_arrow">-->
+    <!--            <area fade="5" fill="#88aaaa00" stroke="#ff0000" stroke-width="0.1"></area>-->
+    <!--        </m>-->
+    <!--        &lt;!&ndash;人行横道 objectcrosswalk&ndash;&gt;-->
+    <!--        <m v="object_crosswalk">-->
+    <!--            <area fill="#88800080" stroke="#ff0000" stroke-width="0.2"></area>-->
+    <!--            <caption style="bold" dy="12" fill="#4D2F08" k="name" size="14" stroke="#ffffff"-->
+    <!--                stroke-width="2.0" />-->
+    <!--            <caption style="bold" dy="-12" fill="#4D2F08" k="ele" size="12" stroke="#ffffff"-->
+    <!--                stroke-width="2.0" />-->
+    <!--        </m>-->
+    <!--        &lt;!&ndash;杆状物 objectpole&ndash;&gt;-->
+    <!--        <m v="object_pole">-->
+    <!--            <line stipple-width="0.5" stroke="#8800aaaa" width="0.1" />-->
+    <!--        </m>-->
+    <!--        &lt;!&ndash;对象标志 objectsymbol&ndash;&gt;-->
+    <!--        <m v="object_symbol">-->
+    <!--            <area fill="#880000cc" stroke="#0000cc" stroke-width="0.2"></area>-->
+    <!--        </m>-->
+    <!--        &lt;!&ndash;交通信号灯 objectTrfficLights&ndash;&gt;-->
+    <!--        <m v="object_trrfic">-->
+    <!--            <area fill="#8800cc00" stroke="#00cc00" stroke-width="0.2"></area>-->
+    <!--        </m>-->
 
-<!--        <m zoom-max="19" zoom-min="15">-->
-<!--            <text use="ferry" />-->
-<!--        </m>-->
+    <!--        <m zoom-max="19" zoom-min="15">-->
+    <!--            <text use="ferry" />-->
+    <!--        </m>-->
 
-<!--        &lt;!&ndash;道路方向&ndash;&gt;-->
-<!--        <m v="symbol_object_arrow">-->
-<!--            <symbol use="oneway"></symbol>-->
-<!--        </m>-->
-<!--        &lt;!&ndash;杆状物&ndash;&gt;-->
-<!--        <m v="symbol_object_pole">-->
-<!--            <symbol src="assets:symbols/gondola.svg" />-->
-<!--        </m>-->
-<!--        &lt;!&ndash;对象标志&ndash;&gt;-->
-<!--        <m v="symbol_object_symbol">-->
-<!--            <symbol src="assets:symbols/peak.svg" />-->
-<!--        </m>-->
-<!--        &lt;!&ndash;交通信号灯&ndash;&gt;-->
-<!--        <m v="symbol_object_traffic">-->
-<!--            <symbol src="assets:symbols/traffic_signal.svg" />-->
-<!--        </m>-->
-<!--    </m>-->
+    <!--        &lt;!&ndash;道路方向&ndash;&gt;-->
+    <!--        <m v="symbol_object_arrow">-->
+    <!--            <symbol use="oneway"></symbol>-->
+    <!--        </m>-->
+    <!--        &lt;!&ndash;杆状物&ndash;&gt;-->
+    <!--        <m v="symbol_object_pole">-->
+    <!--            <symbol src="assets:symbols/gondola.svg" />-->
+    <!--        </m>-->
+    <!--        &lt;!&ndash;对象标志&ndash;&gt;-->
+    <!--        <m v="symbol_object_symbol">-->
+    <!--            <symbol src="assets:symbols/peak.svg" />-->
+    <!--        </m>-->
+    <!--        &lt;!&ndash;交通信号灯&ndash;&gt;-->
+    <!--        <m v="symbol_object_traffic">-->
+    <!--            <symbol src="assets:symbols/traffic_signal.svg" />-->
+    <!--        </m>-->
+    <!--    </m>-->
 
-<!--    <m k="nav_style">-->
-<!--        <m v="symbol_object_line">-->
-<!--            <m k="rule" zoom-max="22" zoom-min="15">-->
-<!--                &lt;!&ndash; 蓝色黑色间隔线 &ndash;&gt;-->
-<!--                <m v="blue_link">-->
-<!--                    <line dasharray="20,20" fix="true" stipple-stroke="#00000000" stroke="#00000000"-->
-<!--                        width="0.1" />-->
-<!--                </m>-->
-<!--                &lt;!&ndash; 黄色线 &ndash;&gt;-->
-<!--                <m v="yellow_link">-->
-<!--                    <line stipple-width="0.1" stroke="#f4ea2a" width="0.1" />-->
-<!--                </m>-->
-<!--            </m>-->
-<!--            <line stipple-width="0.5" stroke="#33aaaa" width="0.3" />-->
-<!--        </m>-->
-<!--        <m v="symbol_track_point" zoom-max="25" zoom-min="10">-->
-<!--            <symbol src="assets:symbols/dot_blue.svg" />-->
-<!--        </m>-->
-<!--    </m>-->
+    <!--    <m k="nav_style">-->
+    <!--        <m v="symbol_object_line">-->
+    <!--            <m k="rule" zoom-max="22" zoom-min="15">-->
+    <!--                &lt;!&ndash; 蓝色黑色间隔线 &ndash;&gt;-->
+    <!--                <m v="blue_link">-->
+    <!--                    <line dasharray="20,20" fix="true" stipple-stroke="#00000000" stroke="#00000000"-->
+    <!--                        width="0.1" />-->
+    <!--                </m>-->
+    <!--                &lt;!&ndash; 黄色线 &ndash;&gt;-->
+    <!--                <m v="yellow_link">-->
+    <!--                    <line stipple-width="0.1" stroke="#f4ea2a" width="0.1" />-->
+    <!--                </m>-->
+    <!--            </m>-->
+    <!--            <line stipple-width="0.5" stroke="#33aaaa" width="0.3" />-->
+    <!--        </m>-->
+    <!--        <m v="symbol_track_point" zoom-max="25" zoom-min="10">-->
+    <!--            <symbol src="assets:symbols/dot_blue.svg" />-->
+    <!--        </m>-->
+    <!--    </m>-->
 
     <m k="qi_table">
         <!--车道数-->
@@ -1805,21 +1805,21 @@
         </m>
         <!--电子眼-->
         <m v="OMDB_ELECTRONICEYE">
-            <m k="angle">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:symbols/volcano.svg" symbol-height="69" symbol-width="69"></symbol>
-            </m>
-            <caption k="name" fill="#000000" priority="0" size="14" stroke="#ffffff" stroke-width="1.0" dy="-30"></caption>
+            <!--            <m k="angle">-->
+            <!--                <symbol repeat="false" repeat-start="0" rotate="false"-->
+            <!--                    src="assets:symbols/volcano.svg" symbol-height="69" symbol-width="69"></symbol>-->
+            <!--            </m>-->
+            <caption dy="-30" fill="#000000" k="name" priority="0" size="14"
+                stroke="#ffffff" stroke-width="1.0"></caption>
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
-                    src="assets:omdb/icon_arrow_right.svg" symbol-height="76"
-                    symbol-width="76"></symbol>
+                    src="assets:omdb/icon_4010.svg" symbol-height="36" symbol-width="28"></symbol>
             </m>
             <m k="type" v="s_2_e">
                 <line use="s2e" />
             </m>
-    </m>
-    <!-- 路口 -->
+        </m>
+        <!-- 路口 -->
         <m v="OMDB_INTERSECTION">
             <m k="type" v="node">
                 <symbol src="assets:symbols/dot_blue_dark.svg"></symbol>
