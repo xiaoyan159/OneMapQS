@@ -146,7 +146,7 @@ class TaskUploadScope(
                             markId = hadLinkDvoBean.mesh,//"20065597"
                             trackPhotoNumber = "",
                             markGeometry = it.geometry,
-                            featureName = it.classType,
+                            featureName = it.classCode,
                             problemType = problemType,
                             problemPhenomenon = it.phenomenon,
                             problemDesc = it.description,
@@ -166,10 +166,17 @@ class TaskUploadScope(
                         bodyList.add(evaluationInfo)
                     }
                 }else{
+                    val linkStatus = 1
+                    //存在原因标记未测评
+                    if(hadLinkDvoBean.reason.isNotEmpty()){
+                        val linkStatus = 0
+                    }else{
+                        val linkStatus = 1
+                    }
                     val evaluationInfo = EvaluationInfo(
                         evaluationTaskId = taskBean.id.toString(),
                         linkPid = hadLinkDvoBean.linkPid,//"84207223282277331"
-                        linkStatus = 0,
+                        linkStatus = linkStatus,
                         markId = hadLinkDvoBean.mesh,//"20065597"
                         trackPhotoNumber = "",
                         markGeometry = "",
@@ -184,7 +191,7 @@ class TaskUploadScope(
                         evaluationWay = 2,
                         roadClassfcation = "",
                         roadFunctionGrade = "",
-                        noEvaluationreason = "",
+                        noEvaluationreason = hadLinkDvoBean.reason,
                         linkLength = 0.0,
                         dataLevel = "",
                         linstringLength = 0.0,
