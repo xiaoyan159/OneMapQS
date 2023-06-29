@@ -1,13 +1,14 @@
 package com.navinfo.omqs.ui.fragment.personalcenter
 
+import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.blankj.utilcode.util.ToastUtils
 import com.blankj.utilcode.util.UriUtils
@@ -21,6 +22,8 @@ import com.navinfo.omqs.db.ImportOMDBHelper
 import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
 import com.navinfo.omqs.tools.CoroutineUtils
 import com.navinfo.omqs.ui.fragment.BaseFragment
+import com.navinfo.omqs.ui.activity.scan.QrCodeActivity
+import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 import org.oscim.core.GeoPoint
 import javax.inject.Inject
@@ -123,6 +126,16 @@ class PersonalCenterFragment(private var backListener: (() -> Unit?)? = null) : 
 //                R.id.personal_center_menu_layer_manager -> { // 图层管理
 //                    findNavController().navigate(R.id.QsLayerManagerFragment)
 //                }
+/*                R.id.personal_center_menu_qs_record_list -> {
+                    findNavController().navigate(R.id.QsRecordListFragment)
+                }
+                R.id.personal_center_menu_layer_manager -> { // 图层管理
+                    findNavController().navigate(R.id.QsLayerManagerFragment)
+                }*/
+                R.id.personal_center_menu_scan_qr_code -> {
+                    //跳转二维码扫描界面
+                    checkPermission()
+                }
             }
             true
         }
@@ -132,6 +145,11 @@ class PersonalCenterFragment(private var backListener: (() -> Unit?)? = null) : 
         }
 
         fileChooser.setCallbacks(this@PersonalCenterFragment)
+    }
+
+    private fun intentTOQRCode() {
+        var intent = Intent(context, QrCodeActivity::class.java);
+        startActivity(intent)
     }
 
     override fun onDestroyView() {
@@ -146,5 +164,19 @@ class PersonalCenterFragment(private var backListener: (() -> Unit?)? = null) : 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         fileChooser.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun checkPermission() {
+        PermissionX.init(this)
+            .permissions(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
+            .request { allGranted, grantedList, deniedList ->
+                if (allGranted) {
+                    //所有权限已经授权
+                    Toast.makeText(context,"授权成功",Toast.LENGTH_LONG).show()
+                    intentTOQRCode()
+                } else {
+                    Toast.makeText(context, "拒绝权限: $deniedList", Toast.LENGTH_LONG).show()
+                }
+            }
     }
 }

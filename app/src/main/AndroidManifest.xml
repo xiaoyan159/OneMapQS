@@ -4,6 +4,11 @@
     android:versionCode="3"
     android:versionName="1.4"
     package="com.navinfo.omqs">
+    <!-- 这个权限用于相机权限-->
+    <uses-feature android:name="android.hardware.camera.any" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
     <!-- 这个权限用于进行网络定位-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- 这个权限用于访问GPS定位-->
@@ -31,7 +36,13 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- 读取缓存数据 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- 相机权限 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- 音频权限 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!--闹钟和提醒-->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
     <!--android:largeHeap="true" 大内存 128M -->
     <application
         android:name=".OMQSApplication"
@@ -57,12 +68,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.activity.map.MainActivity"
             android:exported="false"
             android:launchMode="singleTask"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.OMQualityInspection" />
+
+        <activity
+            android:name=".ui.activity.scan.QrCodeActivity"
+            android:theme="@style/Theme.OMQualityInspection"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.activity.scan.QRCodeResultActivity"
+            android:theme="@style/Theme.OMQualityInspection"
+            android:screenOrientation="portrait" />
+
         <meta-data
             android:name="ScopedStorage"
             android:value="true" />

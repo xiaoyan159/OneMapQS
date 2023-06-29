@@ -52,6 +52,11 @@ class Constant {
          * */
         var LAYER_CONFIG_LIST: List<ImportConfig>? = null
 
+        /**
+         * 室内整理工具IP
+         */
+        lateinit var INDOOR_IP: String
+
         const val DEBUG = true
 
         var IS_VIDEO_SPEED by kotlin.properties.Delegates.notNull<Boolean>()

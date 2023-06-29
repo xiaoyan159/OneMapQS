@@ -167,7 +167,7 @@
 
                     <TextView
                         style="@style/evaluation_fragment_title_text_style"
-                        android:text="问题原因" />
+                        android:text="初步分析" />
 
                     <TextView
                         android:id="@+id/evaluation_cause"

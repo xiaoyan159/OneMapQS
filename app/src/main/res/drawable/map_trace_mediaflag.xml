@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<item android:state_selected="false" android:state_enabled="true" android:drawable="@drawable/icon_no_mediaflag"></item>
+	<item android:state_enabled="false" android:drawable="@drawable/icon_mediaflag_disable"></item>
+	<item android:state_enabled="true" android:state_selected="true" android:drawable="@drawable/icon_mediaflag"></item>
+	<item android:drawable="@drawable/icon_no_mediaflag"></item>
+
+</selector>

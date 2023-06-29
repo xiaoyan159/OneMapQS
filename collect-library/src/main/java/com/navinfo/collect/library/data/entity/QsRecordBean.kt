@@ -34,6 +34,10 @@ open class QsRecordBean @JvmOverloads constructor(
      */
     var classType: String = "",
     /**
+     *要素代码
+     */
+    var classCode: String = "",
+    /**
      * 问题类型
      */
     var problemType: String = "",
@@ -50,6 +54,7 @@ open class QsRecordBean @JvmOverloads constructor(
      * 问题环节
      */
     var problemLink: String = "",
+
     /**
      * 问题原因
      *    根本原因（RCA）
@@ -96,6 +101,7 @@ open class QsRecordBean @JvmOverloads constructor(
             elementId = elementId,
             linkId = linkId,
             classType = classType,
+            classCode = classCode,
             problemType = problemType,
             phenomenon = phenomenon,
             description = description,
