@@ -1600,7 +1600,7 @@
             </m>
         </m>
         <!-- 道路线 -->
-        <m v="OMDB_RD_LINK">
+        <m k="qi_table" v="OMDB_RD_LINK">
             <line stroke="#9c9c9c" width="1" />
         </m>
         <!--道路种别-->
@@ -1818,8 +1818,9 @@
             <m k="type" v="s_2_e">
                 <line use="s2e" />
             </m>
-    </m>
-    <!-- 路口 -->
+        </m>
+
+        <!-- 路口 -->
         <m v="OMDB_INTERSECTION">
             <m k="type" v="node">
                 <symbol src="assets:symbols/dot_blue_dark.svg"></symbol>
@@ -1834,7 +1835,21 @@
         </m>
         <!-- 车信 -->
         <m v="OMDB_LANEINFO">
-            <text use="road"></text>
+            <m k="currentType" v="0">
+                <m k="currentDirect">
+                    <symbol repeat="false" repeat-start="0" repeat-gap="2000"
+                        src="assets:omdb/1301_0_j.svg" symbol-height="29" symbol-width="29"></symbol>
+                </m>
+            </m>
+            <m k="currentType" v="1|2">
+                <m k="currentDirect">
+                    <symbol repeat="false" repeat-start="0" repeat-gap="2000"
+                        src="assets:omdb/1301_1_j.svg" symbol-height="29" symbol-width="29"></symbol>
+                </m>
+            </m>
+            <m k="type" v="s_2_e">
+                <line use="s2e" />
+            </m>
         </m>
     </m>
 </rendertheme>

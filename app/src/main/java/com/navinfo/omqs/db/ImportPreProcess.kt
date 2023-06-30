@@ -16,6 +16,7 @@ import org.oscim.core.GeoPoint
 class ImportPreProcess {
     val code2NameMap = Code2NameMap()
     lateinit var cacheRdLink: Map<String?, RenderEntity>
+    val defaultTranslateDistance = 3.0
 
     fun checkCircleRoad(renderEntity: RenderEntity): Boolean {
         val linkInId  = renderEntity.properties["linkIn"]
@@ -50,9 +51,9 @@ class ImportPreProcess {
         }
         if (Geometry.TYPENAME_POINT == geometry?.geometryType) { // angle为与正北方向的顺时针夹角
             var angle = if(renderEntity?.properties?.get("angle") == null) 0.0 else renderEntity?.properties?.get("angle")?.toDouble()!!
-            if (isReverse) {
-                angle += 180
-            }
+//            if (isReverse) {
+//                angle += 180
+//            }
             // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
             angle=(450-angle)%360
             radian = Math.toRadians(angle)
@@ -65,20 +66,26 @@ class ImportPreProcess {
             val p2: Coordinate = coordinates.get(coordinates.size - 1)
             // 计算线段的方向
             radian = Angle.angle(p1, p2)
-            point = p2
+            point = p1
         }
 
         // 计算偏移距离
-        val dx: Double = GeometryTools.convertDistanceToDegree(3.0, geometry?.coordinate?.y!!) * Math.cos(radian)
-        val dy: Double = GeometryTools.convertDistanceToDegree(3.0, geometry?.coordinate?.y!!) * Math.sin(radian)
+        val dx: Double = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.cos(radian)
+        val dy: Double = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.sin(radian)
 
         // 计算偏移后的点
         val coord =
             Coordinate(point.getX() + dy, point.getY() - dx)
 
-        // 将这个点记录在数据中
-        val geometryTranslate: Geometry = GeometryTools.createGeometry(doubleArrayOf(coord.x, coord.y))
-        renderEntity.geometry = geometryTranslate.toString()
+        // 记录偏移后的点位或线数据，如果数据为线时，记录的偏移后数据为倒数第二个点右移后，方向与线的最后两个点平行同向的单位向量
+        if (Geometry.TYPENAME_POINT == geometry?.geometryType) {
+            val geometryTranslate: Geometry = GeometryTools.createGeometry(doubleArrayOf(coord.x, coord.y))
+            renderEntity.geometry = geometryTranslate.toString()
+        } else {
+            val coorEnd = Coordinate(coord.x+dx, coord.y+dy)
+            val geometryTranslate: Geometry = GeometryTools.createLineString(arrayOf(coord, coorEnd))
+            renderEntity.geometry = geometryTranslate.toString()
+        }
     }
 
     /**
@@ -98,9 +105,9 @@ class ImportPreProcess {
         var point = Coordinate(geometry?.coordinate)
         if (Geometry.TYPENAME_POINT == geometry?.geometryType) {
             var angle = if(renderEntity?.properties?.get("angle") == null) 0.0 else renderEntity?.properties?.get("angle")?.toDouble()!!
-            if (isReverse) {
-                angle += 180
-            }
+//            if (isReverse) {
+//                angle += 180
+//            }
             // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
             angle=(450-angle)%360
             radian = Math.toRadians(angle)
@@ -117,8 +124,8 @@ class ImportPreProcess {
         }
 
         // 计算偏移距离
-        val dx: Double = GeometryTools.convertDistanceToDegree(3.0, geometry?.coordinate?.y!!) * Math.cos(radian)
-        val dy: Double = GeometryTools.convertDistanceToDegree(3.0, geometry?.coordinate?.y!!) * Math.sin(radian)
+        val dx: Double = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.cos(radian)
+        val dy: Double = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.sin(radian)
 
         // 计算偏移后的点
         val coord =
@@ -137,8 +144,14 @@ class ImportPreProcess {
         val translateGeometry = renderEntity.wkt
         val startGeometry = GeometryTools.createGeometry(renderEntity.properties["geometry"])
 
-        val pointEnd = translateGeometry!!.coordinates[translateGeometry.numPoints-1] // 获取这个geometry对应的结束点坐标
-        val pointStart = startGeometry!!.coordinates[startGeometry.numPoints-1] // 获取这个geometry对应的结束点坐标
+        var pointEnd = translateGeometry!!.coordinates[translateGeometry.numPoints-1] // 获取这个geometry对应的结束点坐标
+        var pointStart = startGeometry!!.coordinates[startGeometry.numPoints-1] // 获取这个geometry对应的结束点坐标
+        if (translateGeometry.geometryType == Geometry.TYPENAME_LINESTRING) { // 如果是线数据，则取倒数第二个点作为偏移的起止点
+            pointEnd = translateGeometry!!.coordinates[translateGeometry.numPoints-2] // 获取这个geometry对应的结束点坐标
+        }
+        if (startGeometry.geometryType == Geometry.TYPENAME_LINESTRING) { // 如果是线数据，则取倒数第二个点作为偏移的起止点
+            pointStart = startGeometry!!.coordinates[startGeometry.numPoints-2] // 获取这个geometry对应的结束点坐标
+        }
 
         // 将这个起终点的线记录在数据中
         val startEndReference = ReferenceEntity()
@@ -162,7 +175,7 @@ class ImportPreProcess {
         if (direction.isNotEmpty()) {
             val paramDirections = direction.split("=")
             if (paramDirections.size>=2 && renderEntity.properties[paramDirections[0].trim()] == paramDirections[1].trim()) {
-                isReverse = true;
+                isReverse = true
             }
         }
         var radian = 0.0 // geometry的角度，如果是点，获取angle，如果是线，获取最后两个点的方向
@@ -170,9 +183,9 @@ class ImportPreProcess {
         if (Geometry.TYPENAME_POINT == geometry?.geometryType) {
             point = Coordinate(geometry?.coordinate)
             var angle = if(renderEntity?.properties?.get("angle") == null) 0.0 else renderEntity?.properties?.get("angle")?.toDouble()!!
-            if (isReverse) {
-                angle += 180
-            }
+//            if (isReverse) {
+//                angle += 180
+//            }
             // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
             angle=(450-angle)%360
             radian = Math.toRadians(angle)
@@ -185,12 +198,12 @@ class ImportPreProcess {
             val p2: Coordinate = coordinates.get(coordinates.size - 1)
             // 计算线段的方向
             radian = Angle.angle(p1, p2)
-            point = p2
+            point = p1
         }
 
         // 计算偏移距离
-        val dx: Double = GeometryTools.convertDistanceToDegree(3.0, geometry?.coordinate?.y!!) * Math.cos(radian)
-        val dy: Double = GeometryTools.convertDistanceToDegree(3.0, geometry?.coordinate?.y!!) * Math.sin(radian)
+        val dx: Double = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.cos(radian)
+        val dy: Double = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.sin(radian)
 
         val coorEnd = Coordinate(point.getX() + dx, point.getY() + dy)
 
@@ -251,6 +264,35 @@ class ImportPreProcess {
         }
         for (key in shape.keys()) {
             renderEntity.properties[key] = shape[key].toString()
+        }
+    }
+
+    /**
+     * 解析车信数据二级属性
+     * */
+    fun unpackingLaneInfo(renderEntity: RenderEntity) {
+        if (renderEntity.code == 4601) {
+            if (!renderEntity.properties["laneinfoGroup"].isNullOrEmpty()&&renderEntity.properties["laneinfoGroup"]!="null") {
+                // 解析laneinfoGroup，将数组中的属性放会properties
+                val laneinfoGroup = JSONArray(renderEntity.properties["laneinfoGroup"].toString().replace("{", "[").replace("}", "]"))
+                // 分别获取两个数组中的数据，取第一个作为主数据，另外两个作为辅助渲染数据
+                val laneInfoDirectArray = JSONArray(laneinfoGroup[0].toString())
+                val laneInfoTypeArray = JSONArray(laneinfoGroup[1].toString())
+
+                for (i in 0 until laneInfoDirectArray.length()) {
+                    // 根据后续的数据生成辅助表数据
+                    val referenceEntity = ReferenceEntity()
+                    referenceEntity.renderEntityId = renderEntity.id
+                    referenceEntity.name = "${renderEntity.name}参考方向"
+                    referenceEntity.table = renderEntity.table
+                    // 与原数据使用相同的geometry
+                    referenceEntity.geometry = renderEntity.geometry.toString()
+                    referenceEntity.properties["qi_table"] = renderEntity.table
+                    referenceEntity.properties["currentDirect"] = laneInfoDirectArray[i].toString().split(",").distinct().joinToString("_")
+                    referenceEntity.properties["currentType"] = laneInfoTypeArray[i].toString().split(",").distinct().joinToString("_")
+                    Realm.getDefaultInstance().insert(referenceEntity)
+                }
+            }
         }
     }
 
