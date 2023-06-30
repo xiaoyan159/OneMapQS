@@ -29,6 +29,10 @@
         <item
             android:icon="@drawable/ic_baseline_sim_card_download_24"
             android:title="备份数据" />
+        <item
+            android:id="@+id/personal_center_menu_version"
+            android:icon="@drawable/ic_baseline_layers_24"
+            android:title="版本：ONE_QE_V1.1.0_20230630_A" />
     </group>
     <group android:checkableBehavior="single">
         <item android:title="小标题">
