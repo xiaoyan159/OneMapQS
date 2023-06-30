@@ -201,7 +201,8 @@ class EvaluationResultViewModel @Inject constructor(
                     var classCode = list[0].elementCode
                     liveDataLeftTypeList.postValue(it)
                     if (bean != null) {
-                        val classType2 = roomAppDatabase.getScProblemTypeDao().findClassTypeByCode(bean.renderEntity.code)
+                        val classType2 = roomAppDatabase.getScProblemTypeDao()
+                            .findClassTypeByCode(bean.renderEntity.code)
                         if (classType2 != null) {
                             classType = classType2
                         }
@@ -364,13 +365,19 @@ class EvaluationResultViewModel @Inject constructor(
                 Realm.getDefaultInstance().use { realm ->
                     realm.executeTransactionAsync { bgRealm ->
                         // find the item
-                        val objects = bgRealm.where(QsRecordBean::class.java).equalTo("id", id).findFirst()
+                        val objects =
+                            bgRealm.where(QsRecordBean::class.java).equalTo("id", id).findFirst()
                         if (objects != null) {
                             oldBean = bgRealm.copyFromRealm(objects)
                             oldBean?.let {
                                 liveDataQsRecordBean.postValue(it.copy())
                                 val p = GeometryTools.createGeoPoint(it.geometry)
-                                mapController.markerHandle.addMarker(GeoPoint(p.latitude, p.longitude), markerTitle)
+                                mapController.markerHandle.addMarker(
+                                    GeoPoint(
+                                        p.latitude,
+                                        p.longitude
+                                    ), markerTitle
+                                )
 
                                 //获取linkid
                                 if (it.linkId.isNotEmpty()) {
@@ -381,7 +388,8 @@ class EvaluationResultViewModel @Inject constructor(
                                         }
                                     }
                                 }
-                                liveDataQsRecordBean.value?.attachmentBeanList = it.attachmentBeanList
+                                liveDataQsRecordBean.value?.attachmentBeanList =
+                                    it.attachmentBeanList
                                 // 显示语音数据到界面
                                 getChatMsgEntityList()
                             }
@@ -508,9 +516,13 @@ class EvaluationResultViewModel @Inject constructor(
     fun stopSoundMeter() {
         //先重置标识，防止按钮抬起时触发语音结束
         Constant.IS_VIDEO_SPEED = false
-        if (mSoundMeter != null && mSoundMeter!!.isStartSound()) {
+        if (mSoundMeter != null && mSoundMeter!!.isStartSound) {
             mSoundMeter!!.stop()
         }
-        if (pop != null && pop!!.isShowing) pop!!.dismiss()
+        pop?.let {
+            if(it.isShowing){
+                it.dismiss()
+            }
+        }
     }
 }
