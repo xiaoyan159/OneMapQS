@@ -16,6 +16,7 @@ import com.navinfo.omqs.Constant
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager
+import com.navinfo.omqs.util.DateTimeUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import kotlinx.coroutines.*
@@ -74,21 +75,15 @@ class TaskViewModel @Inject constructor(
                                         task.fileSize = item.fileSize
                                         task.status = item.status
                                         task.currentSize = item.currentSize
-//                                        task.color = item.color
+                                        //已上传后不在更新操作时间
+                                        if(task.syncStatus!= FileManager.Companion.FileUploadStatus.DONE){
+                                            //赋值时间，用于查询过滤
+                                            task.operationTime = DateTimeUtil.getNowDate().time
+                                        }
+                                    }else{
+                                        //赋值时间，用于查询过滤
+                                        task.operationTime = DateTimeUtil.getNowDate().time
                                     }
-//                                    else {
-//                                        if (index < 6)
-//                                            task.color = colors[index]
-//                                        else {
-//                                            val random = Random()
-//                                            task.color = Color.argb(
-//                                                255,
-//                                                random.nextInt(256),
-//                                                random.nextInt(256),
-//                                                random.nextInt(256)
-//                                            )
-//                                        }
-//                                    }
                                     realm.copyToRealmOrUpdate(task)
                                 }
                             }
@@ -114,29 +109,16 @@ class TaskViewModel @Inject constructor(
                 is NetResult.Loading -> {}
             }
             val realm = Realm.getDefaultInstance()
-            val objects = realm.where(TaskBean::class.java).findAll()
+            //过滤掉已上传的超过90天的数据
+            var nowTime:Long = DateTimeUtil.getNowDate().time
+            var beginNowTime:Long = nowTime - 90*3600*24*1000L
+            var syncUpload:Int = FileManager.Companion.FileUploadStatus.DONE
+            val objects = realm.where(TaskBean::class.java).notEqualTo("syncStatus",syncUpload).or().between("operationTime",beginNowTime,nowTime).equalTo("syncStatus",syncUpload).findAll()
             taskList = realm.copyFromRealm(objects)
             for (item in taskList) {
                 FileManager.checkOMDBFileInfo(item)
             }
-//            niMapController.lineHandler.omdbTaskLinkLayer.setLineColor(
-//                Color.rgb(0, 255, 0).toColor()
-//            )
-//            taskList.forEach {
-//                niMapController.lineHandler.omdbTaskLinkLayer.addLineList(it.hadLinkDvoList)
-//            }
-//            niMapController.lineHandler.omdbTaskLinkLayer.update()
             liveDataTaskList.postValue(taskList)
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                mapController.lineHandler.omdbTaskLinkLayer.removeAll()
-//                if(taskList.isNotEmpty()){
-//                    mapController.lineHandler.omdbTaskLinkLayer.addLineList(item.hadLinkDvoList)
-//                }
-//                for (item in taskList) {
-//                    mapController.lineHandler.omdbTaskLinkLayer.setLineColor(Color.valueOf(item.color))
-//
-//                }
-//            }
         }
     }
 

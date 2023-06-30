@@ -56,6 +56,11 @@ open class TaskBean @JvmOverloads constructor(
     var status: Int = 0,
 
     /**
+     * 操作时间
+     */
+    var operationTime: Long = 0L,
+
+    /**
      * 上传状态
      */
     var syncStatus: Int = 0,

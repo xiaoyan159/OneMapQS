@@ -9,6 +9,7 @@ import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.db.ImportOMDBHelper
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
+import com.navinfo.omqs.util.DateTimeUtil
 import io.realm.Realm
 import kotlinx.coroutines.*
 import java.io.File
@@ -94,6 +95,8 @@ class TaskDownloadScope(
         if (taskBean.status != status || status == FileDownloadStatus.LOADING || status == FileDownloadStatus.IMPORTING) {
             taskBean.status = status
             taskBean.message = message
+            //赋值时间，用于查询过滤
+            taskBean.operationTime = DateTimeUtil.getNowDate().time
             downloadData.postValue(taskBean)
             if (status != FileDownloadStatus.LOADING && status != FileDownloadStatus.IMPORTING) {
                 val realm = Realm.getDefaultInstance()
