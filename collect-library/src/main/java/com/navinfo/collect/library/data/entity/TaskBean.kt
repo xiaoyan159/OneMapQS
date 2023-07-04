@@ -74,5 +74,4 @@ open class TaskBean @JvmOverloads constructor(
     fun getDownLoadUrl(): String {
         return "${Constant.SERVER_ADDRESS}devcp/downFile?fileStr=$id"
     }
-
 }

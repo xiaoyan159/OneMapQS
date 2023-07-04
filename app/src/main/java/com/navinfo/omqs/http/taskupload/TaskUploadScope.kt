@@ -137,11 +137,6 @@ class TaskUploadScope(
                             problemType = 2
                         }
                         var evaluationWay = 2
-/*                        if(it.evaluationWay=="生产测评"){
-                            evaluationWay = "1"
-                        }else if(it.evaluationWay=="现场测评"){
-                            evaluationWay = "2"
-                        }*/
                         val evaluationInfo = EvaluationInfo(
                             evaluationTaskId = taskBean.id.toString(),
                             linkPid = hadLinkDvoBean.linkPid,//"84207223282277331"
