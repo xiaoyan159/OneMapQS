@@ -1560,7 +1560,7 @@
     <m k="qi_table">
         <!--车道数-->
         <m v="OMDB_LANE_NUM">
-            <m k="laneNum">
+<!--            <m k="laneNum">
                 <m v="1">
                     <line stroke="#545D6C" width="3" />
                 </m>
@@ -1597,7 +1597,7 @@
                 <m v="12">
                     <line stroke="#545D6C" width="36" />
                 </m>
-            </m>
+            </m>-->
         </m>
         <!-- 道路线 -->
         <m v="OMDB_RD_LINK">
@@ -1698,8 +1698,13 @@
         </m>
         <!--车道中心线-->
         <m v="OMDB_LANE_LINK_LG">
-            <line dasharray="35,35" stroke="#ecf0f1" width="0.1" />
-        </m>
+<!--            <m k="eLaneNodePid">
+                <line dasharray="35,35" stroke="#ecf0f1" width="0.1" />
+            </m>-->
+            <m k="width">
+                <line stroke="#545D6C" width="3" />
+            </m>
+        </m>0
         <!-- 道路边界类型 -->
         <m v="OMDB_RDBOUND_BOUNDARYTYPE">
             <line stroke="#ffffff" width="0.1" />

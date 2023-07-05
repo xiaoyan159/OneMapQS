@@ -46,6 +46,11 @@ class TaskViewModel @Inject constructor(
      */
     val liveDataTaskUpload = MutableLiveData<Map<TaskBean, Boolean>>()
 
+    /**
+     * 用来确定是否关闭
+     */
+    val liveDataCloseTask = MutableLiveData<Boolean>()
+
     private val colors =
         arrayOf(Color.RED, Color.YELLOW, Color.BLUE, Color.MAGENTA, Color.GREEN, Color.CYAN)
 
@@ -297,10 +302,16 @@ class TaskViewModel @Inject constructor(
                             FileManager.checkOMDBFileInfo(item)
                         }
                         liveDataTaskList.postValue(taskList)
+                        liveDataCloseTask.postValue(true)
                     }
                 }
             })
-            mDialog.setNegativeButton("取消", null)
+            mDialog.setNegativeButton("取消", object : FirstDialog.OnClickListener {
+                override fun onClick(dialog: Dialog?, which: Int) {
+                    liveDataCloseTask.postValue(false)
+                    mDialog.dismiss()
+                }
+            })
             mDialog.show()
         }
     }

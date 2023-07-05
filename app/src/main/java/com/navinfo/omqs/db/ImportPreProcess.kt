@@ -300,6 +300,21 @@ class ImportPreProcess {
     }
 
     /**
+     * 生成车道中心线面宽度
+     * */
+    fun generateAddWidthLine(renderEntity: RenderEntity) {
+        // 添加车道中心面渲染原则，根据车道宽度进行渲染
+        val angleReference = ReferenceEntity()
+        angleReference.renderEntityId = renderEntity.id
+        angleReference.name = "${renderEntity.name}车道中线面"
+        angleReference.table = renderEntity.table
+        angleReference.geometry = renderEntity.geometry
+        angleReference.properties["qi_table"] = renderEntity.table
+        angleReference.properties["width"] = "3"
+        Realm.getDefaultInstance().insert(angleReference)
+    }
+
+    /**
      * 生成默认路口数据的参考数据
      * */
     fun generateIntersectionReference(renderEntity: RenderEntity) {

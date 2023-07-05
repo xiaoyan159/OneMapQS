@@ -55,10 +55,10 @@ class TaskListFragment : BaseFragment() {
             if(status==TaskListAdapter.Companion.ItemClickStatus.ITEM_LAYOUT_CLICK){
                 viewModel.setSelectTaskBean(taskBean as TaskBean)
             }else if(status==TaskListAdapter.Companion.ItemClickStatus.DELETE_LAYOUT_CLICK){
+                showLoadingDialog("正在关闭")
                 context?.let { viewModel.removeTask(it, taskBean as TaskBean) }
             }else if(status==TaskListAdapter.Companion.ItemClickStatus.UPLOAD_LAYOUT_CLICK){
                 showLoadingDialog("正在校验")
-                Toast.makeText(context, "正在校验", Toast.LENGTH_SHORT).show()
                 viewModel.checkUploadTask(binding.root.context,taskBean)
             } else {
 
@@ -86,6 +86,14 @@ class TaskListFragment : BaseFragment() {
         binding.taskListRecyclerview.adapter = adapter
         viewModel.liveDataTaskList.observe(viewLifecycleOwner) {
             adapter.refreshData(it)
+        }
+
+        //监听关闭任务状态
+        viewModel.liveDataCloseTask.observe(viewLifecycleOwner){
+            if(it){
+                Toast.makeText(binding.root.context,"成功关闭！",Toast.LENGTH_LONG).show()
+            }
+            hideLoadingDialog()
         }
 
         //监听并调用上传
