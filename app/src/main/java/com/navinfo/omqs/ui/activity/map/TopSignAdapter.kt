@@ -11,9 +11,6 @@ import com.navinfo.omqs.ui.other.BaseViewHolder
 
 class TopSignAdapter(private var itemListener: ((Int, SignBean) -> Unit?)? = null) :
     BaseRecyclerViewAdapter<SignBean>() {
-    override fun getItemViewRes(position: Int): Int {
-        return R.layout.adapter_top_sign
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val viewBinding =

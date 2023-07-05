@@ -1,0 +1,41 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="193dp"
+    android:layout_height="78dp"
+    android:background="@drawable/bg_sign_laneinfo"
+    android:orientation="vertical"
+    tools:context="com.navinfo.omqs.ui.activity.map.SignAdapter">
+
+    <LinearLayout
+        android:id="@+id/sign_more_icons_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp" />
+
+    <TextView
+        android:id="@+id/sign_bottom_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="5dp"
+        android:gravity="center"
+        android:text="道路名"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/sign_bottom_right_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/sign_bottom_text"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="15dp"
+        android:gravity="center"
+        android:text="其他信息"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+</RelativeLayout>

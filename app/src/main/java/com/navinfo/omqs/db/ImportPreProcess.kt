@@ -27,9 +27,9 @@ class ImportPreProcess {
         Log.d("checkCircleRoad", "LinkInEntity: ${linkInId}- ${linkInEntity?.properties?.get("snodePid")}，LinkOutEntity: ${linkOutId}- ${linkOutEntity?.properties?.get("enodePid")}")
         // 查询linkIn的sNode和linkOut的eNode是否相同，如果相同，认为数据是环形路口，返回false
         if (linkInEntity!=null&&linkOutEntity!=null) {
-            if (linkInEntity.properties["snodePid"] == linkOutEntity.properties["enodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["snodePid"]
-                || linkInEntity.properties["snodePid"] == linkOutEntity.properties["snodePid"]|| linkInEntity.properties["enodePid"] == linkOutEntity.properties["enodePid"])
-            return false
+            if (linkInEntity.properties["snodePid"] == linkOutEntity.properties["enodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["snodePid"] == linkOutEntity.properties["snodePid"]|| linkInEntity.properties["enodePid"] == linkOutEntity.properties["enodePid"]) {
+                return false
+            }
         }
         return true
     }
@@ -290,6 +290,8 @@ class ImportPreProcess {
                     referenceEntity.properties["qi_table"] = renderEntity.table
                     referenceEntity.properties["currentDirect"] = laneInfoDirectArray[i].toString().split(",").distinct().joinToString("_")
                     referenceEntity.properties["currentType"] = laneInfoTypeArray[i].toString().split(",").distinct().joinToString("_")
+                    referenceEntity.properties["symbol"] = "assets:omdb/4601/bus/1301_"+referenceEntity.properties["currentDirect"]+".svg"
+                    Log.d("unpackingLaneInfo", referenceEntity.properties["symbol"].toString())
                     Realm.getDefaultInstance().insert(referenceEntity)
                 }
             }

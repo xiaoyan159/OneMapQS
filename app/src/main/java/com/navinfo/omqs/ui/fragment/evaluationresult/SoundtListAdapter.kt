@@ -224,10 +224,6 @@ class SoundtListAdapter(
         }
     }
 
-
-    override fun getItemViewRes(position: Int): Int {
-        return R.layout.adapter_sound_list
-    }
 }
 
 

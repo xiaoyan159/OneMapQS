@@ -30,6 +30,16 @@
         android:textSize="16sp" />
 
     <TextView
+        android:id="@+id/sign_second_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/sign_main_icon"
+        android:text=""
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+    <TextView
         android:id="@+id/sign_bottom_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -46,10 +56,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/sign_bottom_text"
+        android:layout_alignRight="@id/sign_main_bg"
         android:layout_marginRight="15dp"
         android:gravity="center"
         android:text="其他信息"
-        android:layout_alignRight="@id/sign_main_bg"
         android:textColor="@color/white"
         android:textSize="14sp" />
 
@@ -59,17 +69,19 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/sign_main_bg"
         android:layout_marginLeft="2dp"
+        android:padding="4dp"
         android:layout_toRightOf="@id/sign_main_bg"
-        android:background="@drawable/icon_sign_info"
+        android:src="@drawable/icon_sign_info"
         android:visibility="gone" />
 
     <ImageView
         android:id="@+id/sign_main_fast_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_marginLeft="172dp"
         android:layout_marginTop="4dp"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/icon_evaluation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:visibility="gone"
+        android:background="@drawable/icon_evaluation" />
 
 </RelativeLayout>

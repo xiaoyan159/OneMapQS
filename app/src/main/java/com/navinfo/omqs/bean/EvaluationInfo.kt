@@ -38,8 +38,8 @@ data class EvaluationInfo(
     @SerializedName("problemLink")
     val problemLink: String = "",//问题环节
 
-    @SerializedName("problemReason")
-    val problemReason: String = "",//问题原因
+    @SerializedName("preliminaryAnalysis")
+    val preliminaryAnalysis: String = "",//初步分析
 
     @SerializedName("evaluatorName")
     val evaluatorName: String = "",//测评人名称

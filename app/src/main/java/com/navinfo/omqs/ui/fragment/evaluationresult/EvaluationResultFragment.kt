@@ -1,6 +1,5 @@
 package com.navinfo.omqs.ui.fragment.evaluationresult
 
-import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -8,19 +7,22 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavOptions
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.databinding.FragmentEvaluationResultBinding
+import com.navinfo.omqs.ui.dialog.FirstDialog
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
 import dagger.hilt.android.AndroidEntryPoint
-import androidx.navigation.findNavController
-import com.navinfo.omqs.ui.dialog.FirstDialog
+import org.videolan.vlc.Util
+
 
 @AndroidEntryPoint
 class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
@@ -30,6 +32,10 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
      * 和[PhenomenonFragment],[ProblemLinkFragment],[EvaluationResultFragment]共用同一个viewModel
      */
     private val viewModel by shareViewModels<EvaluationResultViewModel>("QsRecode")
+
+    private val pictureAdapter by lazy {
+        PictureAdapter()
+    }
 
     //    private val args:EmptyFragmentArgs by navArgs()
     override fun onCreateView(
@@ -56,6 +62,8 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             adapter.refreshData(it)
         }
 
+        binding.evaluationPictureViewpager
+
         return binding.root
     }
 
@@ -70,12 +78,12 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             val mDialog = FirstDialog(context)
             mDialog.setTitle("提示？")
             mDialog.setMessage("是否退出，请确认！")
-            mDialog.setPositiveButton("确定", object : FirstDialog.OnClickListener {
-                override fun onClick(dialog: Dialog?, which: Int) {
-                    mDialog.dismiss()
-                    onBackPressed()
-                }
-            })
+            mDialog.setPositiveButton(
+                "确定"
+            ) { _, _ ->
+                mDialog.dismiss()
+                onBackPressed()
+            }
             mDialog.setNegativeButton("取消", null)
             mDialog.show()
         }
@@ -91,6 +99,21 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             viewModel.deleteData(requireContext())
 
         }
+        /**
+         * 照片view
+         */
+        binding.evaluationPictureViewpager.adapter = pictureAdapter
+        val list = mutableListOf("1", "2", "3")
+        pictureAdapter.refreshData(list)
+
+        binding.evaluationPictureLeft.setOnClickListener(this)
+        binding.evaluationPictureRight.setOnClickListener(this)
+
+
+        val recyclerView = binding.evaluationPictureViewpager.getChildAt(0) as RecyclerView
+
+        recyclerView.setPadding(0, 0, Util.convertDpToPx(requireContext(), 50), 0)
+        recyclerView.clipToPadding = false
 
 
         binding.evaluationVoice.setOnTouchListener { _, event ->
@@ -110,6 +133,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             }
             true
         }
+
 
         /**
          * 读取元数据
@@ -249,6 +273,24 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         v?.let {
             when (v.id) {
+                //照片左侧按钮
+                R.id.evaluation_picture_left -> {
+                    val currentItem = binding.evaluationPictureViewpager.currentItem
+                    if (currentItem > 0) {
+                        binding.evaluationPictureViewpager.currentItem = currentItem - 1
+                    } else {
+                    }
+
+                }
+                //照片右侧按钮
+                R.id.evaluation_picture_right -> {
+                    val currentItem = binding.evaluationPictureViewpager.currentItem
+                    if (currentItem < pictureAdapter.data.size - 1) {
+                        binding.evaluationPictureViewpager.currentItem = currentItem + 1
+                    } else {
+
+                    }
+                }
                 //上三项，打开面板
                 R.id.evaluation_class_type, R.id.evaluation_problem_type, R.id.evaluation_phenomenon -> {
                     activity?.run {
@@ -313,6 +355,11 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
                 viewModel.stopSoundMeter()
             }
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        findNavController().navigateUp()
+        return true
     }
 
 }

@@ -58,9 +58,6 @@ class QsRecordListAdapter(
         binding.qsRecordTime.text = qsRecordBean.checkTime
     }
 
-    override fun getItemViewRes(position: Int): Int {
-        return R.layout.adapter_qs_record_list
-    }
 
     // 提供set方法
     fun setOnKotlinItemClickListener(itemClickListener: IKotlinItemClickListener) {

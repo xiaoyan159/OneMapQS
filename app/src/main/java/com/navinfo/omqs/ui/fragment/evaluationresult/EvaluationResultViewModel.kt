@@ -26,6 +26,7 @@ import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ChatMsgEntity
+import com.navinfo.omqs.bean.ScProblemTypeBean
 import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.db.RoomAppDatabase
@@ -65,7 +66,7 @@ class EvaluationResultViewModel @Inject constructor(
     /**
      *  问题分类 liveData，给[LeftAdapter]展示的数据
      */
-    val liveDataLeftTypeList = MutableLiveData<List<String>>()
+    val liveDataLeftTypeList = MutableLiveData<List<ScProblemTypeBean>>()
 
     /**
      * 问题类型 liveData 给[MiddleAdapter]展示的数据
@@ -94,6 +95,8 @@ class EvaluationResultViewModel @Inject constructor(
     var mSoundMeter: SoundMeter? = null
 
     var classTypeTemp: String = ""
+
+    var classCodeTemp: String = ""
 
     init {
         liveDataQsRecordBean.value = QsRecordBean(id = UUID.randomUUID().toString())
@@ -137,7 +140,7 @@ class EvaluationResultViewModel @Inject constructor(
             }
         } else {
             liveDataQsRecordBean.value?.run {
-                elementId = bean.elementId
+                elementId = bean.renderEntity.code.toString()
                 linkId = bean.linkId
                 if (linkId.isNotEmpty()) {
                     viewModelScope.launch {
@@ -149,7 +152,7 @@ class EvaluationResultViewModel @Inject constructor(
                         }
                     }
                 }
-                val point = GeometryTools.createGeoPoint(bean.geometry)
+                val point = GeometryTools.createGeoPoint(bean.renderEntity.geometry)
                 this.geometry = GeometryTools.createGeometry(point).toText()
                 mapController.animationHandler.animationByLatLon(point.latitude, point.longitude)
                 mapController.markerHandle.addMarker(point, markerTitle)
@@ -194,22 +197,24 @@ class EvaluationResultViewModel @Inject constructor(
             list?.let {
                 if (list.isNotEmpty()) {
                     //通知页面更新
-                    var classType = list[0]
+                    var classType = list[0].classType
+                    var classCode = list[0].elementCode
                     liveDataLeftTypeList.postValue(it)
                     if (bean != null) {
-                        val classType2 = roomAppDatabase.getScProblemTypeDao()
-                            .findClassTypeByCode(bean.elementCode)
+                        val classType2 = roomAppDatabase.getScProblemTypeDao().findClassTypeByCode(bean.renderEntity.code)
                         if (classType2 != null) {
                             classType = classType2
                         }
                     }
                     //如果右侧栏没数据，给个默认值
                     if (liveDataQsRecordBean.value!!.classType.isEmpty()) {
-
                         liveDataQsRecordBean.value!!.classType = classType
+                        liveDataQsRecordBean.value!!.classCode = classCode
                         classTypeTemp = classType
+                        classCodeTemp = classCode
                     } else {
                         classType = liveDataQsRecordBean.value!!.classType
+                        classCode = liveDataQsRecordBean.value!!.classCode
                     }
                     getProblemList(classType)
                 }
@@ -298,6 +303,7 @@ class EvaluationResultViewModel @Inject constructor(
      */
     fun setPhenomenonMiddleBean(adapterBean: RightBean) {
         liveDataQsRecordBean.value!!.classType = classTypeTemp
+        liveDataQsRecordBean.value!!.classCode = classCodeTemp
         liveDataQsRecordBean.value!!.phenomenon = adapterBean.text
         liveDataQsRecordBean.value!!.problemType = adapterBean.title
         liveDataQsRecordBean.postValue(liveDataQsRecordBean.value)

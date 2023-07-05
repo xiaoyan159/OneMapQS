@@ -5,17 +5,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import com.navinfo.omqs.R
+import com.navinfo.omqs.bean.ScProblemTypeBean
 import com.navinfo.omqs.databinding.TextItemSelectBinding
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 
 class LeftAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) :
-    BaseRecyclerViewAdapter<String>() {
+    BaseRecyclerViewAdapter<ScProblemTypeBean>() {
     private var selectTitle = ""
 
-    override fun getItemViewRes(position: Int): Int {
-        return R.layout.text_item_select
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val viewBinding =
@@ -27,18 +25,18 @@ class LeftAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) :
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         val bd = holder.viewBinding as TextItemSelectBinding
         val title = data[position]
-        bd.itemId.text = title
-        holder.viewBinding.root.isSelected = selectTitle == title
+        bd.itemId.text = title.classType
+        holder.viewBinding.root.isSelected = selectTitle == title.classType
         bd.root.setOnClickListener {
-            if (selectTitle != title) {
-                selectTitle = title
+            if (selectTitle != title.classType) {
+                selectTitle = title.classType
                 notifyDataSetChanged()
             }
-            itemListener?.invoke(position, title)
+            itemListener?.invoke(position, title.classType)
         }
     }
 
-    override fun refreshData(newData: List<String>) {
+    override fun refreshData(newData: List<ScProblemTypeBean>) {
         data = newData
         notifyDataSetChanged()
     }
