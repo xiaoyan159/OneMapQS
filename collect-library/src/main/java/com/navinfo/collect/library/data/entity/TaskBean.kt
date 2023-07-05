@@ -56,6 +56,11 @@ open class TaskBean @JvmOverloads constructor(
     var status: Int = 0,
 
     /**
+     * 操作时间
+     */
+    var operationTime: Long = 0L,
+
+    /**
      * 上传状态
      */
     var syncStatus: Int = 0,
@@ -69,5 +74,4 @@ open class TaskBean @JvmOverloads constructor(
     fun getDownLoadUrl(): String {
         return "${Constant.SERVER_ADDRESS}devcp/downFile?fileStr=$id"
     }
-
 }

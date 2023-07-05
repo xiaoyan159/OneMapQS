@@ -9,4 +9,10 @@
         <attr name="textSize" format="dimension" />
         <attr name="text" format="string" />
     </declare-styleable>
+
+    //自定义删除按钮的宽度
+    <declare-styleable name="LeftDeleteView">
+        <attr name="deleteBtnWidth" format="float"/>
+    </declare-styleable>
+
 </resources>

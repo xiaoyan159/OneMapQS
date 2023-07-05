@@ -13,6 +13,7 @@ import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.bean.SysUserBean
 import com.navinfo.omqs.http.DefaultResponse
 import com.navinfo.omqs.tools.FileManager.Companion.FileUploadStatus
+import com.navinfo.omqs.util.DateTimeUtil
 import io.realm.Realm
 import kotlinx.coroutines.*
 import java.util.*
@@ -72,6 +73,8 @@ class TaskUploadScope(
         if (taskBean.syncStatus != status) {
             taskBean.syncStatus = status
             taskBean.errMsg = message
+            //赋值时间，用于查询过滤
+            taskBean.operationTime = DateTimeUtil.getNowDate().time
             uploadData.postValue(taskBean)
             //同步中不进行状态记录,只做界面变更显示
             if(status!=FileUploadStatus.UPLOADING){
@@ -134,11 +137,6 @@ class TaskUploadScope(
                             problemType = 2
                         }
                         var evaluationWay = 2
-/*                        if(it.evaluationWay=="生产测评"){
-                            evaluationWay = "1"
-                        }else if(it.evaluationWay=="现场测评"){
-                            evaluationWay = "2"
-                        }*/
                         val evaluationInfo = EvaluationInfo(
                             evaluationTaskId = taskBean.id.toString(),
                             linkPid = hadLinkDvoBean.linkPid,//"84207223282277331"

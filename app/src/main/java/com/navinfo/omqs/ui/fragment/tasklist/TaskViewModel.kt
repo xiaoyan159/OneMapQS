@@ -1,5 +1,6 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
@@ -9,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
+import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.GeometryTools
@@ -16,11 +18,12 @@ import com.navinfo.omqs.Constant
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager
+import com.navinfo.omqs.ui.dialog.FirstDialog
+import com.navinfo.omqs.util.DateTimeUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import kotlinx.coroutines.*
 import javax.inject.Inject
-import kotlin.math.max
 
 
 @HiltViewModel
@@ -37,6 +40,12 @@ class TaskViewModel @Inject constructor(
      * 用来更新当前任务
      */
     val liveDataTaskLinks = MutableLiveData<List<HadLinkDvoBean>>()
+
+    /**
+     * 用来更新数据是否可以上传
+     */
+    val liveDataTaskUpload = MutableLiveData<Map<TaskBean, Boolean>>()
+
     private val colors =
         arrayOf(Color.RED, Color.YELLOW, Color.BLUE, Color.MAGENTA, Color.GREEN, Color.CYAN)
 
@@ -74,21 +83,15 @@ class TaskViewModel @Inject constructor(
                                         task.fileSize = item.fileSize
                                         task.status = item.status
                                         task.currentSize = item.currentSize
-//                                        task.color = item.color
+                                        //已上传后不在更新操作时间
+                                        if (task.syncStatus != FileManager.Companion.FileUploadStatus.DONE) {
+                                            //赋值时间，用于查询过滤
+                                            task.operationTime = DateTimeUtil.getNowDate().time
+                                        }
+                                    } else {
+                                        //赋值时间，用于查询过滤
+                                        task.operationTime = DateTimeUtil.getNowDate().time
                                     }
-//                                    else {
-//                                        if (index < 6)
-//                                            task.color = colors[index]
-//                                        else {
-//                                            val random = Random()
-//                                            task.color = Color.argb(
-//                                                255,
-//                                                random.nextInt(256),
-//                                                random.nextInt(256),
-//                                                random.nextInt(256)
-//                                            )
-//                                        }
-//                                    }
                                     realm.copyToRealmOrUpdate(task)
                                 }
                             }
@@ -114,29 +117,19 @@ class TaskViewModel @Inject constructor(
                 is NetResult.Loading -> {}
             }
             val realm = Realm.getDefaultInstance()
-            val objects = realm.where(TaskBean::class.java).findAll()
+            //过滤掉已上传的超过90天的数据
+            var nowTime: Long = DateTimeUtil.getNowDate().time
+            var beginNowTime: Long = nowTime - 90 * 3600 * 24 * 1000L
+            var syncUpload: Int = FileManager.Companion.FileUploadStatus.DONE
+            val objects =
+                realm.where(TaskBean::class.java).notEqualTo("syncStatus", syncUpload).or()
+                    .between("operationTime", beginNowTime, nowTime)
+                    .equalTo("syncStatus", syncUpload).findAll()
             taskList = realm.copyFromRealm(objects)
             for (item in taskList) {
                 FileManager.checkOMDBFileInfo(item)
             }
-//            niMapController.lineHandler.omdbTaskLinkLayer.setLineColor(
-//                Color.rgb(0, 255, 0).toColor()
-//            )
-//            taskList.forEach {
-//                niMapController.lineHandler.omdbTaskLinkLayer.addLineList(it.hadLinkDvoList)
-//            }
-//            niMapController.lineHandler.omdbTaskLinkLayer.update()
             liveDataTaskList.postValue(taskList)
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                mapController.lineHandler.omdbTaskLinkLayer.removeAll()
-//                if(taskList.isNotEmpty()){
-//                    mapController.lineHandler.omdbTaskLinkLayer.addLineList(item.hadLinkDvoList)
-//                }
-//                for (item in taskList) {
-//                    mapController.lineHandler.omdbTaskLinkLayer.setLineColor(Color.valueOf(item.color))
-//
-//                }
-//            }
         }
     }
 
@@ -260,6 +253,92 @@ class TaskViewModel @Inject constructor(
                     list.add(item)
             }
             liveDataTaskLinks.postValue(list)
+        }
+    }
+
+    fun removeTask(context: Context, taskBean: TaskBean) {
+        if (taskBean != null) {
+            val mDialog = FirstDialog(context)
+            mDialog.setTitle("提示？")
+            mDialog.setMessage("是否关闭，请确认！")
+            mDialog.setPositiveButton("确定", object : FirstDialog.OnClickListener {
+                override fun onClick(dialog: Dialog?, which: Int) {
+                    mDialog.dismiss()
+                    viewModelScope.launch(Dispatchers.IO) {
+                        val realm = Realm.getDefaultInstance()
+                        realm.executeTransaction {
+                            val objects = it.where(TaskBean::class.java)
+                                .equalTo("id", taskBean.id).findFirst()
+                            objects?.deleteFromRealm()
+                        }
+                        //遍历删除对应的数据
+                        taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
+                            val qsRecordList = realm.where(QsRecordBean::class.java)
+                                .equalTo("linkId", hadLinkDvoBean.linkPid).findAll()
+                            if (qsRecordList != null && qsRecordList.size > 0) {
+                                val copyList = realm.copyFromRealm(qsRecordList)
+                                copyList.forEach {
+                                    it.deleteFromRealm()
+                                    mapController.markerHandle.removeQsRecordMark(it)
+                                    mapController.mMapView.vtmMap.updateMap(true)
+                                }
+                            }
+                        }
+                        //过滤掉已上传的超过90天的数据
+                        var nowTime: Long = DateTimeUtil.getNowDate().time
+                        var beginNowTime: Long = nowTime - 90 * 3600 * 24 * 1000L
+                        var syncUpload: Int = FileManager.Companion.FileUploadStatus.DONE
+                        val objects = realm.where(TaskBean::class.java)
+                            .notEqualTo("syncStatus", syncUpload).or()
+                            .between("operationTime", beginNowTime, nowTime)
+                            .equalTo("syncStatus", syncUpload).findAll()
+                        val taskList = realm.copyFromRealm(objects)
+                        for (item in taskList) {
+                            FileManager.checkOMDBFileInfo(item)
+                        }
+                        liveDataTaskList.postValue(taskList)
+                    }
+                }
+            })
+            mDialog.setNegativeButton("取消", null)
+            mDialog.show()
+        }
+    }
+
+    fun checkUploadTask(context: Context, taskBean: TaskBean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val realm = Realm.getDefaultInstance()
+            taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
+                val objects = realm.where(QsRecordBean::class.java)
+                    .equalTo("linkId", hadLinkDvoBean.linkPid).findAll()
+                val map: MutableMap<TaskBean, Boolean> = HashMap<TaskBean, Boolean>()
+                if (objects.isEmpty() && hadLinkDvoBean.reason.isEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        liveDataTaskUpload.postValue(map)
+                        val mDialog = FirstDialog(context)
+                        mDialog.setTitle("提示？")
+                        mDialog.setMessage("此任务中存在未测评link，请确认！")
+                        mDialog.setPositiveButton(
+                            "确定",
+                            object : FirstDialog.OnClickListener {
+                                override fun onClick(dialog: Dialog?, which: Int) {
+                                    mDialog.dismiss()
+                                    map[taskBean] = true
+                                    liveDataTaskUpload.postValue(map)
+                                }
+                            })
+                        mDialog.setNegativeButton("取消", object : FirstDialog.OnClickListener {
+                            override fun onClick(dialog: Dialog?, which: Int) {
+                                mDialog.dismiss()
+                            }
+                        })
+                        mDialog.show()
+                    }
+                    return@launch
+                }
+                map[taskBean] = true
+                liveDataTaskUpload.postValue(map)
+            }
         }
     }
 }

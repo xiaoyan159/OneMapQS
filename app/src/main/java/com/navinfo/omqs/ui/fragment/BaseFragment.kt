@@ -2,9 +2,13 @@ package com.navinfo.omqs.ui.fragment
 
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import com.google.android.material.R
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 abstract class BaseFragment : Fragment() {
+    private var loadingDialog: AlertDialog? = null
 //    override fun onCreateView(
 //        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
 //    ): View {
@@ -49,4 +53,21 @@ abstract class BaseFragment : Fragment() {
         return true
     }
 
+
+    /**
+     * 显示loading dialog
+     */
+    fun showLoadingDialog(message: String) {
+        loadingDialog?.dismiss()
+        loadingDialog = MaterialAlertDialogBuilder(
+            this.requireContext(), R.style.MaterialAlertDialog_Material3_Animation).setMessage(message).setCancelable(false).show()
+    }
+
+    /**
+     * 隐藏loading dialog
+     * */
+    fun hideLoadingDialog() {
+        loadingDialog?.dismiss()
+        loadingDialog = null
+    }
 }

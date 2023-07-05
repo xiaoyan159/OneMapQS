@@ -31,8 +31,7 @@
                 android:paddingRight="@dimen/eight"
                 android:paddingTop="@dimen/eight"
                 android:text="title"
-                android:textColor="@color/black"
-                android:textSize="@dimen/card_title_font_2size" />
+                android:textColor="@color/black" />
 
             <View
                 android:id="@+id/title_divider"
@@ -82,7 +81,7 @@
                 android:paddingTop="@dimen/twenty"
                 android:text="提示内容"
                 android:textColor="@color/black"
-                android:textSize="@dimen/card_title_font_3size" />
+                android:textSize="@dimen/card_title_font_2size" />
         </RelativeLayout>
 
 
