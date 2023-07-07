@@ -8,10 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.R
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.map.layers.MultiLinesLayer
+import com.navinfo.collect.library.map.layers.NoteLineLayer
 import com.navinfo.collect.library.map.layers.OmdbTaskLinkLayer
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.StringUtil
-import org.locationtech.jts.geom.LineString
 import org.oscim.android.canvas.AndroidBitmap
 import org.oscim.backend.canvas.Bitmap
 import org.oscim.core.GeoPoint
@@ -23,7 +23,6 @@ import org.oscim.layers.marker.MarkerInterface
 import org.oscim.layers.marker.MarkerItem
 import org.oscim.layers.marker.MarkerSymbol
 import org.oscim.layers.vector.PathLayer
-import org.oscim.layers.vector.VectorLayer
 import org.oscim.layers.vector.geometries.Style
 import org.oscim.map.Map
 
@@ -69,6 +68,9 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
         layer
     }
 
+    /**
+     * 任务线图层
+     */
     val omdbTaskLinkLayer by lazy {
         val omdbTaskLinkLayer = OmdbTaskLinkLayer(
             mMapView.vtmMap,
@@ -83,6 +85,7 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
         addLayer(omdbTaskLinkLayer, NIMapView.LAYER_GROUPS.VECTOR)
         omdbTaskLinkLayer
     }
+
 
     init {
         mMapView.vtmMap.events.bind(this)

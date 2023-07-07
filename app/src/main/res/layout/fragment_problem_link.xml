@@ -2,13 +2,15 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/fragment_problem_link_width"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shape_middle_fragment_bg"
     tools:context="com.navinfo.omqs.ui.fragment.evaluationresult.ProblemLinkFragment">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="55dp"
         android:id="@+id/link_right_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="@dimen/fragment_problem_link_width"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_middle_fragment_bg"
+        app:layout_constraintRight_toRightOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

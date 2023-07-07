@@ -1,12 +1,16 @@
 package com.navinfo.omqs.ui.fragment.evaluationresult
 
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
@@ -21,12 +25,12 @@ import com.navinfo.omqs.ui.dialog.FirstDialog
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
 import dagger.hilt.android.AndroidEntryPoint
-import org.videolan.vlc.Util
 
 
 @AndroidEntryPoint
 class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentEvaluationResultBinding
+    private var mCameraLauncher: ActivityResultLauncher<Intent>? = null
 
     /**
      * 和[PhenomenonFragment],[ProblemLinkFragment],[EvaluationResultFragment]共用同一个viewModel
@@ -35,6 +39,23 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
 
     private val pictureAdapter by lazy {
         PictureAdapter()
+    }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mCameraLauncher = registerForActivityResult<Intent, ActivityResult>(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // 处理相机返回的结果
+                val extras = result.data!!.extras
+                val imageBitmap: Bitmap? = extras!!["data"] as Bitmap?
+                // 在这里处理图片数据
+                if (imageBitmap != null)
+                    viewModel.savePhoto(imageBitmap)
+            }
+        }
     }
 
     //    private val args:EmptyFragmentArgs by navArgs()
@@ -62,7 +83,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             adapter.refreshData(it)
         }
 
-        binding.evaluationPictureViewpager
+
 
         return binding.root
     }
@@ -106,15 +127,26 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         val list = mutableListOf("1", "2", "3")
         pictureAdapter.refreshData(list)
 
+        //照片左右选择键点击监听
         binding.evaluationPictureLeft.setOnClickListener(this)
         binding.evaluationPictureRight.setOnClickListener(this)
+        binding.evaluationCamera.setOnClickListener(this)
+        //设置照片偏移量
+        val viewPager = binding.evaluationPictureViewpager
+        val vto = viewPager.viewTreeObserver
+        vto.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val width = viewPager.width
+                // 处理View宽度
+                // 在回调完成后，需要将监听器从View树中移除，以避免重复调用
+                viewPager.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
+                val recyclerView = viewPager.getChildAt(0) as RecyclerView
 
-        val recyclerView = binding.evaluationPictureViewpager.getChildAt(0) as RecyclerView
-
-        recyclerView.setPadding(0, 0, Util.convertDpToPx(requireContext(), 50), 0)
-        recyclerView.clipToPadding = false
-
+                recyclerView.setPadding(0, 0, width / 2 - 30, 0)
+                recyclerView.clipToPadding = false
+            }
+        })
 
         binding.evaluationVoice.setOnTouchListener { _, event ->
             Log.e("qj", event?.action.toString())
@@ -123,11 +155,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
                     voiceOnTouchStart()//Do Something
                 }
 
-                MotionEvent.ACTION_UP -> {
-                    voiceOnTouchStop()//Do Something
-                }
-
-                MotionEvent.ACTION_CANCEL -> {
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_OUTSIDE -> {
                     voiceOnTouchStop()//Do Something
                 }
             }
@@ -338,7 +366,9 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
 
                     }
                 }
-
+                R.id.evaluation_camera -> {
+                    takePhoto()
+                }
                 else -> {}
             }
         }
@@ -361,5 +391,17 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         findNavController().navigateUp()
         return true
     }
+
+    private fun takePhoto() {
+        try {
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            if (takePictureIntent.resolveActivity(requireActivity().packageManager) != null) {
+                mCameraLauncher!!.launch(takePictureIntent)
+            }
+        } catch (e: Exception) {
+            Log.d("TTTT", e.toString())
+        }
+    }
+
 
 }

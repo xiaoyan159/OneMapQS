@@ -3,6 +3,7 @@ package com.navinfo.omqs.ui.fragment.evaluationresult
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
@@ -35,17 +36,13 @@ import com.navinfo.omqs.util.DateTimeUtil
 import com.navinfo.omqs.util.SoundMeter
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.realm.OrderedCollectionChangeSet
 import io.realm.Realm
 import io.realm.RealmList
-import io.realm.RealmModel
-import io.realm.RealmResults
-import io.realm.kotlin.addChangeListener
-import io.realm.kotlin.where
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
 import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 import javax.inject.Inject
 
@@ -78,9 +75,20 @@ class EvaluationResultViewModel @Inject constructor(
      */
     val liveDataRightTypeList = MutableLiveData<List<RightBean>>()
 
-    var liveDataQsRecordBean = MutableLiveData<QsRecordBean>()
+    /**
+     *
+     */
+    val liveDataQsRecordBean = MutableLiveData<QsRecordBean>()
 
-    var listDataChatMsgEntityList = MutableLiveData<MutableList<ChatMsgEntity>>()
+    /**
+     * 语音列表
+     */
+    val listDataChatMsgEntityList = MutableLiveData<MutableList<ChatMsgEntity>>()
+
+    /**
+     * 照片列表
+     */
+    val liveDataPictureList = MutableLiveData<MutableList<String>>()
 
     var oldBean: QsRecordBean? = null
 
@@ -201,7 +209,8 @@ class EvaluationResultViewModel @Inject constructor(
                     var classCode = list[0].elementCode
                     liveDataLeftTypeList.postValue(it)
                     if (bean != null) {
-                        val classType2 = roomAppDatabase.getScProblemTypeDao().findClassTypeByCode(bean.renderEntity.code)
+                        val classType2 = roomAppDatabase.getScProblemTypeDao()
+                            .findClassTypeByCode(bean.renderEntity.code)
                         if (classType2 != null) {
                             classType = classType2
                         }
@@ -364,13 +373,19 @@ class EvaluationResultViewModel @Inject constructor(
                 Realm.getDefaultInstance().use { realm ->
                     realm.executeTransactionAsync { bgRealm ->
                         // find the item
-                        val objects = bgRealm.where(QsRecordBean::class.java).equalTo("id", id).findFirst()
+                        val objects =
+                            bgRealm.where(QsRecordBean::class.java).equalTo("id", id).findFirst()
                         if (objects != null) {
                             oldBean = bgRealm.copyFromRealm(objects)
                             oldBean?.let {
                                 liveDataQsRecordBean.postValue(it.copy())
                                 val p = GeometryTools.createGeoPoint(it.geometry)
-                                mapController.markerHandle.addMarker(GeoPoint(p.latitude, p.longitude), markerTitle)
+                                mapController.markerHandle.addMarker(
+                                    GeoPoint(
+                                        p.latitude,
+                                        p.longitude
+                                    ), markerTitle
+                                )
 
                                 //获取linkid
                                 if (it.linkId.isNotEmpty()) {
@@ -381,7 +396,8 @@ class EvaluationResultViewModel @Inject constructor(
                                         }
                                     }
                                 }
-                                liveDataQsRecordBean.value?.attachmentBeanList = it.attachmentBeanList
+                                liveDataQsRecordBean.value?.attachmentBeanList =
+                                    it.attachmentBeanList
                                 // 显示语音数据到界面
                                 getChatMsgEntityList()
                             }
@@ -508,9 +524,42 @@ class EvaluationResultViewModel @Inject constructor(
     fun stopSoundMeter() {
         //先重置标识，防止按钮抬起时触发语音结束
         Constant.IS_VIDEO_SPEED = false
-        if (mSoundMeter != null && mSoundMeter!!.isStartSound()) {
+        if (mSoundMeter != null && mSoundMeter!!.isStartSound) {
             mSoundMeter!!.stop()
         }
-        if (pop != null && pop!!.isShowing) pop!!.dismiss()
+        pop?.let {
+            if (it.isShowing) {
+                it.dismiss()
+            }
+        }
+    }
+
+
+    fun savePhoto(bitmap: Bitmap) {
+        viewModelScope.launch(Dispatchers.IO) {
+            // 创建一个名为 "MyApp" 的文件夹
+            val myAppDir = File(Constant.USER_DATA_ATTACHEMNT_PATH)
+            if (!myAppDir.exists())
+                myAppDir.mkdirs() // 确保文件夹已创建
+
+            // 创建一个名为 fileName 的文件
+            val file = File(myAppDir, "${UUID.randomUUID()}.png")
+            file.createNewFile() // 创建文件
+
+            // 将 Bitmap 压缩为 JPEG 格式，并将其写入文件中
+            val out = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+            out.flush()
+            out.close()
+            var picList = mutableListOf<String>()
+            if (liveDataPictureList.value == null) {
+                picList.add(file.absolutePath)
+            } else {
+                picList.addAll(liveDataPictureList.value!!)
+                picList.add(file.absolutePath)
+            }
+            liveDataPictureList.postValue(picList)
+        }
+
     }
 }

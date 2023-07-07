@@ -20,4 +20,10 @@
         android:name="com.navinfo.omqs.ui.fragment.evaluationresult.ProblemLinkFragment"
         android:label="评测页面"
         tools:layout="@layout/fragment_problem_link"></fragment>
+    <fragment
+        android:id="@+id/CanvasFragment"
+        android:name="com.navinfo.omqs.ui.fragment.note.CanvasFragment"
+        android:label="绘图页面"
+        tools:layout="@layout/fragment_canvas"></fragment>
+
 </navigation>

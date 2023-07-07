@@ -184,8 +184,39 @@ class MainActivity : BaseActivity() {
         }
         //捕捉列表变化回调
         viewModel.liveDataQsRecordIdList.observe(this) {
-            //处理页面跳转
-            viewModel.navigationRightFragment(this, it)
+            //跳转到质检数据页面
+            //获取右侧fragment容器
+            val naviController = findNavController(R.id.main_activity_right_fragment)
+
+            naviController.currentDestination?.let { navDestination ->
+                when (navDestination.id) {
+                    R.id.RightEmptyFragment -> {
+                        if (it.size == 1) {
+                            val bundle = Bundle()
+                            bundle.putString("QsId", it[0])
+                            naviController.navigate(R.id.EvaluationResultFragment, bundle)
+                        }
+                    }
+                }
+            }
+        }
+        //捕捉列表变化回调
+        viewModel.liveDataNoteIdList.observe(this) {
+            //跳转到质检数据页面
+            //获取右侧fragment容器
+            val naviController = findNavController(R.id.main_activity_right_fragment)
+
+            naviController.currentDestination?.let { navDestination ->
+                when (navDestination.id) {
+                    R.id.RightEmptyFragment -> {
+                        if (it.size == 1) {
+                            val bundle = Bundle()
+                            bundle.putString("NoteId", it[0])
+                            naviController.navigate(R.id.NoteFragment, bundle)
+                        }
+                    }
+                }
+            }
         }
         //右上角菜单是否被点击
         viewModel.liveDataMenuState.observe(this) {
@@ -253,7 +284,7 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        viewModel.liveDataSignMoreInfo.observe(this){
+        viewModel.liveDataSignMoreInfo.observe(this) {
             val fragment =
                 supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
             if (fragment == null) {
@@ -432,8 +463,15 @@ class MainActivity : BaseActivity() {
     /**
      * 隐藏或显示右侧展开按钮
      */
-    fun setRightSwitchButton(visibility: Int) {
+    fun setRightSwitchButtonVisibility(visibility: Int) {
         binding.mainActivityFragmentSwitch.visibility = visibility
+    }
+
+    /**
+     * 顶部菜单按钮
+     */
+    fun setTopMenuButtonVisibility(visibility: Int) {
+        binding.mainActivityMenu.visibility = visibility
     }
 
     /**
@@ -556,5 +594,21 @@ class MainActivity : BaseActivity() {
         if (viewModel.liveDataRoadName.value != null) {
             viewModel.showSignMoreInfo(viewModel.liveDataRoadName.value!!)
         }
+    }
+
+    /**
+     * 新增便签,打开便签fragment
+     */
+    fun onClickNewNote() {
+        rightController.navigate(R.id.NoteFragment)
+        binding.mainActivityMenu.isSelected = false
+        binding.mainActivityMenuGroup.visibility = View.INVISIBLE
+    }
+
+    /**
+     * 右侧按钮+经纬度按钮
+     */
+    fun setRightButtonsVisible(visible: Int) {
+        binding.mainActivityRightVisibilityButtonsGroup2.visibility = visible
     }
 }

@@ -79,7 +79,7 @@ dependencies {
     implementation "net.sf.kxml:kxml2:2.3.0"
     implementation 'org.slf4j:slf4j-api:2.0.7'
     implementation project(":vtm-themes")
-    api project(":vtm-android")
+    implementation project(":vtm-android")
     implementation project(':vtm-extras')
     implementation project(":vtm-http")
 //    implementation "org.mapsforge:vtm-themes:$vtmVersion"

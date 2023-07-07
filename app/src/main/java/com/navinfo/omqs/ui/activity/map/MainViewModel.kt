@@ -71,6 +71,9 @@ class MainViewModel @Inject constructor(
     //地图点击捕捉到的质检数据ID列表
     val liveDataQsRecordIdList = MutableLiveData<List<String>>()
 
+    //地图点击捕捉到的标签ID列表
+    val liveDataNoteIdList = MutableLiveData<List<String>>()
+
     //左侧看板数据
     val liveDataSignList = MutableLiveData<List<SignBean>>()
 
@@ -127,6 +130,10 @@ class MainViewModel @Inject constructor(
             OnQsRecordItemClickListener {
             override fun onQsRecordList(list: MutableList<String>) {
                 liveDataQsRecordIdList.value = list
+            }
+
+            override fun onNoteList(list: MutableList<String>) {
+                liveDataNoteIdList.value = list
             }
         })
         initLocation()
@@ -295,7 +302,8 @@ class MainViewModel @Inject constructor(
                         }
                     }
 
-                    liveDataTopSignList.postValue(topSignList.distinctBy { it.name }.sortedBy { it.index })
+                    liveDataTopSignList.postValue(topSignList.distinctBy { it.name }
+                        .sortedBy { it.index })
 
                     liveDataSignList.postValue(signList.sortedBy { it.distance })
                     val speechText = SignUtil.getRoadSpeechText(topSignList)
@@ -470,25 +478,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    /**
-     * 处理页面调转
-     */
-    fun navigationRightFragment(activity: MainActivity, list: List<String>) {
-        //获取右侧fragment容器
-        val naviController = activity.findNavController(R.id.main_activity_right_fragment)
-
-        naviController.currentDestination?.let { navDestination ->
-            when (navDestination.id) {
-                R.id.RightEmptyFragment -> {
-                    if (list.size == 1) {
-                        val bundle = Bundle()
-                        bundle.putString("QsId", list[0])
-                        naviController.navigate(R.id.EvaluationResultFragment, bundle)
-                    }
-                }
-            }
-        }
-    }
 
     /**
      * 开启线选择
