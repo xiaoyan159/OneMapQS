@@ -1,5 +1,7 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
+import android.annotation.SuppressLint
+import android.app.Dialog
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,15 +9,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.RecyclerView
+import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.AdapterTaskListBinding
 import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
 import com.navinfo.omqs.http.taskupload.TaskUploadManager
+import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import com.navinfo.omqs.tools.FileManager.Companion.FileUploadStatus
+import com.navinfo.omqs.ui.dialog.FirstDialog
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
+import com.navinfo.omqs.ui.widget.LeftDeleteView
+import io.realm.Realm
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * 离线地图城市列表 RecyclerView 适配器
@@ -28,9 +40,16 @@ import com.navinfo.omqs.ui.other.BaseViewHolder
 class TaskListAdapter(
     private val downloadManager: TaskDownloadManager,
     private val uploadManager: TaskUploadManager,
-    private var itemListener: ((Int, TaskBean) -> Unit?)? = null
+    private val recyclerView: RecyclerView,
+    private var itemListener: ((Int, Int, TaskBean) -> Unit?)? = null,
 ) : BaseRecyclerViewAdapter<TaskBean>() {
     private var selectPosition = -1
+
+    private var leftDeleteView: LeftDeleteView? = null
+
+    private val mRecyclerView = recyclerView
+
+    private var isShowDeleteView = false
 
     private
     val downloadBtnClick = View.OnClickListener() {
@@ -50,29 +69,55 @@ class TaskListAdapter(
                     }
                 }
             } else {
-                Toast.makeText(downloadManager.context, "数据错误，无Link信息，无法执行下载！", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    downloadManager.context,
+                    "数据错误，无Link信息，无法执行下载！",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
 
     private val uploadBtnClick = View.OnClickListener() {
         if (it.tag != null) {
+
             val taskBean = data[it.tag as Int]
+
             if (taskBean.hadLinkDvoList.isNotEmpty()) {
-                when (taskBean.syncStatus) {
-                    FileUploadStatus.NONE, FileUploadStatus.UPLOADING, FileUploadStatus.ERROR, FileUploadStatus.WAITING -> {
-                        uploadManager.start(taskBean.id)
-                    }
-                }
-            }else{
-                Toast.makeText(uploadManager.context, "数据错误，无Link信息，无法执行同步！", Toast.LENGTH_LONG).show()
+
+                itemListener?.invoke(it.tag as Int, ItemClickStatus.UPLOAD_LAYOUT_CLICK, taskBean)
+
+            } else {
+                Toast.makeText(
+                    uploadManager.context,
+                    "数据错误，无Link信息，无法执行同步！",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    /**
+     * 重置item状态
+     * @param point
+     */
+    fun uploadTask(taskBean: TaskBean) {
+        when (taskBean.syncStatus) {
+            FileManager.Companion.FileUploadStatus.NONE, FileManager.Companion.FileUploadStatus.UPLOADING, FileManager.Companion.FileUploadStatus.ERROR, FileManager.Companion.FileUploadStatus.WAITING -> {
+                uploadManager.start(taskBean.id)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+
         val viewBinding =
             AdapterTaskListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+        val deleteView = viewBinding.root
+
+        deleteView.setRecyclerView(mRecyclerView)
+
         return BaseViewHolder(viewBinding)
     }
 
@@ -82,10 +127,25 @@ class TaskListAdapter(
         downloadManager.removeObserver(holder.tag.toInt())
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: BaseViewHolder,
+        @SuppressLint("RecyclerView") position: Int
+    ) {
         val binding: AdapterTaskListBinding =
             holder.viewBinding as AdapterTaskListBinding
         val taskBean = data[position]
+        binding.root.mStatusChangeLister = {
+            isShowDeleteView = it
+            if (it) {
+                //重置以后滑动布局
+                restoreItemView()
+                // 如果编辑菜单在显示
+                leftDeleteView = binding.root
+                selectPosition = position
+            } else {
+                selectPosition = -1
+            }
+        }
         //tag 方便onclick里拿到数据
         holder.tag = taskBean.id.toString()
         changeViews(binding, taskBean)
@@ -122,18 +182,40 @@ class TaskListAdapter(
         binding.taskCityName.text = taskBean.cityName
         binding.taskDataVersion.text = "版本号：${taskBean.dataVersion}"
         binding.root.isSelected = selectPosition == position
-        binding.root.setOnClickListener {
-            val pos = holder.adapterPosition
-            if (selectPosition != pos) {
-                val lastPos = selectPosition
-                selectPosition = pos
-                if (lastPos > -1) {
-                    notifyItemChanged(lastPos)
-                }
-                binding.root.isSelected = true
-                itemListener?.invoke(position, taskBean)
-            }
 
+        binding.taskItemLayout.setOnClickListener {
+            if (isShowDeleteView) {
+                leftDeleteView?.resetDeleteStatus()
+            } else {
+                val pos = holder.adapterPosition
+                if (selectPosition != pos) {
+                    val lastPos = selectPosition
+                    selectPosition = pos
+                    if (lastPos > -1) {
+                        notifyItemChanged(lastPos)
+                    }
+                    binding.root.isSelected = true
+                    itemListener?.invoke(position, ItemClickStatus.ITEM_LAYOUT_CLICK, taskBean)
+                }
+            }
+        }
+
+        binding.taskDeleteLayout.setOnClickListener {
+            //重置状态
+            leftDeleteView?.resetDeleteStatus()
+            itemListener?.invoke(position, ItemClickStatus.DELETE_LAYOUT_CLICK, taskBean)
+        }
+    }
+
+
+    /**
+     * 重置item状态
+     * @param point
+     */
+    fun restoreItemView() {
+        leftDeleteView?.let {
+            if (isShowDeleteView)
+                it.resetDeleteStatus()
         }
     }
 
@@ -271,7 +353,8 @@ class TaskListAdapter(
                 }
                 val errMsg = taskBean.errMsg
                 if (errMsg != null && errMsg.isNotEmpty()) {
-                    Toast.makeText(binding.taskProgressText.context, errMsg, Toast.LENGTH_LONG).show()
+                    Toast.makeText(binding.taskProgressText.context, errMsg, Toast.LENGTH_LONG)
+                        .show()
                 }
             }
 
@@ -280,6 +363,14 @@ class TaskListAdapter(
                     View.INVISIBLE
                 binding.taskDownloadBtn.setText("安装")
             }
+        }
+    }
+
+    companion object {
+        object ItemClickStatus {
+            const val ITEM_LAYOUT_CLICK = 0 //条目点击
+            const val DELETE_LAYOUT_CLICK = 1 //删除点击
+            const val UPLOAD_LAYOUT_CLICK = 2 //上传点击
         }
     }
 }

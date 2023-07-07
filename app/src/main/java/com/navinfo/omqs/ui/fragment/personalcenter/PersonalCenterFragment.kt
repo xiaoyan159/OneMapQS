@@ -143,7 +143,6 @@ class PersonalCenterFragment(private var backListener: (() -> Unit?)? = null) : 
         viewModel.liveDataMessage.observe(viewLifecycleOwner) {
             ToastUtils.showShort(it)
         }
-
         fileChooser.setCallbacks(this@PersonalCenterFragment)
     }
 
