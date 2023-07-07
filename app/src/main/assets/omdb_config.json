@@ -94,7 +94,15 @@
 		"2202":{
 			"table": "OMDB_TUNNEL",
 			"code": 2202,
-			"name": "隧道"
+			"name": "隧道",
+			"transformer": [
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateS2EReferencePoint()"
+				}
+			]
 		},
 		"4001": {
             "table": "OMDB_INTERSECTION",

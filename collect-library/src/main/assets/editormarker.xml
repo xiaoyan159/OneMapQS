@@ -1808,6 +1808,20 @@
                 <line use="s2e" />
             </m>
         </m>
+        <!--隧道-->
+        <m v="OMDB_TUNNEL">
+            <m k="formOfWay">
+                <line dasharray="24,8,4,2" stroke="#d4237a" width="2" />
+            </m>
+            <m k="type" v="s_2_p">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2202_0.svg" symbol-height="69" symbol-width="69"></symbol>
+            </m>
+            <m k="type" v="e_2_p">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2202_1.svg" symbol-height="69" symbol-width="69"></symbol>
+            </m>
+        </m>
         <!--电子眼-->
         <m v="OMDB_ELECTRONICEYE">
             <!--            <m k="angle">-->
