@@ -4,16 +4,17 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import com.navinfo.collect.library.R
+import com.navinfo.collect.library.data.entity.NoteBean
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.map.cluster.ClusterMarkerItem
 import com.navinfo.collect.library.map.cluster.ClusterMarkerRenderer
 import com.navinfo.collect.library.map.layers.MyItemizedLayer
+import com.navinfo.collect.library.map.layers.NoteLineLayer
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.StringUtil
 import io.realm.Realm
@@ -22,6 +23,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.geom.LineString
+import org.locationtech.jts.geom.Polygon
 import org.oscim.android.canvas.AndroidBitmap
 import org.oscim.backend.CanvasAdapter
 import org.oscim.backend.canvas.Bitmap
@@ -29,9 +32,9 @@ import org.oscim.backend.canvas.Paint
 import org.oscim.core.GeoPoint
 import org.oscim.layers.marker.*
 import org.oscim.layers.marker.ItemizedLayer.OnItemGestureListener
+import org.oscim.layers.vector.geometries.*
 import org.oscim.map.Map
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * marker 操作
@@ -56,14 +59,66 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     //画布
     private lateinit var canvas: org.oscim.backend.canvas.Canvas
     private lateinit var itemizedLayer: MyItemizedLayer
+
     private lateinit var markerRendererFactory: MarkerRendererFactory
-    private var resId = R.mipmap.map_icon_report
+    private val resId = R.mipmap.map_icon_report
+    private val noteResId = R.drawable.icon_note_marker
     private var itemListener: OnQsRecordItemClickListener? = null
 
     /**
      * 文字大小
      */
     private val NUM_13 = 13
+
+    /**
+     * 便签线图层
+     */
+    private val noteLineLayer: NoteLineLayer by lazy {
+        val layer = NoteLineLayer(mMapView.vtmMap)
+        addLayer(layer, NIMapView.LAYER_GROUPS.VECTOR)
+        layer
+    }
+
+
+    private val noteLayer: MyItemizedLayer by lazy {
+
+        val layer = MyItemizedLayer(
+            mMapView.vtmMap,
+            mutableListOf(),
+            markerRendererFactory,
+            object : MyItemizedLayer.OnItemGestureListener {
+                override fun onItemSingleTapUp(
+                    list: MutableList<Int>,
+                    nearest: Int
+                ): Boolean {
+                    itemListener?.let {
+                        val idList = mutableListOf<String>()
+                        if (list.size == 0) {
+                        } else {
+                            for (i in list) {
+                                val markerInterface: MarkerInterface =
+                                    noteLayer.itemList[i]
+                                if (markerInterface is MarkerItem) {
+                                    idList.add(markerInterface.title)
+                                }
+                            }
+                            it.onNoteList(idList.distinct().toMutableList())
+                        }
+                    }
+                    return true
+                }
+
+                override fun onItemLongPress(
+                    list: MutableList<Int>?,
+                    nearest: Int
+                ): Boolean {
+                    return true
+                }
+            })
+
+        addLayer(layer, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
+        layer
+    }
 
     init {
         //新增marker图标样式
@@ -100,6 +155,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                 itemizedLayer.isEnabled = mapPosition.getZoomLevel() >= 12
             }
         })
+        initNoteData()
         mMapView.updateMap()
     }
 
@@ -141,6 +197,9 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         }
     }
 
+    /**
+     * 移除marker
+     */
     fun removeMarker(title: String) {
         var marker: MarkerItem? = null
         for (e in mDefaultMarkerLayer.itemList) {
@@ -172,12 +231,53 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         withContext(Dispatchers.Main) {
             mMapView.updateMap(true)
         }
-
     }
 
 
     /**
-     * 删除marker
+     * 增加或更新便签
+     */
+    suspend fun addOrUpdateNoteMark(data: NoteBean) {
+        for (item in noteLayer.itemList) {
+            if (item is MarkerItem) {
+                if (item.title == data.id) {
+                    noteLayer.itemList.remove(item)
+                    break
+                }
+            }
+        }
+        noteLineLayer.removeNoteBeanLines(data)
+        createNoteMarkerItem(data)
+        withContext(Dispatchers.Main) {
+            mMapView.updateMap(true)
+        }
+    }
+
+
+    private fun convertGeometry2Drawable(geometry: Geometry, vectorLayerStyle: Style): Drawable? {
+        var resultDrawable: Drawable? = null
+        if ("POINT" == geometry.geometryType.uppercase(Locale.getDefault())) {
+            val geoPoint = GeoPoint(geometry.coordinate.y, geometry.coordinate.x)
+            if (geoPoint != null) {
+                resultDrawable = PointDrawable(geoPoint, vectorLayerStyle)
+            }
+        } else if ("LINESTRING" == geometry.geometryType.uppercase(Locale.getDefault())) {
+            val lineString = geometry as LineString
+            if (lineString != null) {
+                resultDrawable = LineDrawable(lineString, vectorLayerStyle)
+            }
+        } else if ("POLYGON" == geometry.geometryType.uppercase(Locale.getDefault())) {
+            val polygon = geometry as Polygon
+            if (polygon != null) {
+                resultDrawable = PolygonDrawable(polygon, vectorLayerStyle)
+            }
+        }
+        return resultDrawable
+    }
+
+
+    /**
+     * 删除质检数据
      */
     suspend fun removeQsRecordMark(data: QsRecordBean) {
         for (item in itemizedLayer.itemList) {
@@ -187,6 +287,43 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                     itemizedLayer.populate()
                     return
                 }
+            }
+        }
+    }
+
+    /**
+     * 删除标签
+     */
+    suspend fun removeNoteMark(data: NoteBean) {
+        for (item in noteLayer.itemList) {
+            if (item is MarkerItem) {
+                if (item.title == data.id) {
+                    noteLayer.itemList.remove(item)
+                    noteLineLayer.removeNoteBeanLines(data)
+                    noteLayer.populate()
+                    withContext(Dispatchers.Main) {
+                        mMapView.updateMap(true)
+                    }
+                    return
+                }
+            }
+        }
+    }
+
+    /**
+     * 初始化便签
+     */
+    private fun initNoteData() {
+        mContext.lifecycleScope.launch(Dispatchers.IO) {
+            var list = mutableListOf<NoteBean>()
+            val realm = Realm.getDefaultInstance()
+            realm.executeTransaction {
+                val objects = realm.where<NoteBean>().findAll()
+                list = realm.copyFromRealm(objects)
+            }
+
+            for (item in list) {
+                createNoteMarkerItem(item)
             }
         }
     }
@@ -276,6 +413,39 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
 
     }
 
+    /**
+     * 添加质检数据marker
+     */
+    private suspend fun createNoteMarkerItem(item: NoteBean) {
+        val bitmap: Bitmap = createTextMarkerBitmap(mContext, item.description, noteResId)
+        val geometry: Geometry? = GeometryTools.createGeometry(item.guideGeometry)
+        if (geometry != null) {
+            var geoPoint: org.oscim.core.GeoPoint? = null
+            if (geometry.geometryType != null) {
+                when (geometry.geometryType.uppercase(Locale.getDefault())) {
+                    "POINT" -> geoPoint =
+                        org.oscim.core.GeoPoint(geometry.coordinate.y, geometry.coordinate.x)
+                }
+            }
+            if (geoPoint != null) {
+                var geoMarkerItem: MarkerItem
+                geoMarkerItem = ClusterMarkerItem(
+                    1, item.id, item.description, geoPoint
+                )
+                val markerSymbol =
+                    MarkerSymbol(bitmap, MarkerSymbol.HotspotPlace.CENTER)
+                geoMarkerItem.marker = markerSymbol
+                noteLayer.itemList.add(geoMarkerItem)
+            }
+        }
+        noteLineLayer.showNoteBeanLines(item)
+        noteLayer.populate()
+    }
+
+
+    /**
+     * 添加质检数据marker
+     */
     private suspend fun createMarkerItem(item: QsRecordBean) {
         val bitmap: Bitmap = createTextMarkerBitmap(mContext, item.description, resId)
         if (item.t_lifecycle != 2) {
@@ -554,4 +724,5 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
 
 interface OnQsRecordItemClickListener {
     fun onQsRecordList(list: MutableList<String>)
+    fun onNoteList(list: MutableList<String>)
 }

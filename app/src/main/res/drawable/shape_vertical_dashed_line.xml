@@ -4,7 +4,7 @@
         android:left="-300dp"
         android:right="-300dp">
         <rotate
-            android:drawable="@drawable/laneinfo_1_2"
+            android:drawable="@drawable/shape_dashed_line"
             android:fromDegrees="90" />
     </item>
 </layer-list>

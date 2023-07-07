@@ -32,18 +32,27 @@ class EmptyFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         val currentDestination = findNavController().currentDestination
-        //有右侧面板的时候
-        if (currentDestination?.label == "右侧空页面") {
-            currentDestinationLabel = "右侧空页面"
-            (activity as MainActivity).setRightSwitchButton(View.GONE)
+        currentDestination?.let {
+            //有右侧面板的时候
+            currentDestinationLabel = it.label.toString()
+            if (it.label == "右侧空页面") {
+                (activity as MainActivity).setRightSwitchButtonVisibility(View.GONE)
+                (activity as MainActivity).setTopMenuButtonVisibility(View.VISIBLE)
+            } else if (it.label == "中间空页面") {
+                (activity as MainActivity).setRightButtonsVisible(View.VISIBLE)
+            }
         }
+
     }
 
     override fun onStop() {
         super.onStop()
         //没有有右侧面板的时候
         if (currentDestinationLabel == "右侧空页面") {
-            (activity as MainActivity).setRightSwitchButton(View.VISIBLE)
+            (activity as MainActivity).setRightSwitchButtonVisibility(View.VISIBLE)
+            (activity as MainActivity).setTopMenuButtonVisibility(View.GONE)
+        } else if (currentDestinationLabel == "中间空页面") {
+            (activity as MainActivity).setRightButtonsVisible(View.GONE)
         }
     }
 

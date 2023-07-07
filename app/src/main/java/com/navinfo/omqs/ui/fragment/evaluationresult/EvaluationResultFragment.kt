@@ -2,11 +2,14 @@ package com.navinfo.omqs.ui.fragment.evaluationresult
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavOptions
@@ -27,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentEvaluationResultBinding
+    private var mCameraLauncher: ActivityResultLauncher<Intent>? = null
 
     /**
      * 和[PhenomenonFragment],[ProblemLinkFragment],[EvaluationResultFragment]共用同一个viewModel
@@ -35,6 +39,23 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
 
     private val pictureAdapter by lazy {
         PictureAdapter()
+    }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mCameraLauncher = registerForActivityResult<Intent, ActivityResult>(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // 处理相机返回的结果
+                val extras = result.data!!.extras
+                val imageBitmap: Bitmap? = extras!!["data"] as Bitmap?
+                // 在这里处理图片数据
+                if (imageBitmap != null)
+                    viewModel.savePhoto(imageBitmap)
+            }
+        }
     }
 
     //    private val args:EmptyFragmentArgs by navArgs()
@@ -62,7 +83,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             adapter.refreshData(it)
         }
 
-        binding.evaluationPictureViewpager
+
 
         return binding.root
     }
@@ -122,7 +143,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
 
                 val recyclerView = viewPager.getChildAt(0) as RecyclerView
 
-                recyclerView.setPadding(0, 0, width / 2, 0)
+                recyclerView.setPadding(0, 0, width / 2 - 30, 0)
                 recyclerView.clipToPadding = false
             }
         })
@@ -373,18 +394,10 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
 
     private fun takePhoto() {
         try {
-            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-            val someActivityResultLauncher =
-                registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                    if (result.resultCode == Activity.RESULT_OK) {
-                        val data: Intent? = result.data
-                        // 处理返回的结果
-                    }
-                }
-
-            someActivityResultLauncher.launch(intent)
-
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            if (takePictureIntent.resolveActivity(requireActivity().packageManager) != null) {
+                mCameraLauncher!!.launch(takePictureIntent)
+            }
         } catch (e: Exception) {
             Log.d("TTTT", e.toString())
         }
