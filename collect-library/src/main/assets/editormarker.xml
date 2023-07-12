@@ -1707,7 +1707,48 @@
         </m>0
         <!-- 道路边界类型 -->
         <m v="OMDB_RDBOUND_BOUNDARYTYPE">
-            <line stroke="#ffffff" width="0.1" />
+            <outline-layer id="boundaryType" stroke="#fcba5a" width="0.2" />
+            <m k="boundaryType" v="0">
+                <!--不应用-->
+                <line stroke="#fcba5a" use="boundaryType"/>
+                <lineSymbol repeat-gap="12" repeat-start="12" symbol-height="16" symbol-width="16" src="assets:omdb/icon_2083_0.svg" />
+            </m>
+            <m k="boundaryType" v="1">
+                <!--无标线无可区分边界-->
+                <line dasharray="10,2,2,2,2,2,2,2" repeat-start="0" stroke="#fcba5a" width="0.2" />
+            </m>
+            <m k="boundaryType" v="2">
+                <!--标线-->
+                <line stroke="#fcba5a" use="boundaryType"/>
+            </m>
+            <m k="boundaryType" v="3">
+                <!--路牙-->
+                <line dasharray="10,4"  repeat-start="0" stroke="#fcba5a"  width="0.2" />
+            </m>
+            <m k="boundaryType" v="4">
+                <!--护栏-->
+                <line dasharray="10,2,2,2" repeat-start="0" stroke="#fcba5a" width="0.2"/>
+            </m>
+            <m k="boundaryType" v="5">
+                <!--墙-->
+                <line stroke="#fcba5a" use="boundaryType"/>
+                <line dasharray="10,5" stroke="#fcba5a" width="0.5" />
+            </m>
+            <m k="boundaryType" v="6">
+                <!--道路面铺设边缘-->
+                <line stroke="#fcba5a" use="boundaryType"/>
+                <lineSymbol  repeat-gap="32" repeat-start="0" symbol-height="32" src="assets:omdb/icon_2083_6.svg" />
+            </m>
+            <m k="boundaryType" v="7">
+                <!--虚拟三角岛-->
+                <line stroke="#fcba5a" use="boundaryType"/>
+                <line src="assets:omdb/icon_2083_7.svg" symbol-height="12" symbol-width="12" symbol-percent="20" width="1" />
+            </m>
+            <m k="boundaryType" v="9">
+                <!--杆状障碍物-->
+                <line stroke="#fcba5a" use="boundaryType"/>
+                <lineSymbol  repeat-gap="16" repeat-start="12" symbol-height="24" symbol-width="8" src="assets:omdb/icon_2083_9.svg" />
+            </m>
         </m>
         <!-- 车道边界类型 -->
         <m v="OMDB_LANE_MARK_BOUNDARYTYPE">
@@ -1775,6 +1816,22 @@
                 </m>
             </m>
         </m>
+
+        <!--隧道-->
+        <m v="OMDB_TUNNEL">
+            <m k="formOfWay">
+                <line dasharray="0.3,0.3"  stroke="#d4237a" width="0.4" />
+            </m>
+            <m k="type" v="s_2_p">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2202_0.svg" symbol-height="32" symbol-width="32"></symbol>
+            </m>
+            <m k="type" v="e_2_p">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2202_1.svg" symbol-height="32" symbol-width="32"></symbol>
+            </m>
+        </m>
+
         <!--道路方向-->
         <m v="OMDB_LINK_DIRECT">
             <m k="direct">
@@ -1808,20 +1865,7 @@
                 <line use="s2e" />
             </m>
         </m>
-        <!--隧道-->
-        <m v="OMDB_TUNNEL">
-            <m k="formOfWay">
-                <line dasharray="24,8,4,2" stroke="#d4237a" width="2" />
-            </m>
-            <m k="type" v="s_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_2202_0.svg" symbol-height="69" symbol-width="69"></symbol>
-            </m>
-            <m k="type" v="e_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_2202_1.svg" symbol-height="69" symbol-width="69"></symbol>
-            </m>
-        </m>
+
         <!--电子眼-->
         <m v="OMDB_ELECTRONICEYE">
             <!--            <m k="angle">-->

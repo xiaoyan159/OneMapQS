@@ -38,6 +38,8 @@ import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.oscim.core.GeoPoint
+import org.oscim.renderer.GLViewport
 import org.videolan.vlc.Util
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -503,9 +505,14 @@ class MainActivity : BaseActivity() {
             }
 
             binding.mainActivityBottomSheetGroup.visibility = View.GONE
+
+            mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 5)
         } else {
             binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
+            mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
         }
+        mapController.mMapView.vtmMap.animator()
+            .animateTo(GeoPoint( mapController.mMapView.vtmMap.mapPosition.latitude,mapController.mMapView.vtmMap.mapPosition.latitude))
     }
 
     private fun voiceOnTouchStart() {

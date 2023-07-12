@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="4" height="58.142" viewBox="0 0 4 58.142">
+    <defs>
+        <style>.a{fill:none;stroke:#ebb972;stroke-width:4px;}.b{opacity:0.001;}</style>
+    </defs>
+    <g transform="translate(-401.035 -35.964)">
+        <g transform="translate(313.535 166.535) rotate(-90)">
+            <line class="a" x2="29.071" transform="translate(101.5 89.5)" />
+        </g>
+        <g class="b" transform="translate(313.535 195.605) rotate(-90)">
+            <line class="a" x2="29.071" transform="translate(101.5 89.5)" />
+        </g>
+    </g>
+</svg>

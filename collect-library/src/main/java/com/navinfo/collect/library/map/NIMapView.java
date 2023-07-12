@@ -36,6 +36,7 @@ import org.oscim.layers.tile.vector.labeling.LabelLayer;
 import org.oscim.layers.tile.vector.labeling.LabelTileLoaderHook;
 import org.oscim.map.Map;
 import org.oscim.renderer.GLViewport;
+import org.oscim.scalebar.MapScaleBarLayer;
 import org.oscim.theme.IRenderTheme;
 import org.oscim.theme.ThemeLoader;
 import org.oscim.theme.VtmThemes;
@@ -198,6 +199,11 @@ public final class NIMapView extends RelativeLayout {
      */
     private OnMapTouchListener touchListener;
 
+    /**
+     * 比例尺控件
+     */
+    private MapScaleBarLayer mapScaleBarLayer;
+
     public NIMapView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
@@ -252,7 +258,7 @@ public final class NIMapView extends RelativeLayout {
 
         // 增加比例尺图层
         NaviMapScaleBar naviMapScaleBar = new NaviMapScaleBar(getVtmMap());
-        naviMapScaleBar.initScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 5);
+        mapScaleBarLayer = naviMapScaleBar.initScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 5);
 
 //        if (gridLayer == null) {
 //            gridLayer = new TileGridLayer(getVtmMap());
@@ -876,6 +882,21 @@ public final class NIMapView extends RelativeLayout {
                 zoomLayout.setVisibility(GONE);
             }
         }
+    }
+
+    /**
+     * 设置比例尺位置
+     * @param position
+     * @param xOffset
+     * @param yOffset
+     */
+    public void setScaleBarLayer(GLViewport.Position position, int xOffset, int yOffset){
+        if(mapScaleBarLayer!=null&&mapView.map().layers().contains(mapScaleBarLayer)){
+            mapView.map().layers().remove(mapScaleBarLayer);
+            mapScaleBarLayer = null;
+        }
+        NaviMapScaleBar naviMapScaleBar = new NaviMapScaleBar(getVtmMap());
+        mapScaleBarLayer = naviMapScaleBar.initScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, xOffset, yOffset);
     }
 
     /**
