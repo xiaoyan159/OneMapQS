@@ -1,8 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="69.82" height="37.822" viewBox="0 0 69.82 37.822">
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="b" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
     <defs>
-        <style>.a{fill:#ebb972;}</style>
+        <style>.e{fill:#fcba5a;}</style>
     </defs>
-    <path class="a"
-        d="M8597.151,19460.063a2.98,2.98,0,0,1-2.208-.877l-31.823-31.824a3,3,0,0,1,4.244-4.238l29.787,29.787,29.792-29.787a3,3,0,1,1,4.239,4.238l-31.819,31.824a2.991,2.991,0,0,1-2.122.879C8597.212,19460.064,8597.182,19460.064,8597.151,19460.063Z"
-        transform="translate(-8562.241 -19422.242)" />
+    <g id="c">
+        <path id="d" class="e"
+            d="M31.9,0l-14.3,23.2-1.6,2.6-1.6-2.6L0,0h0V6.1L14.1,28.9l1.9,3.1h0s1.9-3.1,1.9-3.1L32,6V0h0Z" />
+    </g>
 </svg>

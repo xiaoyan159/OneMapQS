@@ -1742,7 +1742,7 @@
             <m k="boundaryType" v="7">
                 <!--虚拟三角岛-->
                 <line stroke="#fcba5a" use="boundaryType"/>
-                <line src="assets:omdb/icon_2083_7.svg" symbol-height="12" symbol-width="12" symbol-percent="20" width="1" />
+                <line src="assets:omdb/icon_2083_7_1.svg" symbol-height="12" symbol-width="12" symbol-percent="20" width="1" />
             </m>
             <m k="boundaryType" v="9">
                 <!--杆状障碍物-->
@@ -1820,7 +1820,7 @@
         <!--隧道-->
         <m v="OMDB_TUNNEL">
             <m k="formOfWay">
-                <line dasharray="0.3,0.3"  stroke="#d4237a" width="0.4" />
+                <line dasharray="0.2,0.2"  stroke="#d4237a" width="0.2" />
             </m>
             <m k="type" v="s_2_p">
                 <symbol repeat="false" repeat-start="0" rotate="false"

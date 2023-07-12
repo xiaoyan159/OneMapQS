@@ -512,7 +512,7 @@ class MainActivity : BaseActivity() {
             mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
         }
         mapController.mMapView.vtmMap.animator()
-            .animateTo(GeoPoint( mapController.mMapView.vtmMap.mapPosition.latitude,mapController.mMapView.vtmMap.mapPosition.latitude))
+            .animateTo(GeoPoint( mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude))
     }
 
     private fun voiceOnTouchStart() {
