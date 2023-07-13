@@ -40,6 +40,7 @@ class TaskListFragment : BaseFragment() {
             if (taskBean.hadLinkDvoList.isEmpty()) {
                 Toast.makeText(context, "数据错误，无Link数据！", Toast.LENGTH_SHORT).show()
             }
+
             when (status) {
                 TaskListAdapter.Companion.ItemClickStatus.ITEM_LAYOUT_CLICK -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -48,6 +49,7 @@ class TaskListFragment : BaseFragment() {
                     }
                 }
                 TaskListAdapter.Companion.ItemClickStatus.DELETE_LAYOUT_CLICK -> {
+                    showLoadingDialog("正在关闭")
                     context?.let { viewModel.removeTask(it, taskBean) }
                 }
                 TaskListAdapter.Companion.ItemClickStatus.UPLOAD_LAYOUT_CLICK -> {
@@ -56,15 +58,6 @@ class TaskListFragment : BaseFragment() {
                     viewModel.checkUploadTask(binding.root.context, taskBean)
                 }
                 else -> {
-            if(status==TaskListAdapter.Companion.ItemClickStatus.ITEM_LAYOUT_CLICK){
-                viewModel.setSelectTaskBean(taskBean as TaskBean)
-            }else if(status==TaskListAdapter.Companion.ItemClickStatus.DELETE_LAYOUT_CLICK){
-                showLoadingDialog("正在关闭")
-                context?.let { viewModel.removeTask(it, taskBean as TaskBean) }
-            }else if(status==TaskListAdapter.Companion.ItemClickStatus.UPLOAD_LAYOUT_CLICK){
-                showLoadingDialog("正在校验")
-                viewModel.checkUploadTask(binding.root.context,taskBean)
-            } else {
 
                 }
             }
