@@ -3,6 +3,7 @@ package com.navinfo.omqs.ui.activity.map
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
+import android.content.SharedPreferences
 import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
@@ -64,6 +65,7 @@ class MainViewModel @Inject constructor(
     private val mapController: NIMapController,
     private val traceDataBase: TraceDataBase,
     private val realmOperateHelper: RealmOperateHelper,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     private var mCameraDialog: CommonDialog? = null
@@ -152,30 +154,19 @@ class MainViewModel @Inject constructor(
     }
 
     /**
-     * 初始话任务高亮高亮
+     * 初始化选中的任务高亮高亮
      */
     private fun initTaskData() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
+                val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
                 val realm = Realm.getDefaultInstance()
-                val results = realm.where(TaskBean::class.java).findAll()
-                val list = realm.copyFromRealm(results)
-                results.addChangeListener { changes ->
-                    val list2 = realm.copyFromRealm(changes)
-                    mapController.lineHandler.omdbTaskLinkLayer.removeAll()
-                    for (item in list2) {
-                        mapController.lineHandler.omdbTaskLinkLayer.addLineList(item.hadLinkDvoList)
-                    }
-                }
-                mapController.lineHandler.omdbTaskLinkLayer.removeAll()
-                for (item in list) {
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                        mapController.lineHandler.omdbTaskLinkLayer.setLineColor(Color.valueOf(item.color))
-//                    }
-                    mapController.lineHandler.omdbTaskLinkLayer.addLineList(item.hadLinkDvoList)
+                val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
+                if (res != null) {
+                    val taskBean = realm.copyFromRealm(res)
+                    mapController.lineHandler.omdbTaskLinkLayer.addLineList(taskBean.hadLinkDvoList)
                 }
             }
-//            realm.close()
         }
     }
 

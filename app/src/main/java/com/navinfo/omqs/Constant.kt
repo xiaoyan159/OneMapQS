@@ -94,6 +94,8 @@ class Constant {
         const val EVENT_LAYER_MANAGER_CHANGE = "EVENT_LAYER_MANAGER_CHANGE" // 图层管理中的配置修改
 
         const val SELECT_TASK_ID = "select_task_id" //选中的任务ID
+
+        const val SHARED_SYNC_TASK_LINK_ID = "shared_sync_task_link_id"//利用shared通知任务页面更新
     }
 
 

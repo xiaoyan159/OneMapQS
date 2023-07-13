@@ -2,12 +2,14 @@ package com.navinfo.omqs.ui.fragment.tasklink
 
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
@@ -22,14 +24,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TaskLinkViewModel @Inject constructor(
-    val mapController: NIMapController,
-    val sharedPreferences: SharedPreferences
+    private val mapController: NIMapController,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     /**
      * 种别
      */
-    private val kindList = listOf<TaskLinkInfoAdapterItem>(
+    private val kindList = listOf(
         TaskLinkInfoAdapterItem("高速道路", "1"),
         TaskLinkInfoAdapterItem("城市高速", "2"),
         TaskLinkInfoAdapterItem("国道", "3"),
@@ -47,7 +49,7 @@ class TaskLinkViewModel @Inject constructor(
     /**
      * FunctionGrade 功能等级
      */
-    private val functionLevelList = listOf<TaskLinkInfoAdapterItem>(
+    private val functionLevelList = listOf(
         TaskLinkInfoAdapterItem("等级1", "1"),
         TaskLinkInfoAdapterItem("等级2", "2"),
         TaskLinkInfoAdapterItem("等级3", "3"),
@@ -58,7 +60,7 @@ class TaskLinkViewModel @Inject constructor(
     /**
      * 数据级别
      */
-    private val dataLevelList = listOf<TaskLinkInfoAdapterItem>(
+    private val dataLevelList = listOf(
         TaskLinkInfoAdapterItem("Pro lane model(有高精车道模型覆盖的高速和城高link)", "1"),
         TaskLinkInfoAdapterItem("Lite lane model(有高精车道模型覆盖的普通路link)", "2"),
         TaskLinkInfoAdapterItem("Standard road model(其他link)", "3"),
@@ -115,7 +117,7 @@ class TaskLinkViewModel @Inject constructor(
             val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
             val realm = Realm.getDefaultInstance()
             val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
-            liveDataTaskBean.postValue(realm.copyFromRealm(res))
+            liveDataTaskBean.postValue(res?.let { realm.copyFromRealm(it) })
         }
     }
 
@@ -162,18 +164,17 @@ class TaskLinkViewModel @Inject constructor(
     /**
      * 保存数据
      */
+    @RequiresApi(Build.VERSION_CODES.M)
     fun saveData() {
         viewModelScope.launch(Dispatchers.Default) {
             if (liveDataTaskBean.value == null) {
                 liveDataToastMessage.postValue("还没有选择任何一条任务！")
                 return@launch
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-                if (mapController.measureLayerHandler.mPathLayer.points.size < 2) {
-                    liveDataToastMessage.postValue("道路点少于2个！")
-                    return@launch
-                }
+            if (mapController.measureLayerHandler.mPathLayer.points.size < 2) {
+                liveDataToastMessage.postValue("道路点少于2个！")
+                return@launch
             }
             if (liveDataSelectKind.value == null) {
                 liveDataToastMessage.postValue("请选择种别！")
@@ -187,7 +188,21 @@ class TaskLinkViewModel @Inject constructor(
                 liveDataToastMessage.postValue("请选择数据等级！")
                 return@launch
             }
-            val linkBean = HadLinkDvoBean(linkPid = UUID.randomUUID().toString())
+            val linkBean = HadLinkDvoBean(
+                linkPid = UUID.randomUUID().toString(),
+                linkStatus = 3,
+                geometry = GeometryTools.getLineString(mapController.measureLayerHandler.mPathLayer.points),
+                linkLength = mapController.measureLayerHandler.lineLenghtLiveData.value!!,
+            )
+            val task: TaskBean = liveDataTaskBean.value!!
+            task.hadLinkDvoList.add(linkBean)
+            val realm = Realm.getDefaultInstance()
+            realm.executeTransaction {
+                it.copyToRealmOrUpdate(task)
+            }
+            sharedPreferences.edit().putString(Constant.SHARED_SYNC_TASK_LINK_ID, linkBean.linkPid)
+                .apply()
+            liveDataFinish.postValue(true)
         }
     }
 
