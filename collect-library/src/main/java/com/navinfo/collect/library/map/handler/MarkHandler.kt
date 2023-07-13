@@ -42,8 +42,6 @@ import java.util.*
 class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     BaseHandler(context, mapView) {
 
-    //    //默认marker图层
-    private var mDefaultMarkerLayer: ItemizedLayer
 
     /**
      * 默认文字颜色
@@ -53,22 +51,94 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     /**
      * 文字画笔
      */
-
-    private lateinit var paint: Paint
-
-    //画布
-    private lateinit var canvas: org.oscim.backend.canvas.Canvas
-    private lateinit var itemizedLayer: MyItemizedLayer
-
-    private lateinit var markerRendererFactory: MarkerRendererFactory
-    private val resId = R.mipmap.map_icon_report
-    private val noteResId = R.drawable.icon_note_marker
-    private var itemListener: OnQsRecordItemClickListener? = null
+    private val paint: Paint by lazy {
+        val p = CanvasAdapter.newPaint()
+        p.setTypeface(Paint.FontFamily.DEFAULT, Paint.FontStyle.NORMAL)
+        p.setTextSize(NUM_13 * CanvasAdapter.getScale())
+        p.strokeWidth = 2 * CanvasAdapter.getScale()
+        p.color = Color.parseColor(mDefaultTextColor)
+        p
+    }
 
     /**
-     * 文字大小
+     *  画布
      */
-    private val NUM_13 = 13
+    private val canvas: org.oscim.backend.canvas.Canvas by lazy {
+        CanvasAdapter.newCanvas()
+    }
+
+    /**
+     * 默认marker图层
+     */
+    private val mDefaultMarkerLayer: ItemizedLayer by lazy {
+        //新增marker图标样式
+        val mDefaultBitmap =
+            AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.mipmap.marker))
+
+        val markerSymbol = MarkerSymbol(
+            mDefaultBitmap,
+            MarkerSymbol.HotspotPlace.BOTTOM_CENTER
+        )
+        val layer = ItemizedLayer(
+            mapView.vtmMap,
+            ArrayList(),
+            markerSymbol,
+            object : OnItemGestureListener<MarkerInterface> {
+                override fun onItemSingleTapUp(index: Int, item: MarkerInterface?): Boolean {
+                    return false
+                }
+
+                override fun onItemLongPress(index: Int, item: MarkerInterface?): Boolean {
+                    return false
+                }
+
+            }
+        )
+        addLayer(layer, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
+        layer
+    }
+
+
+    /**
+     * 评测数据marker 图层
+     */
+    private val qsRecordItemizedLayer: MyItemizedLayer by lazy {
+        val layer = MyItemizedLayer(
+            mMapView.vtmMap,
+            mutableListOf(),
+            markerRendererFactory,
+            object : MyItemizedLayer.OnItemGestureListener {
+                override fun onItemSingleTapUp(
+                    list: MutableList<Int>,
+                    nearest: Int
+                ): Boolean {
+                    itemListener?.let {
+                        val idList = mutableListOf<String>()
+                        if (list.size == 0) {
+                        } else {
+                            for (i in list) {
+                                val markerInterface: MarkerInterface =
+                                    qsRecordItemizedLayer.itemList[i]
+                                if (markerInterface is MarkerItem) {
+                                    idList.add(markerInterface.title)
+                                }
+                            }
+                            it.onQsRecordList(idList.distinct().toMutableList())
+                        }
+                    }
+                    return true
+                }
+
+                override fun onItemLongPress(
+                    list: MutableList<Int>?,
+                    nearest: Int
+                ): Boolean {
+                    return true
+                }
+            })
+        addLayer(layer, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
+        layer
+    }
 
     /**
      * 便签线图层
@@ -79,7 +149,9 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         layer
     }
 
-
+    /**
+     * 便签图标图层
+     */
     private val noteLayer: MyItemizedLayer by lazy {
 
         val layer = MyItemizedLayer(
@@ -94,6 +166,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                     itemListener?.let {
                         val idList = mutableListOf<String>()
                         if (list.size == 0) {
+
                         } else {
                             for (i in list) {
                                 val markerInterface: MarkerInterface =
@@ -120,50 +193,61 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         layer
     }
 
-    init {
-        //新增marker图标样式
-        val mDefaultBitmap =
-            AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.mipmap.marker));
 
-        val markerSymbol = MarkerSymbol(
-            mDefaultBitmap,
-            MarkerSymbol.HotspotPlace.BOTTOM_CENTER
-        );
-        //新增marker图层
-        mDefaultMarkerLayer = ItemizedLayer(
-            mapView.vtmMap,
-            ArrayList<MarkerInterface>(),
-            markerSymbol,
-            object : OnItemGestureListener<MarkerInterface> {
-                override fun onItemSingleTapUp(index: Int, item: MarkerInterface?): Boolean {
-                    return false
-                }
-
-                override fun onItemLongPress(index: Int, item: MarkerInterface?): Boolean {
-                    return false
-                }
-
-            }
+    private val markerRendererFactory: MarkerRendererFactory by lazy {
+        val bitmapPoi: Bitmap = AndroidBitmap(
+            BitmapFactory.decodeResource(
+                mContext.resources,
+                R.mipmap.map_icon_blue2
+            )
         )
+        val symbol = MarkerSymbol(bitmapPoi, MarkerSymbol.HotspotPlace.BOTTOM_CENTER)
+        MarkerRendererFactory { markerLayer ->
+            object : ClusterMarkerRenderer(
+                mContext,
+                markerLayer,
+                symbol,
+                ClusterStyle(
+                    org.oscim.backend.canvas.Color.WHITE,
+                    org.oscim.backend.canvas.Color.BLUE
+                )
+            ) {
+//                override fun getClusterBitmap(size: Int): Bitmap? {
+//                    return super.getclusterbitmap(size)
+//                }
+            }
+        }
+    }
+    private val resId = R.mipmap.map_icon_report
+    private val noteResId = R.drawable.icon_note_marker
+    private var itemListener: OnQsRecordItemClickListener? = null
 
-        //初始化之间数据图层
-        initQsRecordDataLayer()
-        addLayer(mDefaultMarkerLayer, NIMapView.LAYER_GROUPS.OPERATE_MARKER);
+    /**
+     * 文字大小
+     */
+    private val NUM_13 = 13
+
+
+    init {
         // 设置矢量图层均在12级以上才显示
         mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
             if (e == Map.SCALE_EVENT) {
-                itemizedLayer.isEnabled = mapPosition.getZoomLevel() >= 12
+                qsRecordItemizedLayer.isEnabled = mapPosition.getZoomLevel() >= 12
             }
         })
-        initNoteData()
-        mMapView.updateMap()
     }
 
+    /**
+     * 设置marker 点击回调
+     */
     fun setOnQsRecordItemClickListener(listener: OnQsRecordItemClickListener?) {
         itemListener = listener
     }
 
-    //增加marker
+    /**
+     *    增加marker
+     */
+
     fun addMarker(
         geoPoint: GeoPoint,
         title: String?,
@@ -177,16 +261,16 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
             }
         }
         if (marker == null) {
-            var tempTitle = title;
+            var tempTitle = title
             if (tempTitle.isNullOrBlank()) {
-                tempTitle = StringUtil.createUUID();
+                tempTitle = StringUtil.createUUID()
             }
             val marker = MarkerItem(
                 tempTitle,
                 description,
                 geoPoint
             )
-            mDefaultMarkerLayer.addItem(marker);
+            mDefaultMarkerLayer.addItem(marker)
             mMapView.vtmMap.updateMap(true)
         } else {
             marker.description = description
@@ -218,26 +302,24 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     /**
      * 增加或更新marker
      */
-    suspend fun addOrUpdateQsRecordMark(data: QsRecordBean) {
-        for (item in itemizedLayer.itemList) {
+    fun addOrUpdateQsRecordMark(data: QsRecordBean) {
+        for (item in qsRecordItemizedLayer.itemList) {
             if (item is MarkerItem) {
                 if (item.title == data.id) {
-                    itemizedLayer.itemList.remove(item)
+                    qsRecordItemizedLayer.itemList.remove(item)
                     break
                 }
             }
         }
-        createMarkerItem(data)
-        withContext(Dispatchers.Main) {
-            mMapView.updateMap(true)
-        }
+        createQsRecordMarker(data)
+        mMapView.updateMap(true)
     }
 
 
     /**
      * 增加或更新便签
      */
-    suspend fun addOrUpdateNoteMark(data: NoteBean) {
+    fun addOrUpdateNoteMark(data: NoteBean) {
         for (item in noteLayer.itemList) {
             if (item is MarkerItem) {
                 if (item.title == data.id) {
@@ -248,9 +330,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         }
         noteLineLayer.removeNoteBeanLines(data)
         createNoteMarkerItem(data)
-        withContext(Dispatchers.Main) {
-            mMapView.updateMap(true)
-        }
+        mMapView.updateMap(true)
     }
 
 
@@ -258,19 +338,13 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         var resultDrawable: Drawable? = null
         if ("POINT" == geometry.geometryType.uppercase(Locale.getDefault())) {
             val geoPoint = GeoPoint(geometry.coordinate.y, geometry.coordinate.x)
-            if (geoPoint != null) {
-                resultDrawable = PointDrawable(geoPoint, vectorLayerStyle)
-            }
+            resultDrawable = PointDrawable(geoPoint, vectorLayerStyle)
         } else if ("LINESTRING" == geometry.geometryType.uppercase(Locale.getDefault())) {
             val lineString = geometry as LineString
-            if (lineString != null) {
-                resultDrawable = LineDrawable(lineString, vectorLayerStyle)
-            }
+            resultDrawable = LineDrawable(lineString, vectorLayerStyle)
         } else if ("POLYGON" == geometry.geometryType.uppercase(Locale.getDefault())) {
             val polygon = geometry as Polygon
-            if (polygon != null) {
-                resultDrawable = PolygonDrawable(polygon, vectorLayerStyle)
-            }
+            resultDrawable = PolygonDrawable(polygon, vectorLayerStyle)
         }
         return resultDrawable
     }
@@ -279,12 +353,12 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     /**
      * 删除质检数据
      */
-    suspend fun removeQsRecordMark(data: QsRecordBean) {
-        for (item in itemizedLayer.itemList) {
+    fun removeQsRecordMark(data: QsRecordBean) {
+        for (item in qsRecordItemizedLayer.itemList) {
             if (item is MarkerItem) {
                 if (item.title == data.id) {
-                    itemizedLayer.itemList.remove(item)
-                    itemizedLayer.populate()
+                    qsRecordItemizedLayer.itemList.remove(item)
+                    qsRecordItemizedLayer.populate()
                     return
                 }
             }
@@ -294,141 +368,56 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     /**
      * 删除标签
      */
-    suspend fun removeNoteMark(data: NoteBean) {
+    fun removeNoteMark(data: NoteBean) {
         for (item in noteLayer.itemList) {
             if (item is MarkerItem) {
                 if (item.title == data.id) {
                     noteLayer.itemList.remove(item)
                     noteLineLayer.removeNoteBeanLines(data)
                     noteLayer.populate()
-                    withContext(Dispatchers.Main) {
-                        mMapView.updateMap(true)
-                    }
+                    mMapView.updateMap(true)
                     return
                 }
             }
         }
     }
 
-    /**
-     * 初始化便签
-     */
-    private fun initNoteData() {
-        mContext.lifecycleScope.launch(Dispatchers.IO) {
-            var list = mutableListOf<NoteBean>()
-            val realm = Realm.getDefaultInstance()
-            realm.executeTransaction {
-                val objects = realm.where<NoteBean>().findAll()
-                list = realm.copyFromRealm(objects)
-            }
 
-            for (item in list) {
-                createNoteMarkerItem(item)
-            }
-        }
-    }
-
-    /**
-     * 初始话质检数据图层
-     */
-    private fun initQsRecordDataLayer() {
-
-        canvas = CanvasAdapter.newCanvas()
-        paint = CanvasAdapter.newPaint()
-        paint.setTypeface(Paint.FontFamily.DEFAULT, Paint.FontStyle.NORMAL)
-        paint.setTextSize(NUM_13 * CanvasAdapter.getScale())
-        paint.strokeWidth = 2 * CanvasAdapter.getScale()
-        paint.color = Color.parseColor(mDefaultTextColor)
-        val bitmapPoi: Bitmap = AndroidBitmap(
-            BitmapFactory.decodeResource(
-                mContext.resources,
-                R.mipmap.map_icon_blue2
-            )
-        )
-        val symbol = MarkerSymbol(bitmapPoi, MarkerSymbol.HotspotPlace.BOTTOM_CENTER)
-        markerRendererFactory = MarkerRendererFactory { markerLayer ->
-            object : ClusterMarkerRenderer(
-                mContext,
-                markerLayer,
-                symbol,
-                ClusterStyle(
-                    org.oscim.backend.canvas.Color.WHITE,
-                    org.oscim.backend.canvas.Color.BLUE
-                )
-            ) {
-//                override fun getClusterBitmap(size: Int): Bitmap? {
-//                    return super.getclusterbitmap(size)
-//                }
-            }
-        }
-
-        itemizedLayer =
-            MyItemizedLayer(
-                mMapView.vtmMap,
-                mutableListOf(),
-                markerRendererFactory,
-                object : MyItemizedLayer.OnItemGestureListener {
-                    override fun onItemSingleTapUp(
-                        list: MutableList<Int>,
-                        nearest: Int
-                    ): Boolean {
-                        itemListener?.let {
-                            val idList = mutableListOf<String>()
-                            if (list.size == 0) {
-                            } else {
-                                for (i in list) {
-                                    val markerInterface: MarkerInterface =
-                                        itemizedLayer.itemList[i]
-                                    if (markerInterface is MarkerItem) {
-                                        idList.add(markerInterface.title)
-                                    }
-                                }
-                                it.onQsRecordList(idList.distinct().toMutableList())
-                            }
-                        }
-                        return true
-                    }
-
-                    override fun onItemLongPress(
-                        list: MutableList<Int>?,
-                        nearest: Int
-                    ): Boolean {
-                        return true
-                    }
-                })
-        addLayer(itemizedLayer, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
-        mContext.lifecycleScope.launch(Dispatchers.IO) {
-            var list = mutableListOf<QsRecordBean>()
-            val realm = Realm.getDefaultInstance()
-            realm.executeTransaction {
-                val objects = realm.where<QsRecordBean>().findAll()
-                list = realm.copyFromRealm(objects)
-            }
-//            realm.close()
-
-            for (item in list) {
-                createMarkerItem(item)
-            }
-        }
-
-    }
+//    /**
+//     * 初始话质检数据图层
+//     */
+//    private fun initQsRecordDataLayer() {
+//
+//        mContext.lifecycleScope.launch(Dispatchers.IO) {
+//            var list = mutableListOf<QsRecordBean>()
+//            val realm = Realm.getDefaultInstance()
+//            realm.executeTransaction {
+//                val objects = realm.where<QsRecordBean>().findAll()
+//                list = realm.copyFromRealm(objects)
+//            }
+//            for (item in list) {
+//                createMarkerItem(item)
+//            }
+//        }
+//
+//    }
 
     /**
      * 添加质检数据marker
      */
-    private suspend fun createNoteMarkerItem(item: NoteBean) {
+    private fun createNoteMarkerItem(item: NoteBean) {
         val bitmap: Bitmap = createTextMarkerBitmap(mContext, item.description, noteResId)
         val geometry: Geometry? = GeometryTools.createGeometry(item.guideGeometry)
         if (geometry != null) {
-            var geoPoint: org.oscim.core.GeoPoint? = null
+            var geoPoint: GeoPoint? = null
             if (geometry.geometryType != null) {
                 when (geometry.geometryType.uppercase(Locale.getDefault())) {
                     "POINT" -> geoPoint =
-                        org.oscim.core.GeoPoint(geometry.coordinate.y, geometry.coordinate.x)
+                        GeoPoint(geometry.coordinate.y, geometry.coordinate.x)
                 }
             }
             if (geoPoint != null) {
-                var geoMarkerItem: MarkerItem
+                val geoMarkerItem: MarkerItem
                 geoMarkerItem = ClusterMarkerItem(
                     1, item.id, item.description, geoPoint
                 )
@@ -446,16 +435,16 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     /**
      * 添加质检数据marker
      */
-    private suspend fun createMarkerItem(item: QsRecordBean) {
+    private fun createQsRecordMarker(item: QsRecordBean) {
         val bitmap: Bitmap = createTextMarkerBitmap(mContext, item.description, resId)
         if (item.t_lifecycle != 2) {
             val geometry: Geometry? = GeometryTools.createGeometry(item.geometry)
             if (geometry != null) {
-                var geoPoint: org.oscim.core.GeoPoint? = null
+                var geoPoint: GeoPoint? = null
                 if (geometry.geometryType != null) {
                     when (geometry.geometryType.uppercase(Locale.getDefault())) {
                         "POINT" -> geoPoint =
-                            org.oscim.core.GeoPoint(geometry.coordinate.y, geometry.coordinate.x)
+                            GeoPoint(geometry.coordinate.y, geometry.coordinate.x)
 //                                "LINESTRING" -> {
 //                                    val lineString = geometry as LineString
 //                                    if (lineString != null && lineString.coordinates.size > 0) {
@@ -487,7 +476,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                     }
                 }
                 if (geoPoint != null) {
-                    var geoMarkerItem: MarkerItem
+                    val geoMarkerItem: MarkerItem
 //                            if (item.getType() === 1) {
                     geoMarkerItem = ClusterMarkerItem(
                         1, item.id, item.description, geoPoint
@@ -503,11 +492,11 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                     val markerSymbol =
                         MarkerSymbol(bitmap, MarkerSymbol.HotspotPlace.CENTER)
                     geoMarkerItem.marker = markerSymbol
-                    itemizedLayer.itemList.add(geoMarkerItem)
+                    qsRecordItemizedLayer.itemList.add(geoMarkerItem)
                 }
             }
         }
-        itemizedLayer.populate()
+        qsRecordItemizedLayer.populate()
     }
 
 
@@ -700,7 +689,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
             val originBitmap = android.graphics.Bitmap.createBitmap(
                 if (drawable.intrinsicWidth > maxWidth) drawable.intrinsicWidth else maxWidth.toInt(),
                 drawable.intrinsicHeight * 2,
-                android.graphics.Bitmap.Config.ARGB_4444
+                android.graphics.Bitmap.Config.ARGB_8888
             )
             val androidCanvas = Canvas(originBitmap)
             val startX = (originBitmap.width - drawable.intrinsicWidth) / 2
