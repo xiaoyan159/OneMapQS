@@ -1,6 +1,5 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
-import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -9,26 +8,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.navinfo.collect.library.data.entity.QsRecordBean
-import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.databinding.FragmentTaskListBinding
 import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
 import com.navinfo.omqs.http.taskupload.TaskUploadManager
-import com.navinfo.omqs.tools.FileManager
-import com.navinfo.omqs.ui.dialog.FirstDialog
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
 import dagger.hilt.android.AndroidEntryPoint
-import io.realm.Realm
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-@RequiresApi(Build.VERSION_CODES.M)
 @AndroidEntryPoint
 class TaskListFragment : BaseFragment() {
 
@@ -47,11 +35,27 @@ class TaskListFragment : BaseFragment() {
 
     private val adapter: TaskListAdapter by lazy {
         TaskListAdapter(
-            downloadManager, uploadManager,binding.taskListRecyclerview
+            downloadManager, uploadManager, binding.taskListRecyclerview
         ) { _, status, taskBean ->
-            if(taskBean.hadLinkDvoList.isEmpty()){
+            if (taskBean.hadLinkDvoList.isEmpty()) {
                 Toast.makeText(context, "数据错误，无Link数据！", Toast.LENGTH_SHORT).show()
             }
+            when (status) {
+                TaskListAdapter.Companion.ItemClickStatus.ITEM_LAYOUT_CLICK -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        viewModel.setSelectTaskBean(taskBean)
+                    } else {
+                    }
+                }
+                TaskListAdapter.Companion.ItemClickStatus.DELETE_LAYOUT_CLICK -> {
+                    context?.let { viewModel.removeTask(it, taskBean) }
+                }
+                TaskListAdapter.Companion.ItemClickStatus.UPLOAD_LAYOUT_CLICK -> {
+                    showLoadingDialog("正在校验")
+                    Toast.makeText(context, "正在校验", Toast.LENGTH_SHORT).show()
+                    viewModel.checkUploadTask(binding.root.context, taskBean)
+                }
+                else -> {
             if(status==TaskListAdapter.Companion.ItemClickStatus.ITEM_LAYOUT_CLICK){
                 viewModel.setSelectTaskBean(taskBean as TaskBean)
             }else if(status==TaskListAdapter.Companion.ItemClickStatus.DELETE_LAYOUT_CLICK){
@@ -62,6 +66,7 @@ class TaskListFragment : BaseFragment() {
                 viewModel.checkUploadTask(binding.root.context,taskBean)
             } else {
 
+                }
             }
         }
     }
@@ -85,21 +90,13 @@ class TaskListFragment : BaseFragment() {
         binding.taskListRecyclerview.layoutManager = layoutManager
         binding.taskListRecyclerview.adapter = adapter
         viewModel.liveDataTaskList.observe(viewLifecycleOwner) {
-            adapter.refreshData(it)
-        }
-
-        //监听关闭任务状态
-        viewModel.liveDataCloseTask.observe(viewLifecycleOwner){
-            if(it){
-                Toast.makeText(binding.root.context,"成功关闭！",Toast.LENGTH_LONG).show()
-            }
-            hideLoadingDialog()
+            adapter.initSelectTask(it,viewModel.currentSelectTaskBean?.id)
         }
 
         //监听并调用上传
-        viewModel.liveDataTaskUpload.observe(viewLifecycleOwner){
+        viewModel.liveDataTaskUpload.observe(viewLifecycleOwner) {
             for ((key, value) in it) {
-                if(value){
+                if (value) {
                     adapter.uploadTask(key)
                 }
             }

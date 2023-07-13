@@ -1,7 +1,6 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
-import android.app.AlertDialog
-import android.content.DialogInterface
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,14 +15,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentTaskBinding
-import com.navinfo.omqs.databinding.FragmentTaskListBinding
-import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
-import com.navinfo.omqs.http.taskupload.TaskUploadManager
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * 当前任务的道路列表
@@ -42,7 +37,9 @@ class TaskFragment : BaseFragment() {
         TaskAdapter(object : TaskAdapterCallback {
             override fun itemOnClick(bean: HadLinkDvoBean) {
                 if(bean!=null){
-                    viewModel.showCurrentLink(bean)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        viewModel.showCurrentLink(bean)
+                    }
                 }else{
                     Toast.makeText(context, "数据错误，无法显示！", Toast.LENGTH_SHORT).show()
                 }

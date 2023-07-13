@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/right_fragment_w"
     android:layout_height="match_parent"
     android:background="@drawable/shape_right_fragment_bg"
-    tools:context=".ui.fragment.note.NoteFragment">
+    tools:context=".ui.fragment.tasklink.TaskLinkFragment">
 
     <TextView
-        android:id="@+id/note_bar_cancel"
+        android:id="@+id/task_link_bar_cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
         android:layout_marginTop="14dp"
         android:drawableLeft="@drawable/selector_btn_back_xml"
-        android:text="便签"
+        android:text="测评Link"
         android:textColor="@color/default_blue_text_color"
         android:textSize="16sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/note_bar_save"
+        android:id="@+id/task_link_bar_save"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginTop="9dp"
@@ -34,15 +33,16 @@
 
 
     <ImageButton
-        android:id="@+id/note_bar_delete"
+        android:id="@+id/task_link_bar_delete"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_centerInParent="true"
         android:layout_marginRight="5dp"
         android:background="@color/transparent"
         android:src="@drawable/icon_delete"
-        app:layout_constraintRight_toLeftOf="@id/note_bar_cancel"
-        app:layout_constraintTop_toTopOf="@id/note_bar_save" />
+        app:layout_constraintBottom_toBottomOf="@id/task_link_bar_save"
+        app:layout_constraintRight_toLeftOf="@id/task_link_bar_save"
+        app:layout_constraintTop_toTopOf="@id/task_link_bar_save" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
@@ -55,7 +55,8 @@
         app:layout_constraintBottom_toTopOf="@id/note_camera"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/note_bar_save">
+        app:layout_constraintTop_toBottomOf="@id/task_link_bar_save">
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -65,24 +66,17 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp">
+                android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="橡皮擦&#8195;" />
+                    style="@style/evaluation_fragment_title_text_style"
+                    android:layout_width="60dp"
+                    android:text="当前任务" />
 
-                <ImageView
-                    android:id="@+id/sketch_eraser"
+                <TextView
+                    android:id="@+id/task_link_task_name"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/selector_sketch_eraser_bg"
-                    android:src="@drawable/sketch_eraser" />
-
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <LinearLayout
@@ -116,6 +110,82 @@
             </LinearLayout>
 
 
+            <Button
+                android:id="@+id/task_link_add_point"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="打点" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="7dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/evaluation_fragment_title_text_style"
+                    android:layout_width="60dp"
+                    android:text="Link长度" />
+
+                <TextView
+                    android:id="@+id/task_link_length"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0米" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="7dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/evaluation_fragment_title_text_style"
+                    android:layout_width="60dp"
+                    android:text="种别" />
+
+                <TextView
+                    android:id="@+id/task_link_kind"
+                    style="@style/evaluation_fragment_text_style"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="7dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/evaluation_fragment_title_text_style"
+                    android:layout_width="60dp"
+                    android:text="功能等级" />
+
+                <TextView
+                    android:id="@+id/task_link_functional_level"
+                    style="@style/evaluation_fragment_text_style"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="7dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/evaluation_fragment_title_text_style"
+                    android:layout_width="60dp"
+                    android:text="数据级别" />
+
+                <TextView
+                    android:id="@+id/task_link_data_level"
+                    style="@style/evaluation_fragment_text_style"
+                    android:text="" />
+            </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -123,8 +193,8 @@
 
                 <TextView
                     style="@style/evaluation_fragment_title_text_style"
+                    android:layout_width="60dp"
                     android:layout_gravity="top"
-                    android:layout_marginTop="3dp"
                     android:text="备注" />
 
                 <com.navinfo.omqs.ui.widget.MyEditeText

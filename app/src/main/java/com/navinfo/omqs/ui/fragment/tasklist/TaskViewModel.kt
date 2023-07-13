@@ -2,6 +2,7 @@ package com.navinfo.omqs.ui.fragment.tasklist
 
 import android.app.Dialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
 import android.widget.Toast
@@ -28,7 +29,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TaskViewModel @Inject constructor(
-    private val networkService: NetworkService, private val mapController: NIMapController
+    private val networkService: NetworkService,
+    private val mapController: NIMapController,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     /**
@@ -57,7 +60,7 @@ class TaskViewModel @Inject constructor(
     /**
      * 当前选中的任务
      */
-    private var currentSelectTaskBean: TaskBean? = null
+    var currentSelectTaskBean: TaskBean? = null
 
     /**
      * 任务列表查询协程
@@ -65,6 +68,7 @@ class TaskViewModel @Inject constructor(
     private var filterTaskListJob: Job? = null
 
     private var filterTaskJob: Job? = null
+
 
     /**
      * 下载任务列表
@@ -135,6 +139,15 @@ class TaskViewModel @Inject constructor(
                 FileManager.checkOMDBFileInfo(item)
             }
             liveDataTaskList.postValue(taskList)
+            val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
+            if (id > -1) {
+                for(item in taskList){
+                    if(item.id == id){
+                        currentSelectTaskBean = item
+                        liveDataTaskLinks.postValue(currentSelectTaskBean!!.hadLinkDvoList)
+                    }
+                }
+            }
         }
     }
 
@@ -143,6 +156,9 @@ class TaskViewModel @Inject constructor(
      */
     @RequiresApi(Build.VERSION_CODES.M)
     fun setSelectTaskBean(taskBean: TaskBean) {
+
+        sharedPreferences.edit().putInt(Constant.SELECT_TASK_ID, taskBean.id).commit()
+
         currentSelectTaskBean = taskBean
 
         liveDataTaskLinks.value = taskBean.hadLinkDvoList

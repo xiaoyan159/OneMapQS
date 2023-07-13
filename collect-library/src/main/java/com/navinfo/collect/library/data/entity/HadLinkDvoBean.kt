@@ -19,6 +19,15 @@ open class HadLinkDvoBean @JvmOverloads constructor(
     /**
      * 不作业原因
      */
-    var reason: String = ""
+    var reason: String = "",
 
+    /**
+     * 1:源库link， 3：现象新增
+     */
+    var linkStatus: Int = 1,
+
+    /**
+     * link 长度
+     */
+    var linkLength: Double = 0.000
 ) : RealmObject()

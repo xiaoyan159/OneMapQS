@@ -25,5 +25,10 @@
         android:name="com.navinfo.omqs.ui.fragment.note.CanvasFragment"
         android:label="绘图页面"
         tools:layout="@layout/fragment_canvas"></fragment>
+    <fragment
+        android:id="@+id/TaskLinkMiddleFragment"
+        android:name="com.navinfo.omqs.ui.fragment.tasklink.TaskLinkMiddleFragment"
+        android:label="新增评测Link属性选择页面"
+        tools:layout="@layout/fragment_task_link_middle"></fragment>
 
 </navigation>
