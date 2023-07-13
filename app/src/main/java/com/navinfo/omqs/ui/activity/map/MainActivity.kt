@@ -461,6 +461,24 @@ class MainActivity : BaseActivity() {
     }
 
     /**
+     * 准星的显隐控制
+     */
+    fun setHomeCenterVisibility(visible: Int) {
+        binding.mainActivityHomeCenter.visibility = visible
+        binding.mainActivityHomeCenterText.visibility = visible
+        if (visible != View.VISIBLE) {
+            binding.mainActivityHomeCenterText.text = ""
+        }
+    }
+
+    /**
+     * 设置屏幕中心文字内容
+     */
+    fun setHomeCenterText(str: String) {
+        binding.mainActivityHomeCenterText.text = str
+    }
+
+    /**
      * 隐藏或显示右侧展开按钮
      */
     fun setRightSwitchButtonVisibility(visibility: Int) {
@@ -472,6 +490,10 @@ class MainActivity : BaseActivity() {
      */
     fun setTopMenuButtonVisibility(visibility: Int) {
         binding.mainActivityMenu.visibility = visibility
+        if (visibility != View.VISIBLE) {
+            binding.mainActivityMenuGroup.visibility = View.INVISIBLE
+            binding.mainActivityMenu.isSelected = false
+        }
     }
 
     /**
@@ -601,8 +623,14 @@ class MainActivity : BaseActivity() {
      */
     fun onClickNewNote() {
         rightController.navigate(R.id.NoteFragment)
-        binding.mainActivityMenu.isSelected = false
-        binding.mainActivityMenuGroup.visibility = View.INVISIBLE
+    }
+
+    /**
+     * 新增评测link
+     */
+    fun onClickTaskLink() {
+        rightController.navigate(R.id.TaskLinkFragment)
+
     }
 
     /**

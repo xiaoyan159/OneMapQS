@@ -1,18 +1,11 @@
 package com.navinfo.collect.library.map
 
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.navinfo.collect.library.data.entity.NiLocation
-import com.navinfo.collect.library.data.handler.DataNiLocationHandler
-import com.navinfo.collect.library.map.NIMapView.OnMapClickListener
 import com.navinfo.collect.library.map.handler.*
-import com.navinfo.collect.library.map.handler.MeasureLayerHandler
-import com.navinfo.collect.library.map.handler.ViewportHandler
 import com.navinfo.collect.library.system.Constant
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
 

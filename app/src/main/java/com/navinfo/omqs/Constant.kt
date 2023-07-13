@@ -92,6 +92,8 @@ class Constant {
         val OMDB_LAYER_VISIBLE_LIST: MutableList<String> = mutableListOf() // 记录OMDB数据显示的图层名称列表
 
         const val EVENT_LAYER_MANAGER_CHANGE = "EVENT_LAYER_MANAGER_CHANGE" // 图层管理中的配置修改
+
+        const val SELECT_TASK_ID = "select_task_id" //选中的任务ID
     }
 
 

@@ -31,6 +31,28 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/main_activity_home_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/home_map_center"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/main_activity_home_center_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/main_activity_home_center"
+            app:layout_constraintRight_toLeftOf="@id/main_activity_home_center"
+            app:layout_constraintTop_toTopOf="@id/main_activity_home_center" />
+
         <ImageButton
             android:id="@+id/main_activity_camera2"
             android:layout_width="48dp"
@@ -79,7 +101,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/top_right_drawer_btns_mr"
-            app:constraint_referenced_ids="main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_calc_disance,main_activity_note,main_activity_menu"
+            app:constraint_referenced_ids="main_activity_note,main_activity_task_line,main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_calc_disance,main_activity_menu"
             app:flow_horizontalGap="6dp"
             app:flow_wrapMode="aligned"
             app:layout_constraintRight_toLeftOf="@id/main_activity_right_fragment"
@@ -90,7 +112,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="invisible"
-            app:constraint_referenced_ids="main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_note,main_activity_calc_disance" />
+            app:constraint_referenced_ids="main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_note,main_activity_task_line,main_activity_calc_disance" />
 
         <ImageButton
             android:id="@+id/main_activity_serach"
@@ -126,6 +148,12 @@
             android:id="@+id/main_activity_note"
             style="@style/top_right_drawer_btns_style"
             android:onClick="@{()->mainActivity.onClickNewNote()}"
+            android:src="@drawable/icon_menu_note" />
+
+        <ImageButton
+            android:id="@+id/main_activity_task_line"
+            style="@style/top_right_drawer_btns_style"
+            android:onClick="@{()->mainActivity.onClickTaskLink()}"
             android:src="@drawable/icon_calc_disance" />
 
         <ImageButton
@@ -517,5 +545,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
