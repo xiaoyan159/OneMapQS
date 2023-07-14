@@ -151,7 +151,9 @@ class MainViewModel @Inject constructor(
                 liveDataNILocationList.value = list
             }
         })
+
         initLocation()
+
         //处理地图点击操作
         viewModelScope.launch(Dispatchers.Default) {
             mapController.onMapClickFlow.collectLatest {
@@ -172,33 +174,15 @@ class MainViewModel @Inject constructor(
     /**
      * 初始化选中的任务高亮高亮
      */
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun initTaskData() {
-        viewModelScope.launch {
-            val realm = Realm.getDefaultInstance()
-            val results = realm.where(TaskBean::class.java).findAll()
-            val list = realm.copyFromRealm(results)
-            results.addChangeListener { changes ->
-                val list2 = realm.copyFromRealm(changes)
-                mapController.lineHandler.omdbTaskLinkLayer.removeAll()
-                for (item in list2) {
-                    mapController.lineHandler.omdbTaskLinkLayer.addLineList(item.hadLinkDvoList)
-                }
-            }
-            mapController.lineHandler.omdbTaskLinkLayer.removeAll()
-            for (item in list) {
-                mapController.lineHandler.omdbTaskLinkLayer.addLineList(item.hadLinkDvoList)
-            }
     private suspend fun initTaskData() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
-            val realm = Realm.getDefaultInstance()
-            val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
-            if (res != null) {
-                val taskBean = realm.copyFromRealm(res)
-                mapController.lineHandler.omdbTaskLinkLayer.addLineList(taskBean.hadLinkDvoList)
-            }
+        val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
+        val realm = Realm.getDefaultInstance()
+        val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
+        if (res != null) {
+            val taskBean = realm.copyFromRealm(res)
+            mapController.lineHandler.omdbTaskLinkLayer.addLineList(taskBean.hadLinkDvoList)
         }
+
     }
 
     /**
@@ -237,6 +221,7 @@ class MainViewModel @Inject constructor(
     /**
      * 初始化定位信息
      */
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun initLocation() {
         //用于定位点存储到数据库
         viewModelScope.launch(Dispatchers.Default) {
@@ -290,7 +275,12 @@ class MainViewModel @Inject constructor(
         //用于定位点捕捉道路
         viewModelScope.launch(Dispatchers.Default) {
             mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
-                if (!isSelectRoad()) captureLink(GeoPoint(location.latitude, location.longitude))
+                if (!isSelectRoad()) captureLink(
+                    GeoPoint(
+                        location.latitude,
+                        location.longitude
+                    )
+                )
             }
         }
 
@@ -459,9 +449,13 @@ class MainViewModel @Inject constructor(
             mCameraDialog!!.stopVideo()
             try {
                 if (!mCameraDialog!!.getmShareUtil().connectstate) {
-                    mCameraDialog!!.updateCameraResources(1, mCameraDialog!!.getmDeviceNum())
+                    mCameraDialog!!.updateCameraResources(
+                        1,
+                        mCameraDialog!!.getmDeviceNum()
+                    )
                 }
-                TakePhotoManager.getInstance().getCameraVedioClent(mCameraDialog!!.getmDeviceNum())
+                TakePhotoManager.getInstance()
+                    .getCameraVedioClent(mCameraDialog!!.getmDeviceNum())
                     .StopSearch()
             } catch (e: Exception) {
             }
@@ -597,5 +591,6 @@ class MainViewModel @Inject constructor(
     fun showSignMoreInfo(data: RenderEntity) {
         liveDataSignMoreInfo.value = data
     }
+
 
 }

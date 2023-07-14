@@ -1,5 +1,6 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
+import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
@@ -33,7 +34,7 @@ class TaskViewModel @Inject constructor(
     private val networkService: NetworkService,
     private val mapController: NIMapController,
     private val sharedPreferences: SharedPreferences
-) : ViewModel() {
+) : ViewModel(), OnSharedPreferenceChangeListener {
 
     /**
      * 用来更新任务列表
@@ -56,9 +57,6 @@ class TaskViewModel @Inject constructor(
      * 用来确定是否关闭
      */
     val liveDataCloseTask = MutableLiveData<Boolean>()
-
-    private val colors =
-        arrayOf(Color.RED, Color.YELLOW, Color.BLUE, Color.MAGENTA, Color.GREEN, Color.CYAN)
 
     /**
      * 当前选中的任务

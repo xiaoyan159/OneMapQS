@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -145,6 +146,7 @@ class MainActivity : BaseActivity() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -370,6 +372,7 @@ class MainActivity : BaseActivity() {
         mapController.mMapView.onPause()
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onDestroy() {
         super.onDestroy()
         viewModel.speakMode?.shutdown()
@@ -400,6 +403,7 @@ class MainActivity : BaseActivity() {
     /**
      * 打开相机预览
      */
+    @RequiresApi(Build.VERSION_CODES.M)
     fun openCamera() {
         //显示轨迹图层
         viewModel.onClickCameraButton(this)
@@ -408,6 +412,7 @@ class MainActivity : BaseActivity() {
     /**
      * 开关菜单
      */
+    @RequiresApi(Build.VERSION_CODES.M)
     fun onClickMenu() {
         //显示菜单图层
         viewModel.onClickMenu()
@@ -543,6 +548,7 @@ class MainActivity : BaseActivity() {
             .animateTo(GeoPoint( mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude))
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun voiceOnTouchStart() {
         viewModel.startSoundMetter(this, binding.mainActivityVoice)
     }
@@ -625,6 +631,7 @@ class MainActivity : BaseActivity() {
     /**
      * 打开道路名称属性看板，选择的道路在viewmodel里记录，不用
      */
+    @RequiresApi(Build.VERSION_CODES.M)
     fun openRoadNameFragment() {
         if (viewModel.liveDataRoadName.value != null) {
             viewModel.showSignMoreInfo(viewModel.liveDataRoadName.value!!)
@@ -643,7 +650,6 @@ class MainActivity : BaseActivity() {
      */
     fun onClickTaskLink() {
         rightController.navigate(R.id.TaskLinkFragment)
-
     }
 
     /**

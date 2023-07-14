@@ -53,9 +53,6 @@ import java.util.Locale
 class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     BaseHandler(context, mapView) {
 
-    //    //默认marker图层
-    private var mDefaultMarkerLayer: ItemizedLayer
-
     /**
      * 默认文字颜色
      */
@@ -111,12 +108,6 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         layer
     }
 
-    private lateinit var niLocationItemizedLayer: MyItemizedLayer
-
-    private lateinit var markerRendererFactory: MarkerRendererFactory
-    private val resId = R.mipmap.map_icon_report
-    private val noteResId = R.drawable.icon_note_marker
-    private var itemListener: OnQsRecordItemClickListener? = null
     private var niLocationBitmap: Bitmap? = null
     private var niLocationBitmap1: Bitmap? = null
     private var niLocationBitmap2: Bitmap? = null
@@ -147,6 +138,61 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                                 }
                             }
                             it.onQsRecordList(idList.distinct().toMutableList())
+                        }
+                    }
+                    return true
+                }
+
+                override fun onItemLongPress(
+                    list: MutableList<Int>?,
+                    nearest: Int
+                ): Boolean {
+                    return true
+                }
+            })
+        addLayer(layer, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
+        layer
+    }
+
+    /**
+     * 评测数据marker 图层
+     */
+    private val niLocationItemizedLayer: MyItemizedLayer by lazy {
+
+        niLocationBitmap =
+            AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.mipmap.icon_gps))
+        niLocationBitmap1 =
+            AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.mipmap.icon_gps_1))
+        niLocationBitmap2 =
+            AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.mipmap.icon_nilocation))
+        niLocationBitmap3 = AndroidBitmap(
+            BitmapFactory.decodeResource(
+                context.resources,
+                R.mipmap.icon_nilocation_1
+            )
+        )
+
+        val layer = MyItemizedLayer(
+            mMapView.vtmMap,
+            mutableListOf(),
+            markerRendererFactory,
+            object : MyItemizedLayer.OnItemGestureListener {
+                override fun onItemSingleTapUp(
+                    list: MutableList<Int>,
+                    nearest: Int
+                ): Boolean {
+                    itemListener?.let {
+                        val idList = mutableListOf<NiLocation>()
+                        if (list.size == 0) {
+                        } else {
+                            for (i in list) {
+                                val markerInterface: MarkerInterface =
+                                    niLocationItemizedLayer.itemList[i]
+                                if (markerInterface is MarkerItem) {
+                                    idList.add(markerInterface.uid as NiLocation)
+                                }
+                            }
+                            it.onNiLocationList(idList.distinct().toMutableList())
                         }
                     }
                     return true
@@ -235,9 +281,6 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                     org.oscim.backend.canvas.Color.BLUE
                 )
             ) {
-//                override fun getClusterBitmap(size: Int): Bitmap? {
-//                    return super.getclusterbitmap(size)
-//                }
             }
         }
     }
@@ -252,48 +295,13 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
 
 
     init {
-        //新增marker图标样式
-        val mDefaultBitmap =
-            AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.mipmap.marker))
-        val markerSymbol = MarkerSymbol(
-            mDefaultBitmap,
-            MarkerSymbol.HotspotPlace.BOTTOM_CENTER)
-
-        niLocationBitmap = AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.mipmap.icon_gps))
-        niLocationBitmap1 = AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.mipmap.icon_gps_1))
-        niLocationBitmap2 = AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.mipmap.icon_nilocation))
-        niLocationBitmap3 = AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.mipmap.icon_nilocation_1))
-
-                //新增marker图层
-        mDefaultMarkerLayer = ItemizedLayer(
-            mapView.vtmMap,
-            ArrayList<MarkerInterface>(),
-            markerSymbol,
-            object : OnItemGestureListener<MarkerInterface> {
-                override fun onItemSingleTapUp(index: Int, item: MarkerInterface?): Boolean {
-                    return false
-                }
-
-                override fun onItemLongPress(index: Int, item: MarkerInterface?): Boolean {
-                    return false
-                }
-
-            }
-        )
-
-        //初始化之间数据图层
-        initQsRecordDataLayer()
-        addLayer(mDefaultMarkerLayer, NIMapView.LAYER_GROUPS.OPERATE_MARKER);
         // 设置矢量图层均在12级以上才显示
         mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
             if (e == Map.SCALE_EVENT) {
                 qsRecordItemizedLayer.isEnabled = mapPosition.getZoomLevel() >= 12
+                niLocationItemizedLayer.isEnabled = mapPosition.getZoomLevel() >= 12
             }
         })
-        initNoteData()
-        //初始化加载轨迹
-        initNiLocationDataLayer()
-        mMapView.updateMap()
     }
 
     /**
@@ -461,46 +469,6 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
 //
 //    }
 
-    /**
-     * 初始化定位图层
-     */
-    private fun initNiLocationDataLayer() {
-        niLocationItemizedLayer =
-            MyItemizedLayer(
-                mMapView.vtmMap,
-                mutableListOf(),
-                markerRendererFactory,
-                object : MyItemizedLayer.OnItemGestureListener {
-                    override fun onItemSingleTapUp(
-                        list: MutableList<Int>,
-                        nearest: Int
-                    ): Boolean {
-                        itemListener?.let {
-                            val idList = mutableListOf<NiLocation>()
-                            if (list.size == 0) {
-                            } else {
-                                for (i in list) {
-                                    val markerInterface: MarkerInterface =
-                                        niLocationItemizedLayer.itemList[i]
-                                    if (markerInterface is MarkerItem) {
-                                        idList.add(markerInterface.uid as NiLocation)
-                                    }
-                                }
-                                it.onNiLocationList(idList.distinct().toMutableList())
-                            }
-                        }
-                        return true
-                    }
-
-                    override fun onItemLongPress(
-                        list: MutableList<Int>?,
-                        nearest: Int
-                    ): Boolean {
-                        return true
-                    }
-                })
-        addLayer(niLocationItemizedLayer, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
-    }
 
     /**
      * 添加质检数据marker
@@ -545,54 +513,18 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                     when (geometry.geometryType.uppercase(Locale.getDefault())) {
                         "POINT" -> geoPoint =
                             GeoPoint(geometry.coordinate.y, geometry.coordinate.x)
-//                                "LINESTRING" -> {
-//                                    val lineString = geometry as LineString
-//                                    if (lineString != null && lineString.coordinates.size > 0) {
-//                                        geoPoint = GeoPoint(
-//                                            lineString.coordinates[0].y,
-//                                            lineString.coordinates[0].x
-//                                        )
-//                                    }
-//                                    val drawableLine: Drawable =
-//                                        convertGeometry2Drawable(geometry, lineStyle)
-//                                    if (drawableLine != null) {
-//                                        dataVectorLayer.add(drawableLine)
-//                                    }
-//                                }
-//                                "POLYGON" -> {
-//                                    val polygon = geometry as Polygon
-//                                    if (polygon != null && polygon.coordinates.size > 0) {
-//                                        geoPoint = GeoPoint(
-//                                            polygon.coordinates[0].y,
-//                                            polygon.coordinates[0].x
-//                                        )
-//                                    }
-//                                    val drawablePolygon: Drawable =
-//                                        convertGeometry2Drawable(geometry, polygonStyle)
-//                                    if (drawablePolygon != null) {
-//                                        dataVectorLayer.add(drawablePolygon)
-//                                    }
-//                                }
-                            org.oscim.core.GeoPoint(geometry.coordinate.y, geometry.coordinate.x)
                     }
                 }
                 if (geoPoint != null) {
+
                     val geoMarkerItem: MarkerItem
-//                            if (item.getType() === 1) {
-                    geoMarkerItem = ClusterMarkerItem(
-                        1, item.id, item.description, geoPoint
-                    )
-//                            } else {
-//                                geoMarkerItem = MarkerItem(
-//                                    ePointTemp.getType(),
-//                                    ePointTemp.getId(),
-//                                    ePointTemp.getStyleText(),
-//                                    geoPoint
-//                                )
-//                            }
-                    val markerSymbol =
-                        MarkerSymbol(bitmap, MarkerSymbol.HotspotPlace.CENTER)
+
+                    geoMarkerItem = ClusterMarkerItem(1, item.id, item.description, geoPoint)
+
+                    val markerSymbol = MarkerSymbol(bitmap, MarkerSymbol.HotspotPlace.CENTER)
+
                     geoMarkerItem.marker = markerSymbol
+
                     qsRecordItemizedLayer.itemList.add(geoMarkerItem)
                 }
             }
@@ -604,40 +536,51 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
      * 添加质检数据marker
      */
     public suspend fun addNiLocationMarkerItem(niLocation: NiLocation) {
-        val item = MarkerItem(niLocation, niLocation.id, "", GeoPoint(niLocation.latitude, niLocation.longitude))
+
         var itemizedLayer: ItemizedLayer? = null
+
         val direction: Double = niLocation.direction
+
+        val geoMarkerItem: MarkerItem = ClusterMarkerItem(
+            niLocation,
+            niLocation.id,
+            niLocation.time,
+            GeoPoint(niLocation.latitude, niLocation.longitude)
+        )
+
         //角度
-        when(niLocation.media){
-            0->{
+        when (niLocation.media) {
+            0 -> {
                 //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
                 //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
                 if (direction != 0.0) {
                     val symbolGpsTemp =
                         MarkerSymbol(niLocationBitmap, MarkerSymbol.HotspotPlace.CENTER, false)
-                    item.marker = symbolGpsTemp
-                    item.setRotation(direction.toFloat())
-                }else{
+                    geoMarkerItem.marker = symbolGpsTemp
+                    geoMarkerItem.setRotation(direction.toFloat())
+                } else {
                     val symbolGpsTemp =
                         MarkerSymbol(niLocationBitmap2, MarkerSymbol.HotspotPlace.CENTER, false)
-                    item.marker = symbolGpsTemp
+                    geoMarkerItem.marker = symbolGpsTemp
                 }
-                niLocationItemizedLayer.addItem(item)
+                niLocationItemizedLayer.addItem(geoMarkerItem)
                 itemizedLayer = niLocationItemizedLayer
             }
-            1->{
+
+            1 -> {
                 //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
                 //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
                 if (direction != 0.0) {
-                    val symbolLidarTemp = MarkerSymbol(niLocationBitmap1, MarkerSymbol.HotspotPlace.CENTER, false)
-                    item.marker = symbolLidarTemp
-                    item.setRotation(direction.toFloat())
-                }else{
+                    val symbolLidarTemp =
+                        MarkerSymbol(niLocationBitmap1, MarkerSymbol.HotspotPlace.CENTER, false)
+                    geoMarkerItem.marker = symbolLidarTemp
+                    geoMarkerItem.setRotation(direction.toFloat())
+                } else {
                     val symbolGpsTemp =
                         MarkerSymbol(niLocationBitmap3, MarkerSymbol.HotspotPlace.CENTER, false)
-                    item.marker = symbolGpsTemp
+                    geoMarkerItem.marker = symbolGpsTemp
                 }
-                niLocationItemizedLayer.addItem(item)
+                niLocationItemizedLayer.addItem(geoMarkerItem)
                 itemizedLayer = niLocationItemizedLayer
             }
 
@@ -871,4 +814,5 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
 interface OnQsRecordItemClickListener {
     fun onQsRecordList(list: MutableList<String>)
     fun onNoteList(list: MutableList<String>)
+    fun onNiLocationList(list: MutableList<NiLocation>)
 }

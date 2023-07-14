@@ -54,7 +54,7 @@ data class EvaluationInfo(
     val roadClassfcation: String = "",//道路种别
 
     @SerializedName("roadFunctionGrade")
-    val roadFunctionGrade: String = "",//道路功能等级
+    val roadFunctionGrade: Int = 3,//道路功能等级
 
     @SerializedName("noEvaluationreason")
     val noEvaluationreason: String = "",//未测评原因
@@ -63,7 +63,7 @@ data class EvaluationInfo(
     val linkLength: Double = 0.0,//link长度(m 保留3位小数)
 
     @SerializedName("dataLevel")
-    val dataLevel: String = "",//数据级别
+    val dataLevel: Int = 3,//数据级别
 
     @SerializedName("linstringLength")
     val linstringLength: Double = 0.0,//错误要素长度（m）
