@@ -65,6 +65,10 @@ public class NiLocation extends Feature{
     private String groupId;
     @ColumnInfo(name = "timeStamp")
     private String timeStamp;
+    @ColumnInfo(name = "media")
+    private int media;
+    @ColumnInfo(name = "taskId")
+    private String taskId;
 
     private boolean isAccouracy;
     private boolean isSpeed;
@@ -317,5 +321,21 @@ public class NiLocation extends Feature{
 
     public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
+    }
+
+    public int getMedia() {
+        return media;
+    }
+
+    public void setMedia(int media) {
+        this.media = media;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 }

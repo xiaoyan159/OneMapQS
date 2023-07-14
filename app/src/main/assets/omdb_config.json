@@ -94,7 +94,15 @@
 		"2202":{
 			"table": "OMDB_TUNNEL",
 			"code": 2202,
-			"name": "隧道"
+			"name": "隧道",
+			"transformer": [
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateS2EReferencePoint()"
+				}
+			]
 		},
 		"4001": {
             "table": "OMDB_INTERSECTION",
@@ -269,7 +277,15 @@
         "5001":{
             "table": "OMDB_LANE_LINK_LG",
             "code": 5001,
-            "name": "车道中心线"
+            "name": "车道中心线",
+			"transformer": [
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateAddWidthLine()"
+				}
+			]
         },
 		"5002":{
 			"table": "OMDB_AREA",

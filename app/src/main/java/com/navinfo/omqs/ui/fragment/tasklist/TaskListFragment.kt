@@ -40,11 +40,13 @@ class TaskListFragment : BaseFragment() {
             if (taskBean.hadLinkDvoList.isEmpty()) {
                 Toast.makeText(context, "数据错误，无Link数据！", Toast.LENGTH_SHORT).show()
             }
+
             when (status) {
                 TaskListAdapter.Companion.ItemClickStatus.ITEM_LAYOUT_CLICK -> {
                     viewModel.setSelectTaskBean(taskBean)
                 }
                 TaskListAdapter.Companion.ItemClickStatus.DELETE_LAYOUT_CLICK -> {
+                    showLoadingDialog("正在关闭")
                     context?.let { viewModel.removeTask(it, taskBean) }
                 }
                 TaskListAdapter.Companion.ItemClickStatus.UPLOAD_LAYOUT_CLICK -> {

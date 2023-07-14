@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="b" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+    <defs>
+        <style>.e{fill:#fcba5a;}</style>
+    </defs>
+    <g id="c">
+        <path id="d" class="e"
+            d="M31.9,0l-14.3,23.2-1.6,2.6-1.6-2.6L0,0h0V6.1L14.1,28.9l1.9,3.1h0s1.9-3.1,1.9-3.1L32,6V0h0Z" />
+    </g>
+</svg>

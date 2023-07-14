@@ -115,10 +115,13 @@ public class MyItemizedLayer extends ItemizedLayer {
 //                        it = this.mMarkerRenderer.mDefaultMarker;
                     }
 
-                    if (it.isInside(dx, dy)) {// && this.mTmpPoint.y > insideY) {
-//                        insideY = this.mTmpPoint.y;
-                        inside = i;
-                        list.add(i);
+                    try{
+                        if (it.isInside(dx, dy)) {
+                            inside = i;
+                            list.add(i);
+                        }
+                    }catch (Exception e){
+
                     }
 
                     if (inside < 0) {

@@ -113,9 +113,10 @@ class PersonalCenterFragment(private var backListener: (() -> Unit?)? = null) : 
                 }
                 R.id.personal_center_menu_test -> {
                     viewModel.readRealmData()
+                    //108.91056000267433 34.29635901721207
                     // 定位到指定位置
                     niMapController.mMapView.vtmMap.animator()
-                        .animateTo(GeoPoint( 39.799624915997725, 116.51407667184905     ))
+                        .animateTo(GeoPoint( 34.29635901721207, 108.91056000267433))
                 }
 //                R.id.personal_center_menu_task_list -> {
 //                    findNavController().navigate(R.id.TaskManagerFragment)

@@ -152,6 +152,34 @@ class ImportPreProcess {
         Realm.getDefaultInstance().insert(startEndReference)
     }
 
+    fun generateS2EReferencePoint(renderEntity: RenderEntity) {
+        val geometry = GeometryTools.createGeometry(renderEntity.properties["geometry"])
+
+        val pointEnd = geometry!!.coordinates[geometry.numPoints-1] // 获取这个geometry对应的结束点坐标
+        val pointStart = geometry!!.coordinates[0] // 获取这个geometry对应的起点
+
+        // 将这个起终点的线记录在数据中
+        val startReference = ReferenceEntity()
+        startReference.renderEntityId = renderEntity.id
+        startReference.name = "${renderEntity.name}参考线"
+        startReference.table = renderEntity.table
+        // 起点坐标
+        startReference.geometry = GeometryTools.createGeometry(GeoPoint(pointStart.y,pointStart.x)).toString()
+        startReference.properties["qi_table"] = renderEntity.table
+        startReference.properties["type"] = "s_2_p"
+        Realm.getDefaultInstance().insert(startReference)
+
+        val endReference = ReferenceEntity()
+        endReference.renderEntityId = renderEntity.id
+        endReference.name = "${renderEntity.name}参考线"
+        endReference.table = renderEntity.table
+        // 终点坐标
+        endReference.geometry = GeometryTools.createGeometry(GeoPoint(pointEnd.y,pointEnd.x)).toString()
+        endReference.properties["qi_table"] = renderEntity.table
+        endReference.properties["type"] = "e_2_p"
+        Realm.getDefaultInstance().insert(endReference)
+    }
+
     /**
      * 生成与对应方向相同的方向线，用以绘制方向箭头
      * */
@@ -298,6 +326,22 @@ class ImportPreProcess {
             renderEntity.properties["name"] = ""
         }
     }
+
+    /**
+     * 生成车道中心线面宽度
+     * */
+    fun generateAddWidthLine(renderEntity: RenderEntity) {
+        // 添加车道中心面渲染原则，根据车道宽度进行渲染
+        val angleReference = ReferenceEntity()
+        angleReference.renderEntityId = renderEntity.id
+        angleReference.name = "${renderEntity.name}车道中线面"
+        angleReference.table = renderEntity.table
+        angleReference.geometry = renderEntity.geometry
+        angleReference.properties["qi_table"] = renderEntity.table
+        angleReference.properties["width"] = "3"
+        Realm.getDefaultInstance().insert(angleReference)
+    }
+
 
     /**
      * 生成默认路口数据的参考数据

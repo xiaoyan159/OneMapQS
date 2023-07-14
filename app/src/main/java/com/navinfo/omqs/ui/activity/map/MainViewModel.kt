@@ -16,7 +16,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupWindow
 import androidx.annotation.RequiresApi
-import androidx.constraintlayout.widget.Group
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
@@ -24,6 +23,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
+import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.data.entity.NoteBean
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.RenderEntity
@@ -35,7 +35,6 @@ import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
-import com.navinfo.omqs.bean.RoadNameBean
 import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.ui.dialog.CommonDialog
@@ -80,6 +79,9 @@ class MainViewModel @Inject constructor(
     //地图点击捕捉到的标签ID列表
     val liveDataNoteIdList = MutableLiveData<List<String>>()
 
+    //地图点击捕捉到的轨迹列表
+    val liveDataNILocationList = MutableLiveData<List<NiLocation>>()
+
     //左侧看板数据
     val liveDataSignList = MutableLiveData<List<SignBean>>()
 
@@ -123,6 +125,8 @@ class MainViewModel @Inject constructor(
 
     private var linkIdCache = ""
 
+    private var lastNiLocaion: NiLocation? = null
+
     init {
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
             when (e) {
@@ -141,8 +145,14 @@ class MainViewModel @Inject constructor(
             override fun onNoteList(list: MutableList<String>) {
                 liveDataNoteIdList.value = list
             }
+
+            override fun onNiLocationList(list: MutableList<NiLocation>) {
+                liveDataNILocationList.value = list
+            }
         })
+
         initLocation()
+
         //处理地图点击操作
         viewModelScope.launch(Dispatchers.Default) {
             mapController.onMapClickFlow.collectLatest {
@@ -159,6 +169,7 @@ class MainViewModel @Inject constructor(
             initTaskData()
             initQsRecordData()
             initNoteData()
+            initNILocationData()
         }
     }
 
@@ -173,6 +184,7 @@ class MainViewModel @Inject constructor(
             val taskBean = realm.copyFromRealm(res)
             mapController.lineHandler.showTaskLines(taskBean.hadLinkDvoList)
         }
+
     }
 
     /**
@@ -201,8 +213,22 @@ class MainViewModel @Inject constructor(
             list = realm.copyFromRealm(objects)
         }
 
+
+
         for (item in list) {
             mapController.markerHandle.addOrUpdateNoteMark(item)
+        }
+    }
+
+    private suspend fun initNILocationData() {
+        //加载轨迹数据
+        val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
+        val list: List<NiLocation>? = TraceDataBase.getDatabase(
+            mapController.mMapView.context,
+            Constant.USER_DATA_PATH
+        ).niLocationDao.findToTaskIdAll(id.toString())
+        list!!.forEach {
+            mapController.markerHandle.addNiLocationMarkerItem(it)
         }
     }
 
@@ -236,14 +262,38 @@ class MainViewModel @Inject constructor(
                 } catch (e: Exception) {
 
                 }
-                traceDataBase.niLocationDao.insert(location)
-                mapController.mMapView.vtmMap.updateMap(true)
+                val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
+                location.taskId = id.toString()
+                //增加间距判断
+                if (lastNiLocaion != null) {
+                    val disance = GeometryTools.distanceToDouble(
+                        GeoPoint(location.latitude, location.longitude), GeoPoint(
+                            lastNiLocaion!!.latitude, lastNiLocaion!!.longitude
+                        )
+                    )
+                    //相距差距大于0.5米以上进行存储
+                    if (disance > 0.5) {
+                        traceDataBase.niLocationDao.insert(location)
+                        mapController.markerHandle.addNiLocationMarkerItem(location)
+                    }
+                } else {
+                    traceDataBase.niLocationDao.insert(location)
+                    mapController.markerHandle.addNiLocationMarkerItem(location)
+                }
+
+                lastNiLocaion = location
+                //mapController.mMapView.vtmMap.updateMap(true)
             }
         }
         //用于定位点捕捉道路
         viewModelScope.launch(Dispatchers.Default) {
             mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
-                if (!isSelectRoad()) captureLink(GeoPoint(location.latitude, location.longitude))
+                if (!isSelectRoad()) captureLink(
+                    GeoPoint(
+                        location.latitude,
+                        location.longitude
+                    )
+                )
             }
         }
 
@@ -263,101 +313,102 @@ class MainViewModel @Inject constructor(
      * 捕获道路和面板
      */
     private suspend fun captureLink(point: GeoPoint) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val linkList = realmOperateHelper.queryLink(
-                point = point,
-            )
-            var hisRoadName = false
-            if (linkList.isNotEmpty()) {
-                //看板数据
-                val signList = mutableListOf<SignBean>()
-                val topSignList = mutableListOf<SignBean>()
-                mapController.lineHandler.linksLayer.clear()
 
-                val link = linkList[0]
+        val linkList = realmOperateHelper.queryLink(
+            point = point,
+        )
+        var hisRoadName = false
+        if (linkList.isNotEmpty()) {
+            //看板数据
+            val signList = mutableListOf<SignBean>()
+            val topSignList = mutableListOf<SignBean>()
+            mapController.lineHandler.linksLayer.clear()
 
-                val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
+            val link = linkList[0]
 
-                if (linkIdCache != linkId) {
+            val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
 
-                    mapController.lineHandler.showLine(link.geometry)
-                    linkId?.let {
-                        var elementList = realmOperateHelper.queryLinkByLinkPid(it)
-                        for (element in elementList) {
+            if (linkIdCache != linkId) {
 
-                            if (element.code == 2011) {
-                                hisRoadName = true
-                                liveDataRoadName.postValue(element)
-                                continue
-                            }
+                mapController.lineHandler.showLine(link.geometry)
+                linkId?.let {
+                    var elementList = realmOperateHelper.queryLinkByLinkPid(it)
+                    for (element in elementList) {
 
-                            val distance = GeometryTools.distanceToDouble(
-                                point, GeometryTools.createGeoPoint(element.geometry)
-                            )
-
-                            val signBean = SignBean(
-                                iconId = SignUtil.getSignIcon(element),
-                                iconText = SignUtil.getSignIconText(element),
-                                distance = distance.toInt(),
-                                linkId = linkId,
-                                name = SignUtil.getSignNameText(element),
-                                bottomRightText = SignUtil.getSignBottomRightText(element),
-                                renderEntity = element,
-                                isMoreInfo = SignUtil.isMoreInfo(element),
-                                index = SignUtil.getRoadInfoIndex(element)
-                            )
-                            Log.e("jingo", "捕捉到的数据code ${element.code}")
-                            when (element.code) {
-                                //车道数，种别，功能等级,线限速,道路方向
-                                2041, 2008, 2002, 2019, 2010 -> topSignList.add(
-                                    signBean
-                                )
-                                4002, 4003, 4004, 4010, 4022, 4601 -> signList.add(
-                                    signBean
-                                )
-                            }
-
+                        if (element.code == 2011) {
+                            hisRoadName = true
+                            liveDataRoadName.postValue(element)
+                            continue
                         }
 
-                        val realm = Realm.getDefaultInstance()
-                        val entity = realm.where(RenderEntity::class.java)
-                            .equalTo("table", "OMDB_RESTRICTION").and().equalTo(
-                                "properties['linkIn']", it
+                        val distance = GeometryTools.distanceToDouble(
+                            point, GeometryTools.createGeoPoint(element.geometry)
+                        )
+
+                        val signBean = SignBean(
+                            iconId = SignUtil.getSignIcon(element),
+                            iconText = SignUtil.getSignIconText(element),
+                            distance = distance.toInt(),
+                            linkId = linkId,
+                            name = SignUtil.getSignNameText(element),
+                            bottomRightText = SignUtil.getSignBottomRightText(element),
+                            renderEntity = element,
+                            isMoreInfo = SignUtil.isMoreInfo(element),
+                            index = SignUtil.getRoadInfoIndex(element)
+                        )
+                        Log.e("jingo", "捕捉到的数据code ${element.code}")
+                        when (element.code) {
+                            //车道数，种别，功能等级,线限速,道路方向
+                            2041, 2008, 2002, 2019, 2010 -> topSignList.add(
+                                signBean
+                            )
+
+                            4002, 4003, 4004, 4010, 4022, 4601 -> signList.add(
+                                signBean
+                            )
+                        }
+
+                    }
+
+                    val realm = Realm.getDefaultInstance()
+                    val entity = realm.where(RenderEntity::class.java)
+                        .equalTo("table", "OMDB_RESTRICTION").and().equalTo(
+                            "properties['linkIn']", it
+                        ).findFirst()
+                    if (entity != null) {
+                        val outLink = entity.properties["linkOut"]
+                        val linkOutEntity = realm.where(RenderEntity::class.java)
+                            .equalTo("table", "OMDB_RD_LINK").and().equalTo(
+                                "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
+                                outLink
                             ).findFirst()
-                        if (entity != null) {
-                            val outLink = entity.properties["linkOut"]
-                            val linkOutEntity = realm.where(RenderEntity::class.java)
-                                .equalTo("table", "OMDB_RD_LINK").and().equalTo(
-                                    "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
-                                    outLink
-                                ).findFirst()
-                            if (linkOutEntity != null) {
-                                mapController.lineHandler.linksLayer.addLine(
-                                    linkOutEntity.geometry, 0x7DFF0000
-                                )
-                            }
+                        if (linkOutEntity != null) {
+                            mapController.lineHandler.linksLayer.addLine(
+                                linkOutEntity.geometry, 0x7DFF0000
+                            )
                         }
                     }
-
-                    liveDataTopSignList.postValue(topSignList.distinctBy { it.name }
-                        .sortedBy { it.index })
-
-                    liveDataSignList.postValue(signList.sortedBy { it.distance })
-                    val speechText = SignUtil.getRoadSpeechText(topSignList)
-                    withContext(Dispatchers.Main) {
-                        speakMode?.speakText(speechText)
-                    }
-                    linkIdCache = linkId ?: ""
                 }
-            } else {
-                mapController.lineHandler.removeLine()
-                linkIdCache = ""
+
+                liveDataTopSignList.postValue(topSignList.distinctBy { it.name }
+                    .sortedBy { it.index })
+
+                liveDataSignList.postValue(signList.sortedBy { it.distance })
+                val speechText = SignUtil.getRoadSpeechText(topSignList)
+                withContext(Dispatchers.Main) {
+                    speakMode?.speakText(speechText)
+                }
+                linkIdCache = linkId ?: ""
             }
-            //如果没有捕捉到道路名
-            if (!hisRoadName) {
-                liveDataRoadName.postValue(null)
-            }
+        } else {
+            mapController.lineHandler.removeLine()
+            linkIdCache = ""
         }
+        //如果没有捕捉到道路名
+        if (!hisRoadName) {
+            liveDataRoadName.postValue(null)
+        }
+
     }
 
     /**
@@ -405,9 +456,13 @@ class MainViewModel @Inject constructor(
             mCameraDialog!!.stopVideo()
             try {
                 if (!mCameraDialog!!.getmShareUtil().connectstate) {
-                    mCameraDialog!!.updateCameraResources(1, mCameraDialog!!.getmDeviceNum())
+                    mCameraDialog!!.updateCameraResources(
+                        1,
+                        mCameraDialog!!.getmDeviceNum()
+                    )
                 }
-                TakePhotoManager.getInstance().getCameraVedioClent(mCameraDialog!!.getmDeviceNum())
+                TakePhotoManager.getInstance()
+                    .getCameraVedioClent(mCameraDialog!!.getmDeviceNum())
                     .StopSearch()
             } catch (e: Exception) {
             }
@@ -541,5 +596,6 @@ class MainViewModel @Inject constructor(
     fun showSignMoreInfo(data: RenderEntity) {
         liveDataSignMoreInfo.value = data
     }
+
 
 }

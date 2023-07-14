@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -38,6 +39,8 @@ import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.oscim.core.GeoPoint
+import org.oscim.renderer.GLViewport
 import org.videolan.vlc.Util
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -143,6 +146,7 @@ class MainActivity : BaseActivity() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -218,6 +222,12 @@ class MainActivity : BaseActivity() {
                 }
             }
         }
+
+        //捕捉列表变化回调
+        viewModel.liveDataNILocationList.observe(this) {
+             Toast.makeText(this,"轨迹被点击了",Toast.LENGTH_LONG).show()
+        }
+
         //右上角菜单是否被点击
         viewModel.liveDataMenuState.observe(this) {
             binding.mainActivityMenu.isSelected = it
@@ -362,6 +372,7 @@ class MainActivity : BaseActivity() {
         mapController.mMapView.onPause()
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onDestroy() {
         super.onDestroy()
         viewModel.speakMode?.shutdown()
@@ -392,6 +403,7 @@ class MainActivity : BaseActivity() {
     /**
      * 打开相机预览
      */
+    @RequiresApi(Build.VERSION_CODES.M)
     fun openCamera() {
         //显示轨迹图层
         viewModel.onClickCameraButton(this)
@@ -400,6 +412,7 @@ class MainActivity : BaseActivity() {
     /**
      * 开关菜单
      */
+    @RequiresApi(Build.VERSION_CODES.M)
     fun onClickMenu() {
         //显示菜单图层
         viewModel.onClickMenu()
@@ -525,11 +538,17 @@ class MainActivity : BaseActivity() {
             }
 
             binding.mainActivityBottomSheetGroup.visibility = View.GONE
+
+            mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 5)
         } else {
             binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
+            mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
         }
+        mapController.mMapView.vtmMap.animator()
+            .animateTo(GeoPoint( mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude))
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun voiceOnTouchStart() {
         viewModel.startSoundMetter(this, binding.mainActivityVoice)
     }
@@ -612,6 +631,7 @@ class MainActivity : BaseActivity() {
     /**
      * 打开道路名称属性看板，选择的道路在viewmodel里记录，不用
      */
+    @RequiresApi(Build.VERSION_CODES.M)
     fun openRoadNameFragment() {
         if (viewModel.liveDataRoadName.value != null) {
             viewModel.showSignMoreInfo(viewModel.liveDataRoadName.value!!)
@@ -630,7 +650,6 @@ class MainActivity : BaseActivity() {
      */
     fun onClickTaskLink() {
         rightController.navigate(R.id.TaskLinkFragment)
-
     }
 
     /**

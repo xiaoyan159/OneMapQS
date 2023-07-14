@@ -1,5 +1,6 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
+import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
@@ -9,7 +10,9 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
+import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
@@ -50,6 +53,10 @@ class TaskViewModel @Inject constructor(
 
 //    private val colors =
 //        arrayOf(Color.RED, Color.YELLOW, Color.BLUE, Color.MAGENTA, Color.GREEN, Color.CYAN)
+    /**
+     * 用来确定是否关闭
+     */
+    val liveDataCloseTask = MutableLiveData<Boolean>()
 
     /**
      * 当前选中的任务
@@ -177,6 +184,7 @@ class TaskViewModel @Inject constructor(
     private fun showTaskLinks(taskBean: TaskBean) {
 
         mapController.lineHandler.removeAllTaskLine()
+        mapController.markerHandle.clearNiLocationLayer()
         if (taskBean.hadLinkDvoList.isNotEmpty()) {
             mapController.lineHandler.showTaskLines(taskBean.hadLinkDvoList)
             var maxX = 0.0
@@ -206,6 +214,17 @@ class TaskViewModel @Inject constructor(
                 mapController.animationHandler.animateToBox(
                     maxX = maxX, maxY = maxY, minX = minX, minY = minY
                 )
+            }
+        }
+
+        //重新加载轨迹
+        viewModelScope.launch(Dispatchers.IO) {
+            val list: List<NiLocation>? = TraceDataBase.getDatabase(
+                mapController.mMapView.context,
+                Constant.USER_DATA_PATH
+            ).niLocationDao.findToTaskIdAll(taskBean.id.toString())
+            list!!.forEach {
+                mapController.markerHandle.addNiLocationMarkerItem(it)
             }
         }
     }
@@ -299,6 +318,58 @@ class TaskViewModel @Inject constructor(
      * 关闭任务
      */
     fun removeTask(context: Context, taskBean: TaskBean) {
+        if (taskBean != null) {
+            val mDialog = FirstDialog(context)
+            mDialog.setTitle("提示？")
+            mDialog.setMessage("是否关闭，请确认！")
+            mDialog.setPositiveButton("确定", object : FirstDialog.OnClickListener {
+                override fun onClick(dialog: Dialog?, which: Int) {
+                    mDialog.dismiss()
+                    viewModelScope.launch(Dispatchers.IO) {
+                        val realm = Realm.getDefaultInstance()
+                        realm.executeTransaction {
+                            val objects = it.where(TaskBean::class.java)
+                                .equalTo("id", taskBean.id).findFirst()
+                            objects?.deleteFromRealm()
+                        }
+                        //遍历删除对应的数据
+                        taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
+                            val qsRecordList = realm.where(QsRecordBean::class.java)
+                                .equalTo("linkId", hadLinkDvoBean.linkPid).findAll()
+                            if (qsRecordList != null && qsRecordList.size > 0) {
+                                val copyList = realm.copyFromRealm(qsRecordList)
+                                copyList.forEach {
+                                    it.deleteFromRealm()
+                                    mapController.markerHandle.removeQsRecordMark(it)
+                                    mapController.mMapView.vtmMap.updateMap(true)
+                                }
+                            }
+                        }
+                        //过滤掉已上传的超过90天的数据
+                        var nowTime: Long = DateTimeUtil.getNowDate().time
+                        var beginNowTime: Long = nowTime - 90 * 3600 * 24 * 1000L
+                        var syncUpload: Int = FileManager.Companion.FileUploadStatus.DONE
+                        val objects = realm.where(TaskBean::class.java)
+                            .notEqualTo("syncStatus", syncUpload).or()
+                            .between("operationTime", beginNowTime, nowTime)
+                            .equalTo("syncStatus", syncUpload).findAll()
+                        val taskList = realm.copyFromRealm(objects)
+                        for (item in taskList) {
+                            FileManager.checkOMDBFileInfo(item)
+                        }
+                        liveDataTaskList.postValue(taskList)
+                        liveDataCloseTask.postValue(true)
+                    }
+                }
+            })
+            mDialog.setNegativeButton("取消", object : FirstDialog.OnClickListener {
+                override fun onClick(dialog: Dialog?, which: Int) {
+                    liveDataCloseTask.postValue(false)
+                    mDialog.dismiss()
+                }
+            })
+            mDialog.show()
+        }
         val mDialog = FirstDialog(context)
         mDialog.setTitle("提示？")
         mDialog.setMessage("是否关闭，请确认！")

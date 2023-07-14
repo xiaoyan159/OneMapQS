@@ -195,7 +195,11 @@ class TaskListAdapter(
         binding.taskDeleteLayout.setOnClickListener {
             //重置状态
             leftDeleteView?.resetDeleteStatus()
-            itemListener?.invoke(position, ItemClickStatus.DELETE_LAYOUT_CLICK, taskBean)
+            if(taskBean.syncStatus != FileUploadStatus.DONE){
+                Toast.makeText(binding.taskUploadBtn.context, "数据未上传，不允许关闭！", Toast.LENGTH_SHORT).show()
+            }else{
+                itemListener?.invoke(position, ItemClickStatus.DELETE_LAYOUT_CLICK, taskBean)
+            }
         }
     }
 
