@@ -168,6 +168,7 @@ class MainViewModel @Inject constructor(
             initTaskData()
             initQsRecordData()
             initNoteData()
+            initNILocationData()
         }
     }
 
@@ -215,6 +216,18 @@ class MainViewModel @Inject constructor(
 
         for (item in list) {
             mapController.markerHandle.addOrUpdateNoteMark(item)
+        }
+    }
+
+    private suspend fun initNILocationData() {
+        //加载轨迹数据
+        val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
+        val list: List<NiLocation>? = TraceDataBase.getDatabase(
+            mapController.mMapView.context,
+            Constant.USER_DATA_PATH
+        ).niLocationDao.findToTaskIdAll(id.toString())
+        list!!.forEach {
+            mapController.markerHandle.addNiLocationMarkerItem(it)
         }
     }
 
@@ -281,18 +294,6 @@ class MainViewModel @Inject constructor(
                         location.longitude
                     )
                 )
-            }
-        }
-
-        //加载轨迹数据
-        viewModelScope.launch(Dispatchers.IO) {
-            val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
-            val list: List<NiLocation>? = TraceDataBase.getDatabase(
-                mapController.mMapView.context,
-                Constant.USER_DATA_PATH
-            ).niLocationDao.findToTaskIdAll(id.toString())
-            list!!.forEach {
-                mapController.markerHandle.addNiLocationMarkerItem(it)
             }
         }
 
