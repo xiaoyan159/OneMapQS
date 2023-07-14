@@ -18,10 +18,7 @@ open class LinkInfoBean @JvmOverloads constructor(
      * 数据的等级
      */
     var dataLevel: Int = 0,
-    /**
-     * 长度（米）
-     */
-    var length: Double = 0.000,
+
     /**
      * 备注信息
      */

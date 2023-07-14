@@ -32,5 +32,9 @@ open class HadLinkDvoBean @JvmOverloads constructor(
     /**
      * 详细属性
      */
-    var linkInfo: LinkInfoBean? = null
+    var linkInfo: LinkInfoBean? = null,
+    /**
+     * 长度（米）
+     */
+    var length: Double = 0.000,
 ) : RealmObject()

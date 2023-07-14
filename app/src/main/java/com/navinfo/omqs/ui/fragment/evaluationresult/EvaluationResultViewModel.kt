@@ -364,41 +364,39 @@ class EvaluationResultViewModel @Inject constructor(
      */
 
     fun initData(id: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
-            viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
 
-                Realm.getDefaultInstance().use { realm ->
-                    realm.executeTransactionAsync { bgRealm ->
-                        // find the item
-                        val objects =
-                            bgRealm.where(QsRecordBean::class.java).equalTo("id", id).findFirst()
-                        if (objects != null) {
-                            oldBean = bgRealm.copyFromRealm(objects)
-                            oldBean?.let {
-                                liveDataQsRecordBean.postValue(it.copy())
-                                val p = GeometryTools.createGeoPoint(it.geometry)
-                                mapController.markerHandle.addMarker(
-                                    GeoPoint(
-                                        p.latitude,
-                                        p.longitude
-                                    ), markerTitle
-                                )
+            Realm.getDefaultInstance().use { realm ->
+                realm.executeTransactionAsync { bgRealm ->
+                    // find the item
+                    val objects =
+                        bgRealm.where(QsRecordBean::class.java).equalTo("id", id).findFirst()
+                    if (objects != null) {
+                        oldBean = bgRealm.copyFromRealm(objects)
+                        oldBean?.let {
+                            liveDataQsRecordBean.postValue(it.copy())
+                            val p = GeometryTools.createGeoPoint(it.geometry)
+                            mapController.markerHandle.addMarker(
+                                GeoPoint(
+                                    p.latitude,
+                                    p.longitude
+                                ), markerTitle
+                            )
 
-                                //获取linkid
-                                if (it.linkId.isNotEmpty()) {
-                                    viewModelScope.launch(Dispatchers.IO) {
-                                        val link = realmOperateHelper.queryLink(it.linkId)
-                                        link?.let { l ->
-                                            mapController.lineHandler.showLine(l.geometry)
-                                        }
+                            //获取linkid
+                            if (it.linkId.isNotEmpty()) {
+                                viewModelScope.launch(Dispatchers.IO) {
+                                    val link = realmOperateHelper.queryLink(it.linkId)
+                                    link?.let { l ->
+                                        mapController.lineHandler.showLine(l.geometry)
                                     }
                                 }
-                                liveDataQsRecordBean.value?.attachmentBeanList =
-                                    it.attachmentBeanList
-                                // 显示语音数据到界面
-                                getChatMsgEntityList()
                             }
+                            liveDataQsRecordBean.value?.attachmentBeanList =
+                                it.attachmentBeanList
+                            // 显示语音数据到界面
+                            getChatMsgEntityList()
                         }
                     }
                 }
@@ -409,7 +407,6 @@ class EvaluationResultViewModel @Inject constructor(
     /**
      * 查询问题类型列表
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun getChatMsgEntityList() {
         val chatMsgEntityList: MutableList<ChatMsgEntity> = ArrayList()
         liveDataQsRecordBean.value?.attachmentBeanList?.forEach {
