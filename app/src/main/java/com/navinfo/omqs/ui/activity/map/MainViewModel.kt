@@ -18,11 +18,14 @@ import android.widget.PopupWindow
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.NiLocation
+import com.navinfo.collect.library.data.entity.NoteBean
+import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
@@ -43,6 +46,7 @@ import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import io.realm.RealmSet
+import io.realm.kotlin.where
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -65,7 +69,7 @@ class MainViewModel @Inject constructor(
     private val mapController: NIMapController,
     private val traceDataBase: TraceDataBase,
     private val realmOperateHelper: RealmOperateHelper,
-    private val sharedPreferences: SharedPreferences,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     private var mCameraDialog: CommonDialog? = null
@@ -158,12 +162,15 @@ class MainViewModel @Inject constructor(
                 }
             }
         }
-
-        initTaskData()
+        viewModelScope.launch(Dispatchers.IO) {
+            initTaskData()
+            initQsRecordData()
+            initNoteData()
+        }
     }
 
     /**
-     * 初始话任务高亮高亮
+     * 初始化选中的任务高亮高亮
      */
     @RequiresApi(Build.VERSION_CODES.M)
     private fun initTaskData() {
@@ -182,11 +189,54 @@ class MainViewModel @Inject constructor(
             for (item in list) {
                 mapController.lineHandler.omdbTaskLinkLayer.addLineList(item.hadLinkDvoList)
             }
+    private suspend fun initTaskData() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
+            val realm = Realm.getDefaultInstance()
+            val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
+            if (res != null) {
+                val taskBean = realm.copyFromRealm(res)
+                mapController.lineHandler.omdbTaskLinkLayer.addLineList(taskBean.hadLinkDvoList)
+            }
+        }
+    }
+
+    /**
+     * 初始化渲染质检数据
+     */
+    private suspend fun initQsRecordData() {
+        var list = mutableListOf<QsRecordBean>()
+        val realm = Realm.getDefaultInstance()
+        realm.executeTransaction {
+            val objects = realm.where<QsRecordBean>().findAll()
+            list = realm.copyFromRealm(objects)
+        }
+        for (item in list) {
+            mapController.markerHandle.addOrUpdateQsRecordMark(item)
+        }
+    }
+
+    /**
+     * 初始化渲染便签数据
+     */
+    private suspend fun initNoteData() {
+        var list = mutableListOf<NoteBean>()
+        val realm = Realm.getDefaultInstance()
+        realm.executeTransaction {
+            val objects = realm.where<NoteBean>().findAll()
+            list = realm.copyFromRealm(objects)
         }
 
 
+
+        for (item in list) {
+            mapController.markerHandle.addOrUpdateNoteMark(item)
+        }
     }
 
+    /**
+     * 初始化定位信息
+     */
     private fun initLocation() {
         //用于定位点存储到数据库
         viewModelScope.launch(Dispatchers.Default) {

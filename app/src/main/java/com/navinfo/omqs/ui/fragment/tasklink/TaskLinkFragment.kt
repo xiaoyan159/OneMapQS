@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.navinfo.collect.library.map.NIMapController
@@ -14,7 +13,6 @@ import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentTaskLinkBinding
 import com.navinfo.omqs.ui.activity.map.MainActivity
 import com.navinfo.omqs.ui.fragment.BaseFragment
-import com.navinfo.omqs.ui.other.BaseToast
 import com.navinfo.omqs.ui.other.shareViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -144,7 +142,9 @@ class TaskLinkFragment : BaseFragment(), View.OnClickListener {
                 onBackPressed()
             }
             binding.taskLinkBarSave -> {
-                viewModel.saveData()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    viewModel.saveData()
+                }
             }
         }
     }
