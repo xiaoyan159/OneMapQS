@@ -77,7 +77,7 @@ class TaskUploadScope(
             taskBean.operationTime = DateTimeUtil.getNowDate().time
             uploadData.postValue(taskBean)
             //同步中不进行状态记录,只做界面变更显示
-            if(status!=FileUploadStatus.UPLOADING){
+            if (status != FileUploadStatus.UPLOADING) {
                 launch {
                     val realm = Realm.getDefaultInstance()
                     realm.executeTransaction {
@@ -118,7 +118,7 @@ class TaskUploadScope(
 
             val bodyList: MutableList<EvaluationInfo> = ArrayList()
 
-            if (taskBean.syncStatus == FileUploadStatus.WAITING){
+            if (taskBean.syncStatus == FileUploadStatus.WAITING) {
                 change(FileUploadStatus.UPLOADING)
             }
 
@@ -126,7 +126,7 @@ class TaskUploadScope(
 
                 val linkStatus = 1
                 //存在原因标记未测评
-                if(hadLinkDvoBean.reason.isNotEmpty()){
+                if (hadLinkDvoBean.reason.isNotEmpty()) {
                     //未测评
                     val linkStatus = 0
 
@@ -156,23 +156,24 @@ class TaskUploadScope(
 
                     bodyList.add(evaluationInfo)
 
-                }else{
+                } else {
 
                     val linkStatus = hadLinkDvoBean.linkStatus
 
-                    var s: String = "%.3f".format(hadLinkDvoBean.linkLength)//保留一位小数(且支持四舍五入)
+                    var s: String = "%.3f".format(hadLinkDvoBean.length)//保留一位小数(且支持四舍五入)
 
-                    val objects = realm.where(QsRecordBean::class.java).equalTo("linkId", /*"84207223282277331"*/hadLinkDvoBean.linkPid).findAll()
+                    val objects = realm.where(QsRecordBean::class.java)
+                        .equalTo("linkId", /*"84207223282277331"*/hadLinkDvoBean.linkPid).findAll()
 
-                    if (objects != null&&objects.size>0) {
+                    if (objects != null && objects.size > 0) {
                         val copyList = realm.copyFromRealm(objects)
                         copyList.forEach {
                             var problemType = 0
-                            if(it.problemType=="错误"){
+                            if (it.problemType == "错误") {
                                 problemType = 0
-                            }else if(it.problemType=="多余"){
+                            } else if (it.problemType == "多余") {
                                 problemType = 1
-                            }else if(it.problemType=="遗漏"){
+                            } else if (it.problemType == "遗漏") {
                                 problemType = 2
                             }
                             var evaluationWay = 2
@@ -207,16 +208,16 @@ class TaskUploadScope(
 
             }
 
-            if(bodyList.size>0){
+            if (bodyList.size > 0) {
                 val result = uploadManager.netApi.postRequest(bodyList)// .enqueue(object :
 //                        Callback<ResponseBody> {
                 if (result.isSuccessful) {
-                    if (result.code() == 200&&result.body()!=null) {
+                    if (result.code() == 200 && result.body() != null) {
                         val defaultUserResponse = result.body() as DefaultResponse<*>
-                        if(defaultUserResponse.success){
-                            change(FileUploadStatus.DONE,"上传成功")
-                        }else{
-                            change(FileUploadStatus.ERROR,"${defaultUserResponse.msg}")
+                        if (defaultUserResponse.success) {
+                            change(FileUploadStatus.DONE, "上传成功")
+                        } else {
+                            change(FileUploadStatus.ERROR, "${defaultUserResponse.msg}")
                         }
                     } else {
                         // handle the failure
@@ -225,7 +226,7 @@ class TaskUploadScope(
                 } else {
                     change(FileUploadStatus.ERROR)
                 }
-            }else{
+            } else {
                 change(FileUploadStatus.NONE)
             }
         } catch (e: Throwable) {

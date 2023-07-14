@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
+import com.navinfo.collect.library.data.entity.LinkInfoBean
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.GeometryTools
@@ -32,38 +33,38 @@ class TaskLinkViewModel @Inject constructor(
      * 种别
      */
     private val kindList = listOf(
-        TaskLinkInfoAdapterItem("高速道路", "1"),
-        TaskLinkInfoAdapterItem("城市高速", "2"),
-        TaskLinkInfoAdapterItem("国道", "3"),
-        TaskLinkInfoAdapterItem("省道", "4"),
-        TaskLinkInfoAdapterItem("县道", "6"),
-        TaskLinkInfoAdapterItem("乡镇村道路", "7"),
-        TaskLinkInfoAdapterItem("其他道路", "8"),
-        TaskLinkInfoAdapterItem("非引导道路", "9"),
-        TaskLinkInfoAdapterItem("步行道路", "10"),
-        TaskLinkInfoAdapterItem("人渡", "11"),
-        TaskLinkInfoAdapterItem("轮渡", "13"),
-        TaskLinkInfoAdapterItem("自行车道路", "15"),
+        TaskLinkInfoAdapterItem("高速道路", 1),
+        TaskLinkInfoAdapterItem("城市高速", 2),
+        TaskLinkInfoAdapterItem("国道", 3),
+        TaskLinkInfoAdapterItem("省道", 4),
+        TaskLinkInfoAdapterItem("县道", 6),
+        TaskLinkInfoAdapterItem("乡镇村道路", 7),
+        TaskLinkInfoAdapterItem("其他道路", 8),
+        TaskLinkInfoAdapterItem("非引导道路", 9),
+        TaskLinkInfoAdapterItem("步行道路", 10),
+        TaskLinkInfoAdapterItem("人渡", 11),
+        TaskLinkInfoAdapterItem("轮渡", 13),
+        TaskLinkInfoAdapterItem("自行车道路", 15),
     )
 
     /**
      * FunctionGrade 功能等级
      */
     private val functionLevelList = listOf(
-        TaskLinkInfoAdapterItem("等级1", "1"),
-        TaskLinkInfoAdapterItem("等级2", "2"),
-        TaskLinkInfoAdapterItem("等级3", "3"),
-        TaskLinkInfoAdapterItem("等级4", "4"),
-        TaskLinkInfoAdapterItem("等级5", "5"),
+        TaskLinkInfoAdapterItem("等级1", 1),
+        TaskLinkInfoAdapterItem("等级2", 2),
+        TaskLinkInfoAdapterItem("等级3", 3),
+        TaskLinkInfoAdapterItem("等级4", 4),
+        TaskLinkInfoAdapterItem("等级5", 5),
     )
 
     /**
      * 数据级别
      */
     private val dataLevelList = listOf(
-        TaskLinkInfoAdapterItem("Pro lane model(有高精车道模型覆盖的高速和城高link)", "1"),
-        TaskLinkInfoAdapterItem("Lite lane model(有高精车道模型覆盖的普通路link)", "2"),
-        TaskLinkInfoAdapterItem("Standard road model(其他link)", "3"),
+        TaskLinkInfoAdapterItem("Pro lane model(有高精车道模型覆盖的高速和城高link)", 1),
+        TaskLinkInfoAdapterItem("Lite lane model(有高精车道模型覆盖的普通路link)", 2),
+        TaskLinkInfoAdapterItem("Standard road model(其他link)", 3),
     )
 
     /**
@@ -125,9 +126,7 @@ class TaskLinkViewModel @Inject constructor(
      * 编辑点
      */
     fun addPoint() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mapController.measureLayerHandler.drawLineOrPolygon(false)
-        }
+        mapController.measureLayerHandler.drawLineOrPolygon(false)
     }
 
     /**
@@ -154,9 +153,7 @@ class TaskLinkViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mapController.measureLayerHandler.clear()
-        }
+        mapController.measureLayerHandler.clear()
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         super.onCleared()
     }
@@ -164,7 +161,6 @@ class TaskLinkViewModel @Inject constructor(
     /**
      * 保存数据
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     fun saveData() {
         viewModelScope.launch(Dispatchers.Default) {
             if (liveDataTaskBean.value == null) {
@@ -189,10 +185,16 @@ class TaskLinkViewModel @Inject constructor(
                 return@launch
             }
             val linkBean = HadLinkDvoBean(
+//                taskId = liveDataTaskBean.value!!.id,
                 linkPid = UUID.randomUUID().toString(),
                 linkStatus = 3,
                 geometry = GeometryTools.getLineString(mapController.measureLayerHandler.mPathLayer.points),
-                linkLength = mapController.measureLayerHandler.lineLenghtLiveData.value!!,
+                linkInfo = LinkInfoBean(
+                    kind = liveDataSelectKind.value!!.type,
+                    functionLevel = liveDataSelectFunctionLevel.value!!.type,
+                    dataLevel = liveDataSelectDataLevel.value!!.type,
+                    length = mapController.measureLayerHandler.lineLengthLiveData.value!!,
+                )
             )
             val task: TaskBean = liveDataTaskBean.value!!
             task.hadLinkDvoList.add(linkBean)
@@ -200,6 +202,7 @@ class TaskLinkViewModel @Inject constructor(
             realm.executeTransaction {
                 it.copyToRealmOrUpdate(task)
             }
+            mapController.lineHandler.addTaskLink(linkBean)
             sharedPreferences.edit().putString(Constant.SHARED_SYNC_TASK_LINK_ID, linkBean.linkPid)
                 .apply()
             liveDataFinish.postValue(true)
@@ -213,5 +216,19 @@ class TaskLinkViewModel @Inject constructor(
         if (key == Constant.SELECT_TASK_ID) {
             getTaskBean()
         }
+    }
+
+    /**
+     * 绘制线的时候回退点
+     */
+    fun removeLinkLastPoint() {
+        mapController.measureLayerHandler.drawLineBackspace()
+    }
+
+    /**
+     * 清除重绘
+     */
+    fun clearLink() {
+        mapController.measureLayerHandler.clear()
     }
 }

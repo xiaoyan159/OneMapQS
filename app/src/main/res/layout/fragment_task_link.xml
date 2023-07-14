@@ -86,7 +86,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/sketch_back"
+                    android:id="@+id/task_link_back"
                     style="@style/sketch_operation_style"
                     android:src="@drawable/sketch_back" />
 
@@ -94,17 +94,8 @@
                     style="@style/link_gray_style"
                     android:layout_margin="2dp" />
 
-                <ImageView
-                    android:id="@+id/sketch_forward"
-                    style="@style/sketch_operation_style"
-                    android:src="@drawable/sketch_forward" />
-
-                <View
-                    style="@style/link_gray_style"
-                    android:layout_margin="2dp" />
-
                 <TextView
-                    android:id="@+id/sketch_clear"
+                    android:id="@+id/task_link_clear"
                     style="@style/sketch_operation_style"
                     android:text="重绘" />
             </LinearLayout>

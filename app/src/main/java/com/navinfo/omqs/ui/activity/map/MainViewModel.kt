@@ -63,7 +63,6 @@ import javax.inject.Inject
  * 创建Activity全局viewmode
  */
 
-@RequiresApi(Build.VERSION_CODES.M)
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val mapController: NIMapController,
@@ -161,6 +160,8 @@ class MainViewModel @Inject constructor(
                 //线选择状态
                 if (bSelectRoad) {
                     captureLink(it)
+                } else {
+                    captureItem(it)
                 }
             }
         }
@@ -181,7 +182,7 @@ class MainViewModel @Inject constructor(
         val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
         if (res != null) {
             val taskBean = realm.copyFromRealm(res)
-            mapController.lineHandler.omdbTaskLinkLayer.addLineList(taskBean.hadLinkDvoList)
+            mapController.lineHandler.showTaskLines(taskBean.hadLinkDvoList)
         }
 
     }
@@ -234,7 +235,6 @@ class MainViewModel @Inject constructor(
     /**
      * 初始化定位信息
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     private fun initLocation() {
         //用于定位点存储到数据库
         viewModelScope.launch(Dispatchers.Default) {
@@ -302,9 +302,15 @@ class MainViewModel @Inject constructor(
     }
 
     /**
+     * 捕捉要素
+     */
+    private suspend fun captureItem(point: GeoPoint) {
+
+    }
+
+    /**
      * 捕获道路和面板
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     private suspend fun captureLink(point: GeoPoint) {
 
         val linkList = realmOperateHelper.queryLink(
@@ -571,10 +577,8 @@ class MainViewModel @Inject constructor(
         bSelectRoad = select
         //去掉缓存
         linkIdCache = ""
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mapController.lineHandler.removeLine()
-            liveDataSignList.value = mutableListOf()
-        }
+        mapController.lineHandler.removeLine()
+        liveDataSignList.value = mutableListOf()
     }
 
     /**

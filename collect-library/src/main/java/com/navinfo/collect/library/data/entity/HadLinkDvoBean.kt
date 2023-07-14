@@ -3,6 +3,10 @@ package com.navinfo.collect.library.data.entity
 import io.realm.RealmObject
 
 open class HadLinkDvoBean @JvmOverloads constructor(
+//    /**
+//     * 任务id，方便捕捉查询
+//     */
+//    var taskId: Int = 0,
     /**
      * 图幅号
      */
@@ -22,12 +26,15 @@ open class HadLinkDvoBean @JvmOverloads constructor(
     var reason: String = "",
 
     /**
-     * 1:源库link， 3：现象新增
+     * 1:源库link，2：选择link 3：现场新增
      */
     var linkStatus: Int = 1,
-
     /**
-     * link 长度
+     * 详细属性
      */
-    var linkLength: Double = 0.000
+    var linkInfo: LinkInfoBean? = null,
+    /**
+     * 长度（米）
+     */
+    var length: Double = 0.000,
 ) : RealmObject()

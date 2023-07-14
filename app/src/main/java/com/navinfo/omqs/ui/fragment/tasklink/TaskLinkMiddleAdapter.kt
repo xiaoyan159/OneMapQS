@@ -12,7 +12,7 @@ import com.navinfo.omqs.ui.other.BaseViewHolder
 
 data class TaskLinkInfoAdapterItem(
     val title: String,
-    val type: String
+    val type: Int
 )
 
 class TaskLinkMiddleAdapter(private var itemListener: ((Int, TaskLinkInfoAdapterItem) -> Unit?)? = null) :
@@ -26,17 +26,16 @@ class TaskLinkMiddleAdapter(private var itemListener: ((Int, TaskLinkInfoAdapter
         return BaseViewHolder(viewBinding)
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         val binding = holder.viewBinding as AdapterTaskLinkInfoBinding
         binding.title.text = data[position].title
 
         if (selectTitle == binding.title.text) {
             binding.title.setBackgroundResource(R.drawable.shape_bg_blue_bg_4_radius)
-            binding.title.setTextColor(holder.viewBinding.root.context.getColor(R.color.white))
+            binding.title.setTextColor(holder.viewBinding.root.context.resources.getColor(R.color.white))
         } else {
             binding.title.setBackgroundResource(R.drawable.shape_rect_white_2dp_bg)
-            binding.title.setTextColor(holder.viewBinding.root.context.getColor(R.color.black))
+            binding.title.setTextColor(holder.viewBinding.root.context.resources.getColor(R.color.black))
         }
         binding.root.setOnClickListener {
             if (selectTitle != data[position].title) {

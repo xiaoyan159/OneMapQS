@@ -5,9 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
-import android.os.Build
 import android.view.View
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
@@ -17,7 +15,6 @@ import com.navinfo.omqs.R
 /**
  * 自定义装饰器（实现分组+吸顶效果）
  */
-@RequiresApi(Build.VERSION_CODES.M)
 class RightGroupHeaderDecoration(context: Context) : ItemDecoration() {
     //头部的高
     private val mItemHeaderHeight: Int
@@ -35,7 +32,7 @@ class RightGroupHeaderDecoration(context: Context) : ItemDecoration() {
         mTextPaddingLeft = dp2px(context, 6f)
         mTextRect = Rect()
         mItemHeaderPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        mItemHeaderPaint.color = context.getColor(R.color.btn_bg_blue)
+        mItemHeaderPaint.color = context.resources.getColor(R.color.btn_bg_blue)
         mTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         mTextPaint.textSize = 46f
         mTextPaint.color = Color.WHITE

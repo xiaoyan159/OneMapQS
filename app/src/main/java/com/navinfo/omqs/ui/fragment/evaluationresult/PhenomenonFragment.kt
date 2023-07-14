@@ -73,13 +73,11 @@ class PhenomenonFragment :
         }
         binding.phenomenonRightRecyclerview.adapter = rightAdapter
         //右侧菜单增加组标题
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            binding.phenomenonRightRecyclerview.addItemDecoration(
-                RightGroupHeaderDecoration(
-                    requireContext()
-                )
+        binding.phenomenonRightRecyclerview.addItemDecoration(
+            RightGroupHeaderDecoration(
+                requireContext()
             )
-        }
+        )
         //右侧菜单查询数据监听
         viewModel.liveDataRightTypeList.observe(viewLifecycleOwner) {
             rightAdapter.setSelectTitle(viewModel.liveDataQsRecordBean.value!!.phenomenon)

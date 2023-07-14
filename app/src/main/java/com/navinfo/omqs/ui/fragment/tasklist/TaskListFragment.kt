@@ -43,10 +43,7 @@ class TaskListFragment : BaseFragment() {
 
             when (status) {
                 TaskListAdapter.Companion.ItemClickStatus.ITEM_LAYOUT_CLICK -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        viewModel.setSelectTaskBean(taskBean)
-                    } else {
-                    }
+                    viewModel.setSelectTaskBean(taskBean)
                 }
                 TaskListAdapter.Companion.ItemClickStatus.DELETE_LAYOUT_CLICK -> {
                     showLoadingDialog("正在关闭")
@@ -83,7 +80,7 @@ class TaskListFragment : BaseFragment() {
         binding.taskListRecyclerview.layoutManager = layoutManager
         binding.taskListRecyclerview.adapter = adapter
         viewModel.liveDataTaskList.observe(viewLifecycleOwner) {
-            adapter.initSelectTask(it,viewModel.currentSelectTaskBean?.id)
+            adapter.initSelectTask(it, viewModel.currentSelectTaskBean?.id)
         }
 
         //监听并调用上传

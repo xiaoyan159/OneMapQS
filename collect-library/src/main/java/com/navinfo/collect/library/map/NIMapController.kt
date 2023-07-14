@@ -38,14 +38,10 @@ class NIMapController {
         locationLayerHandler = LocationLayerHandler(context, mapView)
         animationHandler = AnimationHandler(context, mapView)
         markerHandle = MarkHandler(context, mapView)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            lineHandler = LineHandler(context, mapView)
-        }
+        lineHandler = LineHandler(context, mapView)
         polygonHandler = PolygonHandler(context, mapView)
         viewportHandler = ViewportHandler(context, mapView)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            measureLayerHandler = MeasureLayerHandler(context, mapView)
-        }
+        measureLayerHandler = MeasureLayerHandler(context, mapView)
         mMapView = mapView
         mMapView.setOnMapClickListener {
             context.lifecycleScope.launch {

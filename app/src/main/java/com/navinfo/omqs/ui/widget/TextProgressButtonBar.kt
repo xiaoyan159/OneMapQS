@@ -122,18 +122,16 @@ class TextProgressButtonBar : View {
                  * 绘制进度值
                  */
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    val shader = LinearGradient(
-                        oval.left,
-                        oval.top,
-                        oval.right,
-                        oval.bottom,
-                        mStartColor,
-                        mCurrentColor,
-                        Shader.TileMode.MIRROR
-                    )
-                    it.shader = shader
-                }
+                val shader = LinearGradient(
+                    oval.left,
+                    oval.top,
+                    oval.right,
+                    oval.bottom,
+                    mStartColor,
+                    mCurrentColor,
+                    Shader.TileMode.MIRROR
+                )
+                it.shader = shader
                 canvas.drawRoundRect(oval, progress.toFloat(), progress.toFloat(), it)
             } else {
                 oval = RectF(
@@ -143,18 +141,16 @@ class TextProgressButtonBar : View {
                  * 绘制进度值
                  */
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    val shader = LinearGradient(
-                        oval.left,
-                        oval.top,
-                        oval.right,
-                        oval.bottom,
-                        mStartColor,
-                        mCurrentColor,
-                        Shader.TileMode.CLAMP
-                    )
-                    it.shader = shader
-                }
+                val shader = LinearGradient(
+                    oval.left,
+                    oval.top,
+                    oval.right,
+                    oval.bottom,
+                    mStartColor,
+                    mCurrentColor,
+                    Shader.TileMode.CLAMP
+                )
+                it.shader = shader
                 canvas.drawRoundRect(oval, corner.toFloat(), corner.toFloat(), it)
             }
             /***

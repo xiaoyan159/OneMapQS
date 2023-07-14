@@ -42,6 +42,8 @@ class TaskLinkFragment : BaseFragment(), View.OnClickListener {
         binding.taskLinkDataLevel.setOnClickListener(this)
         binding.taskLinkBarCancel.setOnClickListener(this)
         binding.taskLinkBarSave.setOnClickListener(this)
+        binding.taskLinkBack.setOnClickListener(this)
+        binding.taskLinkClear.setOnClickListener(this)
         /**
          * 数据操作结束
          */
@@ -86,13 +88,11 @@ class TaskLinkFragment : BaseFragment(), View.OnClickListener {
         /**
          * 线长度
          */
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mapController.measureLayerHandler.lineLenghtLiveData.observe(viewLifecycleOwner) {
-                binding.taskLinkLength.text = "${it}米"
-            }
-            mapController.measureLayerHandler.tempLineDistanceLiveData.observe(viewLifecycleOwner) {
-                (activity as MainActivity).setHomeCenterText(it)
-            }
+        mapController.measureLayerHandler.lineLengthLiveData.observe(viewLifecycleOwner) {
+            binding.taskLinkLength.text = "${it}米"
+        }
+        mapController.measureLayerHandler.tempLineDistanceLiveData.observe(viewLifecycleOwner) {
+            (activity as MainActivity).setHomeCenterText(it)
         }
     }
 
@@ -142,9 +142,13 @@ class TaskLinkFragment : BaseFragment(), View.OnClickListener {
                 onBackPressed()
             }
             binding.taskLinkBarSave -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    viewModel.saveData()
-                }
+                viewModel.saveData()
+            }
+            binding.taskLinkBack -> {
+                viewModel.removeLinkLastPoint()
+            }
+            binding.taskLinkClear -> {
+                viewModel.clearLink()
             }
         }
     }
