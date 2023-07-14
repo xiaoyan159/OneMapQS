@@ -220,6 +220,12 @@ class MainActivity : BaseActivity() {
                 }
             }
         }
+
+        //捕捉列表变化回调
+        viewModel.liveDataNILocationList.observe(this) {
+             Toast.makeText(this,"轨迹被点击了",Toast.LENGTH_LONG).show()
+        }
+
         //右上角菜单是否被点击
         viewModel.liveDataMenuState.observe(this) {
             binding.mainActivityMenu.isSelected = it

@@ -46,4 +46,7 @@ public interface INiLocationDao {
 
     @Query("SELECT * FROM niLocation")
     List<NiLocation> findAll();
+
+    @Query("SELECT * FROM niLocation where taskId =:taskId")
+    List<NiLocation> findToTaskIdAll(String taskId);
 }

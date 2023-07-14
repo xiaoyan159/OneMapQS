@@ -1,6 +1,7 @@
 package com.navinfo.collect.library.map.handler
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
@@ -8,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import com.navinfo.collect.library.R
+import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.data.entity.NoteBean
 import com.navinfo.collect.library.data.entity.QsRecordBean
@@ -235,7 +237,6 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         }
     }
 
-
     /**
      * 增加或更新marker
      */
@@ -449,17 +450,17 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                         nearest: Int
                     ): Boolean {
                         itemListener?.let {
-                            val idList = mutableListOf<String>()
+                            val idList = mutableListOf<NiLocation>()
                             if (list.size == 0) {
                             } else {
                                 for (i in list) {
                                     val markerInterface: MarkerInterface =
-                                        itemizedLayer.itemList[i]
+                                        niLocationItemizedLayer.itemList[i]
                                     if (markerInterface is MarkerItem) {
-                                        idList.add(markerInterface.title)
+                                        idList.add(markerInterface.uid as NiLocation)
                                     }
                                 }
-                                it.onQsRecordList(idList.distinct().toMutableList())
+                                it.onNiLocationList(idList.distinct().toMutableList())
                             }
                         }
                         return true
@@ -473,11 +474,6 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                     }
                 })
         addLayer(niLocationItemizedLayer, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
-        mContext.lifecycleScope.launch(Dispatchers.IO) {
-            var list = mutableListOf<QsRecordBean>()
-
-        }
-
     }
 
     /**
@@ -544,8 +540,8 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     /**
      * 添加质检数据marker
      */
-    private suspend fun addNiLocationMarkerItem(niLocation: NiLocation) {
-        val item = MarkerItem(niLocation.id, "", GeoPoint(niLocation.latitude, niLocation.longitude))
+    public suspend fun addNiLocationMarkerItem(niLocation: NiLocation) {
+        val item = MarkerItem(niLocation, niLocation.id, "", GeoPoint(niLocation.latitude, niLocation.longitude))
         var itemizedLayer: ItemizedLayer? = null
         val direction: Double = niLocation.direction
         //角度
@@ -800,21 +796,11 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     }
 
     /**
-     * 添加质检数据marker
+     * 移除轨迹图层
      */
-    private suspend fun createTrackMarkerItem(item: NiLocation) {
-        for (item in itemizedLayer.itemList) {
-            if (item is MarkerItem) {
-                if (item.title == item.uid) {
-                    itemizedLayer.itemList.remove(item)
-                    break
-                }
-            }
-        }
-        //createMarkerItem(data)
-        withContext(Dispatchers.Main) {
-            mMapView.updateMap(true)
-        }
+    fun clearNiLocationLayer() {
+        niLocationItemizedLayer.removeAllItems()
+        niLocationItemizedLayer.update()
     }
 
 }
@@ -822,4 +808,5 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
 interface OnQsRecordItemClickListener {
     fun onQsRecordList(list: MutableList<String>)
     fun onNoteList(list: MutableList<String>)
+    fun onNiLocationList(list: MutableList<NiLocation>)
 }

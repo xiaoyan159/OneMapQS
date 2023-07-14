@@ -10,7 +10,9 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
+import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
@@ -164,6 +166,8 @@ class TaskViewModel @Inject constructor(
         liveDataTaskLinks.value = taskBean.hadLinkDvoList
 
         mapController.lineHandler.omdbTaskLinkLayer.removeAll()
+        mapController.markerHandle.clearNiLocationLayer()
+
         if (taskBean.hadLinkDvoList.isNotEmpty()) {
             mapController.lineHandler.omdbTaskLinkLayer.addLineList(taskBean.hadLinkDvoList)
             var maxX = 0.0
@@ -193,6 +197,17 @@ class TaskViewModel @Inject constructor(
                 mapController.animationHandler.animateToBox(
                     maxX = maxX, maxY = maxY, minX = minX, minY = minY
                 )
+            }
+        }
+
+        //重新加载轨迹
+        viewModelScope.launch(Dispatchers.IO) {
+            val list: List<NiLocation>? = TraceDataBase.getDatabase(
+                mapController.mMapView.context,
+                Constant.USER_DATA_PATH
+            ).niLocationDao.findToTaskIdAll(taskBean.id.toString())
+            list!!.forEach {
+                mapController.markerHandle.addNiLocationMarkerItem(it)
             }
         }
     }
