@@ -188,12 +188,12 @@ class TaskLinkViewModel @Inject constructor(
 //                taskId = liveDataTaskBean.value!!.id,
                 linkPid = UUID.randomUUID().toString(),
                 linkStatus = 3,
+                length = mapController.measureLayerHandler.lineLengthLiveData.value!!,
                 geometry = GeometryTools.getLineString(mapController.measureLayerHandler.mPathLayer.points),
                 linkInfo = LinkInfoBean(
                     kind = liveDataSelectKind.value!!.type,
                     functionLevel = liveDataSelectFunctionLevel.value!!.type,
                     dataLevel = liveDataSelectDataLevel.value!!.type,
-                    length = mapController.measureLayerHandler.lineLengthLiveData.value!!,
                 )
             )
             val task: TaskBean = liveDataTaskBean.value!!
