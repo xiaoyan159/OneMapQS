@@ -78,9 +78,7 @@ class CanvasFragment : BaseFragment() {
 
         canvasView.setStyle(mStyle)
         if (mColor == -1) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mColor = resources.getColor(R.color.black, null)
-            }
+            mColor = resources.getColor(R.color.black)
         }
         canvasView.setPaintColor(mColor)
         canvasView.setPaintWidth(width)

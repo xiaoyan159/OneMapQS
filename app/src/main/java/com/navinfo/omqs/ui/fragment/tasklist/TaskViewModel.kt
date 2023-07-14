@@ -152,9 +152,7 @@ class TaskViewModel @Inject constructor(
                     currentSelectTaskBean = item
                     liveDataTaskLinks.postValue(currentSelectTaskBean!!.hadLinkDvoList)
                     withContext(Dispatchers.Main) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            showTaskLinks(currentSelectTaskBean!!)
-                        }
+                        showTaskLinks(currentSelectTaskBean!!)
                     }
                     break
                 }
@@ -173,17 +171,14 @@ class TaskViewModel @Inject constructor(
         currentSelectTaskBean = taskBean
 
         liveDataTaskLinks.value = taskBean.hadLinkDvoList
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            showTaskLinks(taskBean)
-        }
+        showTaskLinks(taskBean)
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun showTaskLinks(taskBean: TaskBean) {
 
-        mapController.lineHandler.omdbTaskLinkLayer.removeAll()
+        mapController.lineHandler.removeAllTaskLine()
         if (taskBean.hadLinkDvoList.isNotEmpty()) {
-            mapController.lineHandler.omdbTaskLinkLayer.addLineList(taskBean.hadLinkDvoList)
+            mapController.lineHandler.showTaskLines(taskBean.hadLinkDvoList)
             var maxX = 0.0
             var maxY = 0.0
             var minX = 0.0
@@ -218,9 +213,9 @@ class TaskViewModel @Inject constructor(
     /**
      * 高亮当前选中的link
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     fun showCurrentLink(link: HadLinkDvoBean) {
-        mapController.lineHandler.omdbTaskLinkLayer.showSelectLine(link)
+        mapController.lineHandler.showLine(link.geometry)
+//        mapController.lineHandler.omdbTaskLinkLayer.showSelectLine(link)
         val geometry = GeometryTools.createGeometry(link.geometry)
         if (geometry != null) {
             val envelope = geometry.envelopeInternal
@@ -235,9 +230,7 @@ class TaskViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mapController.lineHandler.omdbTaskLinkLayer.clearSelectLine()
-        }
+        mapController.lineHandler.removeLine()
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         super.onCleared()
     }

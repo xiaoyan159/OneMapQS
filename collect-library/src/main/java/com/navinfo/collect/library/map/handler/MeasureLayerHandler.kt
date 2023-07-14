@@ -34,7 +34,6 @@ import java.math.BigDecimal
 import kotlin.math.abs
 import kotlin.math.ceil
 
-@RequiresApi(Build.VERSION_CODES.M)
 open class MeasureLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
     BaseHandler(context, mapView), Map.UpdateListener {
 
@@ -51,7 +50,7 @@ open class MeasureLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
     /**
      * 实际绘制的总长度
      */
-    val lineLenghtLiveData = MutableLiveData<Double>(0.000)
+    val lineLengthLiveData = MutableLiveData(0.000)
 
     private val markerLayer: ItemizedLayer by lazy {
 
@@ -76,27 +75,27 @@ open class MeasureLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
     private val lineStyle: Style by lazy {
         //新增线数据图层和线样式
         Style.builder().scaleZoomLevel(20).buffer(1.0)
-            .stippleColor(context.resources.getColor(R.color.draw_line_blue1_color, null))
+            .stippleColor(context.resources.getColor(R.color.draw_line_blue1_color))
             .strokeWidth(4f)
-            .fillColor(context.resources.getColor(R.color.draw_line_blue2_color, null))
+            .fillColor(context.resources.getColor(R.color.draw_line_blue2_color))
             .fillAlpha(0.5f)
-            .strokeColor(context.resources.getColor(R.color.draw_line_blue2_color, null))
-            .fillColor(context.resources.getColor(R.color.draw_line_red_color, null))
+            .strokeColor(context.resources.getColor(R.color.draw_line_blue2_color))
+            .fillColor(context.resources.getColor(R.color.draw_line_red_color))
             .stippleWidth(4f).fixed(true).build()
     }
 
     private val newTempStyle: Style by lazy {
-        Style.builder().stippleColor(context.resources.getColor(R.color.transparent, null))
+        Style.builder().stippleColor(context.resources.getColor(R.color.transparent))
             .stipple(30).stippleWidth(30f).strokeWidth(4f)
-            .strokeColor(context.resources.getColor(R.color.draw_line_blue2_color, null))
+            .strokeColor(context.resources.getColor(R.color.draw_line_blue2_color))
             .fixed(true).randomOffset(false).build()
     }
 
     //线型编辑时的样式
     private val editTempStyle: Style by lazy {
-        Style.builder().stippleColor(context.resources.getColor(R.color.transparent, null))
+        Style.builder().stippleColor(context.resources.getColor(R.color.transparent))
             .stipple(30).stippleWidth(30f).strokeWidth(8f)
-            .strokeColor(context.resources.getColor(R.color.draw_line_red_color, null)).fixed(true)
+            .strokeColor(context.resources.getColor(R.color.draw_line_red_color)).fixed(true)
             .randomOffset(false).build()
 
     }
@@ -225,7 +224,9 @@ open class MeasureLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
                     val distance: Double = GeometryTools.getDistance(mPathLayer.points)
                     val bg = BigDecimal(distance)
                     val f1 = bg.setScale(3, BigDecimal.ROUND_HALF_UP).toDouble()
-                    lineLenghtLiveData.value = f1
+                    lineLengthLiveData.value = f1
+                } else {
+                    lineLengthLiveData.value = 0.000
                 }
             }
             val markerItem = MarkerItem(createUUID(), "", "", geoPoint)
@@ -235,14 +236,55 @@ open class MeasureLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
         showAreaLayer()
     }
 
+    /**
+     * 绘制线回退点
+     */
     open fun drawLineBackspace() {
-//        if (mPathLayer != null && mPathLayer.getPoints().size > 0) {
+        if (mPathLayer.points.size > 0) {
+            val list: MutableList<GeoPoint> = java.util.ArrayList<GeoPoint>(mPathLayer.getPoints())
+            val point = list[mPathLayer.points.size - 1]
+            list.remove(point)
+            mPathLayer.setPoints(list)
+            mMapView.vtmMap.animator().animateTo(
+                GeoPoint(
+                    point.latitude, point.longitude
+                )
+            )
+        }
+        if (mPathMakers.size > 0) {
+            var item: MarkerItem? = mPathMakers[mPathMakers.size - 1]
+            markerLayer.removeItem(item)
+            mPathMakers.remove(item)
+        }
+        if (mPathMakers.size == 0 && mPathLayerTemp != null) {
+            mPathLayerTemp.clearPath()
+        }
+        editIndex = -1
+        if (mPathLayerTemp != null) {
+            mPathLayerTemp.setStyle(newTempStyle)
+        }
+        if (mPathLayer.points.size > 1) {
+            val distance: Double = GeometryTools.getDistance(mPathLayer.points)
+            val bg = BigDecimal(distance)
+            val f1 = bg.setScale(3, BigDecimal.ROUND_HALF_UP).toDouble()
+            lineLengthLiveData.value = f1
+        } else {
+            lineLengthLiveData.value = 0.000
+            tempLineDistanceLiveData.value = "0米"
+        }
+    }
+
+    /**
+     * 绘制面回退点
+     */
+    open fun drawPolygonBackspace() {
+//        if (mPathLayer.points.size > 0) {
 //            val list: MutableList<GeoPoint> = java.util.ArrayList<GeoPoint>(mPathLayer.getPoints())
 //            val point = list[mPathLayer.getPoints().size - 1]
 //            list.remove(point)
 //            mPathLayer.setPoints(list)
 //            mMapView.layerManager.jumpToPosition(point.longitude, point.latitude, 0)
-//        } else if (mPolygonLayer != null && mPolygonLayer.points.size > 0) {
+//        } else if (mPolygonLayer.points.size > 0) {
 //            val list: MutableList<GeoPoint> = java.util.ArrayList<GeoPoint>(mPolygonLayer.points)
 //            val point = list[mPolygonLayer.points.size - 1]
 //            list.remove(point)
@@ -321,7 +363,10 @@ open class MeasureLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
         }
     }
 
-    open fun removeLine() {
+    /**
+     * 清除所有
+     */
+    fun clear() {
         bDrawLine = false
         editIndex = -1
         markerLayer.removeAllItems()
@@ -334,10 +379,8 @@ open class MeasureLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
         mPathLayerTemp.isEnabled = false
         mPathLayerTemp.setStyle(newTempStyle)
         hideAreaLayer()
-    }
-
-    fun clear() {
-        removeLine()
+        lineLengthLiveData.value = 0.000
+        tempLineDistanceLiveData.value = "0米"
         mMapView.vtmMap.updateMap(true)
     }
 
@@ -399,9 +442,11 @@ open class MeasureLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
                                     bg.setScale(1, BigDecimal.ROUND_HALF_UP).toDouble()
                                 tempLineDistanceLiveData.value = "${f1}公里"
                             } catch (e: Exception) {
-                                Log.e("jingo",e.toString() + "$distance")
+                                Log.e("jingo", e.toString() + "$distance")
                             }
                         }
+                    } else {
+                        tempLineDistanceLiveData.value = "0米"
                     }
                 }
             }

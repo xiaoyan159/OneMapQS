@@ -20,7 +20,6 @@ class MiddleAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) 
         return BaseViewHolder(viewBinding)
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         val bd = holder.viewBinding as TextItemSelectBinding
         val title = data[position]
@@ -30,10 +29,10 @@ class MiddleAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) 
         bd.itemLayout.layoutParams = layoutParams
         if (selectTitle == title) {
             bd.itemId.setBackgroundResource(R.drawable.shape_bg_blue_bg_4_radius)
-            bd.itemId.setTextColor(holder.viewBinding.root.context.getColor(R.color.white))
+            bd.itemId.setTextColor(holder.viewBinding.root.context.resources.getColor(R.color.white))
         } else {
             bd.itemId.setBackgroundResource(R.drawable.shape_rect_white_2dp_bg)
-            bd.itemId.setTextColor(holder.viewBinding.root.context.getColor(R.color.black))
+            bd.itemId.setTextColor(holder.viewBinding.root.context.resources.getColor(R.color.black))
         }
         bd.root.setOnClickListener {
             if (selectTitle != title) {

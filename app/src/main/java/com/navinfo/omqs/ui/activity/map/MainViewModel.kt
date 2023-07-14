@@ -150,6 +150,8 @@ class MainViewModel @Inject constructor(
                 //线选择状态
                 if (bSelectRoad) {
                     captureLink(it)
+                } else {
+                    captureItem(it)
                 }
             }
         }
@@ -164,14 +166,12 @@ class MainViewModel @Inject constructor(
      * 初始化选中的任务高亮高亮
      */
     private suspend fun initTaskData() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
-            val realm = Realm.getDefaultInstance()
-            val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
-            if (res != null) {
-                val taskBean = realm.copyFromRealm(res)
-                mapController.lineHandler.omdbTaskLinkLayer.addLineList(taskBean.hadLinkDvoList)
-            }
+        val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
+        val realm = Realm.getDefaultInstance()
+        val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
+        if (res != null) {
+            val taskBean = realm.copyFromRealm(res)
+            mapController.lineHandler.showTaskLines(taskBean.hadLinkDvoList)
         }
     }
 
@@ -249,6 +249,13 @@ class MainViewModel @Inject constructor(
 
         //显示轨迹图层
         mapController.layerManagerHandler.showNiLocationLayer()
+
+    }
+
+    /**
+     * 捕捉要素
+     */
+    private suspend fun captureItem(point: GeoPoint) {
 
     }
 
@@ -516,10 +523,8 @@ class MainViewModel @Inject constructor(
         bSelectRoad = select
         //去掉缓存
         linkIdCache = ""
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mapController.lineHandler.removeLine()
-            liveDataSignList.value = mutableListOf()
-        }
+        mapController.lineHandler.removeLine()
+        liveDataSignList.value = mutableListOf()
     }
 
     /**
