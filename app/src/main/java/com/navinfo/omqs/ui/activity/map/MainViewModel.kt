@@ -266,23 +266,22 @@ class MainViewModel @Inject constructor(
                 location.taskId = id.toString()
                 //增加间距判断
                 if (lastNiLocaion != null) {
-                    val disance = GeometryTools.distanceToDouble(
-                        GeoPoint(location.latitude, location.longitude), GeoPoint(
-                            lastNiLocaion!!.latitude, lastNiLocaion!!.longitude
-                        )
-                    )
-                    //相距差距大于0.5米以上进行存储
-                    if (disance > 0.5) {
+                    val disance = GeometryTools.getDistance(
+                        location.latitude, location.longitude,
+                        lastNiLocaion!!.latitude, lastNiLocaion!!.longitude)
+                    //相距差距大于2.5米以上进行存储
+                    if (disance > 2.5) {
                         traceDataBase.niLocationDao.insert(location)
                         mapController.markerHandle.addNiLocationMarkerItem(location)
+                        mapController.mMapView.vtmMap.updateMap(true)
                     }
                 } else {
                     traceDataBase.niLocationDao.insert(location)
                     mapController.markerHandle.addNiLocationMarkerItem(location)
+                    mapController.mMapView.vtmMap.updateMap(true)
                 }
 
                 lastNiLocaion = location
-                //mapController.mMapView.vtmMap.updateMap(true)
             }
         }
         //用于定位点捕捉道路
