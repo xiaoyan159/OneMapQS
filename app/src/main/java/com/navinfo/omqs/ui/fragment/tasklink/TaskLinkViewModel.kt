@@ -193,8 +193,8 @@ class TaskLinkViewModel @Inject constructor(
                     kind = liveDataSelectKind.value!!.type,
                     functionLevel = liveDataSelectFunctionLevel.value!!.type,
                     dataLevel = liveDataSelectDataLevel.value!!.type,
-                    length = mapController.measureLayerHandler.lineLengthLiveData.value!!,
-                )
+                ),
+                length = mapController.measureLayerHandler.lineLengthLiveData.value!!,
             )
             val task: TaskBean = liveDataTaskBean.value!!
             task.hadLinkDvoList.add(linkBean)

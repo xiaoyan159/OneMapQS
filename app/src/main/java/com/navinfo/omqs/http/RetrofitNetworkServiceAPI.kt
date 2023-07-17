@@ -78,9 +78,9 @@ interface RetrofitNetworkServiceAPI {
     /**
      * 登录接口
      */
-    @Headers("Content-Type: application/json")
+    @FormUrlEncoded
     @POST
-    suspend fun retrofitUpdateServerInfo(@Url url: String,@Body indoorConnectionInfoBean: IndoorConnectionInfoBean): Response<QRCodeBean>
+    suspend fun retrofitUpdateServerInfo(@Url url: String,@FieldMap map: Map<String,String>): Response<QRCodeBean>
 
     @Headers("Content-Type: application/json")
     @POST("/devcp/uploadSceneProblem")

@@ -602,6 +602,13 @@ class MainActivity : BaseActivity() {
     }
 
     /**
+     * 显示轨迹回放布局
+     */
+    fun showIndoorDataLayout() {
+        binding.mainActivityMenuIndoorGroup.visibility = View.VISIBLE
+    }
+
+    /**
      * 路径规划
      */
     fun onClickRouteFragment() {

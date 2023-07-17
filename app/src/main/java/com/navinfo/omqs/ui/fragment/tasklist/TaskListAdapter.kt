@@ -241,8 +241,9 @@ class TaskListAdapter(
             FileUploadStatus.DONE -> {
                 binding.taskUploadBtn.stopAnimator()
                 binding.taskUploadBtn.setText("已上传")
+                binding.taskUploadBtn.isEnabled = false
                 binding.taskUploadBtn.setProgress(0)
-                binding.taskUploadBtn.setBackgroundColor(binding.root.resources.getColor(R.color.ripple_end_color))
+                binding.taskUploadBtn.setBackgroundColor(binding.root.resources.getColor(R.color.gray_121))
             }
 
             FileUploadStatus.ERROR -> {

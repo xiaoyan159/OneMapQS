@@ -193,14 +193,29 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
                 R.id.console_personal_center_bg, R.id.console_personal_center_icon_bg -> {
                     if (sceneFlag) {
                         mFragment = PersonalCenterFragment {
-                            TransitionManager.go(aScene, aTransition)
+                            if(it){
+                                activity?.let { a ->
+                                    a.supportFragmentManager.beginTransaction().remove(this).commit()
+                                    (a as MainActivity).showIndoorDataLayout()
+                                }
+                            }else{
+                                TransitionManager.go(aScene, aTransition)
+                            }
+
                         }
                         sceneFlag = false
                         TransitionManager.go(bScene, bTransition)
                     } else {
                         if (mFragment !is PersonalCenterFragment) {
                             mFragment = PersonalCenterFragment {
-                                TransitionManager.go(aScene, aTransition)
+                                if(it){
+                                    activity?.let { a ->
+                                        a.supportFragmentManager.beginTransaction().remove(this).commit()
+                                        (a as MainActivity).showIndoorDataLayout()
+                                    }
+                                }else{
+                                    TransitionManager.go(aScene, aTransition)
+                                }
                             }
                             childFragmentManager.beginTransaction().replace(fragmentId, mFragment!!)
                                 .commit()
