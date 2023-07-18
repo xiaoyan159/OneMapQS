@@ -23,13 +23,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
-import com.navinfo.collect.library.data.entity.NiLocation
-import com.navinfo.collect.library.data.entity.NoteBean
-import com.navinfo.collect.library.data.entity.QsRecordBean
-import com.navinfo.collect.library.data.entity.RenderEntity
-import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.collect.library.data.entity.*
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
+import com.navinfo.collect.library.map.handler.OnTaskLinkItemClickListener
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.omqs.Constant
@@ -76,7 +73,6 @@ class MainViewModel @Inject constructor(
     private val mapController: NIMapController,
     private val traceDataBase: TraceDataBase,
     private val realmOperateHelper: RealmOperateHelper,
-    private val networkService: NetworkService,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
@@ -86,7 +82,7 @@ class MainViewModel @Inject constructor(
     val liveDataQsRecordIdList = MutableLiveData<List<String>>()
 
     //地图点击捕捉到的标签ID列表
-    val liveDataNoteIdList = MutableLiveData<List<String>>()
+    val liveDataNoteId = MutableLiveData<String>()
 
     //地图点击捕捉到的轨迹列表
     val liveDataNILocationList = MutableLiveData<NiLocation>()
@@ -99,6 +95,9 @@ class MainViewModel @Inject constructor(
 
     //道路名
     val liveDataRoadName = MutableLiveData<RenderEntity?>()
+
+    //捕捉到新增的link
+    val liveDataTaskLink = MutableLiveData<String>()
 
     /**
      * 当前选中的要展示的详细信息的要素
@@ -174,13 +173,12 @@ class MainViewModel @Inject constructor(
                 liveDataQsRecordIdList.value = list
             }
 
-            override fun onNoteList(list: MutableList<String>) {
-                liveDataNoteIdList.value = list
+            override fun onNote(id: String) {
+                liveDataNoteId.value = id
             }
 
             override fun onNiLocation(index: Int, item: NiLocation) {
                 liveDataNILocationList.value = item
-                currentIndexNiLocation = index
             }
         })
 
@@ -191,11 +189,11 @@ class MainViewModel @Inject constructor(
             mapController.onMapClickFlow.collectLatest {
 //                testPoint = it
                 //线选择状态
-                /*                if (bSelectRoad) {
-                                    captureLink(it)
-                                } else {
-                                    captureItem(it)
-                                }*/
+                if (bSelectRoad) {
+                    captureLink(it)
+                } else {
+                    captureItem(it)
+                }
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
@@ -257,11 +255,12 @@ class MainViewModel @Inject constructor(
         //加载轨迹数据
         val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
         val list: List<NiLocation>? = TraceDataBase.getDatabase(
-            mapController.mMapView.context,
-            Constant.USER_DATA_PATH
+            mapController.mMapView.context, Constant.USER_DATA_PATH
         ).niLocationDao.findToTaskIdAll(id.toString())
-        list!!.forEach {
-            mapController.markerHandle.addNiLocationMarkerItem(it)
+        if (list != null) {
+            for (location in list) {
+                mapController.markerHandle.addNiLocationMarkerItem(location)
+            }
         }
     }
 
@@ -272,6 +271,19 @@ class MainViewModel @Inject constructor(
     private fun initLocation() {
         //用于定位点存储到数据库
         viewModelScope.launch(Dispatchers.Default) {
+            //用于定位点捕捉道路
+            mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
+                if (!isSelectRoad() && !GeometryTools.isCheckError(
+                        location.longitude, location.latitude
+                    )
+                ) {
+                    captureLink(
+                        GeoPoint(
+                            location.latitude, location.longitude
+                        )
+                    )
+                }
+            }
             mapController.locationLayerHandler.niLocationFlow.collect { location ->
 
                 //过滤掉无效点
@@ -512,12 +524,10 @@ class MainViewModel @Inject constructor(
             try {
                 if (!mCameraDialog!!.getmShareUtil().connectstate) {
                     mCameraDialog!!.updateCameraResources(
-                        1,
-                        mCameraDialog!!.getmDeviceNum()
+                        1, mCameraDialog!!.getmDeviceNum()
                     )
                 }
-                TakePhotoManager.getInstance()
-                    .getCameraVedioClent(mCameraDialog!!.getmDeviceNum())
+                TakePhotoManager.getInstance().getCameraVedioClent(mCameraDialog!!.getmDeviceNum())
                     .StopSearch()
             } catch (e: Exception) {
             }

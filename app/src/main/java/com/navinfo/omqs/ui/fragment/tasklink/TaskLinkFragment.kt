@@ -36,6 +36,13 @@ class TaskLinkFragment : BaseFragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        arguments?.let {
+            val id = it.getString("TaskLinkId")
+            if (id != null && id.isNotEmpty()){
+                viewModel.initData(id)
+            }
+        }
+
         binding.taskLinkAddPoint.setOnClickListener(this)
         binding.taskLinkKind.setOnClickListener(this)
         binding.taskLinkFunctionalLevel.setOnClickListener(this)
@@ -44,6 +51,8 @@ class TaskLinkFragment : BaseFragment(), View.OnClickListener {
         binding.taskLinkBarSave.setOnClickListener(this)
         binding.taskLinkBack.setOnClickListener(this)
         binding.taskLinkClear.setOnClickListener(this)
+        binding.taskLinkBarDelete.setOnClickListener(this)
+
         /**
          * 数据操作结束
          */
@@ -149,6 +158,9 @@ class TaskLinkFragment : BaseFragment(), View.OnClickListener {
             }
             binding.taskLinkClear -> {
                 viewModel.clearLink()
+            }
+            binding.taskLinkBarDelete ->{
+                viewModel.deleteData(requireContext())
             }
         }
     }

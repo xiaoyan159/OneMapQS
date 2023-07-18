@@ -36,6 +36,7 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
         onTaskLinkItemClickListener = listener
     }
 
+
     /**
      * 路口高亮
      */
@@ -183,6 +184,12 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
      * 增加一条任务高亮线
      */
     fun addTaskLink(linkBean: HadLinkDvoBean) {
+        for (marker in omdbTaskMarkerLayer.itemList) {
+            if ((marker as MarkerItem).title == linkBean.linkPid) {
+                omdbTaskMarkerLayer.removeItem(marker)
+                break
+            }
+        }
         if (linkBean.linkStatus == 3) {
             val pointList = GeometryTools.getGeoPoints(linkBean.geometry)
             val geoPoint = if (pointList.size < 3) {
@@ -197,7 +204,10 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
             )
             omdbTaskMarkerLayer.addItem(marker)
         }
+        omdbTaskLinkLayer.removeLine(linkBean.linkPid)
         omdbTaskLinkLayer.addLine(linkBean)
+        omdbTaskLinkLayer.update()
+        mMapView.vtmMap.updateMap(true)
     }
 
     /**
@@ -211,6 +221,8 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
             }
         }
         omdbTaskLinkLayer.removeLine(linkBeanId)
+        omdbTaskLinkLayer.update()
+        mMapView.vtmMap.updateMap(true)
     }
 }
 

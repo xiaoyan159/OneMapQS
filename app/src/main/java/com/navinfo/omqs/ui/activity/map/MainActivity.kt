@@ -180,7 +180,7 @@ class MainActivity : BaseActivity() {
         //给xml传递viewModel对象
         binding.viewModel = viewModel
 
-       binding.mainActivityVoice.setOnTouchListener { v, event ->
+        binding.mainActivityVoice.setOnTouchListener { v, event ->
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
                     voiceOnTouchStart()//Do Something
@@ -210,7 +210,7 @@ class MainActivity : BaseActivity() {
             }
         }
         //捕捉列表变化回调
-        viewModel.liveDataNoteIdList.observe(this) {
+        viewModel.liveDataNoteId.observe(this) {
             //跳转到质检数据页面
             //获取右侧fragment容器
             val naviController = findNavController(R.id.main_activity_right_fragment)
@@ -218,14 +218,21 @@ class MainActivity : BaseActivity() {
             naviController.currentDestination?.let { navDestination ->
                 when (navDestination.id) {
                     R.id.RightEmptyFragment -> {
-                        if (it.size == 1) {
-                            val bundle = Bundle()
-                            bundle.putString("NoteId", it[0])
-                            naviController.navigate(R.id.NoteFragment, bundle)
-                        }
+                        val bundle = Bundle()
+                        bundle.putString("NoteId", it)
+                        naviController.navigate(R.id.NoteFragment, bundle)
                     }
                 }
             }
+        }
+
+        viewModel.liveDataTaskLink.observe(this) {
+            val bundle = Bundle()
+            bundle.putString("TaskLinkId", it)
+            findNavController(R.id.main_activity_right_fragment).navigate(
+                R.id.TaskLinkFragment,
+                bundle
+            )
         }
 
         //捕捉列表变化回调

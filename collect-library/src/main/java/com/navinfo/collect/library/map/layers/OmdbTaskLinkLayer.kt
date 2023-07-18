@@ -59,12 +59,11 @@ class OmdbTaskLinkLayer(map: Map, private var style: Style) : VectorLayer(map) {
         update()
     }
 
-    fun removeLine(linkPid: String): Boolean {
+    fun removeLine(linkPid: String) {
         if (lineMap.containsKey(linkPid)) {
             super.remove(lineMap[linkPid])
             lineMap.remove(linkPid)
         }
-        return false
     }
 
     fun removeLine(geometry: Geometry) {

@@ -1690,7 +1690,7 @@
             <m k="speedFlag" v="1">
                 <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4004_1.png" symbol-height="46"
+                <symbol src="assets:omdb/icon_4004_0.svg" symbol-height="46"
                     symbol-width="46"></symbol>
                 <!--                <caption k="minSpeed" dy="-28" fill="#000000" priority="0" size="14" stroke="#ffffff"-->
                 <!--                    stroke-width="1.0"></caption>-->

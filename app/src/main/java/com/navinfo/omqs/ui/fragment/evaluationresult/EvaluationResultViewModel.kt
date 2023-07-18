@@ -39,6 +39,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import io.realm.RealmList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
 import java.io.File
@@ -109,7 +110,7 @@ class EvaluationResultViewModel @Inject constructor(
     init {
         liveDataQsRecordBean.value = QsRecordBean(id = UUID.randomUUID().toString())
         viewModelScope.launch {
-            mapController.onMapClickFlow.collect {
+            mapController.onMapClickFlow.collectLatest {
                 liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(it).toText()
                 mapController.markerHandle.addMarker(it, markerTitle)
                 viewModelScope.launch {
