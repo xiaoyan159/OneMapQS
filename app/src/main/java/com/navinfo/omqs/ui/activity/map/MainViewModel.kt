@@ -81,7 +81,7 @@ class MainViewModel @Inject constructor(
     val liveDataNoteIdList = MutableLiveData<List<String>>()
 
     //地图点击捕捉到的轨迹列表
-    val liveDataNILocationList = MutableLiveData<List<NiLocation>>()
+    val liveDataNILocationList = MutableLiveData<NiLocation>()
 
     //左侧看板数据
     val liveDataSignList = MutableLiveData<List<SignBean>>()
@@ -163,8 +163,8 @@ class MainViewModel @Inject constructor(
                 liveDataNoteIdList.value = list
             }
 
-            override fun onNiLocationList(list: MutableList<NiLocation>) {
-                liveDataNILocationList.value = list
+            override fun onNiLocation(item: NiLocation) {
+                liveDataNILocationList.value = item
             }
         })
 
@@ -293,8 +293,8 @@ class MainViewModel @Inject constructor(
                         //相距差距大于2.5米以上进行存储
                         if (disance > 2.5) {
                             traceDataBase.niLocationDao.insert(location)
-/*                            mapController.markerHandle.addNiLocationMarkerItem(location)
-                            mapController.mMapView.vtmMap.updateMap(true)*/
+                            mapController.markerHandle.addNiLocationMarkerItem(location)
+                            mapController.mMapView.vtmMap.updateMap(true)
                             lastNiLocaion = location
                         }
                     } else {
