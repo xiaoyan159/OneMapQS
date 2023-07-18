@@ -350,43 +350,36 @@
         <ImageButton
             android:id="@+id/main_activity_snapshot_finish"
             style="@style/top_right_drawer_btns_style"
-            android:clickable="true"
-            android:enabled="false"
-            android:focusable="true"
+            android:onClick="@{()->mainActivity.finishTraceOnclick()}"
             android:src="@drawable/map_trace_finish" />
 
         <ImageButton
             android:id="@+id/main_activity_trace_snapshot_points"
             style="@style/top_right_drawer_btns_style"
-            android:focusable="true"
+            android:onClick="@{()->mainActivity.tracePointsOnclick()}"
             android:src="@drawable/map_trace_select_point" />
 
         <ImageButton
             android:id="@+id/main_activity_snapshot_media_flag"
             style="@style/top_right_drawer_btns_style"
-            android:enabled="false"
-            android:focusable="true"
+            android:onClick="@{()->mainActivity.mediaFlagOnclick()}"
             android:src="@drawable/map_trace_mediaflag" />
 
         <ImageButton
             android:id="@+id/main_activity_snapshot_rewind"
             style="@style/top_right_drawer_btns_style"
-            android:enabled="false"
-            android:focusable="true"
+            android:onClick="@{()->mainActivity.rewindTraceOnclick()}"
             android:src="@drawable/map_trace_forward" />
 
         <ImageButton
             android:id="@+id/main_activity_snapshot_pause"
             style="@style/top_right_drawer_btns_style"
-            android:enabled="false"
-            android:focusable="true"
+            android:onClick="@{()->mainActivity.pauseTraceOnclick()}"
             android:src="@drawable/map_trace_pause" />
 
         <ImageButton
             android:id="@+id/main_activity_snapshot_next"
             style="@style/top_right_drawer_btns_style"
-            android:enabled="false"
-            android:focusable="true"
             android:src="@drawable/map_trace_next" />
 
         <View

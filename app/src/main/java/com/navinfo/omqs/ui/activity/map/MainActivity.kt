@@ -106,6 +106,7 @@ class MainActivity : BaseActivity() {
             }
 
             //点击详细信息
+            @RequiresApi(Build.VERSION_CODES.N)
             override fun onMoreInfoClick(selectTag: String, tag: String, signBean: SignBean) {
                 viewModel.showSignMoreInfo(signBean.renderEntity)
                 val fragment =
@@ -146,7 +147,7 @@ class MainActivity : BaseActivity() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -175,7 +176,7 @@ class MainActivity : BaseActivity() {
         //给xml传递viewModel对象
         binding.viewModel = viewModel
 
-        binding.mainActivityVoice.setOnTouchListener { v, event ->
+       binding.mainActivityVoice.setOnTouchListener { v, event ->
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
                     voiceOnTouchStart()//Do Something
@@ -225,7 +226,9 @@ class MainActivity : BaseActivity() {
 
         //捕捉列表变化回调
         viewModel.liveDataNILocationList.observe(this) {
-             Toast.makeText(this,"轨迹被点击了",Toast.LENGTH_LONG).show()
+            if(viewModel.isSelectTrace()){
+                Toast.makeText(this,"轨迹被点击了",Toast.LENGTH_LONG).show()
+            }
         }
 
         //右上角菜单是否被点击
@@ -372,7 +375,7 @@ class MainActivity : BaseActivity() {
         mapController.mMapView.onPause()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onDestroy() {
         super.onDestroy()
         viewModel.speakMode?.shutdown()
@@ -403,7 +406,7 @@ class MainActivity : BaseActivity() {
     /**
      * 打开相机预览
      */
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.N)
     fun openCamera() {
         //显示轨迹图层
         viewModel.onClickCameraButton(this)
@@ -412,7 +415,7 @@ class MainActivity : BaseActivity() {
     /**
      * 开关菜单
      */
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.N)
     fun onClickMenu() {
         //显示菜单图层
         viewModel.onClickMenu()
@@ -520,9 +523,80 @@ class MainActivity : BaseActivity() {
     /**
      * 点击线选择
      */
+    @RequiresApi(Build.VERSION_CODES.N)
     fun selectLineOnclick() {
         viewModel.setSelectRoad(!viewModel.isSelectRoad())
         binding.mainActivitySelectLine.isSelected = viewModel.isSelectRoad()
+    }
+
+    /**
+     * 点击线选择
+     */
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun tracePointsOnclick() {
+        viewModel.setSelectTrace(!viewModel.isSelectTrace())
+        if(viewModel.isSelectTrace()){
+            Toast.makeText(this,"请选择轨迹点!",Toast.LENGTH_LONG).show()
+        }
+        binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
+    }
+
+    /**
+     * 点击结束轨迹操作
+     */
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun finishTraceOnclick() {
+        setIndoorGroupEnable(false)
+        viewModel.setSelectTrace(false)
+        viewModel.setMediaFlag(false)
+        viewModel.setSelectPauseTrace(false)
+        binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
+        binding.mainActivitySnapshotMediaFlag.isSelected = viewModel.isMediaFlag()
+        binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
+    }
+
+    /**
+     * 点击结束轨迹操作
+     */
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun mediaFlagOnclick() {
+        viewModel.setMediaFlag(!viewModel.isMediaFlag())
+        binding.mainActivitySnapshotMediaFlag.isSelected = viewModel.isMediaFlag()
+    }
+
+    /**
+     * 点击上一个轨迹点播放操作
+     */
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun rewindTraceOnclick() {
+        pasePlayTrace()
+    }
+
+    /**
+     * 点击暂停播放轨迹操作
+     */
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun pauseTraceOnclick() {
+        viewModel.setSelectPauseTrace(!viewModel.isSelectPauseTrace())
+        binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
+        viewModel.setSelectTrace(false)
+        binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
+    }
+
+    /**
+     * 点击下一个轨迹点
+     */
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun nextTraceOnclick() {
+        pasePlayTrace()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun pasePlayTrace() {
+        viewModel.setSelectTrace(false)
+        binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
+        viewModel.setSelectPauseTrace(false)
+        binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
     }
 
 
@@ -548,7 +622,7 @@ class MainActivity : BaseActivity() {
             .animateTo(GeoPoint( mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude))
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun voiceOnTouchStart() {
         viewModel.startSoundMetter(this, binding.mainActivityVoice)
     }
@@ -606,6 +680,20 @@ class MainActivity : BaseActivity() {
      */
     fun showIndoorDataLayout() {
         binding.mainActivityMenuIndoorGroup.visibility = View.VISIBLE
+        if(Constant.INDOOR_IP.isNotEmpty()){
+            setIndoorGroupEnable(true)
+        }else{
+            setIndoorGroupEnable(false)
+        }
+    }
+
+    private fun setIndoorGroupEnable(enable: Boolean){
+        binding.mainActivitySnapshotFinish.isEnabled = enable
+        binding.mainActivityTraceSnapshotPoints.isEnabled = enable
+        binding.mainActivitySnapshotMediaFlag.isEnabled = enable
+        binding.mainActivitySnapshotRewind.isEnabled = enable
+        binding.mainActivitySnapshotPause.isEnabled = enable
+        binding.mainActivitySnapshotNext.isEnabled = enable
     }
 
     /**
@@ -638,7 +726,7 @@ class MainActivity : BaseActivity() {
     /**
      * 打开道路名称属性看板，选择的道路在viewmodel里记录，不用
      */
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.N)
     fun openRoadNameFragment() {
         if (viewModel.liveDataRoadName.value != null) {
             viewModel.showSignMoreInfo(viewModel.liveDataRoadName.value!!)

@@ -55,7 +55,7 @@ class Constant {
         /**
          * 室内整理工具IP
          */
-        lateinit var INDOOR_IP: String
+        var INDOOR_IP: String = ""
 
         const val DEBUG = true
 
