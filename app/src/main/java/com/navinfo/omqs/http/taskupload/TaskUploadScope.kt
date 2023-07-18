@@ -176,6 +176,19 @@ class TaskUploadScope(
                             } else if (it.problemType == "遗漏") {
                                 problemType = 2
                             }
+
+                            var roadClassfcation = 0
+
+                            var roadFunctionGrade = 0
+
+                            var dataLevel = 0
+
+                            if(hadLinkDvoBean.linkInfo!=null){
+                                roadClassfcation = hadLinkDvoBean.linkInfo!!.kind
+                                roadFunctionGrade = hadLinkDvoBean.linkInfo!!.functionLevel
+                                dataLevel = hadLinkDvoBean.linkInfo!!.dataLevel
+                            }
+
                             var evaluationWay = 2
                             val evaluationInfo = EvaluationInfo(
                                 evaluationTaskId = taskBean.id.toString(),
@@ -193,11 +206,11 @@ class TaskUploadScope(
                                 evaluatorName = it.checkUserId,
                                 evaluationDate = it.checkTime,
                                 evaluationWay = evaluationWay,
-                                roadClassfcation = 1,
-                                roadFunctionGrade = 3,
+                                roadClassfcation = roadClassfcation,
+                                roadFunctionGrade = roadFunctionGrade,
                                 noEvaluationreason = "",
                                 linkLength = s.toDouble(),
-                                dataLevel = 3,
+                                dataLevel = dataLevel,
                                 linstringLength = 0.0,
                             )
 

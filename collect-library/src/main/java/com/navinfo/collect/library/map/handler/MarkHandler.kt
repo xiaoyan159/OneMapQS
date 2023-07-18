@@ -158,7 +158,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     /**
      * 评测数据marker 图层
      */
-    private val niLocationItemizedLayer: MyItemizedLayer by lazy {
+    private val niLocationItemizedLayer: ItemizedLayer by lazy {
 
         niLocationBitmap =
             AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.mipmap.icon_gps))
@@ -173,39 +173,24 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
             )
         )
 
-        val layer = MyItemizedLayer(
-            mMapView.vtmMap,
+        val layer = ItemizedLayer(
+            mapView.vtmMap,
             mutableListOf(),
             markerRendererFactory,
-            object : MyItemizedLayer.OnItemGestureListener {
-                override fun onItemSingleTapUp(
-                    list: MutableList<Int>,
-                    nearest: Int
-                ): Boolean {
+            object : OnItemGestureListener<MarkerInterface> {
+                override fun onItemSingleTapUp(index: Int, item: MarkerInterface?): Boolean {
                     itemListener?.let {
-                        val idList = mutableListOf<NiLocation>()
-                        if (list.size == 0) {
-                        } else {
-                            for (i in list) {
-                                val markerInterface: MarkerInterface =
-                                    niLocationItemizedLayer.itemList[i]
-                                if (markerInterface is MarkerItem) {
-                                    idList.add(markerInterface.uid as NiLocation)
-                                }
-                            }
-                            it.onNiLocationList(idList.distinct().toMutableList())
-                        }
+                        it.onNiLocation((niLocationItemizedLayer.itemList[index] as MarkerItem).uid as NiLocation)
                     }
                     return true
                 }
 
-                override fun onItemLongPress(
-                    list: MutableList<Int>?,
-                    nearest: Int
-                ): Boolean {
+                override fun onItemLongPress(index: Int, item: MarkerInterface?): Boolean {
                     return true
                 }
+
             })
+
         addLayer(layer, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
         layer
     }
@@ -824,5 +809,5 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
 interface OnQsRecordItemClickListener {
     fun onQsRecordList(list: MutableList<String>)
     fun onNoteList(list: MutableList<String>)
-    fun onNiLocationList(list: MutableList<NiLocation>)
+    fun onNiLocation(it: NiLocation)
 }

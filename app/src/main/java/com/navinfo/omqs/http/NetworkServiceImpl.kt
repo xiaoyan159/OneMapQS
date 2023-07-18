@@ -101,7 +101,16 @@ class NetworkServiceImpl @Inject constructor(
         //在IO线程中运行
         withContext(Dispatchers.IO) {
             return@withContext try {
-                val result = netApi.retrofitUpdateServerInfo(url,indoorConnectionInfoBean)
+                val map: MutableMap<String, String> = HashMap()
+                map["username"] = indoorConnectionInfoBean.username
+                map["uname"] = indoorConnectionInfoBean.uname
+                map["userid"] = indoorConnectionInfoBean.userid
+                map["plate"] = indoorConnectionInfoBean.plate
+                map["token"] = indoorConnectionInfoBean.token
+                map["baseurl"] = indoorConnectionInfoBean.baseurl
+                map["platform"] = indoorConnectionInfoBean.platform
+
+                val result = netApi.retrofitUpdateServerInfo(url,map)
                 if (result.isSuccessful) {
                     if (result.code() == 200) {
                         NetResult.Success(result.body())

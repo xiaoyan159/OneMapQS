@@ -1329,9 +1329,9 @@ public class GeometryTools {
     }
 
     public static boolean isCheckError(double lon, double lat) {
-/*        if(lon==0&&lat==0){
+        if(lon==0||lat==0){
             return true;
-        }*/
+        }
 
         if (lon > 180 || lon < -180 || lat > 90 || lat < -90) {
             return true;
