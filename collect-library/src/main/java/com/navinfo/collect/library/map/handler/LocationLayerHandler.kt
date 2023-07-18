@@ -12,6 +12,7 @@ import com.baidu.location.LocationClientOption.LocationMode
 import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.utils.DateUtils
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
@@ -29,7 +30,7 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
 //
 //    }
 
-    val niLocationFlow = MutableSharedFlow<NiLocation>(5)
+    val niLocationFlow = MutableSharedFlow<NiLocation>(3)
 
     init {
         ///添加定位图层到地图，[NIMapView.LAYER_GROUPS.NAVIGATION] 是最上层layer组
@@ -72,10 +73,10 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
 //                )
 
 //                if (niLocationListener != null) {
-                    getCurrentNiLocation()?.let { it1 ->
-                        mContext.lifecycleScope.launch {
-                            niLocationFlow.emit(it1)
-                        }
+                getCurrentNiLocation()?.let { it1 ->
+                    mContext.lifecycleScope.launch(Dispatchers.Default) {
+                        niLocationFlow.emit(it1)
+                    }
 
 //                    }// niLocationListener.call(it1) }
                 }

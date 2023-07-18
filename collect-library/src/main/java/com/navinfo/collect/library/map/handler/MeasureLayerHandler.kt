@@ -3,11 +3,9 @@ package com.navinfo.collect.library.map.handler
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
-import android.os.Build
 import android.text.TextPaint
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import com.navinfo.collect.library.R
@@ -451,6 +449,32 @@ open class MeasureLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
                 }
             }
         }
+    }
+
+    /**
+     * 初始化线数据， 用来二次编辑
+     */
+    fun initPathLine(geometry: String) {
+        bDrawLine = true
+        mPathLayer.isEnabled = true
+        mPathLayerTemp.isEnabled = true
+        val pointList = GeometryTools.getGeoPoints(geometry)
+        mPathLayer.setPoints(pointList)
+        for (point in pointList) {
+            val markerItem = MarkerItem(createUUID(), "", "", point)
+            markerLayer.addItem(markerItem)
+            mPathMakers.add(markerItem)
+        }
+        if (mPathLayer.points.size > 1) {
+            val distance: Double = GeometryTools.getDistance(mPathLayer.points)
+            val bg = BigDecimal(distance)
+            val f1 = bg.setScale(3, BigDecimal.ROUND_HALF_UP).toDouble()
+            lineLengthLiveData.value = f1
+            tempLineDistanceLiveData.value = "${f1}米"
+        } else {
+            lineLengthLiveData.value = 0.000
+        }
+        mMapView.updateMap(true)
     }
 
     private val itemGestureListener: OnItemGestureListener<MarkerInterface> =

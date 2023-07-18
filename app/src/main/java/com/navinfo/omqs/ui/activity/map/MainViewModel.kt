@@ -23,13 +23,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
-import com.navinfo.collect.library.data.entity.NiLocation
-import com.navinfo.collect.library.data.entity.NoteBean
-import com.navinfo.collect.library.data.entity.QsRecordBean
-import com.navinfo.collect.library.data.entity.RenderEntity
-import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.collect.library.data.entity.*
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
+import com.navinfo.collect.library.map.handler.OnTaskLinkItemClickListener
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.omqs.Constant
@@ -91,6 +88,9 @@ class MainViewModel @Inject constructor(
     //道路名
     val liveDataRoadName = MutableLiveData<RenderEntity?>()
 
+    //捕捉到新增的link
+    val liveDataTaskLink = MutableLiveData<String>()
+
     /**
      * 当前选中的要展示的详细信息的要素
      */
@@ -150,6 +150,12 @@ class MainViewModel @Inject constructor(
                 liveDataNILocationList.value = list
             }
         })
+        mapController.lineHandler.setOnTaskLinkItemClickListener(object :
+            OnTaskLinkItemClickListener {
+            override fun onTaskLink(taskLinkId: String) {
+                liveDataTaskLink.value = taskLinkId
+            }
+        })
 
         initLocation()
 
@@ -159,7 +165,9 @@ class MainViewModel @Inject constructor(
 //                testPoint = it
                 //线选择状态
                 if (bSelectRoad) {
-                    captureLink(it)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        captureLink(it)
+                    }
                 } else {
                     captureItem(it)
                 }
@@ -169,7 +177,7 @@ class MainViewModel @Inject constructor(
             initTaskData()
             initQsRecordData()
             initNoteData()
-            initNILocationData()
+//            initNILocationData()
         }
     }
 
@@ -227,8 +235,10 @@ class MainViewModel @Inject constructor(
             mapController.mMapView.context,
             Constant.USER_DATA_PATH
         ).niLocationDao.findToTaskIdAll(id.toString())
-        list!!.forEach {
-            mapController.markerHandle.addNiLocationMarkerItem(it)
+        if (list != null) {
+            for (location in list) {
+                mapController.markerHandle.addNiLocationMarkerItem(location)
+            }
         }
     }
 
@@ -238,6 +248,17 @@ class MainViewModel @Inject constructor(
     private fun initLocation() {
         //用于定位点存储到数据库
         viewModelScope.launch(Dispatchers.Default) {
+            //用于定位点捕捉道路
+            mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
+                if (!isSelectRoad()) if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    captureLink(
+                        GeoPoint(
+                            location.latitude,
+                            location.longitude
+                        )
+                    )
+                }
+            }
             mapController.locationLayerHandler.niLocationFlow.collect { location ->
                 val geometry = GeometryTools.createGeometry(
                     GeoPoint(
@@ -285,17 +306,6 @@ class MainViewModel @Inject constructor(
                 //mapController.mMapView.vtmMap.updateMap(true)
             }
         }
-        //用于定位点捕捉道路
-        viewModelScope.launch(Dispatchers.Default) {
-            mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
-                if (!isSelectRoad()) captureLink(
-                    GeoPoint(
-                        location.latitude,
-                        location.longitude
-                    )
-                )
-            }
-        }
 
         //显示轨迹图层
         mapController.layerManagerHandler.showNiLocationLayer()
@@ -312,6 +322,7 @@ class MainViewModel @Inject constructor(
     /**
      * 捕获道路和面板
      */
+    @RequiresApi(Build.VERSION_CODES.N)
     private suspend fun captureLink(point: GeoPoint) {
 
         val linkList = realmOperateHelper.queryLink(

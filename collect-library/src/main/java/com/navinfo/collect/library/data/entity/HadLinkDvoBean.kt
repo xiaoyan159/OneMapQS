@@ -1,12 +1,13 @@
 package com.navinfo.collect.library.data.entity
 
 import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
 
 open class HadLinkDvoBean @JvmOverloads constructor(
-//    /**
-//     * 任务id，方便捕捉查询
-//     */
-//    var taskId: Int = 0,
+    /**
+     * 任务id，方便捕捉查询
+     */
+    var taskId: Int = 0,
     /**
      * 图幅号
      */
@@ -14,6 +15,7 @@ open class HadLinkDvoBean @JvmOverloads constructor(
     /**
      * linkPid
      */
+    @PrimaryKey
     var linkPid: String = "",
     /**
      * (几何)加偏后

@@ -1,5 +1,7 @@
 package com.navinfo.omqs.ui.fragment.tasklink
 
+import android.app.Dialog
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -8,15 +10,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.collect.library.data.entity.LinkInfoBean
+import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
+import com.navinfo.omqs.ui.dialog.FirstDialog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.bson.codecs.UuidCodec
 import org.bson.internal.UuidHelper
 import org.oscim.core.GeoPoint
@@ -103,6 +108,11 @@ class TaskLinkViewModel @Inject constructor(
     val liveDataTaskBean = MutableLiveData<TaskBean?>()
 
     /**
+     * 当前正在编辑的线
+     */
+    private var hadLinkDvoBean: HadLinkDvoBean? = null
+
+    /**
      * 当前正在选择哪个数据 1：种别 2：功能等级 3：数据等级
      */
     private var selectType = 0
@@ -184,26 +194,50 @@ class TaskLinkViewModel @Inject constructor(
                 liveDataToastMessage.postValue("请选择数据等级！")
                 return@launch
             }
-            val linkBean = HadLinkDvoBean(
-//                taskId = liveDataTaskBean.value!!.id,
-                linkPid = UUID.randomUUID().toString(),
-                linkStatus = 3,
-                length = mapController.measureLayerHandler.lineLengthLiveData.value!!,
-                geometry = GeometryTools.getLineString(mapController.measureLayerHandler.mPathLayer.points),
-                linkInfo = LinkInfoBean(
+            val task: TaskBean = liveDataTaskBean.value!!
+            if (hadLinkDvoBean != null) {
+                hadLinkDvoBean!!.taskId = liveDataTaskBean.value!!.id
+                hadLinkDvoBean!!.length =
+                    mapController.measureLayerHandler.lineLengthLiveData.value!!
+                hadLinkDvoBean!!.geometry =
+                    GeometryTools.getLineString(mapController.measureLayerHandler.mPathLayer.points)
+                hadLinkDvoBean!!.linkInfo = LinkInfoBean(
                     kind = liveDataSelectKind.value!!.type,
                     functionLevel = liveDataSelectFunctionLevel.value!!.type,
                     dataLevel = liveDataSelectDataLevel.value!!.type,
                 )
-            )
-            val task: TaskBean = liveDataTaskBean.value!!
-            task.hadLinkDvoList.add(linkBean)
+                for (l in task.hadLinkDvoList) {
+                    if (l.linkPid == hadLinkDvoBean!!.linkPid) {
+                        task.hadLinkDvoList.remove(l)
+                        task.hadLinkDvoList.add(hadLinkDvoBean)
+                        break
+                    }
+                }
+            } else {
+                hadLinkDvoBean = HadLinkDvoBean(
+                    taskId = liveDataTaskBean.value!!.id,
+                    linkPid = UUID.randomUUID().toString(),
+                    linkStatus = 3,
+                    length = mapController.measureLayerHandler.lineLengthLiveData.value!!,
+                    geometry = GeometryTools.getLineString(mapController.measureLayerHandler.mPathLayer.points),
+                    linkInfo = LinkInfoBean(
+                        kind = liveDataSelectKind.value!!.type,
+                        functionLevel = liveDataSelectFunctionLevel.value!!.type,
+                        dataLevel = liveDataSelectDataLevel.value!!.type,
+                    )
+                )
+                task.hadLinkDvoList.add(hadLinkDvoBean)
+            }
+
+
             val realm = Realm.getDefaultInstance()
             realm.executeTransaction {
+                it.copyToRealmOrUpdate(hadLinkDvoBean)
                 it.copyToRealmOrUpdate(task)
             }
-            mapController.lineHandler.addTaskLink(linkBean)
-            sharedPreferences.edit().putString(Constant.SHARED_SYNC_TASK_LINK_ID, linkBean.linkPid)
+            mapController.lineHandler.addTaskLink(hadLinkDvoBean!!)
+            sharedPreferences.edit()
+                .putString(Constant.SHARED_SYNC_TASK_LINK_ID, hadLinkDvoBean!!.linkPid)
                 .apply()
             liveDataFinish.postValue(true)
         }
@@ -230,5 +264,88 @@ class TaskLinkViewModel @Inject constructor(
      */
     fun clearLink() {
         mapController.measureLayerHandler.clear()
+    }
+
+    /**
+     * 初始化数据
+     */
+    fun initData(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val realm = Realm.getDefaultInstance()
+            val objects =
+                realm.where(HadLinkDvoBean::class.java).equalTo("linkPid", id)
+                    .findFirst()
+            objects?.linkInfo?.let {
+                for (kind in kindList) {
+                    if (kind.type == it.kind) {
+                        liveDataSelectKind.postValue(kind)
+                        break
+                    }
+                }
+                for (function in functionLevelList) {
+                    if (function.type == it.functionLevel) {
+                        liveDataSelectFunctionLevel.postValue(function)
+                        break
+                    }
+                }
+                for (data in dataLevelList) {
+                    if (data.type == it.dataLevel) {
+                        liveDataSelectDataLevel.postValue(data)
+                        break
+                    }
+                }
+            }
+            val task =
+                realm.where(TaskBean::class.java).equalTo("id", objects?.taskId)
+                    .findFirst()
+
+            if (task != null) {
+                liveDataTaskBean.postValue(realm.copyFromRealm(task))
+            }
+            hadLinkDvoBean = realm.copyFromRealm(objects)
+            withContext(Dispatchers.Main) {
+                mapController.measureLayerHandler.initPathLine(hadLinkDvoBean?.geometry!!)
+            }
+        }
+    }
+
+    /**
+     * 删除数据
+     */
+    fun deleteData(context: Context) {
+        if(hadLinkDvoBean == null){
+            liveDataFinish.value = true
+            return
+        }
+        val mDialog = FirstDialog(context)
+        mDialog.setTitle("提示？")
+        mDialog.setMessage("是否删除Mark，请确认！")
+        mDialog.setPositiveButton("确定"
+        ) { _, _ ->
+            mDialog.dismiss()
+            viewModelScope.launch(Dispatchers.IO) {
+                val realm = Realm.getDefaultInstance()
+                realm.executeTransaction {
+                    val task = it.where(TaskBean::class.java).equalTo("id",hadLinkDvoBean!!.taskId).findFirst()
+                    if(task != null) {
+                        for (h in task.hadLinkDvoList) {
+                            if(h.linkPid == hadLinkDvoBean!!.linkPid)
+                                task.hadLinkDvoList.remove(h)
+                            break
+                        }
+                        realm.copyToRealmOrUpdate(task)
+                    }
+
+//                    val objects = it.where(HadLinkDvoBean::class.java)
+//                        .equalTo("linkPid", hadLinkDvoBean!!.linkPid).findFirst()
+//                    objects?.deleteFromRealm()
+                }
+                mapController.lineHandler.removeTaskLink(hadLinkDvoBean!!.linkPid)
+                mapController.mMapView.vtmMap.updateMap(true)
+                liveDataFinish.postValue(true)
+            }
+        }
+        mDialog.setNegativeButton("取消", null)
+        mDialog.show()
     }
 }

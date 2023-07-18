@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
@@ -536,58 +537,67 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
      * 添加质检数据marker
      */
     public suspend fun addNiLocationMarkerItem(niLocation: NiLocation) {
+        synchronized(this) {
+            Log.e("jingo", "插入定位点0 ")
 
-        var itemizedLayer: ItemizedLayer? = null
+            var itemizedLayer: ItemizedLayer? = null
 
-        val direction: Double = niLocation.direction
+            val direction: Double = niLocation.direction
 
-        val geoMarkerItem: MarkerItem = ClusterMarkerItem(
-            niLocation,
-            niLocation.id,
-            niLocation.time,
-            GeoPoint(niLocation.latitude, niLocation.longitude)
-        )
+            val geoMarkerItem: MarkerItem = ClusterMarkerItem(
+                niLocation,
+                niLocation.id,
+                niLocation.time,
+                GeoPoint(niLocation.latitude, niLocation.longitude)
+            )
 
-        //角度
-        when (niLocation.media) {
-            0 -> {
-                //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
-                //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
-                if (direction != 0.0) {
-                    val symbolGpsTemp =
-                        MarkerSymbol(niLocationBitmap, MarkerSymbol.HotspotPlace.CENTER, false)
-                    geoMarkerItem.marker = symbolGpsTemp
-                    geoMarkerItem.setRotation(direction.toFloat())
-                } else {
-                    val symbolGpsTemp =
-                        MarkerSymbol(niLocationBitmap2, MarkerSymbol.HotspotPlace.CENTER, false)
-                    geoMarkerItem.marker = symbolGpsTemp
+            //角度
+            when (niLocation.media) {
+                0 -> {
+                    //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
+                    //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
+                    if (direction != 0.0) {
+                        val symbolGpsTemp =
+                            MarkerSymbol(niLocationBitmap, MarkerSymbol.HotspotPlace.CENTER, false)
+                        geoMarkerItem.marker = symbolGpsTemp
+                        geoMarkerItem.setRotation(direction.toFloat())
+                    } else {
+                        val symbolGpsTemp =
+                            MarkerSymbol(niLocationBitmap2, MarkerSymbol.HotspotPlace.CENTER, false)
+                        geoMarkerItem.marker = symbolGpsTemp
+                    }
+                    Log.e(
+                        "jingo",
+                        "插入定位点1 ${geoMarkerItem.geoPoint.longitude} ${geoMarkerItem.geoPoint.latitude}"
+                    )
+                    niLocationItemizedLayer.addItem(geoMarkerItem)
+                    itemizedLayer = niLocationItemizedLayer
                 }
-                niLocationItemizedLayer.addItem(geoMarkerItem)
-                itemizedLayer = niLocationItemizedLayer
-            }
 
-            1 -> {
-                //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
-                //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
-                if (direction != 0.0) {
-                    val symbolLidarTemp =
-                        MarkerSymbol(niLocationBitmap1, MarkerSymbol.HotspotPlace.CENTER, false)
-                    geoMarkerItem.marker = symbolLidarTemp
-                    geoMarkerItem.setRotation(direction.toFloat())
-                } else {
-                    val symbolGpsTemp =
-                        MarkerSymbol(niLocationBitmap3, MarkerSymbol.HotspotPlace.CENTER, false)
-                    geoMarkerItem.marker = symbolGpsTemp
+                1 -> {
+                    //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
+                    //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
+                    if (direction != 0.0) {
+                        val symbolLidarTemp =
+                            MarkerSymbol(niLocationBitmap1, MarkerSymbol.HotspotPlace.CENTER, false)
+                        geoMarkerItem.marker = symbolLidarTemp
+                        geoMarkerItem.setRotation(direction.toFloat())
+                    } else {
+                        val symbolGpsTemp =
+                            MarkerSymbol(niLocationBitmap3, MarkerSymbol.HotspotPlace.CENTER, false)
+                        geoMarkerItem.marker = symbolGpsTemp
+                    }
+                    Log.e(
+                        "jingo",
+                        "插入定位点2 ${geoMarkerItem.geoPoint.longitude} ${geoMarkerItem.geoPoint.latitude}"
+                    )
+                    niLocationItemizedLayer.addItem(geoMarkerItem)
+                    itemizedLayer = niLocationItemizedLayer
                 }
-                niLocationItemizedLayer.addItem(geoMarkerItem)
-                itemizedLayer = niLocationItemizedLayer
-            }
 
+            }
+            itemizedLayer?.update()
         }
-
-        itemizedLayer!!.update()
-
     }
 
 

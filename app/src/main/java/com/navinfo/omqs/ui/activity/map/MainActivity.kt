@@ -223,9 +223,18 @@ class MainActivity : BaseActivity() {
             }
         }
 
+        viewModel.liveDataTaskLink.observe(this) {
+            val bundle = Bundle()
+            bundle.putString("TaskLinkId", it)
+            findNavController(R.id.main_activity_right_fragment).navigate(
+                R.id.TaskLinkFragment,
+                bundle
+            )
+        }
+
         //捕捉列表变化回调
         viewModel.liveDataNILocationList.observe(this) {
-             Toast.makeText(this,"轨迹被点击了",Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "轨迹被点击了", Toast.LENGTH_LONG).show()
         }
 
         //右上角菜单是否被点击
@@ -545,7 +554,12 @@ class MainActivity : BaseActivity() {
             mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
         }
         mapController.mMapView.vtmMap.animator()
-            .animateTo(GeoPoint( mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude))
+            .animateTo(
+                GeoPoint(
+                    mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
+                    mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude
+                )
+            )
     }
 
     @RequiresApi(Build.VERSION_CODES.M)

@@ -1,6 +1,5 @@
 package com.navinfo.collect.library.map
 
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.navinfo.collect.library.map.handler.*
