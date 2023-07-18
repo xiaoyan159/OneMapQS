@@ -26,7 +26,6 @@ import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.*
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
-import com.navinfo.collect.library.map.handler.OnTaskLinkItemClickListener
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.omqs.Constant
@@ -75,7 +74,7 @@ class MainViewModel @Inject constructor(
     private val realmOperateHelper: RealmOperateHelper,
     private val networkService: NetworkService,
     private val sharedPreferences: SharedPreferences
-) : ViewModel() {
+) : ViewModel(),SocketServer.OnConnectSinsListener{
 
     private var mCameraDialog: CommonDialog? = null
 
@@ -133,6 +132,9 @@ class MainViewModel @Inject constructor(
     //状态
     val qrCodeStatus: MutableLiveData<QrCodeStatus> = MutableLiveData()
 
+    //状态
+    val indoorToolsStatus: MutableLiveData<IndoorToolsStatus> = MutableLiveData()
+
     /**
      * 是不是线选择模式
      */
@@ -157,7 +159,9 @@ class MainViewModel @Inject constructor(
 
     private var lastNiLocaion: NiLocation? = null
 
-    var currentIndexNiLocation: Int = 0;
+    var currentIndexNiLocation: Int = 0
+
+    private var socketServer:SocketServer? = null
 
     init {
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
@@ -203,6 +207,8 @@ class MainViewModel @Inject constructor(
             initNoteData()
             initNILocationData()
         }
+
+        socketServer = SocketServer(mapController,traceDataBase,sharedPreferences)
     }
 
     /**
@@ -343,7 +349,6 @@ class MainViewModel @Inject constructor(
         }
         //显示轨迹图层
         mapController.layerManagerHandler.showNiLocationLayer()
-
     }
 
     /**
@@ -724,6 +729,17 @@ class MainViewModel @Inject constructor(
                                         Toast.LENGTH_LONG
                                     ).show()
                                     qrCodeStatus.postValue(QrCodeStatus.QR_CODE_STATUS_UPDATE_VIDEO_INFO_SUCCESS)
+
+                                    //启动双向控制服务
+
+                                    //启动双向控制服务
+                                    if (socketServer != null && socketServer!!.isServerClose) {
+                                        socketServer!!.connect(
+                                            Constant.INDOOR_IP,
+                                            this@MainViewModel
+                                        )
+                                    }
+
                                 }
                             } else {
                                 withContext(Dispatchers.Main) {
@@ -803,5 +819,36 @@ class MainViewModel @Inject constructor(
      */
     fun cancelTrace() {
 
+    }
+
+    override fun onConnect(success: Boolean) {
+        if (!success && socketServer != null) {
+            BaseToast.makeText(
+                mapController.mMapView.context,
+                "轨迹反向控制服务失败，请确认连接是否正常！",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    override fun onIndexing() {
+        //切换为暂停状态
+        indoorToolsStatus.postValue(IndoorToolsStatus.PAUSE)
+    }
+
+    override fun onStop() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onPlay() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onParseEnd() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onReceiveLocation(mNiLocation: NiLocation?) {
+        TODO("Not yet implemented")
     }
 }
