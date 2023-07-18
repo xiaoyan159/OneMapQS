@@ -30,7 +30,7 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
 //
 //    }
 
-    val niLocationFlow = MutableSharedFlow<NiLocation>(3)
+    val niLocationFlow = MutableSharedFlow<NiLocation>(5)
 
     init {
         ///添加定位图层到地图，[NIMapView.LAYER_GROUPS.NAVIGATION] 是最上层layer组
@@ -67,18 +67,12 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
                 val errorCode = it.locType
                 mCurrentLocation = it
                 mLocationLayer.setPosition(it.latitude, it.longitude, it.radius)
-//                Log.e(
-//                    "qj",
-//                    "location==${it.longitude}==errorCode===$errorCode===${it.locTypeDescription}"
-//                )
+                Log.e("qj", "location==${it.longitude}==errorCode===$errorCode===${it.locTypeDescription}")
 
-//                if (niLocationListener != null) {
                 getCurrentNiLocation()?.let { it1 ->
-                    mContext.lifecycleScope.launch(Dispatchers.Default) {
+                    mContext.lifecycleScope.launch {
                         niLocationFlow.emit(it1)
                     }
-
-//                    }// niLocationListener.call(it1) }
                 }
                 //第一次定位成功显示当前位置
                 if (this.bFirst) {

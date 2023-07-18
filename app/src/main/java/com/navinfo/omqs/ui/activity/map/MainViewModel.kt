@@ -270,21 +270,10 @@ class MainViewModel @Inject constructor(
      */
     @RequiresApi(Build.VERSION_CODES.N)
     private fun initLocation() {
+
         //用于定位点存储到数据库
         viewModelScope.launch(Dispatchers.Default) {
             //用于定位点捕捉道路
-            mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
-                if (!isSelectRoad() && !GeometryTools.isCheckError(
-                        location.longitude, location.latitude
-                    )
-                ) {
-                    captureLink(
-                        GeoPoint(
-                            location.latitude, location.longitude
-                        )
-                    )
-                }
-            }
             mapController.locationLayerHandler.niLocationFlow.collect { location ->
 
                 //过滤掉无效点
@@ -335,23 +324,23 @@ class MainViewModel @Inject constructor(
                     }
                 }
             }
+
         }
-        //用于定位点捕捉道路
         viewModelScope.launch(Dispatchers.Default) {
+            //用于定位点捕捉道路
             mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
                 if (!isSelectRoad() && !GeometryTools.isCheckError(
-                        location.longitude,
-                        location.latitude
+                        location.longitude, location.latitude
                     )
-                ) captureLink(
-                    GeoPoint(
-                        location.latitude,
-                        location.longitude
+                ) {
+                    captureLink(
+                        GeoPoint(
+                            location.latitude, location.longitude
+                        )
                     )
-                )
+                }
             }
         }
-
         //显示轨迹图层
         mapController.layerManagerHandler.showNiLocationLayer()
 

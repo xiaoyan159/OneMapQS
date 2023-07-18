@@ -504,7 +504,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
             0 -> {
                 //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
                 //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
-                if (direction != 0.0) {
+                if (direction > 0.0) {
                     val symbolGpsTemp =
                         MarkerSymbol(niLocationBitmap, MarkerSymbol.HotspotPlace.CENTER, false)
                     geoMarkerItem.marker = symbolGpsTemp
@@ -519,7 +519,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
             1 -> {
                 //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
                 //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
-                if (direction != 0.0) {
+                if (direction > 0.0) {
                     val symbolLidarTemp =
                         MarkerSymbol(niLocationBitmap1, MarkerSymbol.HotspotPlace.CENTER, false)
                     geoMarkerItem.marker = symbolLidarTemp
