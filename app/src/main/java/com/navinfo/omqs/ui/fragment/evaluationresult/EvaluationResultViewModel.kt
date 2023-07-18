@@ -212,6 +212,7 @@ class EvaluationResultViewModel @Inject constructor(
                         if (classType2 != null) {
                             classType = classType2
                         }
+                        classCode = bean.renderEntity.code.toString()
                     }
                     //如果右侧栏没数据，给个默认值
                     if (liveDataQsRecordBean.value!!.classType.isEmpty()) {
@@ -298,11 +299,12 @@ class EvaluationResultViewModel @Inject constructor(
     /**
      * 查询问题类型列表
      */
-    fun getProblemTypeList(classType: String) {
+    fun getProblemTypeList(scProblemTypeBean: ScProblemTypeBean) {
         viewModelScope.launch(Dispatchers.IO) {
-            getProblemList(classType)
+            getProblemList(scProblemTypeBean.classType)
         }
-        classTypeTemp = classType
+        classTypeTemp = scProblemTypeBean.classType
+        classCodeTemp = scProblemTypeBean.elementCode
     }
 
     /**
@@ -381,7 +383,7 @@ class EvaluationResultViewModel @Inject constructor(
                                 GeoPoint(
                                     p.latitude,
                                     p.longitude
-                                ), markerTitle
+                                ), markerTitle,"",null
                             )
 
                             //获取linkid

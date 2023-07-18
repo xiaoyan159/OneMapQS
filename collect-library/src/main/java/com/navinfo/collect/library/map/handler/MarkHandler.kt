@@ -1,15 +1,12 @@
 package com.navinfo.collect.library.map.handler
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
-import androidx.lifecycle.lifecycleScope
 import com.navinfo.collect.library.R
-import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.data.entity.NoteBean
 import com.navinfo.collect.library.data.entity.QsRecordBean
@@ -20,11 +17,6 @@ import com.navinfo.collect.library.map.layers.MyItemizedLayer
 import com.navinfo.collect.library.map.layers.NoteLineLayer
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.StringUtil
-import io.realm.Realm
-import io.realm.kotlin.where
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.LineString
 import org.locationtech.jts.geom.Polygon
@@ -179,7 +171,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
             object : OnItemGestureListener<MarkerInterface> {
                 override fun onItemSingleTapUp(index: Int, item: MarkerInterface?): Boolean {
                     itemListener?.let {
-                        it.onNiLocation((niLocationItemizedLayer.itemList[index] as MarkerItem).uid as NiLocation)
+                        it.onNiLocation(index,(niLocationItemizedLayer.itemList[index] as MarkerItem).uid as NiLocation)
                     }
                     return true
                 }
@@ -303,7 +295,8 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     fun addMarker(
         geoPoint: GeoPoint,
         title: String?,
-        description: String? = ""
+        description: String? = "",
+        uid: java.lang.Object?=null,
     ) {
         var marker: MarkerItem? = null
         for (e in mDefaultMarkerLayer.itemList) {
@@ -318,6 +311,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                 tempTitle = StringUtil.createUUID()
             }
             val marker = MarkerItem(
+                uid,
                 tempTitle,
                 description,
                 geoPoint
@@ -331,6 +325,14 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
             mDefaultMarkerLayer.addItem(marker)
             mMapView.vtmMap.updateMap(true)
         }
+    }
+
+    fun getCurrentMark(): MarkerInterface? {
+
+        if(mDefaultMarkerLayer!=null){
+            return mDefaultMarkerLayer.itemList[mDefaultMarkerLayer.itemList.size-1]
+        }
+        return null
     }
 
     /**
@@ -520,9 +522,13 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     /**
      * 添加质检数据marker
      */
-    public suspend fun addNiLocationMarkerItem(niLocation: NiLocation) {
+    fun addNiLocationMarkerItem(niLocation: NiLocation) {
+        var geoMarkerItem = createNILocationBitmap(niLocation)
+        niLocationItemizedLayer.addItem(geoMarkerItem)
+        niLocationItemizedLayer.update()
+    }
 
-        var itemizedLayer: ItemizedLayer? = null
+    private fun createNILocationBitmap(niLocation: NiLocation): MarkerItem{
 
         val direction: Double = niLocation.direction
 
@@ -548,8 +554,6 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                         MarkerSymbol(niLocationBitmap2, MarkerSymbol.HotspotPlace.CENTER, false)
                     geoMarkerItem.marker = symbolGpsTemp
                 }
-                niLocationItemizedLayer.addItem(geoMarkerItem)
-                itemizedLayer = niLocationItemizedLayer
             }
 
             1 -> {
@@ -565,14 +569,10 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                         MarkerSymbol(niLocationBitmap3, MarkerSymbol.HotspotPlace.CENTER, false)
                     geoMarkerItem.marker = symbolGpsTemp
                 }
-                niLocationItemizedLayer.addItem(geoMarkerItem)
-                itemizedLayer = niLocationItemizedLayer
             }
-
         }
 
-        itemizedLayer!!.update()
-
+        return geoMarkerItem
     }
 
 
@@ -794,10 +794,22 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         niLocationItemizedLayer.update()
     }
 
+    fun getNILocationItemizedLayerSize():Int{
+        return niLocationItemizedLayer.itemList.size
+    }
+
+    fun getNILocation(index:Int):MarkerInterface?{
+        return if(index>-1&&index<getNILocationItemizedLayerSize()){
+            niLocationItemizedLayer.itemList[index]
+        }else{
+            null
+        }
+    }
+
 }
 
 interface OnQsRecordItemClickListener {
     fun onQsRecordList(list: MutableList<String>)
     fun onNoteList(list: MutableList<String>)
-    fun onNiLocation(it: NiLocation)
+    fun onNiLocation(index:Int,it: NiLocation)
 }

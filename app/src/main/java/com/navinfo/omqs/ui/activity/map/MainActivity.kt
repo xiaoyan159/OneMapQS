@@ -20,11 +20,13 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.bean.SignBean
+import com.navinfo.omqs.bean.TraceVideoBean
 import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.tools.LayerConfigUtils
@@ -34,12 +36,14 @@ import com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapFragment
 import com.navinfo.omqs.ui.fragment.qsrecordlist.QsRecordListFragment
 import com.navinfo.omqs.ui.fragment.signMoreInfo.SignMoreInfoFragment
 import com.navinfo.omqs.ui.fragment.tasklist.TaskManagerFragment
+import com.navinfo.omqs.ui.other.BaseToast
 import com.navinfo.omqs.ui.widget.RecyclerViewSpacesItemDecoration
 import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
+import org.oscim.layers.marker.MarkerItem
 import org.oscim.renderer.GLViewport
 import org.videolan.vlc.Util
 import java.math.BigDecimal
@@ -227,7 +231,10 @@ class MainActivity : BaseActivity() {
         //捕捉列表变化回调
         viewModel.liveDataNILocationList.observe(this) {
             if(viewModel.isSelectTrace()){
-                Toast.makeText(this,"轨迹被点击了",Toast.LENGTH_LONG).show()
+                //Toast.makeText(this,"轨迹被点击了",Toast.LENGTH_LONG).show()
+                viewModel.showMarker(this,it)
+                val traceVideoBean = TraceVideoBean(command = "videotime?", userid = Constant.USER_ID, time = "${it.time}:000")
+                viewModel.sendServerCommand(this,traceVideoBean)
             }
         }
 
@@ -535,10 +542,17 @@ class MainActivity : BaseActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     fun tracePointsOnclick() {
         viewModel.setSelectTrace(!viewModel.isSelectTrace())
+        binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
+
         if(viewModel.isSelectTrace()){
             Toast.makeText(this,"请选择轨迹点!",Toast.LENGTH_LONG).show()
+            //调用撤销自动播放
+            binding.mainActivitySnapshotFinish.isEnabled = false
+            binding.mainActivitySnapshotRewind.isEnabled = false
+            binding.mainActivitySnapshotPause.isEnabled = false
+            binding.mainActivitySnapshotNext.isEnabled = false
+            viewModel.cancelTrace()
         }
-        binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
     }
 
     /**
@@ -550,6 +564,7 @@ class MainActivity : BaseActivity() {
         viewModel.setSelectTrace(false)
         viewModel.setMediaFlag(false)
         viewModel.setSelectPauseTrace(false)
+        binding.mainActivityMenuIndoorGroup.visibility = View.GONE
         binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
         binding.mainActivitySnapshotMediaFlag.isSelected = viewModel.isMediaFlag()
         binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
@@ -569,7 +584,16 @@ class MainActivity : BaseActivity() {
      */
     @RequiresApi(Build.VERSION_CODES.N)
     fun rewindTraceOnclick() {
-        pasePlayTrace()
+        pausePlayTrace()
+        val item = mapController.markerHandle.getNILocation(viewModel.currentIndexNiLocation-1)
+        if(item!=null){
+            viewModel.currentIndexNiLocation = viewModel.currentIndexNiLocation-1
+            viewModel.showMarker(this,(item as MarkerItem).uid as NiLocation)
+            val traceVideoBean = TraceVideoBean(command = "videotime?", userid = Constant.USER_ID, time = "${(item.uid as NiLocation).time}:000")
+            viewModel.sendServerCommand(this,traceVideoBean)
+        }else{
+            dealNoData()
+        }
     }
 
     /**
@@ -581,6 +605,41 @@ class MainActivity : BaseActivity() {
         binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
         viewModel.setSelectTrace(false)
         binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
+        if(viewModel.isSelectPauseTrace()){
+            playVideo()
+        }else{
+            pauseVideo()
+            viewModel.cancelTrace()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun playVideo(){
+        if (mapController.markerHandle.getCurrentMark()==null) {
+            BaseToast.makeText(this, "请先选择轨迹点！", BaseToast.LENGTH_SHORT).show()
+            return
+        }
+        viewModel.setSelectTrace(false)
+        binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
+        val traceVideoBean = TraceVideoBean(command = "playVideo?", userid = Constant.USER_ID)
+        viewModel.sendServerCommand(this,traceVideoBean)
+    }
+
+    /**
+     * 设置为播放状态
+     */
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun setPlayStatus() {
+        //切换为播放
+        viewModel.setSelectPauseTrace(true)
+        binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
+        playVideo()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun pauseVideo(){
+        val traceVideoBean = TraceVideoBean(command = "pauseVideo?", userid = Constant.USER_ID)
+        viewModel.sendServerCommand(this,traceVideoBean)
     }
 
     /**
@@ -588,15 +647,38 @@ class MainActivity : BaseActivity() {
      */
     @RequiresApi(Build.VERSION_CODES.N)
     fun nextTraceOnclick() {
-        pasePlayTrace()
+        pausePlayTrace()
+        val item = mapController.markerHandle.getNILocation(viewModel.currentIndexNiLocation+1)
+        if(item!=null){
+            viewModel.currentIndexNiLocation = viewModel.currentIndexNiLocation+1
+            viewModel.showMarker(this,(item as MarkerItem).uid as NiLocation)
+            val traceVideoBean = TraceVideoBean(command = "videotime?", userid = Constant.USER_ID, time = "${(item.uid as NiLocation).time}:000")
+            viewModel.sendServerCommand(this,traceVideoBean)
+        }else{
+            dealNoData()
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun pasePlayTrace() {
+    private fun dealNoData() {
+        BaseToast.makeText(this, "无数据了！", Toast.LENGTH_SHORT).show()
+
+        //无数据时自动暂停播放，并停止轨迹
+        if (viewModel.isSelectPauseTrace()) {
+            pauseVideo()
+            viewModel.cancelTrace()
+            viewModel.setSelectPauseTrace(false)
+            binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun pausePlayTrace() {
         viewModel.setSelectTrace(false)
         binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
         viewModel.setSelectPauseTrace(false)
         binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
+        viewModel.cancelTrace()
     }
 
 

@@ -15,10 +15,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupWindow
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
@@ -35,10 +35,16 @@ import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
+import com.navinfo.omqs.bean.QRCodeBean
 import com.navinfo.omqs.bean.SignBean
+import com.navinfo.omqs.bean.TraceVideoBean
 import com.navinfo.omqs.db.RealmOperateHelper
+import com.navinfo.omqs.http.NetResult
+import com.navinfo.omqs.http.NetworkService
+import com.navinfo.omqs.ui.activity.scan.QrCodeStatus
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
+import com.navinfo.omqs.ui.other.BaseToast
 import com.navinfo.omqs.ui.widget.SignUtil
 import com.navinfo.omqs.util.DateTimeUtil
 import com.navinfo.omqs.util.SoundMeter
@@ -56,6 +62,7 @@ import org.oscim.core.MapPosition
 import org.oscim.map.Map
 import org.videolan.libvlc.LibVlcUtil
 import java.io.File
+import java.io.IOException
 import java.util.*
 import javax.inject.Inject
 
@@ -69,6 +76,7 @@ class MainViewModel @Inject constructor(
     private val mapController: NIMapController,
     private val traceDataBase: TraceDataBase,
     private val realmOperateHelper: RealmOperateHelper,
+    private val networkService: NetworkService,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
@@ -97,6 +105,8 @@ class MainViewModel @Inject constructor(
      */
     val liveDataSignMoreInfo = MutableLiveData<RenderEntity>()
 
+    private var traceTag: String = "TRACE_TAG"
+
 //    var testPoint = GeoPoint(0, 0)
 
     //uuid标识，用于记录轨迹组
@@ -119,6 +129,9 @@ class MainViewModel @Inject constructor(
     val liveDataMenuState = MutableLiveData<Boolean>()
 
     val liveDataCenterPoint = MutableLiveData<MapPosition>()
+
+    //状态
+    val qrCodeStatus: MutableLiveData<QrCodeStatus> = MutableLiveData()
 
     /**
      * 是不是线选择模式
@@ -144,6 +157,8 @@ class MainViewModel @Inject constructor(
 
     private var lastNiLocaion: NiLocation? = null
 
+    var currentIndexNiLocation: Int = 0;
+
     init {
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
             when (e) {
@@ -163,8 +178,9 @@ class MainViewModel @Inject constructor(
                 liveDataNoteIdList.value = list
             }
 
-            override fun onNiLocation(item: NiLocation) {
+            override fun onNiLocation(index: Int, item: NiLocation) {
                 liveDataNILocationList.value = item
+                currentIndexNiLocation = index
             }
         })
 
@@ -175,11 +191,11 @@ class MainViewModel @Inject constructor(
             mapController.onMapClickFlow.collectLatest {
 //                testPoint = it
                 //线选择状态
-/*                if (bSelectRoad) {
-                    captureLink(it)
-                } else {
-                    captureItem(it)
-                }*/
+                /*                if (bSelectRoad) {
+                                    captureLink(it)
+                                } else {
+                                    captureItem(it)
+                                }*/
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
@@ -259,7 +275,7 @@ class MainViewModel @Inject constructor(
             mapController.locationLayerHandler.niLocationFlow.collect { location ->
 
                 //过滤掉无效点
-                if(!GeometryTools.isCheckError(location.longitude,location.latitude)){
+                if (!GeometryTools.isCheckError(location.longitude, location.latitude)) {
                     val geometry = GeometryTools.createGeometry(
                         GeoPoint(
                             location.latitude, location.longitude
@@ -289,9 +305,10 @@ class MainViewModel @Inject constructor(
                     if (lastNiLocaion != null) {
                         val disance = GeometryTools.getDistance(
                             location.latitude, location.longitude,
-                            lastNiLocaion!!.latitude, lastNiLocaion!!.longitude)
+                            lastNiLocaion!!.latitude, lastNiLocaion!!.longitude
+                        )
                         //相距差距大于2.5米以上进行存储
-                        if (disance > 2.5) {
+                        if (disance > 2.5 && disance < 60) {
                             traceDataBase.niLocationDao.insert(location)
                             mapController.markerHandle.addNiLocationMarkerItem(location)
                             mapController.mMapView.vtmMap.updateMap(true)
@@ -299,8 +316,8 @@ class MainViewModel @Inject constructor(
                         }
                     } else {
                         traceDataBase.niLocationDao.insert(location)
-/*                        mapController.markerHandle.addNiLocationMarkerItem(location)
-                        mapController.mMapView.vtmMap.updateMap(true)*/
+                        mapController.markerHandle.addNiLocationMarkerItem(location)
+                        mapController.mMapView.vtmMap.updateMap(true)
                         lastNiLocaion = location
                     }
                 }
@@ -309,7 +326,11 @@ class MainViewModel @Inject constructor(
         //用于定位点捕捉道路
         viewModelScope.launch(Dispatchers.Default) {
             mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
-                if (!isSelectRoad()&&!GeometryTools.isCheckError(location.longitude,location.latitude)) captureLink(
+                if (!isSelectRoad() && !GeometryTools.isCheckError(
+                        location.longitude,
+                        location.latitude
+                    )
+                ) captureLink(
                     GeoPoint(
                         location.latitude,
                         location.longitude
@@ -335,11 +356,11 @@ class MainViewModel @Inject constructor(
      */
     @RequiresApi(Build.VERSION_CODES.N)
     private suspend fun captureLink(point: GeoPoint) {
-        if(captureLinkState){
+        if (captureLinkState) {
             return
         }
 
-        try{
+        try {
             captureLinkState = true
 
             val linkList = realmOperateHelper.queryLink(
@@ -437,9 +458,9 @@ class MainViewModel @Inject constructor(
                 liveDataRoadName.postValue(null)
             }
 
-        }catch (e:Exception){
+        } catch (e: Exception) {
 
-        }finally {
+        } finally {
             captureLinkState = false
         }
 
@@ -673,5 +694,114 @@ class MainViewModel @Inject constructor(
         liveDataSignMoreInfo.value = data
     }
 
+    fun sendServerCommand(context: Context, traceVideoBean: TraceVideoBean) {
 
+        if (TextUtils.isEmpty(Constant.INDOOR_IP)) {
+            Toast.makeText(context, "获取ip失败！", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.Default) {
+            val url = "http://${Constant.INDOOR_IP}:8080/sensor/service/${traceVideoBean.command}?"
+
+            when (val result = networkService.sendServerCommand(
+                url = url,
+                traceVideoBean = traceVideoBean
+            )) {
+                is NetResult.Success<*> -> {
+
+                    if (result.data != null) {
+                        try {
+
+                            val defaultUserResponse = result.data as QRCodeBean
+
+                            if (defaultUserResponse.errcode == 0) {
+
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "命令成功。",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    qrCodeStatus.postValue(QrCodeStatus.QR_CODE_STATUS_UPDATE_VIDEO_INFO_SUCCESS)
+                                }
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "命令无效${defaultUserResponse.errmsg}",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                            }
+
+                        } catch (e: IOException) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    context,
+                                    "${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+                }
+
+                is NetResult.Error<*> -> {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "${result.exception.message}",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+                    qrCodeStatus.postValue(QrCodeStatus.QR_CODE_STATUS_NET_FAILURE)
+                }
+
+                is NetResult.Failure<*> -> {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "${result.code}:${result.msg}",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+                    qrCodeStatus.postValue(QrCodeStatus.QR_CODE_STATUS_NET_FAILURE)
+                }
+
+                else -> {}
+            }
+
+        }
+
+    }
+
+    /**
+     * 显示marker
+     * @param trackCollection 轨迹点
+     * @param type  1 提示最后一个轨迹点  非1提示第一个轨迹点
+     */
+    fun showMarker(context: Context, niLocation: NiLocation) {
+        if (mapController.markerHandle != null) {
+            mapController.markerHandle.removeMarker(traceTag)
+            if (niLocation != null) {
+                mapController.markerHandle.addMarker(
+                    GeoPoint(
+                        niLocation.latitude,
+                        niLocation.longitude
+                    ), traceTag, "", niLocation as java.lang.Object
+                )
+            }
+        }
+    }
+
+    /**
+     * 结束自动播放
+     */
+    fun cancelTrace() {
+
+    }
 }

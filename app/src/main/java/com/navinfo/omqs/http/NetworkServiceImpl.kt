@@ -6,6 +6,7 @@ import com.navinfo.omqs.bean.IndoorConnectionInfoBean
 import com.navinfo.omqs.bean.LoginUserBean
 import com.navinfo.omqs.bean.QRCodeBean
 import com.navinfo.omqs.bean.SysUserBean
+import com.navinfo.omqs.bean.TraceVideoBean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
@@ -109,6 +110,33 @@ class NetworkServiceImpl @Inject constructor(
                 map["token"] = indoorConnectionInfoBean.token
                 map["baseurl"] = indoorConnectionInfoBean.baseurl
                 map["platform"] = indoorConnectionInfoBean.platform
+
+                val result = netApi.retrofitUpdateServerInfo(url,map)
+                if (result.isSuccessful) {
+                    if (result.code() == 200) {
+                        NetResult.Success(result.body())
+                    } else {
+                        NetResult.Failure<Any>(result.code(), result.message())
+                    }
+                } else {
+                    NetResult.Failure<Any>(result.code(), result.message())
+                }
+            } catch (e: Exception) {
+                NetResult.Error<Any>(e)
+            }
+        }
+
+    override suspend fun sendServerCommand(
+        url: String,
+        traceVideoBean: TraceVideoBean
+    ): NetResult<QRCodeBean> =
+        //在IO线程中运行
+        withContext(Dispatchers.IO) {
+            return@withContext try {
+                val map: MutableMap<String, String> = HashMap()
+                map["userid"] = traceVideoBean.userid
+                map["playMode"] = traceVideoBean.playMode
+                map["time"] = traceVideoBean.time
 
                 val result = netApi.retrofitUpdateServerInfo(url,map)
                 if (result.isSuccessful) {

@@ -380,6 +380,7 @@
         <ImageButton
             android:id="@+id/main_activity_snapshot_next"
             style="@style/top_right_drawer_btns_style"
+            android:onClick="@{()->mainActivity.nextTraceOnclick()}"
             android:src="@drawable/map_trace_next" />
 
         <View
