@@ -176,7 +176,7 @@ class MainActivity : BaseActivity() {
         //给xml传递viewModel对象
         binding.viewModel = viewModel
 
-       binding.mainActivityVoice.setOnTouchListener { v, event ->
+        binding.mainActivityVoice.setOnTouchListener { v, event ->
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
                     voiceOnTouchStart()//Do Something
@@ -206,7 +206,7 @@ class MainActivity : BaseActivity() {
             }
         }
         //捕捉列表变化回调
-        viewModel.liveDataNoteIdList.observe(this) {
+        viewModel.liveDataNoteId.observe(this) {
             //跳转到质检数据页面
             //获取右侧fragment容器
             val naviController = findNavController(R.id.main_activity_right_fragment)
@@ -214,11 +214,9 @@ class MainActivity : BaseActivity() {
             naviController.currentDestination?.let { navDestination ->
                 when (navDestination.id) {
                     R.id.RightEmptyFragment -> {
-                        if (it.size == 1) {
-                            val bundle = Bundle()
-                            bundle.putString("NoteId", it[0])
-                            naviController.navigate(R.id.NoteFragment, bundle)
-                        }
+                        val bundle = Bundle()
+                        bundle.putString("NoteId", it)
+                        naviController.navigate(R.id.NoteFragment, bundle)
                     }
                 }
             }
@@ -235,8 +233,8 @@ class MainActivity : BaseActivity() {
 
         //捕捉列表变化回调
         viewModel.liveDataNILocationList.observe(this) {
-            if(viewModel.isSelectTrace()){
-                Toast.makeText(this,"轨迹被点击了",Toast.LENGTH_LONG).show()
+            if (viewModel.isSelectTrace()) {
+                Toast.makeText(this, "轨迹被点击了", Toast.LENGTH_LONG).show()
             }
         }
 
@@ -544,8 +542,8 @@ class MainActivity : BaseActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     fun tracePointsOnclick() {
         viewModel.setSelectTrace(!viewModel.isSelectTrace())
-        if(viewModel.isSelectTrace()){
-            Toast.makeText(this,"请选择轨迹点!",Toast.LENGTH_LONG).show()
+        if (viewModel.isSelectTrace()) {
+            Toast.makeText(this, "请选择轨迹点!", Toast.LENGTH_LONG).show()
         }
         binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
     }
@@ -628,7 +626,12 @@ class MainActivity : BaseActivity() {
             mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
         }
         mapController.mMapView.vtmMap.animator()
-            .animateTo(GeoPoint( mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude))
+            .animateTo(
+                GeoPoint(
+                    mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
+                    mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude
+                )
+            )
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -689,14 +692,14 @@ class MainActivity : BaseActivity() {
      */
     fun showIndoorDataLayout() {
         binding.mainActivityMenuIndoorGroup.visibility = View.VISIBLE
-        if(Constant.INDOOR_IP.isNotEmpty()){
+        if (Constant.INDOOR_IP.isNotEmpty()) {
             setIndoorGroupEnable(true)
-        }else{
+        } else {
             setIndoorGroupEnable(false)
         }
     }
 
-    private fun setIndoorGroupEnable(enable: Boolean){
+    private fun setIndoorGroupEnable(enable: Boolean) {
         binding.mainActivitySnapshotFinish.isEnabled = enable
         binding.mainActivityTraceSnapshotPoints.isEnabled = enable
         binding.mainActivitySnapshotMediaFlag.isEnabled = enable

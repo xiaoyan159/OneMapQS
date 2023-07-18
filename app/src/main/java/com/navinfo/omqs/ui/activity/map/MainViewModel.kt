@@ -75,7 +75,7 @@ class MainViewModel @Inject constructor(
     val liveDataQsRecordIdList = MutableLiveData<List<String>>()
 
     //地图点击捕捉到的标签ID列表
-    val liveDataNoteIdList = MutableLiveData<List<String>>()
+    val liveDataNoteId = MutableLiveData<String>()
 
     //地图点击捕捉到的轨迹列表
     val liveDataNILocationList = MutableLiveData<NiLocation>()
@@ -159,8 +159,8 @@ class MainViewModel @Inject constructor(
                 liveDataQsRecordIdList.value = list
             }
 
-            override fun onNoteList(list: MutableList<String>) {
-                liveDataNoteIdList.value = list
+            override fun onNote(id: String) {
+                liveDataNoteId.value = id
             }
 
             override fun onNiLocation(item: NiLocation) {
@@ -182,9 +182,7 @@ class MainViewModel @Inject constructor(
 //                testPoint = it
                 //线选择状态
                 if (bSelectRoad) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        captureLink(it)
-                    }
+                    captureLink(it)
                 } else {
                     captureItem(it)
                 }
@@ -249,8 +247,7 @@ class MainViewModel @Inject constructor(
         //加载轨迹数据
         val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
         val list: List<NiLocation>? = TraceDataBase.getDatabase(
-            mapController.mMapView.context,
-            Constant.USER_DATA_PATH
+            mapController.mMapView.context, Constant.USER_DATA_PATH
         ).niLocationDao.findToTaskIdAll(id.toString())
         if (list != null) {
             for (location in list) {
@@ -268,11 +265,13 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Default) {
             //用于定位点捕捉道路
             mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
-                if (!isSelectRoad()&&!GeometryTools.isCheckError(location.longitude,location.latitude)) if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                if (!isSelectRoad() && !GeometryTools.isCheckError(
+                        location.longitude, location.latitude
+                    )
+                ) {
                     captureLink(
                         GeoPoint(
-                            location.latitude,
-                            location.longitude
+                            location.latitude, location.longitude
                         )
                     )
                 }
@@ -280,7 +279,7 @@ class MainViewModel @Inject constructor(
             mapController.locationLayerHandler.niLocationFlow.collect { location ->
 
                 //过滤掉无效点
-                if(!GeometryTools.isCheckError(location.longitude,location.latitude)){
+                if (!GeometryTools.isCheckError(location.longitude, location.latitude)) {
                     val geometry = GeometryTools.createGeometry(
                         GeoPoint(
                             location.latitude, location.longitude
@@ -309,8 +308,11 @@ class MainViewModel @Inject constructor(
                     //增加间距判断
                     if (lastNiLocaion != null) {
                         val disance = GeometryTools.getDistance(
-                            location.latitude, location.longitude,
-                            lastNiLocaion!!.latitude, lastNiLocaion!!.longitude)
+                            location.latitude,
+                            location.longitude,
+                            lastNiLocaion!!.latitude,
+                            lastNiLocaion!!.longitude
+                        )
                         //相距差距大于2.5米以上进行存储
                         if (disance > 2.5) {
                             traceDataBase.niLocationDao.insert(location)
@@ -345,11 +347,11 @@ class MainViewModel @Inject constructor(
      */
     @RequiresApi(Build.VERSION_CODES.N)
     private suspend fun captureLink(point: GeoPoint) {
-        if(captureLinkState){
+        if (captureLinkState) {
             return
         }
 
-        try{
+        try {
             captureLinkState = true
 
             val linkList = realmOperateHelper.queryLink(
@@ -447,9 +449,9 @@ class MainViewModel @Inject constructor(
                 liveDataRoadName.postValue(null)
             }
 
-        }catch (e:Exception){
+        } catch (e: Exception) {
 
-        }finally {
+        } finally {
             captureLinkState = false
         }
 
@@ -501,12 +503,10 @@ class MainViewModel @Inject constructor(
             try {
                 if (!mCameraDialog!!.getmShareUtil().connectstate) {
                     mCameraDialog!!.updateCameraResources(
-                        1,
-                        mCameraDialog!!.getmDeviceNum()
+                        1, mCameraDialog!!.getmDeviceNum()
                     )
                 }
-                TakePhotoManager.getInstance()
-                    .getCameraVedioClent(mCameraDialog!!.getmDeviceNum())
+                TakePhotoManager.getInstance().getCameraVedioClent(mCameraDialog!!.getmDeviceNum())
                     .StopSearch()
             } catch (e: Exception) {
             }
