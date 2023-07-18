@@ -1600,7 +1600,7 @@
             </m>
         </m>
         <!-- 道路线 -->
-        <m k="qi_table" v="OMDB_RD_LINK">
+        <m v="OMDB_RD_LINK">
             <line stroke="#9c9c9c" width="1" />
         </m>
         <!--道路种别-->
@@ -1835,10 +1835,6 @@
         <!-- 车信 -->
         <m v="OMDB_LANEINFO">
             <m k="currentType" v="0">
-                <m k="currentDirect" v="0">
-                    <symbol repeat="false" repeat-start="0" repeat-gap="2000"
-                        src="assets:omdb/4601/normal/1301_0.svg" symbol-height="29" symbol-width="29"></symbol>
-                </m>
                 <m k="currentDirect" v="1">
                     <symbol repeat="false" repeat-start="0" repeat-gap="2000"
                         src="assets:omdb/4601/normal/1301_1.svg" symbol-height="29" symbol-width="29"></symbol>
@@ -2236,6 +2232,9 @@
                         src="assets:omdb/4601/bus/1301_7.svg" symbol-height="29" symbol-width="29"></symbol>
                 </m>
             </m>
+        </m>
+        <m v="OMDB_AREA">
+            <area use="water"></area>
         </m>
         <m k="type" v="s_2_e">
             <line use="s2e" />

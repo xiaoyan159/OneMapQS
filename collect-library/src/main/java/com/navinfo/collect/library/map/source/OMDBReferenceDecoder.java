@@ -140,7 +140,7 @@ public class OMDBReferenceDecoder extends TileDecoder {
         int length = removeLast ? coordinates.length - 1 : coordinates.length;
         for (int i = 0; i < length; i++) {
             mMapElement.addPoint((float) ((longitudeToX(coordinates[i].x) - mTileX) * mTileScale),
-                    (float) ((latitudeToY(coordinates[i].y) - mTileY) * mTileScale));
+                    (float) ((latitudeToY(coordinates[i].y) - mTileY) * mTileScale), (float)coordinates[i].z);
         }
 
 //        int length = removeLast ? coordinates.length - 1 : coordinates.length;
