@@ -73,6 +73,7 @@ class MainViewModel @Inject constructor(
     private val mapController: NIMapController,
     private val traceDataBase: TraceDataBase,
     private val realmOperateHelper: RealmOperateHelper,
+    private val networkService: NetworkService,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 

@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import com.navinfo.collect.library.R
@@ -186,7 +185,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         layer.setOnItemGestureListener(object : OnItemGestureListener<MarkerInterface> {
             override fun onItemSingleTapUp(index: Int, item: MarkerInterface?): Boolean {
                 itemListener?.let {
-                    it.onNiLocation((niLocationItemizedLayer.itemList[index] as MarkerItem).uid as NiLocation)
+                    it.onNiLocation(index,(niLocationItemizedLayer.itemList[index] as MarkerItem).uid as NiLocation)
                 }
                 return true
             }
