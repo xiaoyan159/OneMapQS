@@ -352,6 +352,10 @@ class MainViewModel @Inject constructor(
                         )
                     )
                 }
+                if(Constant.AUTO_LOCATION){
+                    mapController.mMapView.vtmMap.animator()
+                        .animateTo(GeoPoint( location.longitude, location.latitude))
+                }
             }
         }
         //显示轨迹图层

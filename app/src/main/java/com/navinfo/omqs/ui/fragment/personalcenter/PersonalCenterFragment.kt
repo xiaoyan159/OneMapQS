@@ -17,6 +17,7 @@ import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
 import com.github.k1rakishou.fsaf.callback.FileChooserCallback
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentPersonalCenterBinding
 import com.navinfo.omqs.db.ImportOMDBHelper
@@ -113,6 +114,12 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                             viewModel.importScProblemData(uri)
                         }
                     })
+                }
+                R.id.personal_center_menu_open_auto_location -> {
+                    Constant.AUTO_LOCATION = true
+                }
+                R.id.personal_center_menu_close_auto_location -> {
+                    Constant.AUTO_LOCATION = false
                 }
                 R.id.personal_center_menu_test -> {
                     viewModel.readRealmData()
