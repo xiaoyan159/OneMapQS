@@ -24,11 +24,25 @@ import java.util.Collections
 import kotlin.math.abs
 
 
-enum class IndoorToolsStatus {
-   PAUSE,
+enum class IndoorToolsCommand {
     PLAY,
+    SELECT_POINT,
+    INDEXING,
     NEXT,
-    REWIND
+    REWIND,
+    STOP
+}
+
+enum class IndoorToolsResp{
+    /**
+     * 信息更新轨迹成功
+     */
+    QR_CODE_STATUS_UPDATE_VIDEO_INFO_SUCCESS,
+
+    /**
+     * 信息更新轨迹失败
+     */
+    QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE,
 }
 
 /**
@@ -264,6 +278,7 @@ class SocketServer(
                         timeIndex = mTaskList.size - 1
                         val result = parseResult(mTaskList[timeIndex])
                         var resultNiLocation: NiLocation? = null
+                        var index: Int = -1
                         if (result != null) {
                             when (result.type) {
                                 1 -> {
@@ -277,6 +292,9 @@ class SocketServer(
                                     val currentTimeStr: String = DateTimeUtil.TimePointSSSToTime(
                                         result.data
                                     )
+
+                                    Log.e(TAG, "反向"+result.data)
+
                                     val startTime = currentTime - traceTimeBuffer
                                     val endTme = currentTime + traceTimeBuffer
 
@@ -291,21 +309,23 @@ class SocketServer(
                                             endTimeStr
                                         )
                                     ) {
+
                                         Log.e(TAG, "getTraceData开始")
-                                        val list: List<NiLocation>? =
-                                            getTrackList(startTimeStr, endTimeStr, currentTimeStr)
+
+                                        val list: List<NiLocation>? = getTrackList(startTimeStr, endTimeStr, currentTimeStr)
+
                                         Log.e(TAG, "getTraceData结束")
+
                                         if (list != null && list.size > 0) {
+
                                             var disTime: Long = 0
-
-
                                             //只有一个点不进行判断直接返回结果
                                             if (list.size == 1) {
                                                 resultNiLocation = list[0]
                                             } else {
-
                                                 //遍历集合取最近时间的轨迹点
                                                 b@ for (nilocation in list) {
+
                                                     if (!TextUtils.isEmpty(nilocation.time)) {
 
                                                         //只获取到秒的常量
@@ -323,15 +343,13 @@ class SocketServer(
                                                             //第一次不对比，取当前值
                                                             if (disTime == 0L) {
                                                                 disTime = disTimeTemp
-                                                                resultNiLocation =
-                                                                    nilocation
+                                                                resultNiLocation = nilocation
                                                             } else {
 
                                                                 //前一个差值大于当前差值则取当前相对小的值
                                                                 if (disTime - disTimeTemp > 0) {
                                                                     disTime = disTimeTemp
-                                                                    resultNiLocation =
-                                                                        nilocation
+                                                                    resultNiLocation = nilocation
                                                                 }
                                                             }
                                                         }
@@ -343,6 +361,9 @@ class SocketServer(
                                     val msg1 = Message()
                                     msg1.what = 0x11
                                     msg1.obj = resultNiLocation
+                                    if (resultNiLocation != null) {
+                                        Log.e(TAG, "反向app"+resultNiLocation.time)
+                                    }
                                     mHandler.sendMessage(msg1)
                                 }
 
@@ -373,6 +394,7 @@ class SocketServer(
                         mHandler.sendMessage(msg2)
                     }
                 }
+                Thread.sleep(10)
             } catch (e: Exception) {
                 e.printStackTrace()
                 val msg = Message()
@@ -407,7 +429,7 @@ class SocketServer(
 
                 val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
 
-                val list: MutableList<NiLocation> = traceDataBase.niLocationDao.taskIdAndTimeTofindList(id.toString(),startTime,endTime)
+                val list: MutableList<NiLocation> = traceDataBase.niLocationDao.findToTaskIdAll(id.toString())
 
                 if (list.size > 0) return list
             }
@@ -442,6 +464,7 @@ class SocketServer(
                         connectFaild("连接断开")
                     }
                 }
+                Thread.sleep(10)
             } catch (e: IOException) {
                 connectFaild(e.toString())
                 e.printStackTrace()

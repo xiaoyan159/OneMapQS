@@ -766,6 +766,27 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         }
     }
 
+    fun getNILocationIndex(niLocation: NiLocation):Int?{
+
+        var list = niLocationItemizedLayer.itemList
+
+        if(niLocation!=null&&list.isNotEmpty()){
+
+            var index = -1
+
+            list.forEach{
+
+                index += 1
+
+                if(((it as MarkerItem).uid as NiLocation).id.equals(niLocation.id)){
+                    return index
+                }
+            }
+        }
+
+        return -1
+    }
+
 }
 
 interface OnQsRecordItemClickListener {

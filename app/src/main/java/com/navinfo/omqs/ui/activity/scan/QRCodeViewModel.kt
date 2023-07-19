@@ -34,15 +34,6 @@ enum class QrCodeStatus {
      */
     QR_CODE_STATUS_SERVER_INFO_SUCCESS,
 
-    /**
-     * 信息更新轨迹成功
-     */
-    QR_CODE_STATUS_UPDATE_VIDEO_INFO_SUCCESS,
-
-    /**
-     * 信息更新轨迹失败
-     */
-    QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE,
 }
 
 @HiltViewModel

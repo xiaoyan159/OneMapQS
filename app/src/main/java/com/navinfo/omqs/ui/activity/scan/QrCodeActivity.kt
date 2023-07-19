@@ -62,12 +62,6 @@ class QrCodeActivity : BaseActivity() {
             QrCodeStatus.QR_CODE_STATUS_SERVER_INFO_SUCCESS -> {
 
             }
-            QrCodeStatus.QR_CODE_STATUS_UPDATE_VIDEO_INFO_SUCCESS -> {
-
-            }
-            QrCodeStatus.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE -> {
-
-            }
         }
     }
 

@@ -43,6 +43,7 @@ import com.navinfo.omqs.ui.manager.TakePhotoManager
 import com.navinfo.omqs.ui.other.BaseToast
 import com.navinfo.omqs.ui.widget.SignUtil
 import com.navinfo.omqs.util.DateTimeUtil
+import com.navinfo.omqs.util.ShareUtil
 import com.navinfo.omqs.util.SoundMeter
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -74,7 +75,7 @@ class MainViewModel @Inject constructor(
     private val realmOperateHelper: RealmOperateHelper,
     private val networkService: NetworkService,
     private val sharedPreferences: SharedPreferences
-) : ViewModel(),SocketServer.OnConnectSinsListener{
+) : ViewModel(), SocketServer.OnConnectSinsListener {
 
     private var mCameraDialog: CommonDialog? = null
 
@@ -130,10 +131,10 @@ class MainViewModel @Inject constructor(
     val liveDataCenterPoint = MutableLiveData<MapPosition>()
 
     //状态
-    val qrCodeStatus: MutableLiveData<QrCodeStatus> = MutableLiveData()
+    val liveIndoorToolsResp: MutableLiveData<IndoorToolsResp> = MutableLiveData()
 
     //状态
-    val indoorToolsStatus: MutableLiveData<IndoorToolsStatus> = MutableLiveData()
+    val liveIndoorToolsCommand: MutableLiveData<IndoorToolsCommand> = MutableLiveData()
 
     /**
      * 是不是线选择模式
@@ -159,9 +160,11 @@ class MainViewModel @Inject constructor(
 
     private var lastNiLocaion: NiLocation? = null
 
-    var currentIndexNiLocation: Int = 0
+    private var currentIndexNiLocation: Int = 0
 
-    private var socketServer:SocketServer? = null
+    private var socketServer: SocketServer? = null
+
+    var indoorToolsCommand: IndoorToolsCommand? = null
 
     init {
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
@@ -208,7 +211,7 @@ class MainViewModel @Inject constructor(
             initNILocationData()
         }
 
-        socketServer = SocketServer(mapController,traceDataBase,sharedPreferences)
+        socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
     }
 
     /**
@@ -277,6 +280,7 @@ class MainViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.N)
     private fun initLocation() {
 
+        val shareUtil = ShareUtil(mapController.mMapView.context, 1)
         //用于定位点存储到数据库
         viewModelScope.launch(Dispatchers.Default) {
             //用于定位点捕捉道路
@@ -309,20 +313,20 @@ class MainViewModel @Inject constructor(
                     }
                     val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
                     location.taskId = id.toString()
+                    if (shareUtil.connectstate) {
+                        location.media = 1
+                    }
+                    var disance = 0.0
                     //增加间距判断
                     if (lastNiLocaion != null) {
-                        val disance = GeometryTools.getDistance(
+                        disance = GeometryTools.getDistance(
                             location.latitude, location.longitude,
                             lastNiLocaion!!.latitude, lastNiLocaion!!.longitude
                         )
-                        //相距差距大于2.5米以上进行存储
-                        if (disance > 2.5 && disance < 60) {
-                            traceDataBase.niLocationDao.insert(location)
-                            mapController.markerHandle.addNiLocationMarkerItem(location)
-                            mapController.mMapView.vtmMap.updateMap(true)
-                            lastNiLocaion = location
-                        }
-                    } else {
+
+                    }
+                    //室内整理工具时不能进行轨迹存储，判断轨迹间隔要超过2.5并小于60米
+                    if (Constant.INDOOR_IP.isEmpty() && (disance == 0.0 || (disance > 2.5 && disance < 60))) {
                         traceDataBase.niLocationDao.insert(location)
                         mapController.markerHandle.addNiLocationMarkerItem(location)
                         mapController.mMapView.vtmMap.updateMap(true)
@@ -699,12 +703,18 @@ class MainViewModel @Inject constructor(
         liveDataSignMoreInfo.value = data
     }
 
-    fun sendServerCommand(context: Context, traceVideoBean: TraceVideoBean) {
+    fun sendServerCommand(
+        context: Context,
+        traceVideoBean: TraceVideoBean,
+        indoorToolsCommand: IndoorToolsCommand
+    ) {
 
         if (TextUtils.isEmpty(Constant.INDOOR_IP)) {
             Toast.makeText(context, "获取ip失败！", Toast.LENGTH_LONG).show()
             return
         }
+
+        this.indoorToolsCommand = indoorToolsCommand
 
         viewModelScope.launch(Dispatchers.Default) {
             val url = "http://${Constant.INDOOR_IP}:8080/sensor/service/${traceVideoBean.command}?"
@@ -728,7 +738,8 @@ class MainViewModel @Inject constructor(
                                         "命令成功。",
                                         Toast.LENGTH_LONG
                                     ).show()
-                                    qrCodeStatus.postValue(QrCodeStatus.QR_CODE_STATUS_UPDATE_VIDEO_INFO_SUCCESS)
+
+                                    liveIndoorToolsResp.postValue(IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_SUCCESS)
 
                                     //启动双向控制服务
 
@@ -750,6 +761,7 @@ class MainViewModel @Inject constructor(
                                     )
                                         .show()
                                 }
+                                liveIndoorToolsResp.postValue(IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE)
                             }
 
                         } catch (e: IOException) {
@@ -773,7 +785,7 @@ class MainViewModel @Inject constructor(
                         )
                             .show()
                     }
-                    qrCodeStatus.postValue(QrCodeStatus.QR_CODE_STATUS_NET_FAILURE)
+                    liveIndoorToolsResp.postValue(IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE)
                 }
 
                 is NetResult.Failure<*> -> {
@@ -785,7 +797,7 @@ class MainViewModel @Inject constructor(
                         )
                             .show()
                     }
-                    qrCodeStatus.postValue(QrCodeStatus.QR_CODE_STATUS_NET_FAILURE)
+                    liveIndoorToolsResp.postValue(IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE)
                 }
 
                 else -> {}
@@ -815,6 +827,34 @@ class MainViewModel @Inject constructor(
     }
 
     /**
+     * 显示索引位置
+     * @param niLocation 轨迹点
+     */
+    fun setCurrentIndexNiLocation(niLocation: NiLocation) {
+        viewModelScope.launch ( Dispatchers.IO ){
+            Log.e("qj","开始$currentIndexNiLocation")
+            currentIndexNiLocation = mapController.markerHandle.getNILocationIndex(niLocation)!!
+            Log.e("qj","结束$currentIndexNiLocation")
+        }
+    }
+
+    /**
+     * 设置索引位置
+     * @param index 索引
+     */
+    fun setCurrentIndexLoction(index: Int) {
+        currentIndexNiLocation = index
+    }
+
+    /**
+     *
+     * @return index 索引
+     */
+    fun getCurrentNiLocationIndex(): Int {
+        return currentIndexNiLocation
+    }
+
+    /**
      * 结束自动播放
      */
     fun cancelTrace() {
@@ -833,22 +873,32 @@ class MainViewModel @Inject constructor(
 
     override fun onIndexing() {
         //切换为暂停状态
-        indoorToolsStatus.postValue(IndoorToolsStatus.PAUSE)
+        liveIndoorToolsCommand.postValue(IndoorToolsCommand.INDEXING)
     }
 
     override fun onStop() {
-        TODO("Not yet implemented")
+        liveIndoorToolsCommand.postValue(IndoorToolsCommand.STOP)
     }
 
     override fun onPlay() {
-        TODO("Not yet implemented")
+        liveIndoorToolsCommand.postValue(IndoorToolsCommand.PLAY)
     }
 
     override fun onParseEnd() {
-        TODO("Not yet implemented")
+
     }
 
     override fun onReceiveLocation(mNiLocation: NiLocation?) {
-        TODO("Not yet implemented")
+        if (mNiLocation != null) {
+            setCurrentIndexNiLocation(mNiLocation)
+            showMarker(mapController.mMapView.context, mNiLocation)
+            Log.e("qj","反向控制$currentIndexNiLocation")
+        } else {
+            BaseToast.makeText(
+                mapController.mMapView.context,
+                "没有找到对应轨迹点！",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 }

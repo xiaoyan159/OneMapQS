@@ -185,6 +185,7 @@ class MainActivity : BaseActivity() {
                 MotionEvent.ACTION_DOWN -> {
                     voiceOnTouchStart()//Do Something
                 }
+
                 MotionEvent.ACTION_UP -> {
                     voiceOnTouchStop()//Do Something
                 }
@@ -235,13 +236,18 @@ class MainActivity : BaseActivity() {
             )
         }
 
-        //捕捉列表变化回调
+        //捕捉轨迹点
         viewModel.liveDataNILocationList.observe(this) {
-            if(viewModel.isSelectTrace()){
+            if (viewModel.isSelectTrace()) {
                 //Toast.makeText(this,"轨迹被点击了",Toast.LENGTH_LONG).show()
-                viewModel.showMarker(this,it)
-                val traceVideoBean = TraceVideoBean(command = "videotime?", userid = Constant.USER_ID, time = "${it.time}:000")
-                viewModel.sendServerCommand(this,traceVideoBean)
+                viewModel.showMarker(this, it)
+                viewModel.setCurrentIndexNiLocation(it)
+                val traceVideoBean = TraceVideoBean(
+                    command = "videotime?",
+                    userid = Constant.USER_ID,
+                    time = "${it.time}:000"
+                )
+                viewModel.sendServerCommand(this, traceVideoBean,IndoorToolsCommand.SELECT_POINT)
             }
         }
 
@@ -318,6 +324,49 @@ class MainActivity : BaseActivity() {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment())
                     .commit()
+            }
+        }
+
+        viewModel.liveIndoorToolsResp.observe(this){
+            when(it){
+                IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_SUCCESS->{
+
+                    if(viewModel.indoorToolsCommand==IndoorToolsCommand.SELECT_POINT){
+                        selectPointFinish(true)
+                    }
+
+                }
+                IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE->{
+                    if(viewModel.indoorToolsCommand==IndoorToolsCommand.SELECT_POINT){
+                        selectPointFinish(false)
+                    }
+                }
+            }
+        }
+
+        //室内整理工具反向控制
+        viewModel.liveIndoorToolsCommand.observe(this) {
+            when (it) {
+                IndoorToolsCommand.PLAY -> {
+                    setPlayStatus()
+                }
+                IndoorToolsCommand.INDEXING -> {
+                    pausePlayTrace()
+                }
+                IndoorToolsCommand.SELECT_POINT -> {
+
+                }
+
+                IndoorToolsCommand.NEXT -> {
+                }
+
+                IndoorToolsCommand.REWIND -> {
+                }
+
+                IndoorToolsCommand.STOP -> {
+                    //切换为暂停状态
+                    pausePlayTrace()
+                }
             }
         }
 
@@ -551,13 +600,10 @@ class MainActivity : BaseActivity() {
         viewModel.setSelectTrace(!viewModel.isSelectTrace())
         binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
 
-        if(viewModel.isSelectTrace()){
-            Toast.makeText(this,"请选择轨迹点!",Toast.LENGTH_LONG).show()
+        if (viewModel.isSelectTrace()) {
+            Toast.makeText(this, "请选择轨迹点!", Toast.LENGTH_LONG).show()
             //调用撤销自动播放
-            binding.mainActivitySnapshotFinish.isEnabled = false
-            binding.mainActivitySnapshotRewind.isEnabled = false
-            binding.mainActivitySnapshotPause.isEnabled = false
-            binding.mainActivitySnapshotNext.isEnabled = false
+            setViewEnable(false)
             viewModel.cancelTrace()
         }
     }
@@ -592,13 +638,17 @@ class MainActivity : BaseActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     fun rewindTraceOnclick() {
         pausePlayTrace()
-        val item = mapController.markerHandle.getNILocation(viewModel.currentIndexNiLocation-1)
-        if(item!=null){
-            viewModel.currentIndexNiLocation = viewModel.currentIndexNiLocation-1
-            viewModel.showMarker(this,(item as MarkerItem).uid as NiLocation)
-            val traceVideoBean = TraceVideoBean(command = "videotime?", userid = Constant.USER_ID, time = "${(item.uid as NiLocation).time}:000")
-            viewModel.sendServerCommand(this,traceVideoBean)
-        }else{
+        val item = mapController.markerHandle.getNILocation(viewModel.getCurrentNiLocationIndex() - 1)
+        if (item != null) {
+            viewModel.setCurrentIndexLoction(viewModel.getCurrentNiLocationIndex() - 1)
+            viewModel.showMarker(this, (item as MarkerItem).uid as NiLocation)
+            val traceVideoBean = TraceVideoBean(
+                command = "videotime?",
+                userid = Constant.USER_ID,
+                time = "${(item.uid as NiLocation).time}:000"
+            )
+            viewModel.sendServerCommand(this, traceVideoBean,IndoorToolsCommand.REWIND)
+        } else {
             dealNoData()
         }
     }
@@ -612,24 +662,24 @@ class MainActivity : BaseActivity() {
         binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
         viewModel.setSelectTrace(false)
         binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
-        if(viewModel.isSelectPauseTrace()){
+        if (viewModel.isSelectPauseTrace()) {
             playVideo()
-        }else{
+        } else {
             pauseVideo()
             viewModel.cancelTrace()
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun playVideo(){
-        if (mapController.markerHandle.getCurrentMark()==null) {
+    fun playVideo() {
+        if (mapController.markerHandle.getCurrentMark() == null) {
             BaseToast.makeText(this, "请先选择轨迹点！", BaseToast.LENGTH_SHORT).show()
             return
         }
         viewModel.setSelectTrace(false)
         binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
         val traceVideoBean = TraceVideoBean(command = "playVideo?", userid = Constant.USER_ID)
-        viewModel.sendServerCommand(this,traceVideoBean)
+        viewModel.sendServerCommand(this, traceVideoBean,IndoorToolsCommand.PLAY)
     }
 
     /**
@@ -644,9 +694,9 @@ class MainActivity : BaseActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun pauseVideo(){
+    fun pauseVideo() {
         val traceVideoBean = TraceVideoBean(command = "pauseVideo?", userid = Constant.USER_ID)
-        viewModel.sendServerCommand(this,traceVideoBean)
+        viewModel.sendServerCommand(this, traceVideoBean,IndoorToolsCommand.STOP)
     }
 
     /**
@@ -655,13 +705,17 @@ class MainActivity : BaseActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     fun nextTraceOnclick() {
         pausePlayTrace()
-        val item = mapController.markerHandle.getNILocation(viewModel.currentIndexNiLocation+1)
-        if(item!=null){
-            viewModel.currentIndexNiLocation = viewModel.currentIndexNiLocation+1
-            viewModel.showMarker(this,(item as MarkerItem).uid as NiLocation)
-            val traceVideoBean = TraceVideoBean(command = "videotime?", userid = Constant.USER_ID, time = "${(item.uid as NiLocation).time}:000")
-            viewModel.sendServerCommand(this,traceVideoBean)
-        }else{
+        val item = mapController.markerHandle.getNILocation(viewModel.getCurrentNiLocationIndex() + 1)
+        if (item != null) {
+            viewModel.setCurrentIndexLoction(viewModel.getCurrentNiLocationIndex()+1)
+            viewModel.showMarker(this, (item as MarkerItem).uid as NiLocation)
+            val traceVideoBean = TraceVideoBean(
+                command = "videotime?",
+                userid = Constant.USER_ID,
+                time = "${(item.uid as NiLocation).time}:000"
+            )
+            viewModel.sendServerCommand(this, traceVideoBean,IndoorToolsCommand.NEXT)
+        } else {
             dealNoData()
         }
     }
@@ -688,6 +742,26 @@ class MainActivity : BaseActivity() {
         viewModel.cancelTrace()
     }
 
+    /**
+     * 选点结束
+     * @param value true 选点成功 false 选点失败
+     */
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun selectPointFinish(value: Boolean) {
+        if (value) {
+            setViewEnable(true)
+            viewModel.setSelectPauseTrace(false)
+            binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
+        }
+    }
+
+    private fun setViewEnable(value: Boolean){
+       binding.mainActivitySnapshotRewind.isEnabled = value
+       binding.mainActivitySnapshotNext.isEnabled = value
+       binding.mainActivitySnapshotPause.isEnabled = value
+       binding.mainActivitySnapshotFinish.isEnabled = value
+    }
+
 
     /**
      * 打开或关闭底部导航栏
@@ -708,7 +782,12 @@ class MainActivity : BaseActivity() {
             mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
         }
         mapController.mMapView.vtmMap.animator()
-            .animateTo(GeoPoint( mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude))
+            .animateTo(
+                GeoPoint(
+                    mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
+                    mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude
+                )
+            )
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -769,14 +848,14 @@ class MainActivity : BaseActivity() {
      */
     fun showIndoorDataLayout() {
         binding.mainActivityMenuIndoorGroup.visibility = View.VISIBLE
-        if(Constant.INDOOR_IP.isNotEmpty()){
+        if (Constant.INDOOR_IP.isNotEmpty()) {
             setIndoorGroupEnable(true)
-        }else{
+        } else {
             setIndoorGroupEnable(false)
         }
     }
 
-    private fun setIndoorGroupEnable(enable: Boolean){
+    private fun setIndoorGroupEnable(enable: Boolean) {
         binding.mainActivitySnapshotFinish.isEnabled = enable
         binding.mainActivityTraceSnapshotPoints.isEnabled = enable
         binding.mainActivitySnapshotMediaFlag.isEnabled = enable
