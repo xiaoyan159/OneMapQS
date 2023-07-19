@@ -247,7 +247,7 @@ class MainActivity : BaseActivity() {
                     userid = Constant.USER_ID,
                     time = "${it.time}:000"
                 )
-                viewModel.sendServerCommand(this, traceVideoBean,IndoorToolsCommand.SELECT_POINT)
+                viewModel.sendServerCommand(this, traceVideoBean, IndoorToolsCommand.SELECT_POINT)
             }
         }
 
@@ -327,17 +327,18 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        viewModel.liveIndoorToolsResp.observe(this){
-            when(it){
-                IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_SUCCESS->{
+        viewModel.liveIndoorToolsResp.observe(this) {
+            when (it) {
+                IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_SUCCESS -> {
 
-                    if(viewModel.indoorToolsCommand==IndoorToolsCommand.SELECT_POINT){
+                    if (viewModel.indoorToolsCommand == IndoorToolsCommand.SELECT_POINT) {
                         selectPointFinish(true)
                     }
 
                 }
-                IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE->{
-                    if(viewModel.indoorToolsCommand==IndoorToolsCommand.SELECT_POINT){
+
+                IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE -> {
+                    if (viewModel.indoorToolsCommand == IndoorToolsCommand.SELECT_POINT) {
                         selectPointFinish(false)
                     }
                 }
@@ -350,9 +351,11 @@ class MainActivity : BaseActivity() {
                 IndoorToolsCommand.PLAY -> {
                     setPlayStatus()
                 }
+
                 IndoorToolsCommand.INDEXING -> {
                     pausePlayTrace()
                 }
+
                 IndoorToolsCommand.SELECT_POINT -> {
 
                 }
@@ -389,8 +392,13 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        supportFragmentManager.beginTransaction()
-            .add(R.id.console_fragment_layout, ConsoleFragment()).commit()
+        //自动连接相机
+        if (viewModel.isAutoCamera()) {
+            viewModel.autoCamera()
+        } else {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.console_fragment_layout, ConsoleFragment()).commit()
+        }
     }
 
     //根据输入的经纬度跳转坐标
@@ -638,7 +646,8 @@ class MainActivity : BaseActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     fun rewindTraceOnclick() {
         pausePlayTrace()
-        val item = mapController.markerHandle.getNILocation(viewModel.getCurrentNiLocationIndex() - 1)
+        val item =
+            mapController.markerHandle.getNILocation(viewModel.getCurrentNiLocationIndex() - 1)
         if (item != null) {
             viewModel.setCurrentIndexLoction(viewModel.getCurrentNiLocationIndex() - 1)
             viewModel.showMarker(this, (item as MarkerItem).uid as NiLocation)
@@ -647,7 +656,7 @@ class MainActivity : BaseActivity() {
                 userid = Constant.USER_ID,
                 time = "${(item.uid as NiLocation).time}:000"
             )
-            viewModel.sendServerCommand(this, traceVideoBean,IndoorToolsCommand.REWIND)
+            viewModel.sendServerCommand(this, traceVideoBean, IndoorToolsCommand.REWIND)
         } else {
             dealNoData()
         }
@@ -679,7 +688,7 @@ class MainActivity : BaseActivity() {
         viewModel.setSelectTrace(false)
         binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
         val traceVideoBean = TraceVideoBean(command = "playVideo?", userid = Constant.USER_ID)
-        viewModel.sendServerCommand(this, traceVideoBean,IndoorToolsCommand.PLAY)
+        viewModel.sendServerCommand(this, traceVideoBean, IndoorToolsCommand.PLAY)
     }
 
     /**
@@ -696,7 +705,7 @@ class MainActivity : BaseActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     fun pauseVideo() {
         val traceVideoBean = TraceVideoBean(command = "pauseVideo?", userid = Constant.USER_ID)
-        viewModel.sendServerCommand(this, traceVideoBean,IndoorToolsCommand.STOP)
+        viewModel.sendServerCommand(this, traceVideoBean, IndoorToolsCommand.STOP)
     }
 
     /**
@@ -705,16 +714,17 @@ class MainActivity : BaseActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     fun nextTraceOnclick() {
         pausePlayTrace()
-        val item = mapController.markerHandle.getNILocation(viewModel.getCurrentNiLocationIndex() + 1)
+        val item =
+            mapController.markerHandle.getNILocation(viewModel.getCurrentNiLocationIndex() + 1)
         if (item != null) {
-            viewModel.setCurrentIndexLoction(viewModel.getCurrentNiLocationIndex()+1)
+            viewModel.setCurrentIndexLoction(viewModel.getCurrentNiLocationIndex() + 1)
             viewModel.showMarker(this, (item as MarkerItem).uid as NiLocation)
             val traceVideoBean = TraceVideoBean(
                 command = "videotime?",
                 userid = Constant.USER_ID,
                 time = "${(item.uid as NiLocation).time}:000"
             )
-            viewModel.sendServerCommand(this, traceVideoBean,IndoorToolsCommand.NEXT)
+            viewModel.sendServerCommand(this, traceVideoBean, IndoorToolsCommand.NEXT)
         } else {
             dealNoData()
         }
@@ -755,11 +765,11 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun setViewEnable(value: Boolean){
-       binding.mainActivitySnapshotRewind.isEnabled = value
-       binding.mainActivitySnapshotNext.isEnabled = value
-       binding.mainActivitySnapshotPause.isEnabled = value
-       binding.mainActivitySnapshotFinish.isEnabled = value
+    private fun setViewEnable(value: Boolean) {
+        binding.mainActivitySnapshotRewind.isEnabled = value
+        binding.mainActivitySnapshotNext.isEnabled = value
+        binding.mainActivitySnapshotPause.isEnabled = value
+        binding.mainActivitySnapshotFinish.isEnabled = value
     }
 
 

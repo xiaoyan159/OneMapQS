@@ -24,6 +24,7 @@ import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.*
+import com.navinfo.collect.library.garminvirbxe.HostBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
 import com.navinfo.collect.library.utils.GeometryTools
@@ -37,7 +38,6 @@ import com.navinfo.omqs.bean.TraceVideoBean
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
-import com.navinfo.omqs.ui.activity.scan.QrCodeStatus
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import com.navinfo.omqs.ui.other.BaseToast
@@ -166,6 +166,8 @@ class MainViewModel @Inject constructor(
 
     var indoorToolsCommand: IndoorToolsCommand? = null
 
+    private var shareUtil: ShareUtil? = null
+
     init {
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
             when (e) {
@@ -189,6 +191,8 @@ class MainViewModel @Inject constructor(
                 liveDataNILocationList.value = item
             }
         })
+
+        shareUtil = ShareUtil(mapController.mMapView.context, 1)
 
         initLocation()
 
@@ -280,7 +284,6 @@ class MainViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.N)
     private fun initLocation() {
 
-        val shareUtil = ShareUtil(mapController.mMapView.context, 1)
         //用于定位点存储到数据库
         viewModelScope.launch(Dispatchers.Default) {
             //用于定位点捕捉道路
@@ -313,7 +316,7 @@ class MainViewModel @Inject constructor(
                     }
                     val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
                     location.taskId = id.toString()
-                    if (shareUtil.connectstate) {
+                    if (shareUtil?.connectstate == true) {
                         location.media = 1
                     }
                     var disance = 0.0
@@ -504,17 +507,8 @@ class MainViewModel @Inject constructor(
 
         Log.e("qj", LibVlcUtil.hasCompatibleCPU(context).toString())
 
-        if (mCameraDialog == null) {
-            mCameraDialog = CommonDialog(
-                context,
-                context.resources.getDimension(R.dimen.head_img_width)
-                    .toInt() * 3 + context.resources.getDimension(R.dimen.ten)
-                    .toInt() + context.resources.getDimension(R.dimen.twenty_four).toInt(),
-                context.resources.getDimension(R.dimen.head_img_width).toInt() + 10,
-                1
-            )
-            mCameraDialog!!.setCancelable(true)
-        }
+        initCameraDialog(context)
+
         mCameraDialog!!.openCamear(mCameraDialog!!.getmShareUtil().continusTakePhotoState)
         mCameraDialog!!.show()
         mCameraDialog!!.setOnDismissListener(DialogInterface.OnDismissListener {
@@ -537,6 +531,20 @@ class MainViewModel @Inject constructor(
                 mCameraDialog!!.playVideo()
             }
         })
+    }
+
+    private fun initCameraDialog(context:Context){
+        if (mCameraDialog == null) {
+            mCameraDialog = CommonDialog(
+                context,
+                context.resources.getDimension(R.dimen.head_img_width)
+                    .toInt() * 3 + context.resources.getDimension(R.dimen.ten)
+                    .toInt() + context.resources.getDimension(R.dimen.twenty_four).toInt(),
+                context.resources.getDimension(R.dimen.head_img_width).toInt() + 10,
+                1
+            )
+            mCameraDialog!!.setCancelable(true)
+        }
     }
 
     fun startSoundMetter(context: Context, v: View) {
@@ -899,6 +907,21 @@ class MainViewModel @Inject constructor(
                 "没有找到对应轨迹点！",
                 Toast.LENGTH_SHORT
             ).show()
+        }
+    }
+
+    fun isAutoCamera():Boolean{
+
+        return shareUtil?.connectstate == true
+    }
+
+    fun autoCamera(){
+        if (shareUtil?.connectstate == true) {
+            val hostBean1 = HostBean()
+            hostBean1.ipAddress = shareUtil!!.takeCameraIP
+            hostBean1.hardwareAddress = shareUtil!!.takeCameraMac
+            onClickCameraButton(mapController.mMapView.context)
+            mCameraDialog?.connection(hostBean1)
         }
     }
 }

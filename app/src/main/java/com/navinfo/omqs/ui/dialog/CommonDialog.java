@@ -676,6 +676,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
 
         //当前为连接时启动已有的状态
         if (connectstate) {
+
             mOneBtConnect.setPressed(true);
 
             mOneBtConnect.setBackgroundResource(R.drawable.shape_btn_red_disconnect_bg);
@@ -1525,7 +1526,7 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
     }
 
     //连接
-    private void connection(HostBean hostBean) {
+    public void connection(HostBean hostBean) {
         if (hostBean != null) {
             SensorParams params = new SensorParams();
 
