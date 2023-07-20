@@ -362,6 +362,7 @@
         <ImageButton
             android:id="@+id/main_activity_snapshot_media_flag"
             style="@style/top_right_drawer_btns_style"
+            android:visibility="gone"
             android:onClick="@{()->mainActivity.mediaFlagOnclick()}"
             android:src="@drawable/map_trace_mediaflag" />
 

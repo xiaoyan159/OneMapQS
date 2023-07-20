@@ -1708,8 +1708,12 @@
         <!-- 道路边界类型 -->
         <m v="OMDB_RDBOUND_BOUNDARYTYPE">
             <outline-layer id="boundaryType" stroke="#8e44ad" width="0.2" />
-            <m k="boundaryType" v="0|1|2|3|4|5|6|7|8|9">
+            <m k="boundaryType" v="0|2|3|4|5|6|7|8|9">
                 <line stroke="#ffffff" use="boundaryType" width="0.2"/>
+            </m>
+            <m k="boundaryType" v="1">
+                <!--无标线无可区分边界-->
+                <line dasharray="10,2,2,2,2,2,2,2" repeat-start="0" stroke="#ffffff" width="0.2" />
             </m>
 <!--            <outline-layer id="boundaryType" stroke="#fcba5a" width="0.2" />
             <m k="boundaryType" v="0">
@@ -1767,8 +1771,9 @@
                                 <m v="1">
                                     <line stroke="#ffffff" use="boundaryType" />
                                 </m>
+                                <!--只区分虚线与实线-->
                                 <m v="2">
-                                    <line stroke="#eccc68" use="boundaryType" />
+                                    <line dasharray="10,2,2,2,2,2,2,2" repeat-start="0" stroke="#eccc68" use="boundaryType" />
                                 </m>
                                 <m v="6">
                                     <line stroke="#0000ff" use="boundaryType" />
@@ -1815,7 +1820,11 @@
                     </m>
                 </m>
                 <m v="0|1|3|4|5|6|7|8|9">
-                    <line stroke="#ffffff" use="boundaryType"/>
+                    <line stroke="#ffffff" use="boundaryType" />
+                </m>
+                <!--只区分虚线与实线-->
+                <m v="0|3|4|5|6|7|8|9">
+                    <line dasharray="10,2,2,2,2,2,2,2" repeat-start="0" stroke="#ffffff" />
                 </m>
             </m>
         </m>

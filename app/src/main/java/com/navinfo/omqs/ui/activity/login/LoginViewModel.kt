@@ -1,6 +1,7 @@
 package com.navinfo.omqs.ui.activity.login
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -16,11 +17,11 @@ import com.navinfo.omqs.http.DefaultResponse
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager
+import com.navinfo.omqs.util.NetUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.coroutines.*
-import retrofit2.Response
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
@@ -73,7 +74,9 @@ class LoginViewModel @Inject constructor(
     //是不是登录成功
     val loginStatus: MutableLiveData<LoginStatus> = MutableLiveData()
 
-    var jobLogin: Job? = null;
+    var jobLogin: Job? = null
+
+    var sharedPreferences: SharedPreferences? = null
 
     init {
         loginUser.value = LoginUserBean(userCode = "haofuyue00213", passWord = "123456")
@@ -98,10 +101,26 @@ class LoginViewModel @Inject constructor(
         if (password.isEmpty()) {
             Toast.makeText(context, "请输入密码", Toast.LENGTH_SHORT).show()
         }
+        sharedPreferences =
+            context.getSharedPreferences("USER_SHAREDPREFERENCES", Context.MODE_PRIVATE)
+        val userNameCache = sharedPreferences?.getString("userName", null)
+        val passwordCache = sharedPreferences?.getString("passWord", null)
+        val userCodeCache = sharedPreferences?.getString("userCode", null)
+        //增加缓存记录，不用每次连接网络登录
+        if (userNameCache != null && passwordCache != null && userCodeCache != null) {
+            if (userNameCache == userName && passwordCache == password) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    createUserFolder(context, userCodeCache)
+                    loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
+                }
+                return
+            }
+        }
         //不指定IO，会在主线程里运行
         jobLogin = viewModelScope.launch(Dispatchers.IO) {
             loginCheck(context, userName, password)
         }
+
     }
 
     /**
@@ -115,25 +134,33 @@ class LoginViewModel @Inject constructor(
         loginStatus.postValue(LoginStatus.LOGIN_STATUS_NET_LOADING)
         var userCode = "99999";
         //登录访问
-        when (val result = networkService.loginUser(LoginUserBean(userName,password))) {
-            is NetResult.Success<*> ->{
-                if (result.data!=null) {
+        when (val result = networkService.loginUser(LoginUserBean(userName, password))) {
+            is NetResult.Success<*> -> {
+                if (result.data != null) {
                     try {
                         val defaultUserResponse = result.data as DefaultResponse<SysUserBean>
-                        if(defaultUserResponse.success){
-                            if(defaultUserResponse.obj==null|| defaultUserResponse.obj!!.userCode==null){
+                        if (defaultUserResponse.success) {
+                            if (defaultUserResponse.obj == null || defaultUserResponse.obj!!.userCode == null) {
                                 withContext(Dispatchers.Main) {
-                                    Toast.makeText(context, "服务返回用户Code信息错误", Toast.LENGTH_SHORT)
+                                    Toast.makeText(
+                                        context,
+                                        "服务返回用户Code信息错误",
+                                        Toast.LENGTH_SHORT
+                                    )
                                         .show()
                                 }
                                 loginStatus.postValue(LoginStatus.LOGIN_STATUS_CANCEL)
                                 return
-                            }else{
+                            } else {
                                 userCode = defaultUserResponse.obj?.userCode.toString()
                             }
-                        }else{
+                        } else {
                             withContext(Dispatchers.Main) {
-                                Toast.makeText(context, "${defaultUserResponse.msg}", Toast.LENGTH_SHORT)
+                                Toast.makeText(
+                                    context,
+                                    "${defaultUserResponse.msg}",
+                                    Toast.LENGTH_SHORT
+                                )
                                     .show()
                             }
                             loginStatus.postValue(LoginStatus.LOGIN_STATUS_CANCEL)
@@ -145,7 +172,8 @@ class LoginViewModel @Inject constructor(
                     }
                 }
             }
-            is NetResult.Error<*> ->{
+
+            is NetResult.Error<*> -> {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)
                         .show()
@@ -153,7 +181,8 @@ class LoginViewModel @Inject constructor(
                 loginStatus.postValue(LoginStatus.LOGIN_STATUS_CANCEL)
                 return
             }
-            is NetResult.Failure<*> ->{
+
+            is NetResult.Failure<*> -> {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
                         .show()
@@ -161,12 +190,16 @@ class LoginViewModel @Inject constructor(
                 loginStatus.postValue(LoginStatus.LOGIN_STATUS_CANCEL)
                 return
             }
+
             else -> {}
         }
 
         //文件夹初始化
         try {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_INIT)
+            sharedPreferences?.edit()?.putString("userName", userName)?.commit()
+            sharedPreferences?.edit()?.putString("passWord", password)?.commit()
+            sharedPreferences?.edit()?.putString("userCode", userCode)?.commit()
             createUserFolder(context, userCode)
         } catch (e: IOException) {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_FAILURE)
@@ -185,18 +218,21 @@ class LoginViewModel @Inject constructor(
                     roomAppDatabase.getOfflineMapDao().insertOrUpdate(result.data)
                 }
             }
+
             is NetResult.Error<*> -> {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)
                         .show()
                 }
             }
+
             is NetResult.Failure<*> -> {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
                         .show()
                 }
             }
+
             is NetResult.Loading -> {}
             else -> {}
         }
@@ -234,7 +270,7 @@ class LoginViewModel @Inject constructor(
         // 拷贝配置文件到用户目录下
         val omdbConfigFile = File(userFolder.absolutePath, Constant.OMDB_CONFIG);
 //        if (!omdbConfigFile.exists()) {
-            ResourceUtils.copyFileFromAssets(Constant.OMDB_CONFIG, omdbConfigFile.absolutePath)
+        ResourceUtils.copyFileFromAssets(Constant.OMDB_CONFIG, omdbConfigFile.absolutePath)
 //        }
     }
 

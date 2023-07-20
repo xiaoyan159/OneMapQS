@@ -868,7 +868,7 @@ class MainActivity : BaseActivity() {
     private fun setIndoorGroupEnable(enable: Boolean) {
         binding.mainActivitySnapshotFinish.isEnabled = enable
         binding.mainActivityTraceSnapshotPoints.isEnabled = enable
-        binding.mainActivitySnapshotMediaFlag.isEnabled = enable
+        //binding.mainActivitySnapshotMediaFlag.isEnabled = enable
         binding.mainActivitySnapshotRewind.isEnabled = enable
         binding.mainActivitySnapshotPause.isEnabled = enable
         binding.mainActivitySnapshotNext.isEnabled = enable
