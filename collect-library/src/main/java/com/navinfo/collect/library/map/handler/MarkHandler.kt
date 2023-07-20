@@ -758,9 +758,9 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         return niLocationItemizedLayer.itemList.size
     }
 
-    fun getNILocation(index:Int):MarkerInterface?{
+    fun getNILocation(index:Int):NiLocation?{
         return if(index>-1&&index<getNILocationItemizedLayerSize()){
-            niLocationItemizedLayer.itemList[index]
+            ((niLocationItemizedLayer.itemList[index])as MarkerItem).uid as NiLocation
         }else{
             null
         }

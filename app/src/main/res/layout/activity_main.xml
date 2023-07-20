@@ -345,7 +345,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:constraint_referenced_ids="main_activity_snapshot_finish,main_activity_trace_snapshot_points,main_activity_snapshot_media_flag,main_activity_snapshot_rewind,main_activity_snapshot_pause,main_activity_snapshot_next" />
+            app:constraint_referenced_ids="main_activity_snapshot_finish,main_activity_trace_snapshot_points,main_activity_snapshot_rewind,main_activity_snapshot_pause,main_activity_snapshot_next" />
 
         <ImageButton
             android:id="@+id/main_activity_snapshot_finish"
@@ -359,12 +359,12 @@
             android:onClick="@{()->mainActivity.tracePointsOnclick()}"
             android:src="@drawable/map_trace_select_point" />
 
-        <ImageButton
+<!--        <ImageButton
             android:id="@+id/main_activity_snapshot_media_flag"
             style="@style/top_right_drawer_btns_style"
             android:visibility="gone"
             android:onClick="@{()->mainActivity.mediaFlagOnclick()}"
-            android:src="@drawable/map_trace_mediaflag" />
+            android:src="@drawable/map_trace_mediaflag" />-->
 
         <ImageButton
             android:id="@+id/main_activity_snapshot_rewind"

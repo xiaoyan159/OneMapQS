@@ -334,7 +334,10 @@ class MainActivity : BaseActivity() {
                     if (viewModel.indoorToolsCommand == IndoorToolsCommand.SELECT_POINT) {
                         selectPointFinish(true)
                     }
-
+                    //启动自动播放
+                    if (viewModel.indoorToolsCommand == IndoorToolsCommand.PLAY) {
+                        viewModel.startTimer()
+                    }
                 }
 
                 IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE -> {
@@ -627,7 +630,7 @@ class MainActivity : BaseActivity() {
         viewModel.setSelectPauseTrace(false)
         binding.mainActivityMenuIndoorGroup.visibility = View.GONE
         binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
-        binding.mainActivitySnapshotMediaFlag.isSelected = viewModel.isMediaFlag()
+        //binding.mainActivitySnapshotMediaFlag.isSelected = viewModel.isMediaFlag()
         binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
     }
 
@@ -636,8 +639,8 @@ class MainActivity : BaseActivity() {
      */
     @RequiresApi(Build.VERSION_CODES.N)
     fun mediaFlagOnclick() {
-        viewModel.setMediaFlag(!viewModel.isMediaFlag())
-        binding.mainActivitySnapshotMediaFlag.isSelected = viewModel.isMediaFlag()
+/*        viewModel.setMediaFlag(!viewModel.isMediaFlag())
+        binding.mainActivitySnapshotMediaFlag.isSelected = viewModel.isMediaFlag()*/
     }
 
     /**
@@ -650,11 +653,11 @@ class MainActivity : BaseActivity() {
             mapController.markerHandle.getNILocation(viewModel.getCurrentNiLocationIndex() - 1)
         if (item != null) {
             viewModel.setCurrentIndexLoction(viewModel.getCurrentNiLocationIndex() - 1)
-            viewModel.showMarker(this, (item as MarkerItem).uid as NiLocation)
+            viewModel.showMarker(this, item)
             val traceVideoBean = TraceVideoBean(
                 command = "videotime?",
                 userid = Constant.USER_ID,
-                time = "${(item.uid as NiLocation).time}:000"
+                time = "${item.time}:000"
             )
             viewModel.sendServerCommand(this, traceVideoBean, IndoorToolsCommand.REWIND)
         } else {
@@ -718,11 +721,11 @@ class MainActivity : BaseActivity() {
             mapController.markerHandle.getNILocation(viewModel.getCurrentNiLocationIndex() + 1)
         if (item != null) {
             viewModel.setCurrentIndexLoction(viewModel.getCurrentNiLocationIndex() + 1)
-            viewModel.showMarker(this, (item as MarkerItem).uid as NiLocation)
+            viewModel.showMarker(this, item)
             val traceVideoBean = TraceVideoBean(
                 command = "videotime?",
                 userid = Constant.USER_ID,
-                time = "${(item.uid as NiLocation).time}:000"
+                time = "${item.time}:000"
             )
             viewModel.sendServerCommand(this, traceVideoBean, IndoorToolsCommand.NEXT)
         } else {

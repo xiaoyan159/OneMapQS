@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
+import com.blankj.utilcode.util.ViewUtils.runOnUiThread
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.*
 import com.navinfo.collect.library.garminvirbxe.HostBean
@@ -56,12 +57,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
+import org.oscim.layers.marker.MarkerItem
 import org.oscim.map.Map
 import org.videolan.libvlc.LibVlcUtil
 import java.io.File
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
+import kotlin.concurrent.fixedRateTimer
 
 /**
  * 创建Activity全局viewmode
@@ -167,6 +170,10 @@ class MainViewModel @Inject constructor(
     var indoorToolsCommand: IndoorToolsCommand? = null
 
     private var shareUtil: ShareUtil? = null
+
+    private var timer: Timer? = null
+
+    private var disTime :Long = 1000
 
     init {
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
@@ -352,9 +359,11 @@ class MainViewModel @Inject constructor(
                         )
                     )
                 }
-                if(Constant.AUTO_LOCATION){
-                    mapController.mMapView.vtmMap.animator()
-                        .animateTo(GeoPoint( location.longitude, location.latitude))
+                withContext(Dispatchers.Main){
+                    if(Constant.AUTO_LOCATION){
+                        mapController.mMapView.vtmMap.animator()
+                            .animateTo(GeoPoint( location.longitude, location.latitude))
+                    }
                 }
             }
         }
@@ -866,13 +875,6 @@ class MainViewModel @Inject constructor(
         return currentIndexNiLocation
     }
 
-    /**
-     * 结束自动播放
-     */
-    fun cancelTrace() {
-
-    }
-
     override fun onConnect(success: Boolean) {
         if (!success && socketServer != null) {
             BaseToast.makeText(
@@ -928,4 +930,40 @@ class MainViewModel @Inject constructor(
             mCameraDialog?.connection(hostBean1)
         }
     }
+
+    fun startTimer() {
+        if(timer!=null){
+            cancelTrace()
+        }
+        timer = fixedRateTimer("", false, disTime, disTime) {
+            if(currentIndexNiLocation<mapController.markerHandle.getNILocationItemizedLayerSize()){
+                Log.e("qj","定时器")
+                val niLocation = mapController.markerHandle.getNILocation(currentIndexNiLocation)
+                val nextNiLocation = mapController.markerHandle.getNILocation(currentIndexNiLocation+1)
+                if(nextNiLocation!=null&&niLocation!=null){
+                    var nilocationDisTime = nextNiLocation.timeStamp.toLong() - niLocation.timeStamp.toLong()
+                    disTime = if(nilocationDisTime<1000){
+                        1000
+                    }else{
+                        nilocationDisTime
+                    }
+                    showMarker(mapController.mMapView.context,nextNiLocation)
+                    currentIndexNiLocation += 1
+                    //再次启动
+                    startTimer()
+                }
+            }else{
+                Toast.makeText(mapController.mMapView.context,"无数据了！",Toast.LENGTH_LONG).show()
+                cancelTrace()
+            }
+        }
+    }
+
+    /**
+     * 结束自动播放
+     */
+    fun cancelTrace() {
+        timer?.cancel()
+    }
 }
+
