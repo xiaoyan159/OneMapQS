@@ -1,12 +1,8 @@
 package com.navinfo.collect.library.map
 
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import com.navinfo.collect.library.map.handler.*
 import com.navinfo.collect.library.system.Constant
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.launch
-import org.oscim.core.GeoPoint
 
 /**
  *  地图控制器
@@ -23,7 +19,7 @@ class NIMapController {
     lateinit var viewportHandler: ViewportHandler
     lateinit var measureLayerHandler: MeasureLayerHandler
 
-    val onMapClickFlow = MutableSharedFlow<GeoPoint>()
+//    val onMapClickFlow = MutableSharedFlow<GeoPoint>()
 
     fun init(
         context: AppCompatActivity,
@@ -43,13 +39,26 @@ class NIMapController {
         measureLayerHandler = MeasureLayerHandler(context, mapView)
         mMapView = mapView
         mMapView.setOnMapClickListener {
-            context.lifecycleScope.launch {
-                onMapClickFlow.emit(it)
+            if (mapView.listenerTagList.isNotEmpty()) {
+                val tag = mapView.listenerTagList.last()
+                val listenerList = mapView.listenerList[tag]
+                if (listenerList != null) {
+                    for (listener in listenerList) {
+                        if (listener is OnGeoPointClickListener) {
+                            listener.onMapClick(tag, it)
+                            return@setOnMapClickListener
+                        }
+                    }
+                }
             }
+
+//            context.lifecycleScope.launch {
+//                onMapClickFlow.emit(it)
+//            }
+
         }
         mapView.setOptions(options)
     }
-
-
 }
+
 

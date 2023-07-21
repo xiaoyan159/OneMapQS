@@ -3,8 +3,8 @@ package com.navinfo.collect.library.map;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,12 +12,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.navinfo.collect.library.R;
 import com.navinfo.collect.library.data.entity.NiLocation;
 import com.navinfo.collect.library.map.layers.NaviMapScaleBar;
-import com.navinfo.collect.library.map.source.MapLifeNiLocationTileSource;
 
 import org.oscim.android.MapPreferences;
 import org.oscim.android.MapView;
@@ -29,22 +29,14 @@ import org.oscim.event.Gesture;
 import org.oscim.event.GestureListener;
 import org.oscim.layers.GroupLayer;
 import org.oscim.layers.Layer;
-import org.oscim.layers.tile.buildings.BuildingLayer;
-import org.oscim.layers.tile.vector.OsmTileLayer;
 import org.oscim.layers.tile.vector.VectorTileLayer;
-import org.oscim.layers.tile.vector.labeling.LabelLayer;
-import org.oscim.layers.tile.vector.labeling.LabelTileLoaderHook;
 import org.oscim.map.Map;
 import org.oscim.renderer.GLViewport;
 import org.oscim.scalebar.MapScaleBarLayer;
-import org.oscim.theme.IRenderTheme;
-import org.oscim.theme.ThemeLoader;
 import org.oscim.theme.VtmThemes;
-import org.oscim.tiling.source.mapfile.MapFileTileSource;
-import org.oscim.tiling.source.mapfile.MultiMapFileTileSource;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -92,11 +84,6 @@ public final class NIMapView extends RelativeLayout {
      */
     private NIMapOptions options;
     /**
-     * 地图图层管理器
-     */
-//    private NILayerManager mLayerManager;
-//    private Layer baseRasterLayer, defaultVectorTileLayer, defaultVectorLabelLayer, gridLayer;
-    /**
      * 地图网格图层
      */
 //    private Layer gridLayer;
@@ -108,6 +95,23 @@ public final class NIMapView extends RelativeLayout {
     private MapPreferences mPrefs;
     protected String mapFilePath = "/map";
     protected GroupLayer baseGroupLayer; // 用于盛放所有基础底图的图层组，便于统一管理
+
+
+    private HashMap<String, BaseClickListener[]> listenerList = new HashMap();
+    private List<String> listenerTagList = new ArrayList();
+
+    public HashMap<String, BaseClickListener[]> getListenerList() {
+        return listenerList;
+    }
+
+    /**
+     * 获取所有tag
+     *
+     * @return
+     */
+    public List<String> getListenerTagList() {
+        return listenerTagList;
+    }
 
     public void setOptions(NIMapOptions option) {
         this.options = option;
@@ -812,8 +816,6 @@ public final class NIMapView extends RelativeLayout {
 
     /**
      * 设置logo显隐
-     *
-     * @param position 按钮位置
      */
     public void setLogoVisable(int visable) {
         if (logoImage != null) {
@@ -886,12 +888,13 @@ public final class NIMapView extends RelativeLayout {
 
     /**
      * 设置比例尺位置
+     *
      * @param position
      * @param xOffset
      * @param yOffset
      */
-    public void setScaleBarLayer(GLViewport.Position position, int xOffset, int yOffset){
-        if(mapScaleBarLayer!=null&&mapView.map().layers().contains(mapScaleBarLayer)){
+    public void setScaleBarLayer(GLViewport.Position position, int xOffset, int yOffset) {
+        if (mapScaleBarLayer != null && mapView.map().layers().contains(mapScaleBarLayer)) {
             mapView.map().layers().remove(mapScaleBarLayer);
             mapScaleBarLayer = null;
         }
@@ -1029,4 +1032,39 @@ public final class NIMapView extends RelativeLayout {
         mapView.map().updateMap(redraw);
     }
 
+
+    /**
+     * 增加地图点击监听
+     */
+    public boolean addOnNIMapClickListener(@NonNull String tag, @NonNull BaseClickListener... listeners) {
+        if (TextUtils.equals(tag, "")) {
+            return false;
+        }
+        for (Object s : listenerTagList) {
+            if (s == tag) {
+                return false;
+            }
+        }
+        listenerTagList.add(tag);
+        listenerList.put(tag, listeners);
+        return true;
+    }
+
+    /**
+     * 移除点击监听
+     *
+     * @param tag
+     */
+    public void removeOnNIMapClickListener(@NonNull String tag) {
+        listenerList.remove(tag);
+        for (String t : listenerTagList) {
+            if (t.equals(tag)) {
+                listenerTagList.remove(t);
+                return;
+            }
+        }
+    }
 }
+
+
+

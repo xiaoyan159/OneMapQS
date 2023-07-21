@@ -11,6 +11,7 @@ import com.navinfo.collect.library.R
 import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.data.entity.NoteBean
 import com.navinfo.collect.library.data.entity.QsRecordBean
+import com.navinfo.collect.library.map.BaseClickListener
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.map.cluster.ClusterMarkerItem
 import com.navinfo.collect.library.map.cluster.ClusterMarkerRenderer
@@ -145,18 +146,22 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                     list: MutableList<Int>,
                     nearest: Int
                 ): Boolean {
-                    itemListener?.let {
-                        val idList = mutableListOf<String>()
-                        if (list.size == 0) {
-                        } else {
-                            for (i in list) {
-                                val markerInterface: MarkerInterface =
-                                    qsRecordItemizedLayer.itemList[i]
-                                if (markerInterface is MarkerItem) {
-                                    idList.add(markerInterface.title)
+                    val tag = mMapView.listenerTagList.last()
+                    val listenerList = mMapView.listenerList[tag]
+                    if (listenerList != null) {
+                        for (listener in listenerList) {
+                            if (listener is OnQsRecordItemClickListener) {
+                                val idList = mutableListOf<String>()
+                                for (i in list) {
+                                    val markerInterface: MarkerInterface =
+                                        qsRecordItemizedLayer.itemList[i]
+                                    if (markerInterface is MarkerItem) {
+                                        idList.add(markerInterface.title)
+                                    }
                                 }
+                                listener.onQsRecordList(tag, idList.distinct().toMutableList())
+                                break
                             }
-                            it.onQsRecordList(idList.distinct().toMutableList())
                         }
                     }
                     return true
@@ -185,8 +190,18 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         )
         layer.setOnItemGestureListener(object : OnItemGestureListener<MarkerInterface> {
             override fun onItemSingleTapUp(index: Int, item: MarkerInterface?): Boolean {
-                itemListener?.let {
-                    it.onNiLocation((niLocationItemizedLayer.itemList[index] as MarkerItem).uid as NiLocation)
+                val tag = mMapView.listenerTagList.last()
+                val listenerList = mMapView.listenerList[tag]
+                if (listenerList != null) {
+                    for (listener in listenerList) {
+                        if (listener is OnNiLocationItemListener) {
+                            listener.onNiLocation(
+                                tag,
+                                (niLocationItemizedLayer.itemList[index] as MarkerItem).uid as NiLocation
+                            )
+                            break
+                        }
+                    }
                 }
                 return true
             }
@@ -222,10 +237,17 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         )
         layer.setOnItemGestureListener(object : OnItemGestureListener<MarkerInterface> {
             override fun onItemSingleTapUp(index: Int, item: MarkerInterface?): Boolean {
-                itemListener?.let {
-                    val marker = layer.itemList[index]
-                    if (marker is MarkerItem)
-                        it.onNote(marker.title)
+                val tag = mMapView.listenerTagList.last()
+                val listenerList = mMapView.listenerList[tag]
+                if (listenerList != null) {
+                    for (listener in listenerList) {
+                        if (listener is ONNoteItemClickListener) {
+                            val marker = layer.itemList[index]
+                            if (marker is MarkerItem)
+                                listener.onNote(tag, marker.title)
+                            break
+                        }
+                    }
                 }
                 return true
             }
@@ -241,7 +263,6 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
 
     private val resId = R.mipmap.map_icon_report
     private val noteResId = R.drawable.icon_note_marker
-    private var itemListener: OnQsRecordItemClickListener? = null
 
     /**
      * 文字大小
@@ -259,17 +280,10 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         })
     }
 
-    /**
-     * 设置marker 点击回调
-     */
-    fun setOnQsRecordItemClickListener(listener: OnQsRecordItemClickListener?) {
-        itemListener = listener
-    }
 
     /**
      *    增加marker
      */
-
     fun addMarker(
         geoPoint: GeoPoint,
         title: String?,
@@ -753,10 +767,24 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         niLocationItemizedLayer.update()
     }
 
+    /**
+     * 移除所有质检数据
+     */
+    fun removeAllQsMarker() {
+        qsRecordItemizedLayer.removeAllItems()
+        mMapView.updateMap(true)
+    }
+
 }
 
-interface OnQsRecordItemClickListener {
-    fun onQsRecordList(list: MutableList<String>)
-    fun onNote(noteId: String)
-    fun onNiLocation(it: NiLocation)
+interface OnQsRecordItemClickListener : BaseClickListener {
+    fun onQsRecordList(tag: String, list: MutableList<String>)
+}
+
+interface ONNoteItemClickListener : BaseClickListener {
+    fun onNote(tag: String, noteId: String)
+}
+
+interface OnNiLocationItemListener : BaseClickListener {
+    fun onNiLocation(tag: String, it: NiLocation)
 }

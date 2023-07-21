@@ -18,13 +18,15 @@ import android.widget.PopupWindow
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.*
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.collect.library.map.OnGeoPointClickListener
+import com.navinfo.collect.library.map.handler.ONNoteItemClickListener
+import com.navinfo.collect.library.map.handler.OnNiLocationItemListener
 import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
 import com.navinfo.collect.library.map.handler.OnTaskLinkItemClickListener
 import com.navinfo.collect.library.utils.GeometryTools
@@ -60,14 +62,15 @@ import javax.inject.Inject
  * 创建Activity全局viewmode
  */
 
-@RequiresApi(Build.VERSION_CODES.N)
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val mapController: NIMapController,
     private val traceDataBase: TraceDataBase,
     private val realmOperateHelper: RealmOperateHelper,
     private val sharedPreferences: SharedPreferences
-) : ViewModel() {
+) : ViewModel(), SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private val TAG = "MainViewModel"
 
     private var mCameraDialog: CommonDialog? = null
 
@@ -97,6 +100,16 @@ class MainViewModel @Inject constructor(
      */
     val liveDataSignMoreInfo = MutableLiveData<RenderEntity>()
 
+    /**
+     * 右上角菜单状态
+     */
+    val liveDataMenuState = MutableLiveData<Boolean>()
+
+    /**
+     * 地图中心坐标
+     */
+    val liveDataCenterPoint = MutableLiveData<MapPosition>()
+
 //    var testPoint = GeoPoint(0, 0)
 
     //uuid标识，用于记录轨迹组
@@ -116,9 +129,7 @@ class MainViewModel @Inject constructor(
 
     var captureLinkState: Boolean = false
 
-    val liveDataMenuState = MutableLiveData<Boolean>()
-
-    val liveDataCenterPoint = MutableLiveData<MapPosition>()
+    var currentTaskBean: TaskBean? = null
 
     /**
      * 是不是线选择模式
@@ -145,6 +156,7 @@ class MainViewModel @Inject constructor(
     private var lastNiLocaion: NiLocation? = null
 
     init {
+
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
             when (e) {
                 Map.SCALE_EVENT, Map.MOVE_EVENT, Map.ROTATE_EVENT -> liveDataCenterPoint.value =
@@ -152,76 +164,114 @@ class MainViewModel @Inject constructor(
             }
         })
 
-        //处理质检数据点击事件
-        mapController.markerHandle.setOnQsRecordItemClickListener(object :
-            OnQsRecordItemClickListener {
-            override fun onQsRecordList(list: MutableList<String>) {
-                liveDataQsRecordIdList.value = list
-            }
-
-            override fun onNote(id: String) {
-                liveDataNoteId.value = id
-            }
-
-            override fun onNiLocation(item: NiLocation) {
-                liveDataNILocationList.value = item
-            }
-        })
-        mapController.lineHandler.setOnTaskLinkItemClickListener(object :
-            OnTaskLinkItemClickListener {
-            override fun onTaskLink(taskLinkId: String) {
-                liveDataTaskLink.value = taskLinkId
-            }
-        })
-
         initLocation()
+        /**
+         * 处理点击道路捕捉回调功能
+         */
+        mapController.mMapView.addOnNIMapClickListener(
+            TAG,
+            //处理地图点击操作
+            object : OnGeoPointClickListener {
+                override fun onMapClick(tag: String, point: GeoPoint) {
+                    if (tag == TAG) {
+                        viewModelScope.launch(Dispatchers.Default) {
+                            //线选择状态
+                            if (bSelectRoad) {
+                                captureLink(point)
+                            }
+                        }
+                    }
+                }
+            },
+            /**
+             * 处理之间数据的点击
+             */
+            object : OnQsRecordItemClickListener {
+                override fun onQsRecordList(tag: String, list: MutableList<String>) {
+                    if (tag == TAG)
+                        liveDataQsRecordIdList.value = list
+                }
+            },
+            /**
+             * 处理新增link线点击编辑
+             */
+            object : OnTaskLinkItemClickListener {
+                override fun onTaskLink(tag: String, taskLinkId: String) {
+                    if (tag == TAG)
+                        liveDataTaskLink.value = taskLinkId
+                }
+            },
+            /**
+             * 处理便签点击
+             */
+            object : ONNoteItemClickListener {
+                override fun onNote(tag: String, noteId: String) {
+                    if (tag == TAG)
+                        liveDataNoteId.value = noteId
+                }
 
-        //处理地图点击操作
-        viewModelScope.launch(Dispatchers.Default) {
-            mapController.onMapClickFlow.collectLatest {
-//                testPoint = it
-                //线选择状态
-                if (bSelectRoad) {
-                    captureLink(it)
-                } else {
-                    captureItem(it)
+            },
+            /**
+             * 处理定位点的点击
+             */
+            object : OnNiLocationItemListener {
+                override fun onNiLocation(tag: String, it: NiLocation) {
+                    if (tag == TAG)
+                        liveDataNILocationList.value = it
                 }
             }
-        }
+        )
+
         viewModelScope.launch(Dispatchers.IO) {
-            initTaskData()
+            getTaskBean()
+            //初始化选中的任务高亮高亮
+            mapController.lineHandler.showTaskLines(currentTaskBean?.hadLinkDvoList!!)
             initQsRecordData()
             initNoteData()
             initNILocationData()
         }
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
+
     /**
-     * 初始化选中的任务高亮高亮
+     * 获取当前任务
      */
-    private suspend fun initTaskData() {
+    private suspend fun getTaskBean() {
         val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
         val realm = Realm.getDefaultInstance()
         val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
         if (res != null) {
-            val taskBean = realm.copyFromRealm(res)
-            mapController.lineHandler.showTaskLines(taskBean.hadLinkDvoList)
+            currentTaskBean = realm.copyFromRealm(res)
         }
+    }
 
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        if (key == Constant.SELECT_TASK_ID) {
+            viewModelScope.launch(Dispatchers.IO) {
+                getTaskBean()
+                initQsRecordData()
+            }
+        }
     }
 
     /**
      * 初始化渲染质检数据
      */
     private suspend fun initQsRecordData() {
-        var list = mutableListOf<QsRecordBean>()
-        val realm = Realm.getDefaultInstance()
-        realm.executeTransaction {
-            val objects = realm.where<QsRecordBean>().findAll()
-            list = realm.copyFromRealm(objects)
-        }
-        for (item in list) {
-            mapController.markerHandle.addOrUpdateQsRecordMark(item)
+        if (currentTaskBean != null) {
+            var list = mutableListOf<QsRecordBean>()
+            val realm = Realm.getDefaultInstance()
+            realm.executeTransaction {
+                val objects =
+                    realm.where<QsRecordBean>().equalTo("taskId", currentTaskBean!!.id).findAll()
+                list = realm.copyFromRealm(objects)
+            }
+            mapController.markerHandle.removeAllQsMarker()
+            for (item in list) {
+                mapController.markerHandle.addOrUpdateQsRecordMark(item)
+            }
         }
     }
 
@@ -259,7 +309,6 @@ class MainViewModel @Inject constructor(
     /**
      * 初始化定位信息
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     private fun initLocation() {
         //用于定位点存储到数据库
         viewModelScope.launch(Dispatchers.Default) {
@@ -335,17 +384,10 @@ class MainViewModel @Inject constructor(
 
     }
 
-    /**
-     * 捕捉要素
-     */
-    private suspend fun captureItem(point: GeoPoint) {
-
-    }
 
     /**
      * 捕获道路和面板
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     private suspend fun captureLink(point: GeoPoint) {
         if (captureLinkState) {
             return
@@ -354,101 +396,103 @@ class MainViewModel @Inject constructor(
         try {
             captureLinkState = true
 
-            val linkList = realmOperateHelper.queryLink(
-                point = point,
-            )
-            var hisRoadName = false
-            if (linkList.isNotEmpty()) {
-                //看板数据
-                val signList = mutableListOf<SignBean>()
-                val topSignList = mutableListOf<SignBean>()
-                mapController.lineHandler.linksLayer.clear()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                val linkList = realmOperateHelper.queryLink(
+                    point = point,
+                )
 
-                val link = linkList[0]
+                var hisRoadName = false
+                if (linkList.isNotEmpty()) {
+                    //看板数据
+                    val signList = mutableListOf<SignBean>()
+                    val topSignList = mutableListOf<SignBean>()
+                    mapController.lineHandler.linksLayer.clear()
 
-                val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
+                    val link = linkList[0]
 
-                if (linkIdCache != linkId) {
+                    val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
 
-                    mapController.lineHandler.showLine(link.geometry)
-                    linkId?.let {
-                        var elementList = realmOperateHelper.queryLinkByLinkPid(it)
-                        for (element in elementList) {
+                    if (linkIdCache != linkId) {
 
-                            if (element.code == 2011) {
-                                hisRoadName = true
-                                liveDataRoadName.postValue(element)
-                                continue
-                            }
+                        mapController.lineHandler.showLine(link.geometry)
+                        linkId?.let {
+                            var elementList = realmOperateHelper.queryLinkByLinkPid(it)
+                            for (element in elementList) {
 
-                            val distance = GeometryTools.distanceToDouble(
-                                point, GeometryTools.createGeoPoint(element.geometry)
-                            )
+                                if (element.code == 2011) {
+                                    hisRoadName = true
+                                    liveDataRoadName.postValue(element)
+                                    continue
+                                }
 
-                            val signBean = SignBean(
-                                iconId = SignUtil.getSignIcon(element),
-                                iconText = SignUtil.getSignIconText(element),
-                                distance = distance.toInt(),
-                                linkId = linkId,
-                                name = SignUtil.getSignNameText(element),
-                                bottomRightText = SignUtil.getSignBottomRightText(element),
-                                renderEntity = element,
-                                isMoreInfo = SignUtil.isMoreInfo(element),
-                                index = SignUtil.getRoadInfoIndex(element)
-                            )
-                            Log.e("jingo", "捕捉到的数据code ${element.code}")
-                            when (element.code) {
-                                //车道数，种别，功能等级,线限速,道路方向
-                                2041, 2008, 2002, 2019, 2010 -> topSignList.add(
-                                    signBean
+                                val distance = GeometryTools.distanceToDouble(
+                                    point, GeometryTools.createGeoPoint(element.geometry)
                                 )
 
-                                4002, 4003, 4004, 4010, 4022, 4601 -> signList.add(
-                                    signBean
+                                val signBean = SignBean(
+                                    iconId = SignUtil.getSignIcon(element),
+                                    iconText = SignUtil.getSignIconText(element),
+                                    distance = distance.toInt(),
+                                    linkId = linkId,
+                                    name = SignUtil.getSignNameText(element),
+                                    bottomRightText = SignUtil.getSignBottomRightText(element),
+                                    renderEntity = element,
+                                    isMoreInfo = SignUtil.isMoreInfo(element),
+                                    index = SignUtil.getRoadInfoIndex(element)
                                 )
+                                Log.e("jingo", "捕捉到的数据code ${element.code}")
+                                when (element.code) {
+                                    //车道数，种别，功能等级,线限速,道路方向
+                                    2041, 2008, 2002, 2019, 2010 -> topSignList.add(
+                                        signBean
+                                    )
+
+                                    4002, 4003, 4004, 4010, 4022, 4601 -> signList.add(
+                                        signBean
+                                    )
+                                }
+
                             }
 
-                        }
-
-                        val realm = Realm.getDefaultInstance()
-                        val entity = realm.where(RenderEntity::class.java)
-                            .equalTo("table", "OMDB_RESTRICTION").and().equalTo(
-                                "properties['linkIn']", it
-                            ).findFirst()
-                        if (entity != null) {
-                            val outLink = entity.properties["linkOut"]
-                            val linkOutEntity = realm.where(RenderEntity::class.java)
-                                .equalTo("table", "OMDB_RD_LINK").and().equalTo(
-                                    "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
-                                    outLink
+                            val realm = Realm.getDefaultInstance()
+                            val entity = realm.where(RenderEntity::class.java)
+                                .equalTo("table", "OMDB_RESTRICTION").and().equalTo(
+                                    "properties['linkIn']", it
                                 ).findFirst()
-                            if (linkOutEntity != null) {
-                                mapController.lineHandler.linksLayer.addLine(
-                                    linkOutEntity.geometry, 0x7DFF0000
-                                )
+                            if (entity != null) {
+                                val outLink = entity.properties["linkOut"]
+                                val linkOutEntity = realm.where(RenderEntity::class.java)
+                                    .equalTo("table", "OMDB_RD_LINK").and().equalTo(
+                                        "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
+                                        outLink
+                                    ).findFirst()
+                                if (linkOutEntity != null) {
+                                    mapController.lineHandler.linksLayer.addLine(
+                                        linkOutEntity.geometry, 0x7DFF0000
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    liveDataTopSignList.postValue(topSignList.distinctBy { it.name }
-                        .sortedBy { it.index })
+                        liveDataTopSignList.postValue(topSignList.distinctBy { it.name }
+                            .sortedBy { it.index })
 
-                    liveDataSignList.postValue(signList.sortedBy { it.distance })
-                    val speechText = SignUtil.getRoadSpeechText(topSignList)
-                    withContext(Dispatchers.Main) {
-                        speakMode?.speakText(speechText)
+                        liveDataSignList.postValue(signList.sortedBy { it.distance })
+                        val speechText = SignUtil.getRoadSpeechText(topSignList)
+                        withContext(Dispatchers.Main) {
+                            speakMode?.speakText(speechText)
+                        }
+                        linkIdCache = linkId ?: ""
                     }
-                    linkIdCache = linkId ?: ""
+                } else {
+                    mapController.lineHandler.removeLine()
+                    linkIdCache = ""
                 }
-            } else {
-                mapController.lineHandler.removeLine()
-                linkIdCache = ""
+                //如果没有捕捉到道路名
+                if (!hisRoadName) {
+                    liveDataRoadName.postValue(null)
+                }
             }
-            //如果没有捕捉到道路名
-            if (!hisRoadName) {
-                liveDataRoadName.postValue(null)
-            }
-
         } catch (e: Exception) {
 
         } finally {
@@ -474,9 +518,9 @@ class MainViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            mapController.lineHandler.removeLine()
-        }
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        mapController.mMapView.removeOnNIMapClickListener(TAG)
+        mapController.lineHandler.removeLine()
     }
 
     //点击相机按钮

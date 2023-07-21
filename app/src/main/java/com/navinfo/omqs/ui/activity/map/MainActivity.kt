@@ -106,7 +106,6 @@ class MainActivity : BaseActivity() {
             }
 
             //点击详细信息
-            @RequiresApi(Build.VERSION_CODES.N)
             override fun onMoreInfoClick(selectTag: String, tag: String, signBean: SignBean) {
                 viewModel.showSignMoreInfo(signBean.renderEntity)
                 val fragment =
@@ -147,7 +146,6 @@ class MainActivity : BaseActivity() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -226,8 +224,7 @@ class MainActivity : BaseActivity() {
             val bundle = Bundle()
             bundle.putString("TaskLinkId", it)
             findNavController(R.id.main_activity_right_fragment).navigate(
-                R.id.TaskLinkFragment,
-                bundle
+                R.id.TaskLinkFragment, bundle
             )
         }
 
@@ -382,7 +379,6 @@ class MainActivity : BaseActivity() {
         mapController.mMapView.onPause()
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onDestroy() {
         super.onDestroy()
         viewModel.speakMode?.shutdown()
@@ -413,7 +409,6 @@ class MainActivity : BaseActivity() {
     /**
      * 打开相机预览
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun openCamera() {
         //显示轨迹图层
         viewModel.onClickCameraButton(this)
@@ -422,7 +417,6 @@ class MainActivity : BaseActivity() {
     /**
      * 开关菜单
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun onClickMenu() {
         //显示菜单图层
         viewModel.onClickMenu()
@@ -530,7 +524,6 @@ class MainActivity : BaseActivity() {
     /**
      * 点击线选择
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun selectLineOnclick() {
         viewModel.setSelectRoad(!viewModel.isSelectRoad())
         binding.mainActivitySelectLine.isSelected = viewModel.isSelectRoad()
@@ -539,7 +532,6 @@ class MainActivity : BaseActivity() {
     /**
      * 点击线选择
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun tracePointsOnclick() {
         viewModel.setSelectTrace(!viewModel.isSelectTrace())
         if (viewModel.isSelectTrace()) {
@@ -551,7 +543,6 @@ class MainActivity : BaseActivity() {
     /**
      * 点击结束轨迹操作
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun finishTraceOnclick() {
         setIndoorGroupEnable(false)
         viewModel.setSelectTrace(false)
@@ -565,7 +556,6 @@ class MainActivity : BaseActivity() {
     /**
      * 点击结束轨迹操作
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun mediaFlagOnclick() {
         viewModel.setMediaFlag(!viewModel.isMediaFlag())
         binding.mainActivitySnapshotMediaFlag.isSelected = viewModel.isMediaFlag()
@@ -574,7 +564,6 @@ class MainActivity : BaseActivity() {
     /**
      * 点击上一个轨迹点播放操作
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun rewindTraceOnclick() {
         pasePlayTrace()
     }
@@ -582,7 +571,6 @@ class MainActivity : BaseActivity() {
     /**
      * 点击暂停播放轨迹操作
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun pauseTraceOnclick() {
         viewModel.setSelectPauseTrace(!viewModel.isSelectPauseTrace())
         binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
@@ -593,12 +581,10 @@ class MainActivity : BaseActivity() {
     /**
      * 点击下一个轨迹点
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun nextTraceOnclick() {
         pasePlayTrace()
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     fun pasePlayTrace() {
         viewModel.setSelectTrace(false)
         binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
@@ -625,8 +611,7 @@ class MainActivity : BaseActivity() {
             binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
             mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
         }
-        mapController.mMapView.vtmMap.animator()
-            .animateTo(
+        mapController.mMapView.vtmMap.animator().animateTo(
                 GeoPoint(
                     mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
                     mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude
@@ -634,7 +619,6 @@ class MainActivity : BaseActivity() {
             )
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     private fun voiceOnTouchStart() {
         viewModel.startSoundMetter(this, binding.mainActivityVoice)
     }
@@ -738,7 +722,6 @@ class MainActivity : BaseActivity() {
     /**
      * 打开道路名称属性看板，选择的道路在viewmodel里记录，不用
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun openRoadNameFragment() {
         if (viewModel.liveDataRoadName.value != null) {
             viewModel.showSignMoreInfo(viewModel.liveDataRoadName.value!!)
