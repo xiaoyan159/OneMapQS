@@ -329,6 +329,7 @@ class EvaluationResultViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val realm = Realm.getDefaultInstance()
             liveDataQsRecordBean.value!!.checkTime = DateTimeUtil.getDataTime()
+            liveDataQsRecordBean.value!!.checkUserId = Constant.USER_REAL_NAME
             realm.executeTransaction {
                 it.copyToRealmOrUpdate(liveDataQsRecordBean.value)
             }

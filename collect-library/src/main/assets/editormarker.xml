@@ -1560,51 +1560,51 @@
     <m k="qi_table">
         <!--车道数-->
         <m v="OMDB_LANE_NUM">
-<!--            <m k="laneNum">
-                <m v="1">
-                    <line stroke="#545D6C" width="3" />
-                </m>
-                <m v="2">
-                    <line stroke="#545D6C" width="6" />
-                </m>
-                <m v="3">
-                    <line stroke="#545D6C" width="9" />
-                </m>
-                <m v="4">
-                    <line stroke="#545D6C" width="12" />
-                </m>
-                <m v="5">
-                    <line stroke="#545D6C" width="15" />
-                </m>
-                <m v="6">
-                    <line stroke="#545D6C" width="18" />
-                </m>
-                <m v="7">
-                    <line stroke="#545D6C" width="21" />
-                </m>
-                <m v="8">
-                    <line stroke="#545D6C" width="24" />
-                </m>
-                <m v="9">
-                    <line stroke="#545D6C" width="27" />
-                </m>
-                <m v="10">
-                    <line stroke="#545D6C" width="30" />
-                </m>
-                <m v="11">
-                    <line stroke="#545D6C" width="33" />
-                </m>
-                <m v="12">
-                    <line stroke="#545D6C" width="36" />
-                </m>
-            </m>-->
+            <!--            <m k="laneNum">
+                            <m v="1">
+                                <line stroke="#545D6C" width="3" />
+                            </m>
+                            <m v="2">
+                                <line stroke="#545D6C" width="6" />
+                            </m>
+                            <m v="3">
+                                <line stroke="#545D6C" width="9" />
+                            </m>
+                            <m v="4">
+                                <line stroke="#545D6C" width="12" />
+                            </m>
+                            <m v="5">
+                                <line stroke="#545D6C" width="15" />
+                            </m>
+                            <m v="6">
+                                <line stroke="#545D6C" width="18" />
+                            </m>
+                            <m v="7">
+                                <line stroke="#545D6C" width="21" />
+                            </m>
+                            <m v="8">
+                                <line stroke="#545D6C" width="24" />
+                            </m>
+                            <m v="9">
+                                <line stroke="#545D6C" width="27" />
+                            </m>
+                            <m v="10">
+                                <line stroke="#545D6C" width="30" />
+                            </m>
+                            <m v="11">
+                                <line stroke="#545D6C" width="33" />
+                            </m>
+                            <m v="12">
+                                <line stroke="#545D6C" width="36" />
+                            </m>
+                        </m>-->
         </m>
         <!-- 道路线 -->
-        <m v="OMDB_RD_LINK">
+        <m v="OMDB_RD_LINK" zoom-max="19">
             <line stroke="#9c9c9c" width="1" />
         </m>
         <!--道路种别-->
-        <m v="OMDB_RD_LINK_KIND">
+        <m v="OMDB_RD_LINK_KIND" zoom-max="19">
             <outline-layer id="kind0" stroke="#44000000" width="0.1" />
             <outline-layer id="kind1" stroke="#aa807040" width="0.1" />
             <m k="kind" v="1">
@@ -1698,9 +1698,9 @@
         </m>
         <!--车道中心线-->
         <m v="OMDB_LANE_LINK_LG">
-<!--            <m k="eLaneNodePid">
-                <line dasharray="35,35" stroke="#ecf0f1" width="0.1" />
-            </m>-->
+            <!--            <m k="eLaneNodePid">
+                            <line dasharray="35,35" stroke="#ecf0f1" width="0.1" />
+                        </m>-->
             <m k="width">
                 <line stroke="#545D6C" width="3" />
             </m>
@@ -1715,56 +1715,55 @@
                 <!--无标线无可区分边界-->
                 <line dasharray="20,8" repeat-start="0" stroke="#ffffff" width="0.2"/>
             </m>
-<!--            <outline-layer id="boundaryType" stroke="#fcba5a" width="0.2" />
-            <m k="boundaryType" v="0">
-                &lt;!&ndash;不应用&ndash;&gt;
-                <line stroke="#fcba5a" use="boundaryType"/>
-                <lineSymbol repeat-gap="12" repeat-start="12" symbol-height="16" symbol-width="16" src="assets:omdb/icon_2083_0.svg" />
-            </m>
-            <m k="boundaryType" v="1">
-                &lt;!&ndash;无标线无可区分边界&ndash;&gt;
-                <line dasharray="10,2,2,2,2,2,2,2" repeat-start="0" stroke="#fcba5a" width="0.2" />
-            </m>
-            <m k="boundaryType" v="2">
-                &lt;!&ndash;标线&ndash;&gt;
-                <line stroke="#fcba5a" use="boundaryType"/>
-            </m>
-            <m k="boundaryType" v="3">
-                &lt;!&ndash;路牙&ndash;&gt;
-                <line dasharray="10,4"  repeat-start="0" stroke="#fcba5a"  width="0.2" />
-            </m>
-            <m k="boundaryType" v="4">
-                &lt;!&ndash;护栏&ndash;&gt;
-                <line dasharray="10,2,2,2" repeat-start="0" stroke="#fcba5a" width="0.2"/>
-            </m>
-            <m k="boundaryType" v="5">
-                &lt;!&ndash;墙&ndash;&gt;
-                <line stroke="#fcba5a" use="boundaryType"/>
-                <line dasharray="10,5" stroke="#fcba5a" width="0.5" />
-            </m>
-            <m k="boundaryType" v="6">
-                &lt;!&ndash;道路面铺设边缘&ndash;&gt;
-                <line stroke="#fcba5a" use="boundaryType"/>
-                <lineSymbol  repeat-gap="32" repeat-start="0" symbol-height="32" src="assets:omdb/icon_2083_6.svg" />
-            </m>
-            <m k="boundaryType" v="7">
-                &lt;!&ndash;虚拟三角岛&ndash;&gt;
-                <line stroke="#fcba5a" use="boundaryType"/>
-                <line src="assets:omdb/icon_2083_7_1.svg" symbol-height="12" symbol-width="12" symbol-percent="20" width="1" />
-            </m>
-            <m k="boundaryType" v="9">
-                &lt;!&ndash;杆状障碍物&ndash;&gt;
-                <line stroke="#fcba5a" use="boundaryType"/>
-                <lineSymbol  repeat-gap="16" repeat-start="12" symbol-height="24" symbol-width="8" src="assets:omdb/icon_2083_9.svg" />
-            </m>-->
+            <!--            <outline-layer id="boundaryType" stroke="#fcba5a" width="0.2" />
+                        <m k="boundaryType" v="0">
+                            &lt;!&ndash;不应用&ndash;&gt;
+                            <line stroke="#fcba5a" use="boundaryType"/>
+                            <lineSymbol repeat-gap="12" repeat-start="12" symbol-height="16" symbol-width="16" src="assets:omdb/icon_2083_0.svg" />
+                        </m>
+                        <m k="boundaryType" v="1">
+                            &lt;!&ndash;无标线无可区分边界&ndash;&gt;
+                            <line dasharray="10,2,2,2,2,2,2,2" repeat-start="0" stroke="#fcba5a" width="0.2" />
+                        </m>
+                        <m k="boundaryType" v="2">
+                            &lt;!&ndash;标线&ndash;&gt;
+                            <line stroke="#fcba5a" use="boundaryType"/>
+                        </m>
+                        <m k="boundaryType" v="3">
+                            &lt;!&ndash;路牙&ndash;&gt;
+                            <line dasharray="10,4"  repeat-start="0" stroke="#fcba5a"  width="0.2" />
+                        </m>
+                        <m k="boundaryType" v="4">
+                            &lt;!&ndash;护栏&ndash;&gt;
+                            <line dasharray="10,2,2,2" repeat-start="0" stroke="#fcba5a" width="0.2"/>
+                        </m>
+                        <m k="boundaryType" v="5">
+                            &lt;!&ndash;墙&ndash;&gt;
+                            <line stroke="#fcba5a" use="boundaryType"/>
+                            <line dasharray="10,5" stroke="#fcba5a" width="0.5" />
+                        </m>
+                        <m k="boundaryType" v="6">
+                            &lt;!&ndash;道路面铺设边缘&ndash;&gt;
+                            <line stroke="#fcba5a" use="boundaryType"/>
+                            <lineSymbol  repeat-gap="32" repeat-start="0" symbol-height="32" src="assets:omdb/icon_2083_6.svg" />
+                        </m>
+                        <m k="boundaryType" v="7">
+                            &lt;!&ndash;虚拟三角岛&ndash;&gt;
+                            <line stroke="#fcba5a" use="boundaryType"/>
+                            <line src="assets:omdb/icon_2083_7_1.svg" symbol-height="12" symbol-width="12" symbol-percent="20" width="1" />
+                        </m>
+                        <m k="boundaryType" v="9">
+                            &lt;!&ndash;杆状障碍物&ndash;&gt;
+                            <line stroke="#fcba5a" use="boundaryType"/>
+                            <lineSymbol  repeat-gap="16" repeat-start="12" symbol-height="24" symbol-width="8" src="assets:omdb/icon_2083_9.svg" />
+                        </m>-->
         </m>
         <!-- 车道边界类型 -->
         <m v="OMDB_LANE_MARK_BOUNDARYTYPE">
             <outline-layer id="boundary" stroke="#ffffff" width="0.2" />
-            <m k="boundaryType">
+            <m k="boundaryType" v="2">
                 <!--标线-->
-                <m v="2">
-                    <m k="markType">
+                <m k="markType" v="0|1|4|5|6|7|8">
                         <!--其他|实线-->
                         <m v="0|1|2|3|4|5|6|7|8">
                             <m k="markColor">
@@ -1772,7 +1771,7 @@
                                     <line stroke="#ffffff" use="boundaryType" />
                                 </m>
                                 <m v="2">
-                                    <line dasharray="10,2,2,2,2,2,2,2" repeat-start="0" stroke="#eccc68" use="boundaryType" />
+                                    <line stroke="#eccc68" use="boundaryType" />
                                 </m>
                                 <m v="6">
                                     <line stroke="#0000ff" use="boundaryType" />
@@ -1785,46 +1784,38 @@
                                 </m>
                             </m>
                         </m>
-<!--                        &lt;!&ndash;虚线&ndash;&gt;
-                        <m v="2">
-                            <m k="markColor">
-                                <m v="0|1">
-                                    <line dasharray="13,135" stipple="5" stipple-stroke="#000000"
-                                        stroke="#ffffff" use="boundaryType" />
-                                </m>
-                                <m v="2">
-                                    <line dasharray="13,135" stipple="5" stipple-stroke="#ffffff"
-                                        stroke="#eccc68" use="boundaryType" />
-                                </m>
-                                <m v="6">
-                                    <line dasharray="13,135" stipple="5" stipple-stroke="#ffffff"
-                                        stroke="#0000ff" use="boundaryType" />
-                                </m>
-                                <m v="7">
-                                    <line dasharray="13,135" stipple="5" stipple-stroke="#ffffff"
-                                        stroke="#00ff00" use="boundaryType" />
-                                </m>
-                                <m v="9">
-                                    <line dasharray="13,135" stipple="5" stipple-stroke="#ffffff"
-                                        stroke="#8e44ad" use="boundaryType" />
-                                </m>
+                    </m>
+
+                <m k="markType" v="2|3">
+                    <!--其他|实线-->
+                    <m v="0|1|2|3|4|5|6|7|8">
+                        <m k="markColor">
+                            <m v="1">
+                                <line dasharray="20,8" repeat-start="0" stroke="#ffffff" width="0.2"/>
+                            </m>
+                            <m v="2">
+                                <line dasharray="20,8" repeat-start="0" stroke="#eccc68" width="0.2"/>
+                            </m>
+                            <m v="6">
+                                <line dasharray="20,8" repeat-start="0" stroke="#0000ff" width="0.2"/>
+                            </m>
+                            <m v="7">
+                                <line dasharray="20,8" repeat-start="0" stroke="#00ff00" width="0.2"/>
+                            </m>
+                            <m v="0|9">
+                                <line dasharray="20,8" repeat-start="0" stroke="#8e44ad" width="0.2"/>
                             </m>
                         </m>
-                        &lt;!&ndash;导流区边线&ndash;&gt;
-                        <m v="4">
-                            <line outline="boundary" stroke="#545D6C"></line>
-                            <lineSymbol repeat-gap="0.5" repeat-start="0"
-                                src="assets:omdb/icon_right.png" />
-                        </m>-->
                     </m>
                 </m>
-                <m v="0|3|4|5|6|7|8|9">
-                    <line stroke="#ffffff" use="boundaryType" />
-                </m>
-                <!--只区分虚线与实线-->
-                <m v="1">
-                    <line dasharray="20,8" repeat-start="0" stroke="#ffffff" width="0.2"/>
-                </m>
+            </m>
+
+            <m k="boundaryType" v="0|3|4|5|6|7|8|9">
+                <line stroke="#ffffff" use="boundaryType" />
+            </m>
+            <!--只区分虚线与实线-->
+            <m k="boundaryType" v="1">
+                <line dasharray="20,8" repeat-start="0" stroke="#ffffff" width="0.2"/>
             </m>
         </m>
 

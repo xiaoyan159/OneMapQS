@@ -24,6 +24,11 @@ class Constant {
          */
         lateinit var USER_ID: String
 
+        /**
+         * 当前用户名称
+         */
+        lateinit var USER_REAL_NAME: String
+
         //数据版本
         lateinit var VERSION_ID: String
 
