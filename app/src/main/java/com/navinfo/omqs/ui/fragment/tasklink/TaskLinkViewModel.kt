@@ -246,7 +246,7 @@ class TaskLinkViewModel @Inject constructor(
     /**
      * 监听shared变化
      */
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         if (key == Constant.SELECT_TASK_ID) {
             getTaskBean()
         }
@@ -313,32 +313,47 @@ class TaskLinkViewModel @Inject constructor(
      * 删除数据
      */
     fun deleteData(context: Context) {
-        if(hadLinkDvoBean == null){
+        if (hadLinkDvoBean == null) {
             liveDataFinish.value = true
             return
         }
         val mDialog = FirstDialog(context)
         mDialog.setTitle("提示？")
         mDialog.setMessage("是否删除Mark，请确认！")
-        mDialog.setPositiveButton("确定"
+        mDialog.setPositiveButton(
+            "确定"
         ) { _, _ ->
             mDialog.dismiss()
             viewModelScope.launch(Dispatchers.IO) {
                 val realm = Realm.getDefaultInstance()
                 realm.executeTransaction {
-                    val task = it.where(TaskBean::class.java).equalTo("id",hadLinkDvoBean!!.taskId).findFirst()
-                    if(task != null) {
+                    //先找到对应的任务
+                    val task = it.where(TaskBean::class.java).equalTo("id", hadLinkDvoBean!!.taskId)
+                        .findFirst()
+                    //维护任务删除当前link
+                    if (task != null) {
                         for (h in task.hadLinkDvoList) {
-                            if(h.linkPid == hadLinkDvoBean!!.linkPid)
+                            if (h.linkPid == hadLinkDvoBean!!.linkPid)
                                 task.hadLinkDvoList.remove(h)
                             break
                         }
                         realm.copyToRealmOrUpdate(task)
                     }
 
-//                    val objects = it.where(HadLinkDvoBean::class.java)
-//                        .equalTo("linkPid", hadLinkDvoBean!!.linkPid).findFirst()
-//                    objects?.deleteFromRealm()
+                    //删除link
+                    val objects = it.where(HadLinkDvoBean::class.java)
+                        .equalTo("linkPid", hadLinkDvoBean!!.linkPid).findFirst()
+                    objects?.deleteFromRealm()
+                    //删除相关联的评测任务
+                    val qsRecordBeans = it.where(QsRecordBean::class.java)
+                        .equalTo("linkId", hadLinkDvoBean!!.linkPid).and()
+                        .equalTo("taskId", hadLinkDvoBean!!.taskId).findAll()
+                    if (qsRecordBeans != null) {
+                        for (b in qsRecordBeans) {
+                            mapController.markerHandle.removeQsRecordMark(b)
+                        }
+                        qsRecordBeans.deleteAllFromRealm()
+                    }
                 }
                 mapController.lineHandler.removeTaskLink(hadLinkDvoBean!!.linkPid)
                 mapController.mMapView.vtmMap.updateMap(true)

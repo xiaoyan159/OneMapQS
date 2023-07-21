@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.R
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
+import com.navinfo.collect.library.map.BaseClickListener
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.map.layers.MultiLinesLayer
 import com.navinfo.collect.library.map.layers.OmdbTaskLinkLayer
@@ -19,21 +20,23 @@ import org.oscim.layers.vector.geometries.Style
 
 class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(context, mapView) {
 
-    //绘制线 样式
-    private val lineStyle: Style
-
-    //高亮线绘制线 样式
-    private val defaultLineStyle: Style
 
     /**
      * 高亮线图层，同时只高亮一条线，如线选择
      */
-    private val mDefaultPathLayer: PathLayer
+    private val mDefaultPathLayer: PathLayer by lazy {
+        //高亮线绘制线 样式
+        val defaultLineStyle = Style.builder()
+            .stippleColor(context.resources.getColor(R.color.draw_line_blue2_color))
+            .strokeWidth(10f)
+            .fillColor(context.resources.getColor(R.color.teal_200))
+            .fillAlpha(0.5f)
+            .strokeColor(context.resources.getColor(R.color.teal_200))
+            .fixed(true).build()
 
-    private var onTaskLinkItemClickListener: OnTaskLinkItemClickListener? = null
-
-    fun setOnTaskLinkItemClickListener(listener: OnTaskLinkItemClickListener) {
-        onTaskLinkItemClickListener = listener
+        val layer = PathLayer(mMapView.vtmMap, defaultLineStyle)
+        addLayer(layer, NIMapView.LAYER_GROUPS.OPERATE_LINE)
+        layer
     }
 
 
@@ -84,12 +87,18 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
             markerSymbol,
             object : OnItemGestureListener<MarkerInterface> {
                 override fun onItemSingleTapUp(index: Int, item: MarkerInterface?): Boolean {
-                    onTaskLinkItemClickListener?.let {
-                        if (item is MarkerItem) {
-                            it.onTaskLink(item.title)
+                    val tag = mMapView.listenerTagList.last()
+                    val listenerList = mMapView.listenerList[tag]
+                    if (listenerList != null) {
+                        for (listener in listenerList) {
+                            if (listener is OnTaskLinkItemClickListener) {
+                                if (item is MarkerItem) {
+                                    listener.onTaskLink(tag, item.title)
+                                }
+                                break
+                            }
                         }
                     }
-
                     return false
                 }
 
@@ -103,30 +112,6 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
         layer
     }
 
-    init {
-
-        //新增线数据图层和线样式
-        lineStyle = Style.builder()
-            .stippleColor(context.resources.getColor(R.color.draw_line_blue1_color))
-            .strokeWidth(4f)
-            .fillColor(context.resources.getColor(R.color.draw_line_blue2_color))
-            .fillAlpha(0.5f)
-            .strokeColor(context.resources.getColor(R.color.draw_line_blue2_color))
-            .fixed(true).build()
-
-
-        defaultLineStyle = Style.builder()
-            .stippleColor(context.resources.getColor(R.color.draw_line_blue2_color))
-            .strokeWidth(10f)
-            .fillColor(context.resources.getColor(R.color.teal_200))
-            .fillAlpha(0.5f)
-            .strokeColor(context.resources.getColor(R.color.teal_200))
-            .fixed(true).build()
-
-        mDefaultPathLayer = PathLayer(mMapView.vtmMap, defaultLineStyle)
-        addLayer(mDefaultPathLayer, NIMapView.LAYER_GROUPS.OPERATE_LINE)
-
-    }
 
     /**
      * 高亮一条线
@@ -226,6 +211,6 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
     }
 }
 
-interface OnTaskLinkItemClickListener {
-    fun onTaskLink(taskLinkId: String)
+interface OnTaskLinkItemClickListener : BaseClickListener {
+    fun onTaskLink(tag: String, taskLinkId: String)
 }

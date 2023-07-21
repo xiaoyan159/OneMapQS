@@ -163,7 +163,8 @@ class TaskUploadScope(
                     var s: String = "%.3f".format(hadLinkDvoBean.length)//保留一位小数(且支持四舍五入)
 
                     val objects = realm.where(QsRecordBean::class.java)
-                        .equalTo("linkId", /*"84207223282277331"*/hadLinkDvoBean.linkPid).findAll()
+                        .equalTo("linkId", /*"84207223282277331"*/hadLinkDvoBean.linkPid).and()
+                        .equalTo("taskId", hadLinkDvoBean.taskId).findAll()
 
                     if (objects != null && objects.size > 0) {
                         val copyList = realm.copyFromRealm(objects)
@@ -183,7 +184,7 @@ class TaskUploadScope(
 
                             var dataLevel = 0
 
-                            if(hadLinkDvoBean.linkInfo!=null){
+                            if (hadLinkDvoBean.linkInfo != null) {
                                 roadClassfcation = hadLinkDvoBean.linkInfo!!.kind
                                 roadFunctionGrade = hadLinkDvoBean.linkInfo!!.functionLevel
                                 dataLevel = hadLinkDvoBean.linkInfo!!.dataLevel

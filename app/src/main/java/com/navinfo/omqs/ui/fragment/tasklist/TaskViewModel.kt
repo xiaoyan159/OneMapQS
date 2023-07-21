@@ -1,12 +1,11 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
-import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Build
+import android.view.View
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,8 +15,10 @@ import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.collect.library.map.OnGeoPointClickListener
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
+import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager
@@ -26,6 +27,8 @@ import com.navinfo.omqs.util.DateTimeUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collectLatest
+import org.oscim.core.GeoPoint
 import javax.inject.Inject
 
 
@@ -33,8 +36,10 @@ import javax.inject.Inject
 class TaskViewModel @Inject constructor(
     private val networkService: NetworkService,
     private val mapController: NIMapController,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val realmOperateHelper: RealmOperateHelper,
 ) : ViewModel(), OnSharedPreferenceChangeListener {
+    private val TAG = "TaskViewModel"
 
     /**
      * 用来更新任务列表
@@ -59,6 +64,11 @@ class TaskViewModel @Inject constructor(
     val liveDataCloseTask = MutableLiveData<Boolean>()
 
     /**
+     * 提示信息
+     */
+    val liveDataToastMessage = MutableLiveData<String>()
+
+    /**
      * 当前选中的任务
      */
     var currentSelectTaskBean: TaskBean? = null
@@ -70,6 +80,10 @@ class TaskViewModel @Inject constructor(
 
     private var filterTaskJob: Job? = null
 
+    /**
+     * 是否开启了道路选择
+     */
+    var liveDataSelectNewLink = MutableLiveData(false)
 
     init {
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
@@ -318,65 +332,13 @@ class TaskViewModel @Inject constructor(
      * 关闭任务
      */
     fun removeTask(context: Context, taskBean: TaskBean) {
-        if (taskBean != null) {
-            val mDialog = FirstDialog(context)
-            mDialog.setTitle("提示？")
-            mDialog.setMessage("是否关闭，请确认！")
-            mDialog.setPositiveButton("确定", object : FirstDialog.OnClickListener {
-                override fun onClick(dialog: Dialog?, which: Int) {
-                    mDialog.dismiss()
-                    viewModelScope.launch(Dispatchers.IO) {
-                        val realm = Realm.getDefaultInstance()
-                        realm.executeTransaction {
-                            val objects = it.where(TaskBean::class.java)
-                                .equalTo("id", taskBean.id).findFirst()
-                            objects?.deleteFromRealm()
-                        }
-                        //遍历删除对应的数据
-                        taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
-                            val qsRecordList = realm.where(QsRecordBean::class.java)
-                                .equalTo("linkId", hadLinkDvoBean.linkPid).findAll()
-                            if (qsRecordList != null && qsRecordList.size > 0) {
-                                val copyList = realm.copyFromRealm(qsRecordList)
-                                copyList.forEach {
-                                    it.deleteFromRealm()
-                                    mapController.markerHandle.removeQsRecordMark(it)
-                                    mapController.mMapView.vtmMap.updateMap(true)
-                                }
-                            }
-                        }
-                        //过滤掉已上传的超过90天的数据
-                        var nowTime: Long = DateTimeUtil.getNowDate().time
-                        var beginNowTime: Long = nowTime - 90 * 3600 * 24 * 1000L
-                        var syncUpload: Int = FileManager.Companion.FileUploadStatus.DONE
-                        val objects = realm.where(TaskBean::class.java)
-                            .notEqualTo("syncStatus", syncUpload).or()
-                            .between("operationTime", beginNowTime, nowTime)
-                            .equalTo("syncStatus", syncUpload).findAll()
-                        val taskList = realm.copyFromRealm(objects)
-                        for (item in taskList) {
-                            FileManager.checkOMDBFileInfo(item)
-                        }
-                        liveDataTaskList.postValue(taskList)
-                        liveDataCloseTask.postValue(true)
-                    }
-                }
-            })
-            mDialog.setNegativeButton("取消", object : FirstDialog.OnClickListener {
-                override fun onClick(dialog: Dialog?, which: Int) {
-                    liveDataCloseTask.postValue(false)
-                    mDialog.dismiss()
-                }
-            })
-            mDialog.show()
-        }
         val mDialog = FirstDialog(context)
         mDialog.setTitle("提示？")
         mDialog.setMessage("是否关闭，请确认！")
         mDialog.setPositiveButton(
             "确定"
-        ) { _, _ ->
-            mDialog.dismiss()
+        ) { dialog, _ ->
+            dialog.dismiss()
             viewModelScope.launch(Dispatchers.IO) {
                 val realm = Realm.getDefaultInstance()
                 realm.executeTransaction {
@@ -387,7 +349,8 @@ class TaskViewModel @Inject constructor(
                 //遍历删除对应的数据
                 taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
                     val qsRecordList = realm.where(QsRecordBean::class.java)
-                        .equalTo("linkId", hadLinkDvoBean.linkPid).findAll()
+                        .equalTo("linkId", hadLinkDvoBean.linkPid).and()
+                        .equalTo("taskId", hadLinkDvoBean.taskId).findAll()
                     if (qsRecordList != null && qsRecordList.size > 0) {
                         val copyList = realm.copyFromRealm(qsRecordList)
                         copyList.forEach {
@@ -410,9 +373,15 @@ class TaskViewModel @Inject constructor(
                     FileManager.checkOMDBFileInfo(item)
                 }
                 liveDataTaskList.postValue(taskList)
+                liveDataCloseTask.postValue(true)
             }
         }
-        mDialog.setNegativeButton("取消", null)
+        mDialog.setNegativeButton(
+            "取消"
+        ) { _, _ ->
+            liveDataCloseTask.postValue(false)
+            mDialog.dismiss()
+        }
         mDialog.show()
     }
 
@@ -421,7 +390,8 @@ class TaskViewModel @Inject constructor(
             val realm = Realm.getDefaultInstance()
             taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
                 val objects = realm.where(QsRecordBean::class.java)
-                    .equalTo("linkId", hadLinkDvoBean.linkPid).findAll()
+                    .equalTo("linkId", hadLinkDvoBean.linkPid).and()
+                    .equalTo("taskId", hadLinkDvoBean.taskId).findAll()
                 val map: MutableMap<TaskBean, Boolean> = HashMap<TaskBean, Boolean>()
                 if (objects.isEmpty() && hadLinkDvoBean.reason.isEmpty()) {
                     withContext(Dispatchers.Main) {
@@ -452,11 +422,127 @@ class TaskViewModel @Inject constructor(
     /**
      * 监听新增的评测link
      */
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         if (key == Constant.SHARED_SYNC_TASK_LINK_ID) {
             viewModelScope.launch(Dispatchers.IO) {
                 getLocalTaskList()
             }
+        }
+    }
+
+    /**
+     * 设置是否开启选择link
+     */
+    fun setSelectLink(selected: Boolean) {
+        liveDataSelectNewLink.value = selected
+        //开始捕捉
+        if (selected) {
+            mapController.mMapView.addOnNIMapClickListener(TAG, object : OnGeoPointClickListener {
+                override fun onMapClick(tag: String, point: GeoPoint) {
+                    if (tag == TAG) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            viewModelScope.launch(Dispatchers.Default) {
+                                if (currentSelectTaskBean == null) {
+                                    liveDataToastMessage.postValue("还没有开启任何任务")
+                                } else {
+                                    val links = realmOperateHelper.queryLink(
+                                        point = point,
+                                    )
+                                    if (links.isNotEmpty()) {
+                                        val l = links[0]
+                                        for (link in currentSelectTaskBean!!.hadLinkDvoList) {
+                                            if (link.linkPid == l.properties["linkPid"]) {
+                                                return@launch
+                                            }
+                                        }
+                                        val hadLinkDvoBean = HadLinkDvoBean(
+                                            taskId = currentSelectTaskBean!!.id,
+                                            linkPid = l.properties["linkPid"]!!,
+                                            geometry = l.geometry,
+                                            linkStatus = 2
+                                        )
+                                        currentSelectTaskBean!!.hadLinkDvoList.add(
+                                            hadLinkDvoBean
+                                        )
+                                        val realm = Realm.getDefaultInstance()
+                                        realm.executeTransaction { r ->
+                                            r.copyToRealmOrUpdate(hadLinkDvoBean)
+                                            r.copyToRealmOrUpdate(currentSelectTaskBean!!)
+                                        }
+                                        liveDataTaskLinks.postValue(currentSelectTaskBean!!.hadLinkDvoList)
+                                        mapController.lineHandler.addTaskLink(hadLinkDvoBean)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            })
+        } else {
+            mapController.mMapView.removeOnNIMapClickListener(TAG)
+            mapController.lineHandler.removeLine()
+        }
+    }
+
+    /**
+     * 删除评测link
+     */
+    fun deleteTaskLink(context: Context, hadLinkDvoBean: HadLinkDvoBean) {
+        if (hadLinkDvoBean.linkStatus == 1) {
+            val mDialog = FirstDialog(context)
+            mDialog.setTitle("提示")
+            mDialog.setMessage("当前要评测的link是任务原始规划的，不能删除，如果不进行作业请标记原因")
+            mDialog.setCancelVisibility(View.GONE)
+            mDialog.setPositiveButton(
+                "确定"
+            ) { _, _ ->
+                mDialog.dismiss()
+            }
+            mDialog.show()
+        } else {
+            val mDialog = FirstDialog(context)
+            mDialog.setTitle("提示")
+            mDialog.setMessage("是否删除当前link，与之相关联的评测任务会一起删除！！")
+            mDialog.setPositiveButton(
+                "确定"
+            ) { dialog, _ ->
+                dialog.dismiss()
+                viewModelScope.launch(Dispatchers.IO) {
+                    val realm = Realm.getDefaultInstance()
+                    realm.executeTransaction {
+                        for (link in currentSelectTaskBean!!.hadLinkDvoList) {
+                            if (link.linkPid == hadLinkDvoBean.linkPid) {
+                                currentSelectTaskBean!!.hadLinkDvoList.remove(link)
+                                break
+                            }
+                        }
+                        realm.where(HadLinkDvoBean::class.java)
+                            .equalTo("linkPid", hadLinkDvoBean.linkPid).findFirst()
+                            ?.deleteFromRealm()
+                        val markers = realm.where(QsRecordBean::class.java)
+                            .equalTo("linkId", hadLinkDvoBean.linkPid)
+                            .and().equalTo("taskId", hadLinkDvoBean.taskId)
+                            .findAll()
+                        if(markers != null){
+                            for(marker in markers){
+                                mapController.markerHandle.removeQsRecordMark(marker)
+                            }
+                            markers.deleteAllFromRealm()
+                        }
+
+                        realm.copyToRealmOrUpdate(currentSelectTaskBean)
+                        mapController.lineHandler.removeTaskLink(hadLinkDvoBean.linkPid)
+                        liveDataTaskLinks.postValue(currentSelectTaskBean!!.hadLinkDvoList)
+                    }
+                }
+            }
+            mDialog.setNegativeButton(
+                "取消"
+            ) { _, _ ->
+                mDialog.dismiss()
+            }
+            mDialog.show()
         }
     }
 }

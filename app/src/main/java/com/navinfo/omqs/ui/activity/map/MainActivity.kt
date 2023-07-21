@@ -12,7 +12,6 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -20,7 +19,6 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
@@ -43,7 +41,6 @@ import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
-import org.oscim.layers.marker.MarkerItem
 import org.oscim.renderer.GLViewport
 import org.videolan.vlc.Util
 import java.math.BigDecimal
@@ -110,7 +107,6 @@ class MainActivity : BaseActivity() {
             }
 
             //点击详细信息
-            @RequiresApi(Build.VERSION_CODES.N)
             override fun onMoreInfoClick(selectTag: String, tag: String, signBean: SignBean) {
                 viewModel.showSignMoreInfo(signBean.renderEntity)
                 val fragment =
@@ -151,7 +147,6 @@ class MainActivity : BaseActivity() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -231,8 +226,7 @@ class MainActivity : BaseActivity() {
             val bundle = Bundle()
             bundle.putString("TaskLinkId", it)
             findNavController(R.id.main_activity_right_fragment).navigate(
-                R.id.TaskLinkFragment,
-                bundle
+                R.id.TaskLinkFragment, bundle
             )
         }
 
@@ -410,7 +404,7 @@ class MainActivity : BaseActivity() {
         val inputDialog = MaterialAlertDialogBuilder(
             this
         ).setTitle("坐标定位").setView(view)
-        var editText = view.findViewById<EditText>(R.id.dialog_edittext)
+        val editText = view.findViewById<EditText>(R.id.dialog_edittext)
         editText.hint = "请输入经纬度例如：\n116.1234567,39.1234567\n116.1234567 39.1234567"
         inputDialog.setNegativeButton("取消") { dialog, _ ->
             dialog.dismiss()
@@ -449,7 +443,6 @@ class MainActivity : BaseActivity() {
         mapController.mMapView.onPause()
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onDestroy() {
         super.onDestroy()
         viewModel.speakMode?.shutdown()
@@ -480,7 +473,6 @@ class MainActivity : BaseActivity() {
     /**
      * 打开相机预览
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun openCamera() {
         //显示轨迹图层
         viewModel.onClickCameraButton(this)
@@ -489,7 +481,6 @@ class MainActivity : BaseActivity() {
     /**
      * 开关菜单
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun onClickMenu() {
         //显示菜单图层
         viewModel.onClickMenu()
@@ -597,7 +588,6 @@ class MainActivity : BaseActivity() {
     /**
      * 点击线选择
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun selectLineOnclick() {
         viewModel.setSelectRoad(!viewModel.isSelectRoad())
         binding.mainActivitySelectLine.isSelected = viewModel.isSelectRoad()
@@ -606,7 +596,6 @@ class MainActivity : BaseActivity() {
     /**
      * 点击线选择
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun tracePointsOnclick() {
         viewModel.setSelectTrace(!viewModel.isSelectTrace())
         binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
@@ -622,7 +611,6 @@ class MainActivity : BaseActivity() {
     /**
      * 点击结束轨迹操作
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun finishTraceOnclick() {
         setIndoorGroupEnable(false)
         viewModel.setSelectTrace(false)
@@ -637,7 +625,6 @@ class MainActivity : BaseActivity() {
     /**
      * 点击结束轨迹操作
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun mediaFlagOnclick() {
 /*        viewModel.setMediaFlag(!viewModel.isMediaFlag())
         binding.mainActivitySnapshotMediaFlag.isSelected = viewModel.isMediaFlag()*/
@@ -646,7 +633,6 @@ class MainActivity : BaseActivity() {
     /**
      * 点击上一个轨迹点播放操作
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun rewindTraceOnclick() {
         pausePlayTrace()
         val item =
@@ -668,7 +654,6 @@ class MainActivity : BaseActivity() {
     /**
      * 点击暂停播放轨迹操作
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun pauseTraceOnclick() {
         viewModel.setSelectPauseTrace(!viewModel.isSelectPauseTrace())
         binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
@@ -682,8 +667,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun playVideo() {
+    private fun playVideo() {
         if (mapController.markerHandle.getCurrentMark() == null) {
             BaseToast.makeText(this, "请先选择轨迹点！", BaseToast.LENGTH_SHORT).show()
             return
@@ -697,16 +681,14 @@ class MainActivity : BaseActivity() {
     /**
      * 设置为播放状态
      */
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun setPlayStatus() {
+    private fun setPlayStatus() {
         //切换为播放
         viewModel.setSelectPauseTrace(true)
         binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
         playVideo()
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun pauseVideo() {
+    private fun pauseVideo() {
         val traceVideoBean = TraceVideoBean(command = "pauseVideo?", userid = Constant.USER_ID)
         viewModel.sendServerCommand(this, traceVideoBean, IndoorToolsCommand.STOP)
     }
@@ -714,7 +696,6 @@ class MainActivity : BaseActivity() {
     /**
      * 点击下一个轨迹点
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun nextTraceOnclick() {
         pausePlayTrace()
         val item =
@@ -733,7 +714,6 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     private fun dealNoData() {
         BaseToast.makeText(this, "无数据了！", Toast.LENGTH_SHORT).show()
 
@@ -746,7 +726,6 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     fun pausePlayTrace() {
         viewModel.setSelectTrace(false)
         binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
@@ -759,7 +738,6 @@ class MainActivity : BaseActivity() {
      * 选点结束
      * @param value true 选点成功 false 选点失败
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     private fun selectPointFinish(value: Boolean) {
         if (value) {
             setViewEnable(true)
@@ -773,6 +751,7 @@ class MainActivity : BaseActivity() {
         binding.mainActivitySnapshotNext.isEnabled = value
         binding.mainActivitySnapshotPause.isEnabled = value
         binding.mainActivitySnapshotFinish.isEnabled = value
+        viewModel.cancelTrace()
     }
 
 
@@ -794,16 +773,14 @@ class MainActivity : BaseActivity() {
             binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
             mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
         }
-        mapController.mMapView.vtmMap.animator()
-            .animateTo(
-                GeoPoint(
-                    mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
-                    mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude
-                )
+        mapController.mMapView.vtmMap.animator().animateTo(
+            GeoPoint(
+                mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
+                mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude
             )
+        )
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     private fun voiceOnTouchStart() {
         viewModel.startSoundMetter(this, binding.mainActivityVoice)
     }
@@ -907,7 +884,6 @@ class MainActivity : BaseActivity() {
     /**
      * 打开道路名称属性看板，选择的道路在viewmodel里记录，不用
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun openRoadNameFragment() {
         if (viewModel.liveDataRoadName.value != null) {
             viewModel.showSignMoreInfo(viewModel.liveDataRoadName.value!!)

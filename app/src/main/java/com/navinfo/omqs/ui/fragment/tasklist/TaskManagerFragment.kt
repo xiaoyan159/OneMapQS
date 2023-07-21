@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.navinfo.omqs.databinding.FragmentTaskManagerBinding
 import com.navinfo.omqs.ui.fragment.BaseFragment
@@ -38,10 +40,20 @@ class TaskManagerFragment(private var backListener: ((TaskManagerFragment) -> Un
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.liveDataToastMessage.observe(viewLifecycleOwner) {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        }
         //禁止滑动，因为页面在抽屉里，和抽屉的滑动有冲突
         binding.taskManagerViewpager.isUserInputEnabled = false
         //创建viewpager2的适配器
         binding.taskManagerViewpager.adapter = activity?.let { TaskManagerAdapter(it) }
+        binding.taskManagerViewpager.registerOnPageChangeCallback(object :
+            ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                viewModel.setSelectLink(false)
+            }
+        })
+
         //绑定viewpager2与tabLayout
         TabLayoutMediator(
             binding.taskManagerTabLayout,
