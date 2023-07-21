@@ -31,6 +31,7 @@ import com.navinfo.collect.library.map.OnGeoPointClickListener
 import com.navinfo.collect.library.map.handler.ONNoteItemClickListener
 import com.navinfo.collect.library.map.handler.OnNiLocationItemListener
 import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
+import com.navinfo.collect.library.map.handler.OnTaskLinkItemClickListener
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.omqs.Constant
@@ -80,7 +81,8 @@ class MainViewModel @Inject constructor(
     private val realmOperateHelper: RealmOperateHelper,
     private val networkService: NetworkService,
     private val sharedPreferences: SharedPreferences
-) : ViewModel(), SocketServer.OnConnectSinsListener, SharedPreferences.OnSharedPreferenceChangeListener {
+) : ViewModel(), SocketServer.OnConnectSinsListener,
+    SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val TAG = "MainViewModel"
 
@@ -185,7 +187,7 @@ class MainViewModel @Inject constructor(
 
     private var timer: Timer? = null
 
-    private var disTime :Long = 1000
+    private var disTime: Long = 1000
 
     init {
 
@@ -250,7 +252,7 @@ class MainViewModel @Inject constructor(
              * 处理定位点的点击
              */
             object : OnNiLocationItemListener {
-                override fun onNiLocation(tag: String, it: NiLocation) {
+                override fun onNiLocation(tag: String, index: Int, it: NiLocation) {
                     if (tag == TAG)
                         liveDataNILocationList.value = it
                 }
@@ -415,10 +417,10 @@ class MainViewModel @Inject constructor(
                         )
                     )
                 }
-                withContext(Dispatchers.Main){
-                    if(Constant.AUTO_LOCATION){
+                withContext(Dispatchers.Main) {
+                    if (Constant.AUTO_LOCATION) {
                         mapController.mMapView.vtmMap.animator()
-                            .animateTo(GeoPoint( location.longitude, location.latitude))
+                            .animateTo(GeoPoint(location.longitude, location.latitude))
                     }
                 }
             }
@@ -597,7 +599,7 @@ class MainViewModel @Inject constructor(
         })
     }
 
-    private fun initCameraDialog(context:Context){
+    private fun initCameraDialog(context: Context) {
         if (mCameraDialog == null) {
             mCameraDialog = CommonDialog(
                 context,
@@ -903,10 +905,10 @@ class MainViewModel @Inject constructor(
      * @param niLocation 轨迹点
      */
     fun setCurrentIndexNiLocation(niLocation: NiLocation) {
-        viewModelScope.launch ( Dispatchers.IO ){
-            Log.e("qj","开始$currentIndexNiLocation")
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.e("qj", "开始$currentIndexNiLocation")
             currentIndexNiLocation = mapController.markerHandle.getNILocationIndex(niLocation)!!
-            Log.e("qj","结束$currentIndexNiLocation")
+            Log.e("qj", "结束$currentIndexNiLocation")
         }
     }
 
@@ -957,7 +959,7 @@ class MainViewModel @Inject constructor(
         if (mNiLocation != null) {
             setCurrentIndexNiLocation(mNiLocation)
             showMarker(mapController.mMapView.context, mNiLocation)
-            Log.e("qj","反向控制$currentIndexNiLocation")
+            Log.e("qj", "反向控制$currentIndexNiLocation")
         } else {
             BaseToast.makeText(
                 mapController.mMapView.context,
@@ -967,12 +969,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun isAutoCamera():Boolean{
+    fun isAutoCamera(): Boolean {
 
         return shareUtil?.connectstate == true
     }
 
-    fun autoCamera(){
+    fun autoCamera() {
         if (shareUtil?.connectstate == true) {
             val hostBean1 = HostBean()
             hostBean1.ipAddress = shareUtil!!.takeCameraIP
@@ -983,28 +985,30 @@ class MainViewModel @Inject constructor(
     }
 
     fun startTimer() {
-        if(timer!=null){
+        if (timer != null) {
             cancelTrace()
         }
         timer = fixedRateTimer("", false, disTime, disTime) {
-            if(currentIndexNiLocation<mapController.markerHandle.getNILocationItemizedLayerSize()){
-                Log.e("qj","定时器")
+            if (currentIndexNiLocation < mapController.markerHandle.getNILocationItemizedLayerSize()) {
+                Log.e("qj", "定时器")
                 val niLocation = mapController.markerHandle.getNILocation(currentIndexNiLocation)
-                val nextNiLocation = mapController.markerHandle.getNILocation(currentIndexNiLocation+1)
-                if(nextNiLocation!=null&&niLocation!=null){
-                    var nilocationDisTime = nextNiLocation.timeStamp.toLong() - niLocation.timeStamp.toLong()
-                    disTime = if(nilocationDisTime<1000){
+                val nextNiLocation =
+                    mapController.markerHandle.getNILocation(currentIndexNiLocation + 1)
+                if (nextNiLocation != null && niLocation != null) {
+                    var nilocationDisTime =
+                        nextNiLocation.timeStamp.toLong() - niLocation.timeStamp.toLong()
+                    disTime = if (nilocationDisTime < 1000) {
                         1000
-                    }else{
+                    } else {
                         nilocationDisTime
                     }
-                    showMarker(mapController.mMapView.context,nextNiLocation)
+                    showMarker(mapController.mMapView.context, nextNiLocation)
                     currentIndexNiLocation += 1
                     //再次启动
                     startTimer()
                 }
-            }else{
-                Toast.makeText(mapController.mMapView.context,"无数据了！",Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(mapController.mMapView.context, "无数据了！", Toast.LENGTH_LONG).show()
                 cancelTrace()
             }
         }

@@ -12,7 +12,6 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -20,7 +19,6 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
@@ -43,7 +41,6 @@ import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
-import org.oscim.layers.marker.MarkerItem
 import org.oscim.renderer.GLViewport
 import org.videolan.vlc.Util
 import java.math.BigDecimal
@@ -407,7 +404,7 @@ class MainActivity : BaseActivity() {
         val inputDialog = MaterialAlertDialogBuilder(
             this
         ).setTitle("坐标定位").setView(view)
-        var editText = view.findViewById<EditText>(R.id.dialog_edittext)
+        val editText = view.findViewById<EditText>(R.id.dialog_edittext)
         editText.hint = "请输入经纬度例如：\n116.1234567,39.1234567\n116.1234567 39.1234567"
         inputDialog.setNegativeButton("取消") { dialog, _ ->
             dialog.dismiss()
@@ -670,8 +667,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun playVideo() {
+    private fun playVideo() {
         if (mapController.markerHandle.getCurrentMark() == null) {
             BaseToast.makeText(this, "请先选择轨迹点！", BaseToast.LENGTH_SHORT).show()
             return
@@ -685,16 +681,14 @@ class MainActivity : BaseActivity() {
     /**
      * 设置为播放状态
      */
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun setPlayStatus() {
+    private fun setPlayStatus() {
         //切换为播放
         viewModel.setSelectPauseTrace(true)
         binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
         playVideo()
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun pauseVideo() {
+    private fun pauseVideo() {
         val traceVideoBean = TraceVideoBean(command = "pauseVideo?", userid = Constant.USER_ID)
         viewModel.sendServerCommand(this, traceVideoBean, IndoorToolsCommand.STOP)
     }
@@ -732,7 +726,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    fun pasePlayTrace() {
+    fun pausePlayTrace() {
         viewModel.setSelectTrace(false)
         binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
         viewModel.setSelectPauseTrace(false)
@@ -780,11 +774,11 @@ class MainActivity : BaseActivity() {
             mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
         }
         mapController.mMapView.vtmMap.animator().animateTo(
-                GeoPoint(
-                    mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
-                    mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude
-                )
+            GeoPoint(
+                mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
+                mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude
             )
+        )
     }
 
     private fun voiceOnTouchStart() {
