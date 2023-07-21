@@ -17,6 +17,7 @@ import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
 import com.github.k1rakishou.fsaf.callback.FileChooserCallback
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentPersonalCenterBinding
 import com.navinfo.omqs.db.ImportOMDBHelper
@@ -114,12 +115,18 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         }
                     })
                 }
+                R.id.personal_center_menu_open_auto_location -> {
+                    Constant.AUTO_LOCATION = true
+                }
+                R.id.personal_center_menu_close_auto_location -> {
+                    Constant.AUTO_LOCATION = false
+                }
                 R.id.personal_center_menu_test -> {
                     viewModel.readRealmData()
-                    //108.91056000267433 34.29635901721207
+                    //108.90107116103331 34.29568928574205
                     // 定位到指定位置
                     niMapController.mMapView.vtmMap.animator()
-                        .animateTo(GeoPoint( 34.29635901721207, 108.91056000267433))
+                        .animateTo(GeoPoint( 34.29568928574205, 108.90107116103331))
                 }
 //                R.id.personal_center_menu_task_list -> {
 //                    findNavController().navigate(R.id.TaskManagerFragment)

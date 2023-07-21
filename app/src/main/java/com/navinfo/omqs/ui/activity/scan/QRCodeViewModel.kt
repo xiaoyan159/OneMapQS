@@ -33,6 +33,7 @@ enum class QrCodeStatus {
      * 信息更新成功
      */
     QR_CODE_STATUS_SERVER_INFO_SUCCESS,
+
 }
 
 @HiltViewModel

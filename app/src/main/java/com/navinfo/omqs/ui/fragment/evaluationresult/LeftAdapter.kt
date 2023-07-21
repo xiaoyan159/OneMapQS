@@ -7,7 +7,7 @@ import com.navinfo.omqs.databinding.TextItemSelectBinding
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 
-class LeftAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) :
+class LeftAdapter(private var itemListener: ((Int, ScProblemTypeBean) -> Unit?)? = null) :
     BaseRecyclerViewAdapter<ScProblemTypeBean>() {
     private var selectTitle = ""
 
@@ -28,7 +28,7 @@ class LeftAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) :
                 selectTitle = title.classType
                 notifyDataSetChanged()
             }
-            itemListener?.invoke(position, title.classType)
+            itemListener?.invoke(position, title)
         }
     }
 

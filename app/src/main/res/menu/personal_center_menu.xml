@@ -57,6 +57,18 @@
 <!--                    android:title="图层管理" />-->
 
                 <item
+                    android:id="@+id/personal_center_menu_open_auto_location"
+                    android:icon="@drawable/baseline_person_24"
+                    android:visible="true"
+                    android:title="开启自动定位" />
+
+                <item
+                    android:id="@+id/personal_center_menu_close_auto_location"
+                    android:icon="@drawable/baseline_person_24"
+                    android:visible="true"
+                    android:title="关闭自动定位" />
+
+                <item
                     android:id="@+id/personal_center_menu_test"
                     android:icon="@drawable/baseline_person_24"
                     android:visible="true"

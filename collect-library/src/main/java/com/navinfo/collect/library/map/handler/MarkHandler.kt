@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import com.navinfo.collect.library.R
@@ -197,6 +196,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                         if (listener is OnNiLocationItemListener) {
                             listener.onNiLocation(
                                 tag,
+                                index,
                                 (niLocationItemizedLayer.itemList[index] as MarkerItem).uid as NiLocation
                             )
                             break
@@ -211,6 +211,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
             }
 
         })
+
         addLayer(layer, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
         layer
     }
@@ -287,7 +288,8 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     fun addMarker(
         geoPoint: GeoPoint,
         title: String?,
-        description: String? = ""
+        description: String? = "",
+        uid: java.lang.Object? = null,
     ) {
         var marker: MarkerItem? = null
         for (e in mDefaultMarkerLayer.itemList) {
@@ -302,6 +304,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                 tempTitle = StringUtil.createUUID()
             }
             val marker = MarkerItem(
+                uid,
                 tempTitle,
                 description,
                 geoPoint
@@ -315,6 +318,14 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
             mDefaultMarkerLayer.addItem(marker)
             mMapView.vtmMap.updateMap(true)
         }
+    }
+
+    fun getCurrentMark(): MarkerInterface? {
+
+        if (mDefaultMarkerLayer != null) {
+            return mDefaultMarkerLayer.itemList[mDefaultMarkerLayer.itemList.size - 1]
+        }
+        return null
     }
 
     /**
@@ -484,68 +495,59 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     /**
      * 添加质检数据marker
      */
-    public suspend fun addNiLocationMarkerItem(niLocation: NiLocation) {
+    fun addNiLocationMarkerItem(niLocation: NiLocation) {
         synchronized(this) {
-            Log.e("jingo", "插入定位点0 ")
-
-            var itemizedLayer: ItemizedLayer? = null
-
-            val direction: Double = niLocation.direction
-
-            val geoMarkerItem: MarkerItem = ClusterMarkerItem(
-                niLocation,
-                niLocation.id,
-                niLocation.time,
-                GeoPoint(niLocation.latitude, niLocation.longitude)
-            )
-
-            //角度
-            when (niLocation.media) {
-                0 -> {
-                    //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
-                    //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
-                    if (direction != 0.0) {
-                        val symbolGpsTemp =
-                            MarkerSymbol(niLocationBitmap, MarkerSymbol.HotspotPlace.CENTER, false)
-                        geoMarkerItem.marker = symbolGpsTemp
-                        geoMarkerItem.setRotation(direction.toFloat())
-                    } else {
-                        val symbolGpsTemp =
-                            MarkerSymbol(niLocationBitmap2, MarkerSymbol.HotspotPlace.CENTER, false)
-                        geoMarkerItem.marker = symbolGpsTemp
-                    }
-                    Log.e(
-                        "jingo",
-                        "插入定位点1 ${geoMarkerItem.geoPoint.longitude} ${geoMarkerItem.geoPoint.latitude}"
-                    )
-                    niLocationItemizedLayer.addItem(geoMarkerItem)
-                    itemizedLayer = niLocationItemizedLayer
-                }
-
-                1 -> {
-                    //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
-                    //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
-                    if (direction != 0.0) {
-                        val symbolLidarTemp =
-                            MarkerSymbol(niLocationBitmap1, MarkerSymbol.HotspotPlace.CENTER, false)
-                        geoMarkerItem.marker = symbolLidarTemp
-                        geoMarkerItem.setRotation(direction.toFloat())
-                    } else {
-                        val symbolGpsTemp =
-                            MarkerSymbol(niLocationBitmap3, MarkerSymbol.HotspotPlace.CENTER, false)
-                        geoMarkerItem.marker = symbolGpsTemp
-                    }
-                    Log.e(
-                        "jingo",
-                        "插入定位点2 ${geoMarkerItem.geoPoint.longitude} ${geoMarkerItem.geoPoint.latitude}"
-                    )
-                    niLocationItemizedLayer.addItem(geoMarkerItem)
-                    itemizedLayer = niLocationItemizedLayer
-                }
-
-            }
-            itemizedLayer?.update()
+            var geoMarkerItem = createNILocationBitmap(niLocation)
+            niLocationItemizedLayer.addItem(geoMarkerItem)
+            niLocationItemizedLayer.update()
         }
+    }
+
+    private fun createNILocationBitmap(niLocation: NiLocation): MarkerItem {
+
+        val direction: Double = niLocation.direction
+
+        val geoMarkerItem: MarkerItem = ClusterMarkerItem(
+            niLocation,
+            niLocation.id,
+            niLocation.time,
+            GeoPoint(niLocation.latitude, niLocation.longitude)
+        )
+
+        //角度
+        when (niLocation.media) {
+            0 -> {
+                //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
+                //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
+                if (direction > 0.0) {
+                    val symbolGpsTemp =
+                        MarkerSymbol(niLocationBitmap, MarkerSymbol.HotspotPlace.CENTER, false)
+                    geoMarkerItem.marker = symbolGpsTemp
+                    geoMarkerItem.setRotation(direction.toFloat())
+                } else {
+                    val symbolGpsTemp =
+                        MarkerSymbol(niLocationBitmap2, MarkerSymbol.HotspotPlace.CENTER, false)
+                    geoMarkerItem.marker = symbolGpsTemp
+                }
+            }
+
+            1 -> {
+                //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
+                //角度不为0时需要预先设置marker样式并进行角度设置，否则使用图层默认的sym即可
+                if (direction > 0.0) {
+                    val symbolLidarTemp =
+                        MarkerSymbol(niLocationBitmap1, MarkerSymbol.HotspotPlace.CENTER, false)
+                    geoMarkerItem.marker = symbolLidarTemp
+                    geoMarkerItem.setRotation(direction.toFloat())
+                } else {
+                    val symbolGpsTemp =
+                        MarkerSymbol(niLocationBitmap3, MarkerSymbol.HotspotPlace.CENTER, false)
+                    geoMarkerItem.marker = symbolGpsTemp
+                }
+            }
+        }
+
+        return geoMarkerItem
     }
 
 
@@ -775,6 +777,38 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         mMapView.updateMap(true)
     }
 
+    fun getNILocationItemizedLayerSize(): Int {
+        return niLocationItemizedLayer.itemList.size
+    }
+
+    fun getNILocation(index: Int): NiLocation? {
+        return if (index > -1 && index < getNILocationItemizedLayerSize()) {
+            ((niLocationItemizedLayer.itemList[index]) as MarkerItem).uid as NiLocation
+        } else {
+            null
+        }
+    }
+
+    fun getNILocationIndex(niLocation: NiLocation): Int? {
+
+        var list = niLocationItemizedLayer.itemList
+
+        if (niLocation != null && list.isNotEmpty()) {
+
+            var index = -1
+
+            list.forEach {
+
+                index += 1
+
+                if (((it as MarkerItem).uid as NiLocation).id.equals(niLocation.id)) {
+                    return index
+                }
+            }
+        }
+
+        return -1
+    }
 }
 
 interface OnQsRecordItemClickListener : BaseClickListener {
@@ -786,5 +820,5 @@ interface ONNoteItemClickListener : BaseClickListener {
 }
 
 interface OnNiLocationItemListener : BaseClickListener {
-    fun onNiLocation(tag: String, it: NiLocation)
+    fun onNiLocation(tag: String, index: Int, it: NiLocation)
 }

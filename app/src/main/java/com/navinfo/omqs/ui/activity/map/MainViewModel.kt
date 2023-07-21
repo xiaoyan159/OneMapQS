@@ -15,31 +15,39 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupWindow
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
+import com.blankj.utilcode.util.ViewUtils.runOnUiThread
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.*
+import com.navinfo.collect.library.garminvirbxe.HostBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.OnGeoPointClickListener
 import com.navinfo.collect.library.map.handler.ONNoteItemClickListener
 import com.navinfo.collect.library.map.handler.OnNiLocationItemListener
 import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
-import com.navinfo.collect.library.map.handler.OnTaskLinkItemClickListener
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
+import com.navinfo.omqs.bean.QRCodeBean
 import com.navinfo.omqs.bean.SignBean
+import com.navinfo.omqs.bean.TraceVideoBean
 import com.navinfo.omqs.db.RealmOperateHelper
+import com.navinfo.omqs.http.NetResult
+import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
+import com.navinfo.omqs.ui.other.BaseToast
 import com.navinfo.omqs.ui.widget.SignUtil
 import com.navinfo.omqs.util.DateTimeUtil
+import com.navinfo.omqs.util.ShareUtil
 import com.navinfo.omqs.util.SoundMeter
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -52,11 +60,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
+import org.oscim.layers.marker.MarkerItem
 import org.oscim.map.Map
 import org.videolan.libvlc.LibVlcUtil
 import java.io.File
+import java.io.IOException
 import java.util.*
 import javax.inject.Inject
+import kotlin.concurrent.fixedRateTimer
 
 /**
  * 创建Activity全局viewmode
@@ -67,8 +78,9 @@ class MainViewModel @Inject constructor(
     private val mapController: NIMapController,
     private val traceDataBase: TraceDataBase,
     private val realmOperateHelper: RealmOperateHelper,
+    private val networkService: NetworkService,
     private val sharedPreferences: SharedPreferences
-) : ViewModel(), SharedPreferences.OnSharedPreferenceChangeListener {
+) : ViewModel(), SocketServer.OnConnectSinsListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val TAG = "MainViewModel"
 
@@ -99,6 +111,8 @@ class MainViewModel @Inject constructor(
      * 当前选中的要展示的详细信息的要素
      */
     val liveDataSignMoreInfo = MutableLiveData<RenderEntity>()
+
+    private var traceTag: String = "TRACE_TAG"
 
     /**
      * 右上角菜单状态
@@ -131,6 +145,12 @@ class MainViewModel @Inject constructor(
 
     var currentTaskBean: TaskBean? = null
 
+    //状态
+    val liveIndoorToolsResp: MutableLiveData<IndoorToolsResp> = MutableLiveData()
+
+    //状态
+    val liveIndoorToolsCommand: MutableLiveData<IndoorToolsCommand> = MutableLiveData()
+
     /**
      * 是不是线选择模式
      */
@@ -155,6 +175,18 @@ class MainViewModel @Inject constructor(
 
     private var lastNiLocaion: NiLocation? = null
 
+    private var currentIndexNiLocation: Int = 0
+
+    private var socketServer: SocketServer? = null
+
+    var indoorToolsCommand: IndoorToolsCommand? = null
+
+    private var shareUtil: ShareUtil? = null
+
+    private var timer: Timer? = null
+
+    private var disTime :Long = 1000
+
     init {
 
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
@@ -163,6 +195,9 @@ class MainViewModel @Inject constructor(
                     mapPosition
             }
         })
+
+
+        shareUtil = ShareUtil(mapController.mMapView.context, 1)
 
         initLocation()
         /**
@@ -231,6 +266,7 @@ class MainViewModel @Inject constructor(
             initNILocationData()
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
     }
 
 
@@ -310,21 +346,10 @@ class MainViewModel @Inject constructor(
      * 初始化定位信息
      */
     private fun initLocation() {
+
         //用于定位点存储到数据库
         viewModelScope.launch(Dispatchers.Default) {
             //用于定位点捕捉道路
-            mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
-                if (!isSelectRoad() && !GeometryTools.isCheckError(
-                        location.longitude, location.latitude
-                    )
-                ) {
-                    captureLink(
-                        GeoPoint(
-                            location.latitude, location.longitude
-                        )
-                    )
-                }
-            }
             mapController.locationLayerHandler.niLocationFlow.collect { location ->
 
                 //过滤掉无效点
@@ -354,34 +379,52 @@ class MainViewModel @Inject constructor(
                     }
                     val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
                     location.taskId = id.toString()
+                    if (shareUtil?.connectstate == true) {
+                        location.media = 1
+                    }
+                    var disance = 0.0
                     //增加间距判断
                     if (lastNiLocaion != null) {
-                        val disance = GeometryTools.getDistance(
-                            location.latitude,
-                            location.longitude,
-                            lastNiLocaion!!.latitude,
-                            lastNiLocaion!!.longitude
+                        disance = GeometryTools.getDistance(
+                            location.latitude, location.longitude,
+                            lastNiLocaion!!.latitude, lastNiLocaion!!.longitude
                         )
-                        //相距差距大于2.5米以上进行存储
-                        if (disance > 2.5) {
-                            traceDataBase.niLocationDao.insert(location)
-                            mapController.markerHandle.addNiLocationMarkerItem(location)
-                            mapController.mMapView.vtmMap.updateMap(true)
-                            lastNiLocaion = location
-                        }
-                    } else {
+
+                    }
+                    //室内整理工具时不能进行轨迹存储，判断轨迹间隔要超过2.5并小于60米
+                    if (Constant.INDOOR_IP.isEmpty() && (disance == 0.0 || (disance > 2.5 && disance < 60))) {
                         traceDataBase.niLocationDao.insert(location)
-/*                        mapController.markerHandle.addNiLocationMarkerItem(location)
-                        mapController.mMapView.vtmMap.updateMap(true)*/
+                        mapController.markerHandle.addNiLocationMarkerItem(location)
+                        mapController.mMapView.vtmMap.updateMap(true)
                         lastNiLocaion = location
                     }
                 }
             }
-        }
 
+        }
+        viewModelScope.launch(Dispatchers.Default) {
+            //用于定位点捕捉道路
+            mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
+                if (!isSelectRoad() && !GeometryTools.isCheckError(
+                        location.longitude, location.latitude
+                    )
+                ) {
+                    captureLink(
+                        GeoPoint(
+                            location.latitude, location.longitude
+                        )
+                    )
+                }
+                withContext(Dispatchers.Main){
+                    if(Constant.AUTO_LOCATION){
+                        mapController.mMapView.vtmMap.animator()
+                            .animateTo(GeoPoint( location.longitude, location.latitude))
+                    }
+                }
+            }
+        }
         //显示轨迹图层
         mapController.layerManagerHandler.showNiLocationLayer()
-
     }
 
 
@@ -528,17 +571,8 @@ class MainViewModel @Inject constructor(
 
         Log.e("qj", LibVlcUtil.hasCompatibleCPU(context).toString())
 
-        if (mCameraDialog == null) {
-            mCameraDialog = CommonDialog(
-                context,
-                context.resources.getDimension(R.dimen.head_img_width)
-                    .toInt() * 3 + context.resources.getDimension(R.dimen.ten)
-                    .toInt() + context.resources.getDimension(R.dimen.twenty_four).toInt(),
-                context.resources.getDimension(R.dimen.head_img_width).toInt() + 10,
-                1
-            )
-            mCameraDialog!!.setCancelable(true)
-        }
+        initCameraDialog(context)
+
         mCameraDialog!!.openCamear(mCameraDialog!!.getmShareUtil().continusTakePhotoState)
         mCameraDialog!!.show()
         mCameraDialog!!.setOnDismissListener(DialogInterface.OnDismissListener {
@@ -561,6 +595,20 @@ class MainViewModel @Inject constructor(
                 mCameraDialog!!.playVideo()
             }
         })
+    }
+
+    private fun initCameraDialog(context:Context){
+        if (mCameraDialog == null) {
+            mCameraDialog = CommonDialog(
+                context,
+                context.resources.getDimension(R.dimen.head_img_width)
+                    .toInt() * 3 + context.resources.getDimension(R.dimen.ten)
+                    .toInt() + context.resources.getDimension(R.dimen.twenty_four).toInt(),
+                context.resources.getDimension(R.dimen.head_img_width).toInt() + 10,
+                1
+            )
+            mCameraDialog!!.setCancelable(true)
+        }
     }
 
     fun startSoundMetter(context: Context, v: View) {
@@ -727,5 +775,246 @@ class MainViewModel @Inject constructor(
         liveDataSignMoreInfo.value = data
     }
 
+    fun sendServerCommand(
+        context: Context,
+        traceVideoBean: TraceVideoBean,
+        indoorToolsCommand: IndoorToolsCommand
+    ) {
 
+        if (TextUtils.isEmpty(Constant.INDOOR_IP)) {
+            Toast.makeText(context, "获取ip失败！", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        this.indoorToolsCommand = indoorToolsCommand
+
+        viewModelScope.launch(Dispatchers.Default) {
+            val url = "http://${Constant.INDOOR_IP}:8080/sensor/service/${traceVideoBean.command}?"
+
+            when (val result = networkService.sendServerCommand(
+                url = url,
+                traceVideoBean = traceVideoBean
+            )) {
+                is NetResult.Success<*> -> {
+
+                    if (result.data != null) {
+                        try {
+
+                            val defaultUserResponse = result.data as QRCodeBean
+
+                            if (defaultUserResponse.errcode == 0) {
+
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "命令成功。",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+
+                                    liveIndoorToolsResp.postValue(IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_SUCCESS)
+
+                                    //启动双向控制服务
+
+                                    //启动双向控制服务
+                                    if (socketServer != null && socketServer!!.isServerClose) {
+                                        socketServer!!.connect(
+                                            Constant.INDOOR_IP,
+                                            this@MainViewModel
+                                        )
+                                    }
+
+                                }
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "命令无效${defaultUserResponse.errmsg}",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                                liveIndoorToolsResp.postValue(IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE)
+                            }
+
+                        } catch (e: IOException) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    context,
+                                    "${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+                }
+
+                is NetResult.Error<*> -> {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "${result.exception.message}",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+                    liveIndoorToolsResp.postValue(IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE)
+                }
+
+                is NetResult.Failure<*> -> {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "${result.code}:${result.msg}",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+                    liveIndoorToolsResp.postValue(IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE)
+                }
+
+                else -> {}
+            }
+
+        }
+
+    }
+
+    /**
+     * 显示marker
+     * @param trackCollection 轨迹点
+     * @param type  1 提示最后一个轨迹点  非1提示第一个轨迹点
+     */
+    fun showMarker(context: Context, niLocation: NiLocation) {
+        if (mapController.markerHandle != null) {
+            mapController.markerHandle.removeMarker(traceTag)
+            if (niLocation != null) {
+                mapController.markerHandle.addMarker(
+                    GeoPoint(
+                        niLocation.latitude,
+                        niLocation.longitude
+                    ), traceTag, "", niLocation as java.lang.Object
+                )
+            }
+        }
+    }
+
+    /**
+     * 显示索引位置
+     * @param niLocation 轨迹点
+     */
+    fun setCurrentIndexNiLocation(niLocation: NiLocation) {
+        viewModelScope.launch ( Dispatchers.IO ){
+            Log.e("qj","开始$currentIndexNiLocation")
+            currentIndexNiLocation = mapController.markerHandle.getNILocationIndex(niLocation)!!
+            Log.e("qj","结束$currentIndexNiLocation")
+        }
+    }
+
+    /**
+     * 设置索引位置
+     * @param index 索引
+     */
+    fun setCurrentIndexLoction(index: Int) {
+        currentIndexNiLocation = index
+    }
+
+    /**
+     *
+     * @return index 索引
+     */
+    fun getCurrentNiLocationIndex(): Int {
+        return currentIndexNiLocation
+    }
+
+    override fun onConnect(success: Boolean) {
+        if (!success && socketServer != null) {
+            BaseToast.makeText(
+                mapController.mMapView.context,
+                "轨迹反向控制服务失败，请确认连接是否正常！",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    override fun onIndexing() {
+        //切换为暂停状态
+        liveIndoorToolsCommand.postValue(IndoorToolsCommand.INDEXING)
+    }
+
+    override fun onStop() {
+        liveIndoorToolsCommand.postValue(IndoorToolsCommand.STOP)
+    }
+
+    override fun onPlay() {
+        liveIndoorToolsCommand.postValue(IndoorToolsCommand.PLAY)
+    }
+
+    override fun onParseEnd() {
+
+    }
+
+    override fun onReceiveLocation(mNiLocation: NiLocation?) {
+        if (mNiLocation != null) {
+            setCurrentIndexNiLocation(mNiLocation)
+            showMarker(mapController.mMapView.context, mNiLocation)
+            Log.e("qj","反向控制$currentIndexNiLocation")
+        } else {
+            BaseToast.makeText(
+                mapController.mMapView.context,
+                "没有找到对应轨迹点！",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    fun isAutoCamera():Boolean{
+
+        return shareUtil?.connectstate == true
+    }
+
+    fun autoCamera(){
+        if (shareUtil?.connectstate == true) {
+            val hostBean1 = HostBean()
+            hostBean1.ipAddress = shareUtil!!.takeCameraIP
+            hostBean1.hardwareAddress = shareUtil!!.takeCameraMac
+            onClickCameraButton(mapController.mMapView.context)
+            mCameraDialog?.connection(hostBean1)
+        }
+    }
+
+    fun startTimer() {
+        if(timer!=null){
+            cancelTrace()
+        }
+        timer = fixedRateTimer("", false, disTime, disTime) {
+            if(currentIndexNiLocation<mapController.markerHandle.getNILocationItemizedLayerSize()){
+                Log.e("qj","定时器")
+                val niLocation = mapController.markerHandle.getNILocation(currentIndexNiLocation)
+                val nextNiLocation = mapController.markerHandle.getNILocation(currentIndexNiLocation+1)
+                if(nextNiLocation!=null&&niLocation!=null){
+                    var nilocationDisTime = nextNiLocation.timeStamp.toLong() - niLocation.timeStamp.toLong()
+                    disTime = if(nilocationDisTime<1000){
+                        1000
+                    }else{
+                        nilocationDisTime
+                    }
+                    showMarker(mapController.mMapView.context,nextNiLocation)
+                    currentIndexNiLocation += 1
+                    //再次启动
+                    startTimer()
+                }
+            }else{
+                Toast.makeText(mapController.mMapView.context,"无数据了！",Toast.LENGTH_LONG).show()
+                cancelTrace()
+            }
+        }
+    }
+
+    /**
+     * 结束自动播放
+     */
+    fun cancelTrace() {
+        timer?.cancel()
+    }
 }
+

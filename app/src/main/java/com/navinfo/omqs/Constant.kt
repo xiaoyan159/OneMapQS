@@ -59,6 +59,11 @@ class Constant {
 
         const val DEBUG = true
 
+        /**
+         * 是否自动定位
+         */
+        var AUTO_LOCATION = false
+
         var IS_VIDEO_SPEED by kotlin.properties.Delegates.notNull<Boolean>()
 
         const val message_status_late = "预约，待发送"
