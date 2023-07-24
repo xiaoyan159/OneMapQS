@@ -262,8 +262,8 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getTaskBean()
             //初始化选中的任务高亮高亮
-            if(currentTaskBean!=null){
-                mapController.lineHandler.showTaskLines(currentTaskBean?.hadLinkDvoList!!)
+            if (currentTaskBean != null) {
+                mapController.lineHandler.showTaskLines(currentTaskBean!!.hadLinkDvoList)
             }
             initQsRecordData()
             initNoteData()
