@@ -1,5 +1,10 @@
 {
 	"tableMap" : {
+		"1012": {
+			"table": "OMDB_CHECKPOINT",
+			"code": 1012,
+			"name": "检查点"
+		},
 		"2001": {
 			"table": "OMDB_RD_LINK",
 			"code": 2001,

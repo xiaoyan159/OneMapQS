@@ -1603,6 +1603,13 @@
         <m v="OMDB_RD_LINK" zoom-max="19">
             <line stroke="#9c9c9c" width="1" />
         </m>
+
+        <!-- 检查点 -->
+        <m v="OMDB_CHECKPOINT" zoom-max="20">
+            <symbol src="assets:omdb/icon_1012_0.svg" symbol-height="64"
+                symbol-width="64"></symbol>
+        </m>
+
         <!--道路种别-->
         <m v="OMDB_RD_LINK_KIND" zoom-max="19">
             <outline-layer id="kind0" stroke="#44000000" width="0.1" />
@@ -1702,7 +1709,7 @@
                             <line dasharray="35,35" stroke="#ecf0f1" width="0.1" />
                         </m>-->
             <m k="width">
-                <line stroke="#545D6C" width="3" />
+                <line stroke="#7A88A0" width="3.5" />
             </m>
         </m>0
         <!-- 道路边界类型 -->
@@ -1713,7 +1720,7 @@
             </m>
             <m k="boundaryType" v="1">
                 <!--无标线无可区分边界-->
-                <line dasharray="20,8" repeat-start="0" stroke="#ffffff" width="0.2"/>
+                <line dasharray="12,6" repeat-start="0" stroke="#ffffff" width="0.2"/>
             </m>
             <!--            <outline-layer id="boundaryType" stroke="#fcba5a" width="0.2" />
                         <m k="boundaryType" v="0">
@@ -1764,48 +1771,50 @@
             <m k="boundaryType" v="2">
                 <!--标线-->
                 <m k="markType" v="0|1|4|5|6|7|8">
-                        <!--其他|实线-->
-                        <m v="0|1|2|3|4|5|6|7|8">
-                            <m k="markColor">
-                                <m v="1">
-                                    <line stroke="#ffffff" use="boundaryType" />
-                                </m>
-                                <m v="2">
-                                    <line stroke="#eccc68" use="boundaryType" />
-                                </m>
-                                <m v="6">
-                                    <line stroke="#0000ff" use="boundaryType" />
-                                </m>
-                                <m v="7">
-                                    <line stroke="#00ff00" use="boundaryType" />
-                                </m>
-                                <m v="0|9">
-                                    <line stroke="#8e44ad" use="boundaryType" />
-                                </m>
-                            </m>
-                        </m>
+                    <!--其他|实线-->
+                    <m k="markColor" v="1">
+                        <line stroke="#ffffff" use="boundaryType" />
+                    </m>
+                    <m k="markColor" v="2">
+                        <line stroke="#eccc68" use="boundaryType" />
                     </m>
 
+                    <m k="markColor" v="6">
+                        <line stroke="#0000ff" use="boundaryType" />
+                    </m>
+
+                    <m k="markColor" v="7">
+                        <line stroke="#00ff00" use="boundaryType" />
+                    </m>
+
+                    <m k="markColor" v="0|9">
+                        <line stroke="#8e44ad" use="boundaryType" />
+                    </m>
+                </m>
                 <m k="markType" v="2|3">
                     <!--其他|实线-->
                     <m v="0|1|2|3|4|5|6|7|8">
-                        <m k="markColor">
-                            <m v="1">
-                                <line dasharray="20,8" repeat-start="0" stroke="#ffffff" width="0.2"/>
-                            </m>
-                            <m v="2">
-                                <line dasharray="20,8" repeat-start="0" stroke="#eccc68" width="0.2"/>
-                            </m>
-                            <m v="6">
-                                <line dasharray="20,8" repeat-start="0" stroke="#0000ff" width="0.2"/>
-                            </m>
-                            <m v="7">
-                                <line dasharray="20,8" repeat-start="0" stroke="#00ff00" width="0.2"/>
-                            </m>
-                            <m v="0|9">
-                                <line dasharray="20,8" repeat-start="0" stroke="#8e44ad" width="0.2"/>
-                            </m>
+
+                        <!--其他|实线-->
+                        <m k="markColor" v="1">
+                            <line dasharray="12,6" repeat-start="0" stroke="#ffffff" width="0.2"/>
                         </m>
+                        <m k="markColor" v="2">
+                            <line dasharray="12,6" repeat-start="0" stroke="#eccc68" width="0.2"/>
+                        </m>
+
+                        <m k="markColor" v="6">
+                            <line dasharray="12,6" repeat-start="0" stroke="#0000ff" width="0.2"/>
+                        </m>
+
+                        <m k="markColor" v="7">
+                            <line dasharray="12,6" repeat-start="0" stroke="#00ff00" width="0.2"/>
+                        </m>
+
+                        <m k="markColor" v="0|9">
+                            <line dasharray="12,6" repeat-start="0" stroke="#8e44ad" width="0.2"/>
+                        </m>
+
                     </m>
                 </m>
             </m>
@@ -1815,7 +1824,7 @@
             </m>
             <!--只区分虚线与实线-->
             <m k="boundaryType" v="1">
-                <line dasharray="20,8" repeat-start="0" stroke="#ffffff" width="0.2"/>
+                <line dasharray="12,6" repeat-start="0" stroke="#ffffff" width="0.2"/>
             </m>
         </m>
 
