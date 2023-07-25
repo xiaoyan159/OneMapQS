@@ -65,7 +65,7 @@ open class QsRecordBean @JvmOverloads constructor(
     /**
      * 质检员ID
      */
-    var checkUserId: String = "张海球",
+    var checkUserId: String = "",
     /**
      * 质检日期
      */

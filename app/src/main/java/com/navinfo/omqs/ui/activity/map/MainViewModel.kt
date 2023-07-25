@@ -381,9 +381,11 @@ class MainViewModel @Inject constructor(
                     } catch (e: Exception) {
 
                     }
-                    val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
-                    location.taskId = id.toString()
-                    if (shareUtil?.connectstate == true) {
+
+                    location.taskId = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1).toString()
+
+                    //判断如果是连接状态并处于录像模式，标记为有效点
+                    if (shareUtil?.connectstate == true&&shareUtil?.takeCameraMode==0) {
                         location.media = 1
                     }
                     var disance = 0.0
@@ -393,7 +395,6 @@ class MainViewModel @Inject constructor(
                             location.latitude, location.longitude,
                             lastNiLocaion!!.latitude, lastNiLocaion!!.longitude
                         )
-
                     }
                     //室内整理工具时不能进行轨迹存储，判断轨迹间隔要超过2.5并小于60米
                     if (Constant.INDOOR_IP.isEmpty() && (disance == 0.0 || (disance > 2.5 && disance < 60))) {

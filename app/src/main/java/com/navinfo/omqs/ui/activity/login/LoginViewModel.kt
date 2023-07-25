@@ -106,11 +106,12 @@ class LoginViewModel @Inject constructor(
         val userNameCache = sharedPreferences?.getString("userName", null)
         val passwordCache = sharedPreferences?.getString("passWord", null)
         val userCodeCache = sharedPreferences?.getString("userCode", null)
+        val userRealName = sharedPreferences?.getString("userRealName", null)
         //增加缓存记录，不用每次连接网络登录
-        if (userNameCache != null && passwordCache != null && userCodeCache != null) {
+        if (userNameCache != null && passwordCache != null && userCodeCache != null&&userRealName!=null) {
             if (userNameCache == userName && passwordCache == password) {
                 viewModelScope.launch(Dispatchers.IO) {
-                    createUserFolder(context, userCodeCache)
+                    createUserFolder(context, userCodeCache,userRealName)
                     loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
                 }
                 return
@@ -133,6 +134,7 @@ class LoginViewModel @Inject constructor(
         //网络访问
         loginStatus.postValue(LoginStatus.LOGIN_STATUS_NET_LOADING)
         var userCode = "99999";
+        var userRealName = "";
         //登录访问
         when (val result = networkService.loginUser(LoginUserBean(userName, password))) {
             is NetResult.Success<*> -> {
@@ -153,6 +155,7 @@ class LoginViewModel @Inject constructor(
                                 return
                             } else {
                                 userCode = defaultUserResponse.obj?.userCode.toString()
+                                userRealName = defaultUserResponse.obj?.userName.toString()
                             }
                         } else {
                             withContext(Dispatchers.Main) {
@@ -200,7 +203,9 @@ class LoginViewModel @Inject constructor(
             sharedPreferences?.edit()?.putString("userName", userName)?.commit()
             sharedPreferences?.edit()?.putString("passWord", password)?.commit()
             sharedPreferences?.edit()?.putString("userCode", userCode)?.commit()
-            createUserFolder(context, userCode)
+            sharedPreferences?.edit()?.putString("userRealName", userRealName)?.commit()
+
+            createUserFolder(context, userCode,userRealName)
         } catch (e: IOException) {
             loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_FAILURE)
         }
@@ -242,9 +247,10 @@ class LoginViewModel @Inject constructor(
     /**
      * 创建用户目录
      */
-    private fun createUserFolder(context: Context, userId: String) {
+    private fun createUserFolder(context: Context, userId: String,userRealName:String) {
         Constant.IS_VIDEO_SPEED = false
         Constant.USER_ID = userId
+        Constant.USER_REAL_NAME = userRealName
         Constant.VERSION_ID = userId
         Constant.USER_DATA_PATH = Constant.DATA_PATH + Constant.USER_ID + "/" + Constant.VERSION_ID
         Constant.USER_DATA_ATTACHEMNT_PATH = Constant.USER_DATA_PATH + "/attachment/"
