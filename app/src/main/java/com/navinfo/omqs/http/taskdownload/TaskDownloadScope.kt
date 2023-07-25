@@ -133,10 +133,13 @@ class TaskDownloadScope(
             importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile).collect {
                 Log.e("jingo", "数据安装 $it")
                 if (it == "finish") {
-                    change(FileDownloadStatus.DONE)
                     withContext(Dispatchers.Main) {
+                        downloadManager.mapController.layerManagerHandler.omdbLayersUpdate()
                         downloadManager.mapController.mMapView.updateMap(true)
+                        Log.e("jingo", "数据安装结束，刷新地图")
                     }
+                    change(FileDownloadStatus.DONE)
+
                 } else {
                     change(FileDownloadStatus.IMPORTING, it)
                 }

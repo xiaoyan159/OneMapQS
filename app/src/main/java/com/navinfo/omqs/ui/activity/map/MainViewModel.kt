@@ -369,7 +369,7 @@ class MainViewModel @Inject constructor(
                     GeometryToolsKt.getTileYByGeometry(geometry.toString(), tileY)
 
                     //遍历存储tile对应的x与y的值
-                    tileX.forEach { x ->
+                    tileX.forEach {   x ->
                         tileY.forEach { y ->
                             location.tilex = x
                             location.tiley = y
