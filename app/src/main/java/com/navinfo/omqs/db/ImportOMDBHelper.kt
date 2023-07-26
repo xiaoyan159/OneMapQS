@@ -9,6 +9,7 @@ import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.ZipUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.ImportConfig
@@ -16,6 +17,7 @@ import com.navinfo.omqs.hilt.OMDBDataBaseHiltFactory
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.realm.Realm
+import io.realm.RealmQuery
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -131,8 +133,9 @@ class ImportOMDBHelper @AssistedInject constructor(
             // 开始解压zip文件
             val unZipFiles = ZipUtils.unzipFile(omdbZipFile, unZipFolder)
             // 将listResult数据插入到Realm数据库中
+            val realm = Realm.getDefaultInstance()
+            realm.beginTransaction()
             try {
-                Realm.getDefaultInstance().beginTransaction()
                 // 遍历解压后的文件，读取该数据返回
                 for ((index, currentEntry) in importConfig.tableMap.entries.withIndex()) {
                     val currentConfig = currentEntry.value
@@ -147,11 +150,16 @@ class ImportOMDBHelper @AssistedInject constructor(
                         if (list != null) {
                             // 将list数据转换为map
                             for ((index, line) in list.withIndex()) {
-                                Log.d("ImportOMDBHelper", "解析第：${index+1}行")
-                                val map = gson.fromJson<Map<String, Any>>(line, object:TypeToken<Map<String, Any>>(){}.getType())
+                                Log.d("ImportOMDBHelper", "解析第：${index + 1}行")
+                                val map = gson.fromJson<Map<String, Any>>(
+                                    line,
+                                    object : TypeToken<Map<String, Any>>() {}.getType()
+                                )
                                     .toMutableMap()
                                 map["qi_table"] = currentConfig.table
                                 map["qi_name"] = currentConfig.name
+                                map["qi_code"] =
+                                    if (currentConfig.code == 0) currentConfig.code else currentEntry.key
                                 map["qi_code"] = if (currentConfig.code == 0) currentConfig.code else currentEntry.key
                                 map["qi_zoomMin"] = currentConfig.zoomMin
                                 map["qi_zoomMax"] = currentConfig.zoomMax
@@ -171,16 +179,22 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 for ((key, value) in map) {
                                     when (value) {
                                         is String -> renderEntity.properties.put(key, value)
-                                        is Int -> renderEntity.properties.put(key, value.toInt().toString())
-                                        is Double -> renderEntity.properties.put(key, value.toDouble().toString())
+                                        is Int -> renderEntity.properties.put(
+                                            key,
+                                            value.toInt().toString()
+                                        )
+                                        is Double -> renderEntity.properties.put(
+                                            key,
+                                            value.toDouble().toString()
+                                        )
                                         else -> renderEntity.properties.put(key, value.toString())
                                     }
                                 }
                                 listResult.add(renderEntity)
                                 // 对renderEntity做预处理后再保存
                                 val resultEntity = importConfig.transformProperties(renderEntity)
-                                if (resultEntity!=null) {
-                                    Realm.getDefaultInstance().insert(renderEntity)
+                                if (resultEntity != null) {
+                                    realm.insert(renderEntity)
                                 }
                             }
                         }
@@ -189,12 +203,14 @@ class ImportOMDBHelper @AssistedInject constructor(
                     emit("${index + 1}/${importConfig.tableMap.size}")
                     // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
                     if (currentConfig.table == "OMDB_RD_LINK") {
-                        importConfig.preProcess.cacheRdLink = listResult.associateBy { it.properties["linkPid"] }
+                        importConfig.preProcess.cacheRdLink =
+                            listResult.associateBy { it.properties["linkPid"] }
                     }
                 }
-                Realm.getDefaultInstance().commitTransaction()
+                realm.commitTransaction()
+                realm.close()
             } catch (e: Exception) {
-                Realm.getDefaultInstance().cancelTransaction()
+                realm.cancelTransaction()
                 throw e
             }
             emit("finish")

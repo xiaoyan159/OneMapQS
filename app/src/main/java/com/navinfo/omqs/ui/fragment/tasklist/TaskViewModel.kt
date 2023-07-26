@@ -95,55 +95,6 @@ class TaskViewModel @Inject constructor(
     fun getTaskList(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
 
-            when (val result = networkService.getTaskList(Constant.USER_ID)) {
-                is NetResult.Success -> {
-                    if (result.data != null) {
-                        val realm = Realm.getDefaultInstance()
-                        realm.executeTransaction {
-                            result.data.obj?.let { list ->
-                                for (index in list.indices) {
-                                    val task = list[index]
-                                    val item = realm.where(TaskBean::class.java).equalTo(
-                                        "id", task.id
-                                    ).findFirst()
-                                    if (item != null) {
-                                        task.fileSize = item.fileSize
-                                        task.status = item.status
-                                        task.currentSize = item.currentSize
-                                        task.hadLinkDvoList = item.hadLinkDvoList
-                                        //已上传后不在更新操作时间
-                                        if (task.syncStatus != FileManager.Companion.FileUploadStatus.DONE) {
-                                            //赋值时间，用于查询过滤
-                                            task.operationTime = DateTimeUtil.getNowDate().time
-                                        }
-                                    } else {
-                                        //赋值时间，用于查询过滤
-                                        task.operationTime = DateTimeUtil.getNowDate().time
-                                    }
-                                    realm.copyToRealmOrUpdate(task)
-                                }
-                            }
-
-                        }
-                    }
-                }
-
-                is NetResult.Error<*> -> {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                }
-
-                is NetResult.Failure<*> -> {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                }
-
-                is NetResult.Loading -> {}
-            }
             getLocalTaskList()
         }
     }
@@ -160,7 +111,7 @@ class TaskViewModel @Inject constructor(
         val objects =
             realm.where(TaskBean::class.java).notEqualTo("syncStatus", syncUpload).or()
                 .between("operationTime", beginNowTime, nowTime)
-                .equalTo("syncStatus", syncUpload).findAll()
+                .equalTo("syncStatus", syncUpload).findAll().sort("id")
         val taskList = realm.copyFromRealm(objects)
         for (item in taskList) {
             FileManager.checkOMDBFileInfo(item)
