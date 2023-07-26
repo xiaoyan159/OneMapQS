@@ -61,7 +61,7 @@ public class OMDBDataDecoder extends TileDecoder {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public boolean decode(Tile tile, ITileDataSink sink, List<RenderEntity> listResult) {
+    public boolean decode(int zoomLevel,Tile tile, ITileDataSink sink, List<RenderEntity> listResult) {
         mTileDataSink = sink;
         mTileScale = 1 << tile.zoomLevel;
         mTileX = tile.tileX / mTileScale;
@@ -71,10 +71,11 @@ public class OMDBDataDecoder extends TileDecoder {
         listResult.stream().iterator().forEachRemaining(new Consumer<RenderEntity>() {
             @Override
             public void accept(RenderEntity renderEntity) {
-//                Log.d("RealmDBTileDataSource", renderEntity.getGeometry());
-                Map<String, Object> properties= new HashMap<>(renderEntity.getProperties().size());
-                properties.putAll(renderEntity.getProperties());
-                parseGeometry(renderEntity.getTable(), renderEntity.getWkt(), properties);
+                if(zoomLevel>=renderEntity.getZoomMin()&&zoomLevel<=renderEntity.getZoomMax()){
+                    Map<String, Object> properties= new HashMap<>(renderEntity.getProperties().size());
+                    properties.putAll(renderEntity.getProperties());
+                    parseGeometry(renderEntity.getTable(), renderEntity.getWkt(), properties);
+                }
             }
         });
         return true;

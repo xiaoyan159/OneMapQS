@@ -1,16 +1,13 @@
 package com.navinfo.omqs.ui.fragment.evaluationresult
 
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
-import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ScProblemTypeBean
 import com.navinfo.omqs.databinding.TextItemSelectBinding
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 
-class LeftAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) :
+class LeftAdapter(private var itemListener: ((Int, ScProblemTypeBean) -> Unit?)? = null) :
     BaseRecyclerViewAdapter<ScProblemTypeBean>() {
     private var selectTitle = ""
 
@@ -21,7 +18,6 @@ class LeftAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) :
         return BaseViewHolder(viewBinding)
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         val bd = holder.viewBinding as TextItemSelectBinding
         val title = data[position]
@@ -32,7 +28,7 @@ class LeftAdapter(private var itemListener: ((Int, String) -> Unit?)? = null) :
                 selectTitle = title.classType
                 notifyDataSetChanged()
             }
-            itemListener?.invoke(position, title.classType)
+            itemListener?.invoke(position, title)
         }
     }
 

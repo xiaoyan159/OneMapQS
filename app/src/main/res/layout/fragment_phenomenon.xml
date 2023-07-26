@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/fragment_phenomenon_width"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shape_middle_fragment_bg"
+    android:gravity="right"
     tools:context="com.navinfo.omqs.ui.fragment.evaluationresult.PhenomenonFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/phenomenon_left_recyclerview"
-        android:layout_width="148dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:layout_width="@dimen/fragment_phenomenon_width"
+        android:layout_height="match_parent"
+        android:layout_marginTop="55dp"
+        android:background="@drawable/shape_middle_fragment_bg"
+        android:orientation="horizontal">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/phenomenon_right_recyclerview"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/phenomenon_left_recyclerview"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/phenomenon_left_recyclerview"
+            android:layout_width="148dp"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/phenomenon_right_recyclerview" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/phenomenon_right_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

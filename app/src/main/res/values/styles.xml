@@ -1,5 +1,20 @@
 <resources>
 
+    <style name="sketch_operation_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+    </style>
+
+    <style name="link_gray_style" comment="竖着的灰色分隔线">
+        <item name="android:layout_width">1dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">#C3C3C3</item>
+    </style>
+
     <style name="main_activity_bottom_sheet_icon" comment="主控页面下方按钮样式">
         <item name="android:layout_width">36dp</item>
         <item name="android:layout_height">36dp</item>

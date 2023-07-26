@@ -1,13 +1,13 @@
 package com.navinfo.collect.library.map.handler
 
-import android.content.Context
+import android.graphics.Point
 import androidx.appcompat.app.AppCompatActivity
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.utils.GeometryTools
 import org.oscim.core.GeoPoint
-import org.oscim.core.Point
 
-open class ViewportHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(context, mapView) {
+open class ViewportHandler(context: AppCompatActivity, mapView: NIMapView) :
+    BaseHandler(context, mapView) {
     /**
      * Set pivot horizontal / vertical relative to view center in [-1, 1].
      * e.g. pivotY 0.5 is usually preferred for navigation, moving center to 25% of view height.
@@ -54,32 +54,47 @@ open class ViewportHandler(context: AppCompatActivity, mapView: NIMapView) : Bas
      * @param snapType 扩展外接矩形的方式，用屏幕像素还是距离
      *  @param distance 距离大小 像素 或 米
      */
+//    fun toScreenPoint(
+//        geoPoint: GeoPoint
+//    ): String {
+//        val point = Point()
+//
+//        mMapView.vtmMap.viewport().toScreenPoint(geoPoint, false, point)
+//
+//        return "${point.x},${point.y}"
+//    }
+
     fun toScreenPoint(
         geoPoint: GeoPoint
-    ): String {
-        val point = Point()
+    ): Point {
+        val point = org.oscim.core.Point()
 
         mMapView.vtmMap.viewport().toScreenPoint(geoPoint, false, point)
 
-        return "${point.x},${point.y}"
+        return Point(point.x.toInt(), point.y.toInt())
     }
 
-    /**
-     * 获取几何的外接矩形,返回矩形的左上，右下两个坐标
-     * @param snapType 扩展外接矩形的方式，用屏幕像素还是距离
-     *  @param distance 距离大小 像素 或 米
-     */
-    fun fromScreenPoint(
-        px: Float, py: Float
-    ): Map<String, Any> {
 
-        val geo = mMapView.vtmMap.viewport().fromScreenPoint(px, py)
+//    /**
+//     * 获取几何的外接矩形,返回矩形的左上，右下两个坐标
+//     * @param snapType 扩展外接矩形的方式，用屏幕像素还是距离
+//     *  @param distance 距离大小 像素 或 米
+//     */
+//    fun fromScreenPointMap(
+//        px: Float, py: Float
+//    ): Map<String, Any> {
+//
+//        val geo = mMapView.vtmMap.viewport().fromScreenPoint(px, py)
+//
+//        return mapOf(
+//            "latitude" to geo.latitude,
+//            "longitude" to geo.longitude,
+//            "longitudeE6" to geo.longitudeE6,
+//            "latitudeE6" to geo.latitudeE6,
+//        )
+//    }
 
-        return mapOf(
-            "latitude" to geo.latitude,
-            "longitude" to geo.longitude,
-            "longitudeE6" to geo.longitudeE6,
-            "latitudeE6" to geo.latitudeE6,
-        )
+    fun fromScreenPoint(point: android.graphics.Point): GeoPoint {
+        return mMapView.vtmMap.viewport().fromScreenPoint(point.x.toFloat(), point.y.toFloat())
     }
 }

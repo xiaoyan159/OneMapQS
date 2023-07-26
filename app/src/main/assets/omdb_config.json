@@ -1,29 +1,46 @@
 {
 	"tableMap" : {
+		"1012": {
+			"table": "OMDB_CHECKPOINT",
+			"code": 1012,
+			"name": "检查点",
+			"zoomMin": 18,
+			"zoomMax": 23
+		},
 		"2001": {
 			"table": "OMDB_RD_LINK",
 			"code": 2001,
-			"name": "道路线"
+			"name": "道路线",
+			"zoomMin": 18,
+			"zoomMax": 19
 		},
 		"2002": {
 			"table": "OMDB_RD_LINK_FUNCTION_CLASS",
 			"code": 2002,
-			"name": "道路功能等级"
+			"name": "道路功能等级",
+			"zoomMin": 18,
+			"zoomMax": 19
 		},
 		"2008": {
 			"table": "OMDB_RD_LINK_KIND",
 			"code": 2008,
-			"name": "道路种别"
+			"name": "道路种别",
+			"zoomMin": 18,
+			"zoomMax": 19
 		},
 		"2010": {
 			"table": "OMDB_LINK_DIRECT",
 			"code": 2010,
-			"name": "道路方向"
+			"name": "道路方向",
+			"zoomMin": 18,
+			"zoomMax": 19
 		},
 		"2011": {
 			"table": "OMDB_LINK_NAME",
 			"code": 2011,
 			"name": "道路名",
+			"zoomMin": 18,
+			"zoomMax": 19,
 			"transformer": [
 				{
 					"k": "geometry",
@@ -37,6 +54,8 @@
 			"table": "OMDB_LANE_MARK_BOUNDARYTYPE",
 			"code": 2013,
 			"name": "车道边界类型",
+			"zoomMin": 20,
+			"zoomMax": 23,
 			"transformer": [
 				{
 					"k": "geometry",
@@ -49,17 +68,23 @@
 		"2019": {
 			"table": "OMDB_LINK_SPEEDLIMIT",
 			"code": 2019,
-			"name": "常规线限速"
+			"name": "常规线限速",
+			"zoomMin": 18,
+			"zoomMax": 19
 		},
 		"2020": {
 			"table": "OMDB_LINK_SPEEDLIMIT_COND",
 			"code": 2020,
-			"name": "条件线限速"
+			"name": "条件线限速",
+			"zoomMin": 18,
+			"zoomMax": 19
 		},
 		"2021": {
 			"table": "OMDB_LINK_SPEEDLIMIT_VAR",
 			"code": 2021,
-			"name": "可变线限速"
+			"name": "可变线限速",
+			"zoomMin": 18,
+			"zoomMax": 19
 		},
 		"2022": {
 			"table": "OMDB_CON_ACCESS",
@@ -84,7 +109,9 @@
 		"2083":{
 			"table": "OMDB_RDBOUND_BOUNDARYTYPE",
 			"code": 2083,
-			"name": "道路边界类型"
+			"name": "道路边界类型",
+			"zoomMin": 20,
+			"zoomMax": 23
 		},
 		"2201":{
 			"table": "OMDB_BRIDGE",
@@ -94,12 +121,24 @@
 		"2202":{
 			"table": "OMDB_TUNNEL",
 			"code": 2202,
-			"name": "隧道"
+			"name": "隧道",
+			"zoomMin": 18,
+			"zoomMax": 23,
+			"transformer": [
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateS2EReferencePoint()"
+				}
+			]
 		},
 		"4001": {
             "table": "OMDB_INTERSECTION",
             "code": 4001,
             "name": "路口",
+			"zoomMin": 18,
+			"zoomMax": 19,
 			"transformer": [
 				{
 					"k": "geometry",
@@ -113,6 +152,8 @@
             "table": "OMDB_SPEEDLIMIT",
             "code": 4002,
             "name": "常规点限速",
+			"zoomMin": 18,
+			"zoomMax": 23,
 			"transformer": [
 				{
 					"k": "maxSpeed",
@@ -132,6 +173,8 @@
 			"table": "OMDB_SPEEDLIMIT_COND",
 			"code": 4003,
 			"name": "条件点限速",
+			"zoomMin": 18,
+			"zoomMax": 23,
 			"transformer": [
 				{
 					"k": "maxSpeed",
@@ -145,6 +188,8 @@
 			"table": "OMDB_SPEEDLIMIT_VAR",
 			"code": 4004,
 			"name": "可变点限速",
+			"zoomMin": 18,
+			"zoomMax": 23,
 			"transformer": [
 				{
 					"k": "location",
@@ -170,6 +215,8 @@
 			"table": "OMDB_RESTRICTION",
 			"code": 4006,
 			"name": "普通交限",
+			"zoomMin": 18,
+			"zoomMax": 23,
 			"transformer": [
 				{
 					"k": "geometry",
@@ -207,6 +254,8 @@
 			"table": "OMDB_ELECTRONICEYE",
 			"code": 4010,
 			"name": "电子眼",
+			"zoomMin": 18,
+			"zoomMax": 23,
 			"transformer": [
 				{
 					"k": "geometry",
@@ -238,6 +287,8 @@
 			"table": "OMDB_TRAFFICLIGHT",
 			"code": 4022,
 			"name": "交通灯",
+			"zoomMin": 18,
+			"zoomMax": 23,
 			"transformer": [
 			]
 		},
@@ -245,6 +296,8 @@
 			"table": "OMDB_LANEINFO",
 			"code": 4601,
 			"name": "车信",
+			"zoomMin": 18,
+			"zoomMax": 19,
 			"transformer": [
 				{
 					"k": "geometry",
@@ -269,7 +322,17 @@
         "5001":{
             "table": "OMDB_LANE_LINK_LG",
             "code": 5001,
-            "name": "车道中心线"
+            "name": "车道中心线",
+			"zoomMin": 20,
+			"zoomMax": 23,
+			"transformer": [
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateAddWidthLine()"
+				}
+			]
         },
 		"5002":{
 			"table": "OMDB_AREA",

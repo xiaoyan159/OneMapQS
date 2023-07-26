@@ -150,6 +150,7 @@
                 android:layout_gravity="right|bottom"
                 android:layout_margin="10dp"
                 android:paddingLeft="@dimen/five"
+                android:visibility="invisible"
                 android:textColor="@color/white"
                 android:text="录像"
                 android:button="@drawable/chk_icon_camera_record_or_takephoto_xml"

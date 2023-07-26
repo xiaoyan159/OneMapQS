@@ -24,6 +24,11 @@ class Constant {
          */
         lateinit var USER_ID: String
 
+        /**
+         * 当前用户名称
+         */
+        lateinit var USER_REAL_NAME: String
+
         //数据版本
         lateinit var VERSION_ID: String
 
@@ -55,9 +60,19 @@ class Constant {
         /**
          * 室内整理工具IP
          */
-        lateinit var INDOOR_IP: String
+        var INDOOR_IP: String = ""
 
         const val DEBUG = true
+
+        /**
+         * 地图最多缩放级别23
+         */
+        const val MAX_ZOOM = 23
+
+        /**
+         * 是否自动定位
+         */
+        var AUTO_LOCATION = false
 
         var IS_VIDEO_SPEED by kotlin.properties.Delegates.notNull<Boolean>()
 
@@ -92,6 +107,10 @@ class Constant {
         val OMDB_LAYER_VISIBLE_LIST: MutableList<String> = mutableListOf() // 记录OMDB数据显示的图层名称列表
 
         const val EVENT_LAYER_MANAGER_CHANGE = "EVENT_LAYER_MANAGER_CHANGE" // 图层管理中的配置修改
+
+        const val SELECT_TASK_ID = "select_task_id" //选中的任务ID
+
+        const val SHARED_SYNC_TASK_LINK_ID = "shared_sync_task_link_id"//利用shared通知任务页面更新
     }
 
 

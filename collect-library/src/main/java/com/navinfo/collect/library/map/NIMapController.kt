@@ -1,20 +1,8 @@
 package com.navinfo.collect.library.map
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import com.navinfo.collect.library.data.entity.NiLocation
-import com.navinfo.collect.library.data.handler.DataNiLocationHandler
-import com.navinfo.collect.library.map.NIMapView.OnMapClickListener
 import com.navinfo.collect.library.map.handler.*
-import com.navinfo.collect.library.map.handler.MeasureLayerHandler
-import com.navinfo.collect.library.map.handler.ViewportHandler
 import com.navinfo.collect.library.system.Constant
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.launch
-import org.oscim.core.GeoPoint
 
 /**
  *  地图控制器
@@ -31,7 +19,7 @@ class NIMapController {
     lateinit var viewportHandler: ViewportHandler
     lateinit var measureLayerHandler: MeasureLayerHandler
 
-    val onMapClickFlow = MutableSharedFlow<GeoPoint>()
+//    val onMapClickFlow = MutableSharedFlow<GeoPoint>()
 
     fun init(
         context: AppCompatActivity,
@@ -45,23 +33,32 @@ class NIMapController {
         locationLayerHandler = LocationLayerHandler(context, mapView)
         animationHandler = AnimationHandler(context, mapView)
         markerHandle = MarkHandler(context, mapView)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            lineHandler = LineHandler(context, mapView)
-        }
+        lineHandler = LineHandler(context, mapView)
         polygonHandler = PolygonHandler(context, mapView)
         viewportHandler = ViewportHandler(context, mapView)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            measureLayerHandler = MeasureLayerHandler(context, mapView)
-        }
+        measureLayerHandler = MeasureLayerHandler(context, mapView)
         mMapView = mapView
         mMapView.setOnMapClickListener {
-            context.lifecycleScope.launch {
-                onMapClickFlow.emit(it)
+            if (mapView.listenerTagList.isNotEmpty()) {
+                val tag = mapView.listenerTagList.last()
+                val listenerList = mapView.listenerList[tag]
+                if (listenerList != null) {
+                    for (listener in listenerList) {
+                        if (listener is OnGeoPointClickListener) {
+                            listener.onMapClick(tag, it)
+                            return@setOnMapClickListener
+                        }
+                    }
+                }
             }
+
+//            context.lifecycleScope.launch {
+//                onMapClickFlow.emit(it)
+//            }
+
         }
         mapView.setOptions(options)
     }
-
-
 }
+
 

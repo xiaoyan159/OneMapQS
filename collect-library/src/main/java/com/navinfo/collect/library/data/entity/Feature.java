@@ -14,7 +14,7 @@ import java.util.UUID;
  * @Date 2022/4/14
  * @Description: ${TODO}(数据基类)
  */
-public class Feature implements Serializable, Cloneable {
+public class Feature extends Object implements Serializable, Cloneable {
 //    //主键
 //    @PrimaryKey(autoGenerate = true)
 //    public int rowId;

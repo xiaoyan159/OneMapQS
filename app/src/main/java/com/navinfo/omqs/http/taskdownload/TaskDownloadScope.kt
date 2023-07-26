@@ -1,14 +1,16 @@
 package com.navinfo.omqs.http.taskdownload
 
 import android.util.Log
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.navinfo.omqs.Constant
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.omqs.Constant
 import com.navinfo.omqs.db.ImportOMDBHelper
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
+import com.navinfo.omqs.ui.other.BaseViewHolder
 import com.navinfo.omqs.util.DateTimeUtil
 import io.realm.Realm
 import kotlinx.coroutines.*
@@ -21,7 +23,7 @@ class TaskDownloadScope(
     private val downloadManager: TaskDownloadManager,
     val taskBean: TaskBean,
 ) :
-    CoroutineScope by CoroutineScope(Dispatchers.IO + CoroutineName("OfflineMapDownLoad")) {
+    CoroutineScope by CoroutineScope(Dispatchers.IO + CoroutineName("TaskMapDownLoad")) {
 
     /**
      *下载任务，用来取消的
@@ -31,8 +33,8 @@ class TaskDownloadScope(
     /**
      * 管理观察者，同时只有一个就行了
      */
-    private val observer = Observer<Any> {}
-//    private var lifecycleOwner: LifecycleOwner? = null
+//    private val observer = Observer<Any> {}
+    private var lifecycleOwner: LifecycleOwner? = null
 
     /**
      *通知UI更新
@@ -71,7 +73,7 @@ class TaskDownloadScope(
         downloadJob = launch() {
             FileManager.checkOMDBFileInfo(taskBean)
             if (taskBean.status == FileDownloadStatus.IMPORT) {
-                importData()
+                importData(taskId = taskBean.id)
             } else {
                 download()
             }
@@ -92,6 +94,7 @@ class TaskDownloadScope(
      * @param status [OfflineMapCityBean.Status]
      */
     private suspend fun change(status: Int, message: String = "") {
+
         if (taskBean.status != status || status == FileDownloadStatus.LOADING || status == FileDownloadStatus.IMPORTING) {
             taskBean.status = status
             taskBean.message = message
@@ -111,15 +114,16 @@ class TaskDownloadScope(
      * 添加下载任务观察者
      */
     fun observer(owner: LifecycleOwner, ob: Observer<TaskBean>) {
+
         removeObserver()
-//        this.lifecycleOwner = owner
+        this.lifecycleOwner = owner
         downloadData.observe(owner, ob)
     }
 
     /**
      * 导入数据
      */
-    private suspend fun importData(file: File? = null) {
+    private suspend fun importData(file: File? = null, taskId: Int?=0) {
         try {
             Log.e("jingo", "importData SSS")
             change(FileDownloadStatus.IMPORTING)
@@ -130,15 +134,17 @@ class TaskDownloadScope(
                     downloadManager.context,
                     fileNew
                 )
-            importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile).collect {
-                Log.e("jingo", "数据安装 $it")
-                if (it == "finish") {
-                    change(FileDownloadStatus.DONE)
-                    withContext(Dispatchers.Main) {
-                        downloadManager.mapController.mMapView.updateMap(true)
+            if (taskId != null) {
+                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile,taskId).collect {
+                    Log.e("jingo", "数据安装 $it")
+                    if (it == "finish") {
+                        change(FileDownloadStatus.DONE)
+                        withContext(Dispatchers.Main) {
+                            downloadManager.mapController.mMapView.updateMap(true)
+                        }
+                    } else {
+                        change(FileDownloadStatus.IMPORTING, it)
                     }
-                } else {
-                    change(FileDownloadStatus.IMPORTING, it)
                 }
             }
         } catch (e: Exception) {
@@ -177,7 +183,7 @@ class TaskDownloadScope(
                 startPosition = 0
             }
             if (fileTemp.length() > 0 && taskBean.fileSize > 0 && fileTemp.length() == taskBean.fileSize) {
-                importData(fileTemp)
+                importData(fileTemp,taskBean.id)
                 return
             }
 
@@ -218,7 +224,7 @@ class TaskDownloadScope(
                 randomAccessFile?.close()
                 inputStream = null
                 randomAccessFile = null
-                importData()
+                importData(taskId = taskBean.id)
             } else {
                 change(FileDownloadStatus.PAUSE)
             }
@@ -232,10 +238,17 @@ class TaskDownloadScope(
     }
 
     fun removeObserver() {
-        downloadData.observeForever(observer)
-//        lifecycleOwner?.let {
-        downloadData.removeObserver(observer)
-//            null
-//        }
+//        downloadData.observeForever(observer)
+////        lifecycleOwner?.let {
+//        downloadData.removeObserver(observer)
+////            null
+////        }
+        if (lifecycleOwner != null) {
+            Log.e(
+                "jingo",
+                "移除的上一个监听者 ${lifecycleOwner.hashCode()} ${(lifecycleOwner as BaseViewHolder).tag}"
+            )
+            downloadData.removeObservers(lifecycleOwner!!)
+        }
     }
 }

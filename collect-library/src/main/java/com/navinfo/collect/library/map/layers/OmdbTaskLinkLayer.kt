@@ -10,6 +10,7 @@ import org.locationtech.jts.geom.Geometry
 import org.oscim.layers.vector.VectorLayer
 import org.oscim.layers.vector.geometries.Drawable
 import org.oscim.layers.vector.geometries.LineDrawable
+import org.oscim.layers.vector.geometries.PointDrawable
 import org.oscim.layers.vector.geometries.Style
 import org.oscim.map.Map
 
@@ -58,12 +59,11 @@ class OmdbTaskLinkLayer(map: Map, private var style: Style) : VectorLayer(map) {
         update()
     }
 
-    fun removeLine(linkPid: String): Boolean {
+    fun removeLine(linkPid: String) {
         if (lineMap.containsKey(linkPid)) {
             super.remove(lineMap[linkPid])
             lineMap.remove(linkPid)
         }
-        return false
     }
 
     fun removeLine(geometry: Geometry) {
@@ -87,3 +87,4 @@ class OmdbTaskLinkLayer(map: Map, private var style: Style) : VectorLayer(map) {
         update()
     }
 }
+

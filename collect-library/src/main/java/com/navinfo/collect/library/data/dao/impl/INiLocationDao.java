@@ -46,4 +46,10 @@ public interface INiLocationDao {
 
     @Query("SELECT * FROM niLocation")
     List<NiLocation> findAll();
+
+    @Query("SELECT * FROM niLocation where  time>=:startTime and time<=:endTime and taskId=:taskId")
+    List<NiLocation> taskIdAndTimeTofindList(String taskId,long startTime,long endTime);
+
+    @Query("SELECT * FROM niLocation where taskId =:taskId")
+    List<NiLocation> findToTaskIdAll(String taskId);
 }

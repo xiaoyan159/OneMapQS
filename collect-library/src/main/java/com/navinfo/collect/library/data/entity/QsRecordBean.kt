@@ -15,6 +15,7 @@ import io.realm.annotations.PrimaryKey
  */
 //@RealmClass
 open class QsRecordBean @JvmOverloads constructor(
+    var taskId: Int = -1,
     /**
      * id 主键
      *
@@ -64,7 +65,7 @@ open class QsRecordBean @JvmOverloads constructor(
     /**
      * 质检员ID
      */
-    var checkUserId: String = "张海球",
+    var checkUserId: String = "",
     /**
      * 质检日期
      */
@@ -97,6 +98,7 @@ open class QsRecordBean @JvmOverloads constructor(
 
     fun copy(): QsRecordBean {
         val qs = QsRecordBean(
+            taskId = taskId,
             id = id,
             elementId = elementId,
             linkId = linkId,

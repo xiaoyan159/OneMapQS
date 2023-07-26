@@ -31,6 +31,28 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/main_activity_home_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/home_map_center"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/main_activity_home_center_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/main_activity_home_center"
+            app:layout_constraintRight_toLeftOf="@id/main_activity_home_center"
+            app:layout_constraintTop_toTopOf="@id/main_activity_home_center" />
+
         <ImageButton
             android:id="@+id/main_activity_camera2"
             android:layout_width="48dp"
@@ -79,7 +101,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/top_right_drawer_btns_mr"
-            app:constraint_referenced_ids="main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_calc_disance,main_activity_menu"
+            app:constraint_referenced_ids="main_activity_note,main_activity_task_line,main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_calc_disance,main_activity_menu"
             app:flow_horizontalGap="6dp"
             app:flow_wrapMode="aligned"
             app:layout_constraintRight_toLeftOf="@id/main_activity_right_fragment"
@@ -90,7 +112,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="invisible"
-            app:constraint_referenced_ids="main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_calc_disance" />
+            app:constraint_referenced_ids="main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_note,main_activity_task_line,main_activity_calc_disance" />
 
         <ImageButton
             android:id="@+id/main_activity_serach"
@@ -123,6 +145,18 @@
             android:src="@drawable/icon_calc_disance" />
 
         <ImageButton
+            android:id="@+id/main_activity_note"
+            style="@style/top_right_drawer_btns_style"
+            android:onClick="@{()->mainActivity.onClickNewNote()}"
+            android:src="@drawable/icon_menu_note" />
+
+        <ImageButton
+            android:id="@+id/main_activity_task_line"
+            style="@style/top_right_drawer_btns_style"
+            android:onClick="@{()->mainActivity.onClickTaskLink()}"
+            android:src="@drawable/icon_calc_disance" />
+
+        <ImageButton
             android:id="@+id/main_activity_menu"
             android:layout_width="@dimen/top_right_drawer_wh"
             android:layout_height="@dimen/top_right_drawer_wh"
@@ -130,72 +164,6 @@
             android:elevation="2dp"
             android:onClick="@{()->mainActivity.onClickMenu()}" />
 
-
-        <androidx.constraintlayout.helper.widget.Flow
-            android:id="@+id/main_activity_flow_indoor"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/top_right_drawer_btns_mr"
-            app:constraint_referenced_ids="main_activity_snapshot_finish,main_activity_trace_snapshot_points,main_activity_snapshot_media_flag,main_activity_snapshot_rewind,main_activity_snapshot_pause,main_activity_snapshot_next,main_activity_menu_indoor_group"
-            app:flow_horizontalGap="6dp"
-            app:flow_wrapMode="aligned"
-            app:layout_constraintRight_toLeftOf="@id/main_activity_right_fragment"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/main_activity_menu_indoor_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:constraint_referenced_ids="main_activity_snapshot_finish,main_activity_trace_snapshot_points,main_activity_snapshot_media_flag,main_activity_snapshot_rewind,main_activity_snapshot_pause,main_activity_snapshot_next" />
-
-        <ImageButton
-            android:id="@+id/main_activity_snapshot_finish"
-            style="@style/top_right_drawer_btns_style"
-            android:clickable="true"
-            android:enabled="false"
-            android:focusable="true"
-            android:src="@drawable/map_trace_finish"
-            tools:ignore="MissingConstraints" />
-
-        <ImageButton
-            android:id="@+id/main_activity_trace_snapshot_points"
-            style="@style/top_right_drawer_btns_style"
-            android:focusable="true"
-            android:src="@drawable/map_trace_select_point"
-            tools:ignore="MissingConstraints" />
-
-        <ImageButton
-            android:id="@+id/main_activity_snapshot_media_flag"
-            style="@style/top_right_drawer_btns_style"
-            android:enabled="false"
-            android:focusable="true"
-            android:src="@drawable/map_trace_mediaflag"
-            tools:ignore="MissingConstraints" />
-
-        <ImageButton
-            android:id="@+id/main_activity_snapshot_rewind"
-            style="@style/top_right_drawer_btns_style"
-            android:enabled="false"
-            android:focusable="true"
-            android:src="@drawable/map_trace_forward"
-            tools:ignore="MissingConstraints" />
-
-        <ImageButton
-            android:id="@+id/main_activity_snapshot_pause"
-            style="@style/top_right_drawer_btns_style"
-            android:enabled="false"
-            android:focusable="true"
-            android:src="@drawable/map_trace_pause"
-            tools:ignore="DuplicateIds,MissingConstraints" />
-
-        <ImageButton
-            android:id="@+id/main_activity_snapshot_next"
-            style="@style/top_right_drawer_btns_style"
-            android:enabled="false"
-            android:focusable="true"
-            android:src="@drawable/map_trace_next"
-            tools:ignore="DuplicateIds,MissingConstraints" />
 
         <androidx.constraintlayout.widget.Barrier
             android:layout_width="wrap_content"
@@ -224,16 +192,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="@id/main_activity_sign_recyclerview" />
 
-        <fragment
-            android:id="@+id/main_activity_right_fragment"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:elevation="3dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:navGraph="@navigation/right_fragment_nav_graph" />
 
         <TextView
             android:id="@+id/main_activity_geometry"
@@ -250,7 +208,18 @@
             android:text="经纬度:116.99388424,38.8403844"
             android:textSize="10sp"
             app:layout_constraintBottom_toTopOf="@id/main_activity_bottom_sheet_bg"
-            app:layout_constraintRight_toLeftOf="@id/main_activity_middle_fragment" />
+            app:layout_constraintRight_toLeftOf="@id/main_activity_right_fragment" />
+
+        <fragment
+            android:id="@+id/main_activity_right_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:elevation="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navGraph="@navigation/right_fragment_nav_graph" />
 
         <TextView
             android:id="@+id/main_activity_road_name"
@@ -336,16 +305,21 @@
             android:layout_height="wrap_content"
             app:constraint_referenced_ids="main_activity_select_line,main_activity_voice,main_activity_add_new" />
 
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/main_activity_right_visibility_buttons_group2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="main_activity_select_line,main_activity_voice,main_activity_add_new,main_activity_zoom_in,main_activity_zoom_out,main_activity_geometry,main_activity_location" />
+
         <fragment
             android:id="@+id/main_activity_middle_fragment"
             android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginRight="-1dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/main_activity_right_fragment"
-            app:layout_constraintTop_toBottomOf="@id/main_activity_flow"
+            app:layout_constraintTop_toTopOf="parent"
             app:navGraph="@navigation/middle_fragment_nav_graph" />
 
         <androidx.constraintlayout.widget.Group
@@ -353,6 +327,62 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:constraint_referenced_ids="main_activity_right_fragment,main_activity_middle_fragment" />
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/main_activity_flow_indoor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/five"
+            app:constraint_referenced_ids="main_activity_snapshot_finish,main_activity_trace_snapshot_points,main_activity_snapshot_media_flag,main_activity_snapshot_rewind,main_activity_snapshot_pause,main_activity_snapshot_next,main_activity_menu_indoor_group"
+            app:flow_horizontalGap="6dp"
+            app:flow_wrapMode="aligned"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/main_activity_bottom_sheet" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/main_activity_menu_indoor_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="main_activity_snapshot_finish,main_activity_trace_snapshot_points,main_activity_snapshot_rewind,main_activity_snapshot_pause,main_activity_snapshot_next" />
+
+        <ImageButton
+            android:id="@+id/main_activity_snapshot_finish"
+            style="@style/top_right_drawer_btns_style"
+            android:onClick="@{()->mainActivity.finishTraceOnclick()}"
+            android:src="@drawable/map_trace_finish" />
+
+        <ImageButton
+            android:id="@+id/main_activity_trace_snapshot_points"
+            style="@style/top_right_drawer_btns_style"
+            android:onClick="@{()->mainActivity.tracePointsOnclick()}"
+            android:src="@drawable/map_trace_select_point" />
+
+<!--        <ImageButton
+            android:id="@+id/main_activity_snapshot_media_flag"
+            style="@style/top_right_drawer_btns_style"
+            android:visibility="gone"
+            android:onClick="@{()->mainActivity.mediaFlagOnclick()}"
+            android:src="@drawable/map_trace_mediaflag" />-->
+
+        <ImageButton
+            android:id="@+id/main_activity_snapshot_rewind"
+            style="@style/top_right_drawer_btns_style"
+            android:onClick="@{()->mainActivity.rewindTraceOnclick()}"
+            android:src="@drawable/map_trace_forward" />
+
+        <ImageButton
+            android:id="@+id/main_activity_snapshot_pause"
+            style="@style/top_right_drawer_btns_style"
+            android:onClick="@{()->mainActivity.pauseTraceOnclick()}"
+            android:src="@drawable/map_trace_pause" />
+
+        <ImageButton
+            android:id="@+id/main_activity_snapshot_next"
+            style="@style/top_right_drawer_btns_style"
+            android:onClick="@{()->mainActivity.nextTraceOnclick()}"
+            android:src="@drawable/map_trace_next" />
 
         <View
             android:id="@+id/main_activity_bottom_sheet"
@@ -496,6 +526,7 @@
              main_activity_bottom_sheet_bg,
             main_bottom_task,main_bottom_home" />
 
+
         <FrameLayout
             android:id="@+id/console_fragment_layout"
             android:layout_width="0dp"
@@ -505,5 +536,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

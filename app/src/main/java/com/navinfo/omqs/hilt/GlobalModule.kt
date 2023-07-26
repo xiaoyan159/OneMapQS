@@ -1,6 +1,8 @@
 package com.navinfo.omqs.hilt
 
 import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.room.Room
 import com.google.gson.Gson
@@ -25,7 +27,6 @@ import io.realm.Realm
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -37,6 +38,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class GlobalModule {
+
 
     @Singleton
     @Provides
@@ -165,5 +167,11 @@ class GlobalModule {
     @Provides
     fun provideRealmDefaultInstance(): Realm {
         return Realm.getDefaultInstance()
+    }
+
+    @Singleton
+    @Provides
+    fun provideSharedPreferences(context: Application): SharedPreferences {
+        return context.getSharedPreferences("Shared" + Constant.USER_ID, Context.MODE_PRIVATE)
     }
 }

@@ -45,7 +45,7 @@ class SignUtil {
          *获取道路功能等级文字
          */
         private fun getLinkFunctionClassText(data: RenderEntity): String {
-            return "等级${data.properties["functionClass"]}"
+            return "FC${data.properties["functionClass"]}"
         }
 
         /**
@@ -55,9 +55,9 @@ class SignUtil {
             val direct = data.properties["direct"]
             when (direct?.toInt()) {
                 0 -> return "不应用"
-                1 -> return "双方向"
-                2 -> return "顺方向"
-                3 -> return "逆方向"
+                1 -> return "双"
+                2 -> return "顺"
+                3 -> return "逆"
             }
             return ""
         }

@@ -28,6 +28,19 @@
         android:name="com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultFragment"
         android:label="评测页面"
         tools:layout="@layout/fragment_evaluation_result">
+    </fragment>
 
+    <fragment
+        android:id="@+id/NoteFragment"
+        android:name="com.navinfo.omqs.ui.fragment.note.NoteFragment"
+        android:label="便签页面"
+        tools:layout="@layout/fragment_note">
+    </fragment>
+
+    <fragment
+        android:id="@+id/TaskLinkFragment"
+        android:name="com.navinfo.omqs.ui.fragment.tasklink.TaskLinkFragment"
+        android:label="测评Link"
+        tools:layout="@layout/fragment_task_link">
     </fragment>
 </navigation>

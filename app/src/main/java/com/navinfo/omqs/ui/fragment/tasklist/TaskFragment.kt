@@ -1,7 +1,6 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
-import android.app.AlertDialog
-import android.content.DialogInterface
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,14 +15,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentTaskBinding
-import com.navinfo.omqs.databinding.FragmentTaskListBinding
-import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
-import com.navinfo.omqs.http.taskupload.TaskUploadManager
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
+import com.yanzhenjie.recyclerview.SwipeMenuBridge
+import com.yanzhenjie.recyclerview.SwipeMenuCreator
+import com.yanzhenjie.recyclerview.SwipeMenuItem
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.videolan.vlc.Util
 
 /**
  * 当前任务的道路列表
@@ -41,14 +40,12 @@ class TaskFragment : BaseFragment() {
     private val adapter: TaskAdapter by lazy {
         TaskAdapter(object : TaskAdapterCallback {
             override fun itemOnClick(bean: HadLinkDvoBean) {
-                if(bean!=null){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     viewModel.showCurrentLink(bean)
-                }else{
-                    Toast.makeText(context, "数据错误，无法显示！", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun editOnclick(position: Int, bean: HadLinkDvoBean) {
+            override fun editOnClick(position: Int, bean: HadLinkDvoBean) {
                 showLinkEditDialog(position, bean)
             }
         })
@@ -66,11 +63,43 @@ class TaskFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.taskAddLink.setOnClickListener {
+            viewModel.setSelectLink(!binding.taskAddLink.isSelected)
+        }
+
+        viewModel.liveDataSelectNewLink.observe(viewLifecycleOwner) {
+            binding.taskAddLink.isSelected = it
+        }
+
+        //注意：使用滑动菜单不能开启滑动删除，否则只有滑动删除没有滑动菜单
+        val mSwipeMenuCreator = SwipeMenuCreator { _, rightMenu, _ ->
+            //添加菜单自动添加至尾部
+            val deleteItem = SwipeMenuItem(context)
+            deleteItem.height = Util.convertDpToPx(requireContext(), 60)
+            deleteItem.width = Util.convertDpToPx(requireContext(), 80)
+            deleteItem.text = "删除"
+            deleteItem.background = requireContext().getDrawable(R.color.red)
+            deleteItem.setTextColor(requireContext().resources.getColor(R.color.white))
+            rightMenu.addMenuItem(deleteItem)
+        }
+
         val layoutManager = LinearLayoutManager(context)
         //// 设置 RecyclerView 的固定大小，避免在滚动时重新计算视图大小和布局，提高性能
         binding.taskRecyclerview.setHasFixedSize(true)
         binding.taskRecyclerview.layoutManager = layoutManager
+
+        //增加侧滑按钮
+        binding.taskRecyclerview.setSwipeMenuCreator(mSwipeMenuCreator)
+
+
+        //单项点击
+        binding.taskRecyclerview.setOnItemMenuClickListener { menuBridge, position ->
+            menuBridge.closeMenu()
+            viewModel.deleteTaskLink(requireContext(), adapter.data[position])
+        }
+
         binding.taskRecyclerview.adapter = adapter
+
         binding.taskSearchClear.setOnClickListener {
             binding.taskSearch.setText("")
         }
@@ -92,6 +121,7 @@ class TaskFragment : BaseFragment() {
 
         })
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

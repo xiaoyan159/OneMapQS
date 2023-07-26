@@ -1,6 +1,7 @@
 package com.navinfo.omqs.http.taskdownload
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.navinfo.collect.library.map.NIMapController
@@ -17,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap
 class TaskDownloadManager constructor(
     val importFactory: ImportOMDBHiltFactory,
     val netApi: RetrofitNetworkServiceAPI,
-    val mapController:NIMapController
+    val mapController: NIMapController
 ) {
 
     lateinit var context: Context
@@ -40,6 +41,7 @@ class TaskDownloadManager constructor(
     private val taskScopeMap: ConcurrentHashMap<Int, TaskDownloadScope> by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
         ConcurrentHashMap<Int, TaskDownloadScope>()
     }
+
 
     fun init(context: Context) {
         this.context = context
@@ -102,8 +104,9 @@ class TaskDownloadManager constructor(
 
 
     fun addTask(taskBean: TaskBean) {
+        Log.e("jingo", "下载线程 ${taskBean.id}")
         if (!scopeMap.containsKey(taskBean.id)) {
-            scopeMap[taskBean.id] = TaskDownloadScope( this, taskBean)
+            scopeMap[taskBean.id] = TaskDownloadScope(this, taskBean)
         }
     }
 
@@ -111,6 +114,7 @@ class TaskDownloadManager constructor(
     fun observer(
         id: Int, lifecycleOwner: LifecycleOwner, observer: Observer<TaskBean>
     ) {
+        Log.e("jingo", "监听线程 ${id}")
         if (scopeMap.containsKey(id)) {
             scopeMap[id]!!.observer(lifecycleOwner, observer)
         }

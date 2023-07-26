@@ -59,6 +59,9 @@ open class RenderEntity() : RealmObject(), Parcelable {
     var properties: RealmDictionary<String> = RealmDictionary()
     var tileX: RealmSet<Int> = RealmSet() // x方向的tile编码
     var tileY: RealmSet<Int> = RealmSet()  // y方向的tile编码
+    var taskId: Int = 0 //任务ID
+    var zoomMin: Int = 18 //显示最小级别
+    var zoomMax: Int = 23 //显示最大级别
 
     constructor(name: String) : this() {
         this.name = name

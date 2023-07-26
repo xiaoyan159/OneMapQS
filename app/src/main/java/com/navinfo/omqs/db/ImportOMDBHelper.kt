@@ -5,23 +5,19 @@ import android.database.Cursor.*
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.core.database.getBlobOrNull
-import androidx.core.database.getFloatOrNull
-import androidx.core.database.getIntOrNull
-import androidx.core.database.getStringOrNull
 import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.ZipUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.ImportConfig
-import com.navinfo.omqs.bean.Transform
-import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
 import com.navinfo.omqs.hilt.OMDBDataBaseHiltFactory
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.realm.Realm
+import io.realm.RealmQuery
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -127,7 +123,7 @@ class ImportOMDBHelper @AssistedInject constructor(
      * @param omdbZipFile omdb数据抽取生成的Zip文件
      * @param configFile 对应的配置文件
      * */
-    suspend fun importOmdbZipFile(omdbZipFile: File): Flow<String> = withContext(Dispatchers.IO) {
+    suspend fun importOmdbZipFile(omdbZipFile: File, taskId: Int): Flow<String> = withContext(Dispatchers.IO) {
         val unZipFolder = File(omdbZipFile.parentFile, "result")
         flow {
             if (unZipFolder.exists()) {
@@ -137,8 +133,9 @@ class ImportOMDBHelper @AssistedInject constructor(
             // 开始解压zip文件
             val unZipFiles = ZipUtils.unzipFile(omdbZipFile, unZipFolder)
             // 将listResult数据插入到Realm数据库中
+            val realm = Realm.getDefaultInstance()
+            realm.beginTransaction()
             try {
-                Realm.getDefaultInstance().beginTransaction()
                 // 遍历解压后的文件，读取该数据返回
                 for ((index, currentEntry) in importConfig.tableMap.entries.withIndex()) {
                     val currentConfig = currentEntry.value
@@ -161,7 +158,11 @@ class ImportOMDBHelper @AssistedInject constructor(
                                     .toMutableMap()
                                 map["qi_table"] = currentConfig.table
                                 map["qi_name"] = currentConfig.name
+                                map["qi_code"] =
+                                    if (currentConfig.code == 0) currentConfig.code else currentEntry.key
                                 map["qi_code"] = if (currentConfig.code == 0) currentConfig.code else currentEntry.key
+                                map["qi_zoomMin"] = currentConfig.zoomMin
+                                map["qi_zoomMax"] = currentConfig.zoomMax
 
                                 // 先查询这个mesh下有没有数据，如果有则跳过即可
                                 // val meshEntity = Realm.getDefaultInstance().where(RenderEntity::class.java).equalTo("properties['mesh']", map["mesh"].toString()).findFirst()
@@ -169,21 +170,31 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 renderEntity.code = map["qi_code"].toString().toInt()
                                 renderEntity.name = map["qi_name"].toString()
                                 renderEntity.table = map["qi_table"].toString()
+                                renderEntity.taskId = taskId
+                                renderEntity.zoomMin = map["qi_zoomMin"].toString().toInt()
+                                renderEntity.zoomMax = map["qi_zoomMax"].toString().toInt()
+
                                 // 其他数据插入到Properties中
                                 renderEntity.geometry = map["geometry"].toString()
                                 for ((key, value) in map) {
                                     when (value) {
                                         is String -> renderEntity.properties.put(key, value)
-                                        is Int -> renderEntity.properties.put(key, value.toInt().toString())
-                                        is Double -> renderEntity.properties.put(key, value.toDouble().toString())
+                                        is Int -> renderEntity.properties.put(
+                                            key,
+                                            value.toInt().toString()
+                                        )
+                                        is Double -> renderEntity.properties.put(
+                                            key,
+                                            value.toDouble().toString()
+                                        )
                                         else -> renderEntity.properties.put(key, value.toString())
                                     }
                                 }
                                 listResult.add(renderEntity)
                                 // 对renderEntity做预处理后再保存
                                 val resultEntity = importConfig.transformProperties(renderEntity)
-                                if (resultEntity!=null) {
-                                    Realm.getDefaultInstance().insert(renderEntity)
+                                if (resultEntity != null) {
+                                    realm.insert(renderEntity)
                                 }
                             }
                         }
@@ -192,12 +203,14 @@ class ImportOMDBHelper @AssistedInject constructor(
                     emit("${index + 1}/${importConfig.tableMap.size}")
                     // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
                     if (currentConfig.table == "OMDB_RD_LINK") {
-                        importConfig.preProcess.cacheRdLink = listResult.associateBy { it.properties["linkPid"] }
+                        importConfig.preProcess.cacheRdLink =
+                            listResult.associateBy { it.properties["linkPid"] }
                     }
                 }
-                Realm.getDefaultInstance().commitTransaction()
+                realm.commitTransaction()
+                realm.close()
             } catch (e: Exception) {
-                Realm.getDefaultInstance().cancelTransaction()
+                realm.cancelTransaction()
                 throw e
             }
             emit("finish")

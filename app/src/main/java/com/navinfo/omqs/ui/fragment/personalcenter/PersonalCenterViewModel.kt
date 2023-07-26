@@ -1,8 +1,9 @@
 package com.navinfo.omqs.ui.fragment.personalcenter
 
 import android.net.Uri
+import android.os.Build
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,17 +17,13 @@ import com.navinfo.omqs.bean.ScRootCauseAnalysisBean
 import com.navinfo.omqs.db.ImportOMDBHelper
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.db.RoomAppDatabase
-import com.navinfo.omqs.tools.MetadataUtils
 import com.navinfo.omqs.tools.MetadataUtils.Companion.ScProblemTypeTitle
 import com.navinfo.omqs.tools.MetadataUtils.Companion.ScRootCauseAnalysisTitle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.apache.commons.io.input.BOMInputStream
 import java.io.*
-import java.nio.charset.Charset
-import java.text.Normalizer
 import java.util.*
 import javax.inject.Inject
 
@@ -43,6 +40,7 @@ class PersonalCenterViewModel @Inject constructor(
     /**
      * 导入OMDB数据
      * */
+    @RequiresApi(Build.VERSION_CODES.N)
     suspend fun obtainOMDBZipData(importOMDBHelper: ImportOMDBHelper) {
         Log.d("OMQSApplication", "开始生成数据")
 //        Realm.getDefaultInstance().beginTransaction()
@@ -164,11 +162,13 @@ class PersonalCenterViewModel @Inject constructor(
     /**
      * 导入OMDB数据
      * */
-    fun importOMDBData(importOMDBHelper: ImportOMDBHelper) {
+    fun importOMDBData(importOMDBHelper: ImportOMDBHelper,taskId:Int?=0) {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("OMQSApplication", "开始导入数据")
-            importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile).collect {
-                Log.d("importOMDBData", it)
+            if (taskId != null) {
+                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, taskId).collect {
+                    Log.d("importOMDBData", it)
+                }
             }
             Log.d("OMQSApplication", "导入数据完成")
         }

@@ -1,6 +1,5 @@
 package com.navinfo.collect.library.utils
 
-import java.text.ParsePosition
 import java.text.SimpleDateFormat
 import java.util.*
 

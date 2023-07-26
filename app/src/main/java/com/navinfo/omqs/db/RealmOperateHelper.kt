@@ -3,6 +3,7 @@ package com.navinfo.omqs.db
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.data.entity.RenderEntity.Companion.LinkTable
 import com.navinfo.collect.library.map.NIMapController
@@ -84,6 +85,39 @@ class RealmOperateHelper() {
         return result
     }
 
+
+    suspend fun captureTaskLink(
+        taskId: Int,
+        point: GeoPoint,
+        buffer: Double = DEFAULT_BUFFER,
+        bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE,
+    ): HadLinkDvoBean? {
+
+        val polygon = getPolygonFromPoint(
+            GeometryTools.createPoint(point.longitude, point.latitude),
+            buffer,
+            bufferType
+        )
+
+        val realm = Realm.getDefaultInstance()
+        val realmList = realm.where(HadLinkDvoBean::class.java)
+            .equalTo("taskId", taskId)
+            .findAll()
+        var linkBean: HadLinkDvoBean? = null
+        var nearLast: Double = 99999.99
+        for (link in realmList) {
+            if (polygon.intersects(GeometryTools.createGeometry(link.geometry))) {
+                val near = point.distance(GeometryTools.createGeoPoint(link.geometry))
+                if (near < nearLast) {
+                    nearLast = near
+                    linkBean = link
+                }
+            }
+        }
+        if (linkBean != null)
+            return realm.copyFromRealm(linkBean)
+        return null
+    }
 
     suspend fun queryLink(linkPid: String): RenderEntity? {
         var link: RenderEntity? = null
@@ -237,6 +271,8 @@ class RealmOperateHelper() {
         Log.d("queryLink", wkt.toString())
         return wkt
     }
+
+
 }
 
 enum class BUFFER_TYPE(val index: Int) {

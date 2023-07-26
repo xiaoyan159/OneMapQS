@@ -158,11 +158,51 @@ class ImportPreProcess {
         startEndReference.renderEntityId = renderEntity.id
         startEndReference.name = "${renderEntity.name}参考线"
         startEndReference.table = renderEntity.table
+        startEndReference.zoomMin = renderEntity.zoomMin
+        startEndReference.zoomMax = renderEntity.zoomMax
+        startEndReference.taskId = renderEntity.taskId
+
         // 起终点坐标组成的线
         startEndReference.geometry = GeometryTools.createLineString(arrayOf<Coordinate>(pointStart, pointEnd)).toString()
         startEndReference.properties["qi_table"] = renderEntity.table
         startEndReference.properties["type"] = "s_2_e"
         Realm.getDefaultInstance().insert(startEndReference)
+    }
+
+    fun generateS2EReferencePoint(renderEntity: RenderEntity) {
+        val geometry = GeometryTools.createGeometry(renderEntity.properties["geometry"])
+
+        val pointEnd = geometry!!.coordinates[geometry.numPoints-1] // 获取这个geometry对应的结束点坐标
+        val pointStart = geometry!!.coordinates[0] // 获取这个geometry对应的起点
+
+        // 将这个起终点的线记录在数据中
+        val startReference = ReferenceEntity()
+        startReference.renderEntityId = renderEntity.id
+        startReference.name = "${renderEntity.name}参考线"
+        startReference.table = renderEntity.table
+        startReference.zoomMin = renderEntity.zoomMin
+        startReference.zoomMax = renderEntity.zoomMax
+        startReference.taskId = renderEntity.taskId
+
+        // 起点坐标
+        startReference.geometry = GeometryTools.createGeometry(GeoPoint(pointStart.y,pointStart.x)).toString()
+        startReference.properties["qi_table"] = renderEntity.table
+        startReference.properties["type"] = "s_2_p"
+        Realm.getDefaultInstance().insert(startReference)
+
+        val endReference = ReferenceEntity()
+        endReference.renderEntityId = renderEntity.id
+        endReference.name = "${renderEntity.name}参考线"
+        endReference.table = renderEntity.table
+        endReference.zoomMin = renderEntity.zoomMin
+        endReference.zoomMax = renderEntity.zoomMax
+        endReference.taskId = renderEntity.taskId
+
+        // 终点坐标
+        endReference.geometry = GeometryTools.createGeometry(GeoPoint(pointEnd.y,pointEnd.x)).toString()
+        endReference.properties["qi_table"] = renderEntity.table
+        endReference.properties["type"] = "e_2_p"
+        Realm.getDefaultInstance().insert(endReference)
     }
 
     /**
@@ -211,6 +251,9 @@ class ImportPreProcess {
         angleReference.renderEntityId = renderEntity.id
         angleReference.name = "${renderEntity.name}参考方向"
         angleReference.table = renderEntity.table
+        angleReference.zoomMin = renderEntity.zoomMin
+        angleReference.zoomMax = renderEntity.zoomMax
+        angleReference.taskId = renderEntity.taskId
         // 与原有方向指向平行的线
         angleReference.geometry = GeometryTools.createLineString(arrayOf(point, coorEnd)).toString()
         angleReference.properties["qi_table"] = renderEntity.table
@@ -299,7 +342,6 @@ class ImportPreProcess {
     }
 
 
-
     /**
      * 生成默认道路名数据
      * */
@@ -344,6 +386,25 @@ class ImportPreProcess {
     }
 
     /**
+     * 生成车道中心线面宽度
+     * */
+    fun generateAddWidthLine(renderEntity: RenderEntity) {
+        // 添加车道中心面渲染原则，根据车道宽度进行渲染
+        val angleReference = ReferenceEntity()
+        angleReference.renderEntityId = renderEntity.id
+        angleReference.name = "${renderEntity.name}车道中线面"
+        angleReference.table = renderEntity.table
+        angleReference.geometry = renderEntity.geometry
+        angleReference.properties["qi_table"] = renderEntity.table
+        angleReference.properties["width"] = "3"
+        angleReference.zoomMin = renderEntity.zoomMin
+        angleReference.zoomMax = renderEntity.zoomMax
+        angleReference.taskId = renderEntity.taskId
+        Realm.getDefaultInstance().insert(angleReference)
+    }
+
+
+    /**
      * 生成默认路口数据的参考数据
      * */
     fun generateIntersectionReference(renderEntity: RenderEntity) {
@@ -356,6 +417,9 @@ class ImportPreProcess {
                 intersectionReference.renderEntityId = renderEntity.id
                 intersectionReference.name = "${renderEntity.name}参考点"
                 intersectionReference.table = renderEntity.table
+                intersectionReference.zoomMin = renderEntity.zoomMin
+                intersectionReference.zoomMax = renderEntity.zoomMax
+                intersectionReference.taskId = renderEntity.taskId
                 // 与原有方向指向平行的线
                 intersectionReference.geometry = GeometryTools.createGeometry(nodeJSONObject["geometry"].toString()).toString()
                 intersectionReference.properties["qi_table"] = renderEntity.table

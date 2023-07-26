@@ -6,8 +6,7 @@ import com.navinfo.omqs.bean.IndoorConnectionInfoBean
 import com.navinfo.omqs.bean.LoginUserBean
 import com.navinfo.omqs.bean.QRCodeBean
 import com.navinfo.omqs.bean.SysUserBean
-import okhttp3.ResponseBody
-import retrofit2.Response
+import com.navinfo.omqs.bean.TraceVideoBean
 
 
 /**
@@ -38,4 +37,9 @@ interface NetworkService {
      * 更新用户信息
      */
     suspend fun updateServerInfo(url: String,indoorConnectionInfoBean: IndoorConnectionInfoBean): NetResult<QRCodeBean>
+
+    /**
+     * 设置轨迹对应的视频
+     */
+    suspend fun sendServerCommand(url: String,traceVideoBean: TraceVideoBean): NetResult<QRCodeBean>
 }

@@ -3,6 +3,8 @@ package com.navinfo.omqs.ui.fragment.evaluationresult
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.SharedPreferences
+import android.graphics.Bitmap
 import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
@@ -19,9 +21,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.entity.AttachmentBean
+import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.RenderEntity.Companion.LinkTable
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.collect.library.map.OnGeoPointClickListener
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
@@ -35,17 +40,14 @@ import com.navinfo.omqs.util.DateTimeUtil
 import com.navinfo.omqs.util.SoundMeter
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.realm.OrderedCollectionChangeSet
 import io.realm.Realm
 import io.realm.RealmList
-import io.realm.RealmModel
-import io.realm.RealmResults
-import io.realm.kotlin.addChangeListener
-import io.realm.kotlin.where
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.oscim.core.GeoPoint
 import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 import javax.inject.Inject
 
@@ -54,9 +56,11 @@ class EvaluationResultViewModel @Inject constructor(
     private val roomAppDatabase: RoomAppDatabase,
     private val mapController: NIMapController,
     private val realmOperateHelper: RealmOperateHelper,
-) : ViewModel() {
+    private val sharedPreferences: SharedPreferences
+) : ViewModel(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val markerTitle = "点选marker"
+
+    private val TAG = "点选marker"
 
     /**
      * 操作结束，销毁页面
@@ -68,20 +72,40 @@ class EvaluationResultViewModel @Inject constructor(
      */
     val liveDataLeftTypeList = MutableLiveData<List<ScProblemTypeBean>>()
 
-    /**
-     * 问题类型 liveData 给[MiddleAdapter]展示的数据
-     */
-//    val liveDataMiddleTypeList = MutableLiveData<List<String>>()
 
     /**
      * 问题现象 liveData 给[RightGroupHeaderAdapter]展示的数据
      */
     val liveDataRightTypeList = MutableLiveData<List<RightBean>>()
 
-    var liveDataQsRecordBean = MutableLiveData<QsRecordBean>()
+    /**
+     * 要保存的评测数据
+     */
+    val liveDataQsRecordBean = MutableLiveData(QsRecordBean(id = UUID.randomUUID().toString()))
 
-    var listDataChatMsgEntityList = MutableLiveData<MutableList<ChatMsgEntity>>()
+    /**
+     * 语音列表
+     */
+    val listDataChatMsgEntityList = MutableLiveData<MutableList<ChatMsgEntity>>()
 
+    /**
+     * 照片列表
+     */
+    val liveDataPictureList = MutableLiveData<MutableList<String>>()
+
+    /**
+     * toast信息
+     */
+    val liveDataToastMessage = MutableLiveData<String>()
+
+    /**
+     * 当前选择的任务
+     */
+    val liveDataTaskBean = MutableLiveData<TaskBean>()
+
+    /**
+     * 编辑数据时用来差分数据
+     */
     var oldBean: QsRecordBean? = null
 
     //语音窗体
@@ -99,24 +123,27 @@ class EvaluationResultViewModel @Inject constructor(
     var classCodeTemp: String = ""
 
     init {
-        liveDataQsRecordBean.value = QsRecordBean(id = UUID.randomUUID().toString())
-        viewModelScope.launch {
-            mapController.onMapClickFlow.collect {
-                liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(it).toText()
-                mapController.markerHandle.addMarker(it, markerTitle)
-                viewModelScope.launch {
-                    captureLink(it.longitude, it.latitude)
+        mapController.mMapView.addOnNIMapClickListener(TAG, object : OnGeoPointClickListener {
+            override fun onMapClick(tag: String, point: GeoPoint) {
+                if (tag == TAG) {
+                    liveDataQsRecordBean.value!!.geometry =
+                        GeometryTools.createGeometry(point).toText()
+                    mapController.markerHandle.addMarker(point, TAG)
+                    viewModelScope.launch {
+                        captureLink(point)
+                    }
                 }
+
             }
-        }
+        })
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onCleared() {
         super.onCleared()
-        mapController.markerHandle.removeMarker(markerTitle)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            mapController.lineHandler.removeLine()
-        }
+        mapController.mMapView.removeOnNIMapClickListener(TAG)
+        mapController.markerHandle.removeMarker(TAG)
+        mapController.lineHandler.removeLine()
     }
 
 
@@ -124,42 +151,57 @@ class EvaluationResultViewModel @Inject constructor(
      * 查询数据库，获取问题分类
      */
     fun initNewData(bean: SignBean?, filePath: String) {
-        //获取当前定位点
-        val geoPoint = mapController.locationLayerHandler.getCurrentGeoPoint()
-        //如果不是从面板进来的
-        if (bean == null) {
-            geoPoint?.let {
-                liveDataQsRecordBean.value!!.geometry = GeometryTools.createGeometry(it).toText()
-                mapController.markerHandle.addMarker(geoPoint, markerTitle)
-                mapController.animationHandler.animationByLatLon(
-                    geoPoint.latitude, geoPoint.longitude
-                )
-                viewModelScope.launch {
-                    captureLink(geoPoint.longitude, geoPoint.latitude)
-                }
+        //查询元数据
+        viewModelScope.launch(Dispatchers.IO) {
+            /**
+             * 获取当前所选的任务
+             */
+            val taskId = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
+            val realm = Realm.getDefaultInstance()
+            val objects = realm.where(TaskBean::class.java).equalTo("id", taskId).findFirst()
+            if (objects != null) {
+                liveDataTaskBean.postValue(realm.copyFromRealm(objects))
             }
-        } else {
-            liveDataQsRecordBean.value?.run {
-                elementId = bean.renderEntity.code.toString()
-                linkId = bean.linkId
-                if (linkId.isNotEmpty()) {
-                    viewModelScope.launch {
-                        val link = realmOperateHelper.queryLink(linkId)
-                        link?.let { l ->
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            //获取当前定位点
+            val geoPoint = mapController.locationLayerHandler.getCurrentGeoPoint()
+            //如果不是从面板进来的
+            if (bean == null) {
+                geoPoint?.let {
+                    liveDataQsRecordBean.value!!.geometry =
+                        GeometryTools.createGeometry(it).toText()
+                    withContext(Dispatchers.Main) {
+                        mapController.markerHandle.addMarker(geoPoint, TAG)
+                        mapController.animationHandler.animationByLatLon(
+                            geoPoint.latitude, geoPoint.longitude
+                        )
+                    }
+                    captureLink(geoPoint)
+                }
+            } else {
+                liveDataQsRecordBean.value?.run {
+                    elementId = bean.renderEntity.code.toString()
+                    linkId = bean.linkId
+                    if (linkId.isNotEmpty()) {
+                        viewModelScope.launch {
+                            val link = realmOperateHelper.queryLink(linkId)
+                            link?.let { l ->
                                 mapController.lineHandler.showLine(l.geometry)
                             }
                         }
                     }
+
+                    val point = GeometryTools.createGeoPoint(bean.renderEntity.geometry)
+                    this.geometry = GeometryTools.createGeometry(point).toText()
+                    withContext(Dispatchers.Main) {
+                        mapController.animationHandler.animationByLatLon(
+                            point.latitude, point.longitude
+                        )
+                        mapController.markerHandle.addMarker(point, TAG)
+                    }
                 }
-                val point = GeometryTools.createGeoPoint(bean.renderEntity.geometry)
-                this.geometry = GeometryTools.createGeometry(point).toText()
-                mapController.animationHandler.animationByLatLon(point.latitude, point.longitude)
-                mapController.markerHandle.addMarker(point, markerTitle)
             }
-        }
-        //查询元数据
-        viewModelScope.launch(Dispatchers.IO) {
+
             getClassTypeList(bean)
             getProblemLinkList()
         }
@@ -167,23 +209,32 @@ class EvaluationResultViewModel @Inject constructor(
     }
 
     /**
-     * 捕捉道路
+     * 捕捉道路或新增评测link
      */
-    private suspend fun captureLink(longitude: Double, latitude: Double) {
+    private suspend fun captureLink(point: GeoPoint) {
+        if (liveDataTaskBean.value == null) {
+            liveDataToastMessage.postValue("请先选择所属任务!")
+            return
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val linkList = realmOperateHelper.queryLink(
-                point = GeoPoint(latitude, longitude),
-            )
-
             liveDataQsRecordBean.value?.let {
-                if (linkList.isNotEmpty()) {
-                    it.linkId = linkList[0].properties[LinkTable.linkPid] ?: ""
-                    mapController.lineHandler.showLine(linkList[0].geometry)
-                    Log.e("jingo", "捕捉到的linkId = ${it.linkId}")
+
+                val taskLink =
+                    realmOperateHelper.captureTaskLink(liveDataTaskBean.value!!.id, point)
+                if (taskLink != null) {
+                    it.linkId = taskLink.linkPid
+                    mapController.lineHandler.showLine(taskLink.geometry)
+                    return
                 } else {
-                    it.linkId = ""
-                    mapController.lineHandler.removeLine()
+                    val linkList = realmOperateHelper.queryLink(point = point)
+                    if (linkList.isNotEmpty()) {
+                        it.linkId = linkList[0].properties[LinkTable.linkPid] ?: ""
+                        mapController.lineHandler.showLine(linkList[0].geometry)
+                        return
+                    }
                 }
+                it.linkId = ""
+                mapController.lineHandler.removeLine()
             }
         }
     }
@@ -201,10 +252,12 @@ class EvaluationResultViewModel @Inject constructor(
                     var classCode = list[0].elementCode
                     liveDataLeftTypeList.postValue(it)
                     if (bean != null) {
-                        val classType2 = roomAppDatabase.getScProblemTypeDao().findClassTypeByCode(bean.renderEntity.code)
+                        val classType2 = roomAppDatabase.getScProblemTypeDao()
+                            .findClassTypeByCode(bean.renderEntity.code)
                         if (classType2 != null) {
                             classType = classType2
                         }
+                        classCode = bean.renderEntity.code.toString()
                     }
                     //如果右侧栏没数据，给个默认值
                     if (liveDataQsRecordBean.value!!.classType.isEmpty()) {
@@ -291,11 +344,12 @@ class EvaluationResultViewModel @Inject constructor(
     /**
      * 查询问题类型列表
      */
-    fun getProblemTypeList(classType: String) {
+    fun getProblemTypeList(scProblemTypeBean: ScProblemTypeBean) {
         viewModelScope.launch(Dispatchers.IO) {
-            getProblemList(classType)
+            getProblemList(scProblemTypeBean.classType)
         }
-        classTypeTemp = classType
+        classTypeTemp = scProblemTypeBean.classType
+        classCodeTemp = scProblemTypeBean.elementCode
     }
 
     /**
@@ -315,19 +369,52 @@ class EvaluationResultViewModel @Inject constructor(
         liveDataQsRecordBean.postValue(liveDataQsRecordBean.value)
     }
 
+    /**
+     * 保存数据
+     */
+
     fun saveData() {
+
         viewModelScope.launch(Dispatchers.IO) {
+            val taskBean = liveDataQsRecordBean.value!!
+            if (liveDataTaskBean.value == null) {
+                liveDataToastMessage.postValue("请选择所属任务！")
+                return@launch
+            } else if (taskBean.classType.isEmpty()) {
+                liveDataToastMessage.postValue("请选择要素分类！")
+                return@launch
+            } else if (taskBean.problemType.isEmpty()) {
+                liveDataToastMessage.postValue("请选择问题类型！")
+                return@launch
+            } else if (taskBean.phenomenon.isEmpty()) {
+                liveDataToastMessage.postValue("请选择问题现象！")
+                return@launch
+            } else if (taskBean.problemLink.isEmpty()) {
+                liveDataToastMessage.postValue("请选择问题环节！")
+                return@launch
+            } else if (taskBean.classType.isEmpty()) {
+                liveDataToastMessage.postValue("请选择问题分类！")
+                return@launch
+            } else if (taskBean.cause.isEmpty()) {
+                liveDataToastMessage.postValue("请选择初步分析原因！")
+                return@launch
+            }
+
             val realm = Realm.getDefaultInstance()
+            liveDataQsRecordBean.value!!.taskId = liveDataTaskBean.value!!.id
             liveDataQsRecordBean.value!!.checkTime = DateTimeUtil.getDataTime()
+            liveDataQsRecordBean.value!!.checkUserId = Constant.USER_REAL_NAME
             realm.executeTransaction {
                 it.copyToRealmOrUpdate(liveDataQsRecordBean.value)
             }
-//            realm.close()
             mapController.markerHandle.addOrUpdateQsRecordMark(liveDataQsRecordBean.value!!)
             liveDataFinish.postValue(true)
         }
     }
 
+    /**
+     * 删除数据
+     */
     fun deleteData(context: Context) {
         val mDialog = FirstDialog(context)
         mDialog.setTitle("提示？")
@@ -357,160 +444,222 @@ class EvaluationResultViewModel @Inject constructor(
      */
 
     fun initData(id: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
-            viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
 
-                Realm.getDefaultInstance().use { realm ->
-                    realm.executeTransactionAsync { bgRealm ->
-                        // find the item
-                        val objects = bgRealm.where(QsRecordBean::class.java).equalTo("id", id).findFirst()
-                        if (objects != null) {
-                            oldBean = bgRealm.copyFromRealm(objects)
-                            oldBean?.let {
-                                liveDataQsRecordBean.postValue(it.copy())
-                                val p = GeometryTools.createGeoPoint(it.geometry)
-                                mapController.markerHandle.addMarker(GeoPoint(p.latitude, p.longitude), markerTitle)
+            val realm = Realm.getDefaultInstance()
+            val objects = realm.where(QsRecordBean::class.java).equalTo("id", id).findFirst()
+            Log.e("jingo", "查询数据 id= $id")
+            if (objects != null) {
+                oldBean = realm.copyFromRealm(objects)
+                oldBean?.let {
+                    /**
+                     * 获取当前所选的任务
+                     */
+                    val objects =
+                        realm.where(TaskBean::class.java).equalTo("id", it.taskId).findFirst()
+                    if (objects != null) {
+                        liveDataTaskBean.postValue(realm.copyFromRealm(objects))
+                    }
 
-                                //获取linkid
-                                if (it.linkId.isNotEmpty()) {
-                                    viewModelScope.launch(Dispatchers.IO) {
-                                        val link = realmOperateHelper.queryLink(it.linkId)
-                                        link?.let { l ->
-                                            mapController.lineHandler.showLine(l.geometry)
-                                        }
-                                    }
-                                }
-                                liveDataQsRecordBean.value?.attachmentBeanList = it.attachmentBeanList
-                                // 显示语音数据到界面
-                                getChatMsgEntityList()
+                    liveDataQsRecordBean.postValue(it.copy())
+                    val p = GeometryTools.createGeoPoint(it.geometry)
+                    mapController.markerHandle.addMarker(
+                        GeoPoint(
+                            p.latitude, p.longitude
+                        ), TAG, "", null
+                    )
+
+                    //获取linkid
+                    if (it.linkId.isNotEmpty()) {
+                        val link = realmOperateHelper.queryLink(it.linkId)
+                        if (link != null) {
+                            mapController.lineHandler.showLine(link.geometry)
+                        } else {
+                            val realmR = realm.where(HadLinkDvoBean::class.java)
+                                .equalTo("linkPid", it.linkId).and().equalTo("taskId", it.taskId)
+                                .findFirst()
+                            if (realmR != null) {
+                                mapController.lineHandler.showLine(realmR.geometry)
                             }
                         }
                     }
+                    liveDataQsRecordBean.value?.attachmentBeanList = it.attachmentBeanList
+                    // 显示语音数据到界面
+                    getChatMsgEntityList()
+        }
+            } else {
+                liveDataToastMessage.postValue("数据读取失败")
+    }
+}
+}
+
+/**
+ * 查询问题类型列表
+ */
+    private suspend fun getChatMsgEntityList() {
+    val chatMsgEntityList: MutableList<ChatMsgEntity> = ArrayList()
+    liveDataQsRecordBean.value?.attachmentBeanList?.forEach {
+        //1 录音
+        if (it.type == 1) {
+            val chatMsgEntity = ChatMsgEntity()
+            chatMsgEntity.name = it.name
+            chatMsgEntity.voiceUri = Constant.USER_DATA_ATTACHEMNT_PATH
+            chatMsgEntityList.add(chatMsgEntity)
+        }
+    }
+    listDataChatMsgEntityList.postValue(chatMsgEntityList)
+}
+
+fun addChatMsgEntity(filePath: String) {
+
+    if (filePath.isNotEmpty()) {
+        var chatMsgEntityList: MutableList<ChatMsgEntity> = ArrayList()
+        if (listDataChatMsgEntityList.value?.isEmpty() == false) {
+            chatMsgEntityList = listDataChatMsgEntityList.value!!
+        }
+        val chatMsgEntity = ChatMsgEntity()
+        chatMsgEntity.name = filePath.replace(Constant.USER_DATA_ATTACHEMNT_PATH, "").toString()
+        chatMsgEntity.voiceUri = Constant.USER_DATA_ATTACHEMNT_PATH
+        chatMsgEntityList.add(chatMsgEntity)
+
+
+        var attachmentList: RealmList<AttachmentBean> = RealmList()
+
+        //赋值处理
+        if (liveDataQsRecordBean.value?.attachmentBeanList?.isEmpty() == false) {
+            attachmentList = liveDataQsRecordBean.value?.attachmentBeanList!!
+        }
+
+        val attachmentBean = AttachmentBean()
+        attachmentBean.name = chatMsgEntity.name!!
+        attachmentBean.type = 1
+        attachmentList.add(attachmentBean)
+        liveDataQsRecordBean.value?.attachmentBeanList = attachmentList
+
+        listDataChatMsgEntityList.postValue(chatMsgEntityList)
+    }
+}
+
+fun startSoundMetter(activity: Activity, v: View) {
+
+    if (mSpeakMode == null) {
+        mSpeakMode = SpeakMode(activity)
+    }
+
+    //语音识别动画
+    if (pop == null) {
+        pop = PopupWindow()
+        pop!!.width = ViewGroup.LayoutParams.MATCH_PARENT
+        pop!!.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        pop!!.setBackgroundDrawable(BitmapDrawable())
+        val view =
+            View.inflate(activity as Context, R.layout.cv_card_voice_rcd_hint_window, null)
+        pop!!.contentView = view
+        volume = view.findViewById(R.id.volume)
+    }
+
+    pop!!.update()
+
+    Constant.IS_VIDEO_SPEED = true
+    //录音动画
+    if (pop != null) {
+        pop!!.showAtLocation(v, Gravity.CENTER, 0, 0)
+    }
+    volume!!.setBackgroundResource(R.drawable.pop_voice_img)
+    val animation = volume!!.background as AnimationDrawable
+    animation.start()
+
+    val name: String = DateTimeUtil.getTimeSSS().toString() + ".m4a"
+    if (mSoundMeter == null) {
+        mSoundMeter = SoundMeter()
+    }
+    mSoundMeter!!.setmListener(object : SoundMeter.OnSoundMeterListener {
+        @RequiresApi(Build.VERSION_CODES.Q)
+        override fun onSuccess(filePath: String?) {
+            if (!TextUtils.isEmpty(filePath) && File(filePath).exists()) {
+                if (File(filePath) == null || File(filePath).length() < 1600) {
+                    ToastUtils.showLong("语音时间太短，无效！")
+                    mSpeakMode!!.speakText("语音时间太短，无效")
+                    stopSoundMeter()
+                    return
                 }
             }
+
+            mSpeakMode!!.speakText("结束录音")
+
+            addChatMsgEntity(filePath!!)
         }
+
+        @RequiresApi(api = Build.VERSION_CODES.Q)
+        override fun onfaild(message: String?) {
+            ToastUtils.showLong("录制失败！")
+            mSpeakMode!!.speakText("录制失败")
+            stopSoundMeter()
+        }
+    })
+
+    mSoundMeter!!.start(Constant.USER_DATA_ATTACHEMNT_PATH + name)
+    ToastUtils.showLong("开始录音")
+    mSpeakMode!!.speakText("开始录音")
+}
+
+//停止语音录制
+@RequiresApi(api = Build.VERSION_CODES.Q)
+fun stopSoundMeter() {
+    //先重置标识，防止按钮抬起时触发语音结束
+    Constant.IS_VIDEO_SPEED = false
+    if (mSoundMeter != null && mSoundMeter!!.isStartSound) {
+        mSoundMeter!!.stop()
+    }
+    pop?.let {
+        if (it.isShowing) {
+            it.dismiss()
+        }
+    }
+}
+
+
+fun savePhoto(bitmap: Bitmap) {
+    viewModelScope.launch(Dispatchers.IO) {
+        // 创建一个名为 "MyApp" 的文件夹
+        val myAppDir = File(Constant.USER_DATA_ATTACHEMNT_PATH)
+            if (!myAppDir.exists()) myAppDir.mkdirs() // 确保文件夹已创建
+
+        // 创建一个名为 fileName 的文件
+        val file = File(myAppDir, "${UUID.randomUUID()}.png")
+        file.createNewFile() // 创建文件
+
+        // 将 Bitmap 压缩为 JPEG 格式，并将其写入文件中
+        val out = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+        out.flush()
+        out.close()
+        var picList = mutableListOf<String>()
+        if (liveDataPictureList.value == null) {
+            picList.add(file.absolutePath)
+        } else {
+            picList.addAll(liveDataPictureList.value!!)
+            picList.add(file.absolutePath)
+        }
+        liveDataPictureList.postValue(picList)
+    }
+
     }
 
     /**
-     * 查询问题类型列表
+     * 监听任务选择变化
      */
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun getChatMsgEntityList() {
-        val chatMsgEntityList: MutableList<ChatMsgEntity> = ArrayList()
-        liveDataQsRecordBean.value?.attachmentBeanList?.forEach {
-            //1 录音
-            if (it.type == 1) {
-                val chatMsgEntity = ChatMsgEntity()
-                chatMsgEntity.name = it.name
-                chatMsgEntity.voiceUri = Constant.USER_DATA_ATTACHEMNT_PATH
-                chatMsgEntityList.add(chatMsgEntity)
-            }
-        }
-        listDataChatMsgEntityList.postValue(chatMsgEntityList)
-    }
-
-    fun addChatMsgEntity(filePath: String) {
-
-        if (filePath.isNotEmpty()) {
-            var chatMsgEntityList: MutableList<ChatMsgEntity> = ArrayList()
-            if (listDataChatMsgEntityList.value?.isEmpty() == false) {
-                chatMsgEntityList = listDataChatMsgEntityList.value!!
-            }
-            val chatMsgEntity = ChatMsgEntity()
-            chatMsgEntity.name = filePath.replace(Constant.USER_DATA_ATTACHEMNT_PATH, "").toString()
-            chatMsgEntity.voiceUri = Constant.USER_DATA_ATTACHEMNT_PATH
-            chatMsgEntityList.add(chatMsgEntity)
-
-
-            var attachmentList: RealmList<AttachmentBean> = RealmList()
-
-            //赋值处理
-            if (liveDataQsRecordBean.value?.attachmentBeanList?.isEmpty() == false) {
-                attachmentList = liveDataQsRecordBean.value?.attachmentBeanList!!
-            }
-
-            val attachmentBean = AttachmentBean()
-            attachmentBean.name = chatMsgEntity.name!!
-            attachmentBean.type = 1
-            attachmentList.add(attachmentBean)
-            liveDataQsRecordBean.value?.attachmentBeanList = attachmentList
-
-            listDataChatMsgEntityList.postValue(chatMsgEntityList)
-        }
-    }
-
-    fun startSoundMetter(activity: Activity, v: View) {
-
-        if (mSpeakMode == null) {
-            mSpeakMode = SpeakMode(activity)
-        }
-
-        //语音识别动画
-        if (pop == null) {
-            pop = PopupWindow()
-            pop!!.width = ViewGroup.LayoutParams.MATCH_PARENT
-            pop!!.height = ViewGroup.LayoutParams.WRAP_CONTENT
-            pop!!.setBackgroundDrawable(BitmapDrawable())
-            val view =
-                View.inflate(activity as Context, R.layout.cv_card_voice_rcd_hint_window, null)
-            pop!!.contentView = view
-            volume = view.findViewById(R.id.volume)
-        }
-
-        pop!!.update()
-
-        Constant.IS_VIDEO_SPEED = true
-        //录音动画
-        if (pop != null) {
-            pop!!.showAtLocation(v, Gravity.CENTER, 0, 0)
-        }
-        volume!!.setBackgroundResource(R.drawable.pop_voice_img)
-        val animation = volume!!.background as AnimationDrawable
-        animation.start()
-
-        val name: String = DateTimeUtil.getTimeSSS().toString() + ".m4a"
-        if (mSoundMeter == null) {
-            mSoundMeter = SoundMeter()
-        }
-        mSoundMeter!!.setmListener(object : SoundMeter.OnSoundMeterListener {
-            @RequiresApi(Build.VERSION_CODES.Q)
-            override fun onSuccess(filePath: String?) {
-                if (!TextUtils.isEmpty(filePath) && File(filePath).exists()) {
-                    if (File(filePath) == null || File(filePath).length() < 1600) {
-                        ToastUtils.showLong("语音时间太短，无效！")
-                        mSpeakMode!!.speakText("语音时间太短，无效")
-                        stopSoundMeter()
-                        return
-                    }
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        if (key == Constant.SELECT_TASK_ID && oldBean == null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val taskId = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
+                val realm = Realm.getDefaultInstance()
+                val objects = realm.where(TaskBean::class.java).equalTo("id", taskId).findFirst()
+                if (objects != null) {
+                    liveDataTaskBean.postValue(realm.copyFromRealm(objects))
                 }
-
-                mSpeakMode!!.speakText("结束录音")
-
-                addChatMsgEntity(filePath!!)
             }
-
-            @RequiresApi(api = Build.VERSION_CODES.Q)
-            override fun onfaild(message: String?) {
-                ToastUtils.showLong("录制失败！")
-                mSpeakMode!!.speakText("录制失败")
-                stopSoundMeter()
-            }
-        })
-
-        mSoundMeter!!.start(Constant.USER_DATA_ATTACHEMNT_PATH + name)
-        ToastUtils.showLong("开始录音")
-        mSpeakMode!!.speakText("开始录音")
-    }
-
-    //停止语音录制
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    fun stopSoundMeter() {
-        //先重置标识，防止按钮抬起时触发语音结束
-        Constant.IS_VIDEO_SPEED = false
-        if (mSoundMeter != null && mSoundMeter!!.isStartSound()) {
-            mSoundMeter!!.stop()
         }
-        if (pop != null && pop!!.isShowing) pop!!.dismiss()
-    }
+}
 }

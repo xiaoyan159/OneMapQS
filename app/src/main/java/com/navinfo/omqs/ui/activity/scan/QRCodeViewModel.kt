@@ -9,14 +9,10 @@ import androidx.lifecycle.viewModelScope
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.IndoorConnectionInfoBean
 import com.navinfo.omqs.bean.QRCodeBean
-import com.navinfo.omqs.bean.SysUserBean
-import com.navinfo.omqs.http.DefaultResponse
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
-import com.navinfo.omqs.ui.activity.login.LoginStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -37,6 +33,7 @@ enum class QrCodeStatus {
      * 信息更新成功
      */
     QR_CODE_STATUS_SERVER_INFO_SUCCESS,
+
 }
 
 @HiltViewModel
@@ -99,11 +96,14 @@ class QrCodeViewModel @Inject constructor(
                                                 Toast.LENGTH_LONG
                                             ).show()
                                         }
+
+                                        updateServerInfo(context)
+
                                     } else {
                                         withContext(Dispatchers.Main) {
                                             Toast.makeText(
                                                 context,
-                                                "${defaultUserResponse.msg}",
+                                                "${defaultUserResponse.errmsg}",
                                                 Toast.LENGTH_SHORT
                                             )
                                                 .show()
@@ -165,17 +165,20 @@ class QrCodeViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.Default) {
             val url = "http://${Constant.INDOOR_IP}:8080/sensor/service/connection"
+
+
+            val indoorConnectionInfoBean = IndoorConnectionInfoBean(
+                Constant.USER_ID,
+                Constant.USER_ID,
+                Constant.USER_ID,
+                "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODk2MjI5MjQsInVzZXJJZCI6IjEwNCIsImlhdCI6MTY4OTU3MjUyNCwidXNlcm5hbWUiOiJ3ZWl3ZWlsaW4wMDEwNCJ9.9WUqOhme8Yi_2xRBKMMe0ihb_yR1uwTqWTdZfZ7dMtE",
+                "http://fastmap.navinfo.com/onemap",
+                Constant.USER_ID,
+                "Android"
+            )
             when (val result = networkService.updateServerInfo(
                 url = url,
-                indoorConnectionInfoBean = IndoorConnectionInfoBean(
-                    Constant.USER_ID,
-                    Constant.USER_ID,
-                    Constant.USER_ID,
-                    Constant.USER_ID,
-                    com.navinfo.collect.library.system.Constant.SERVER_ADDRESS,
-                    Constant.USER_ID,
-                    "Android"
-                )
+                indoorConnectionInfoBean = indoorConnectionInfoBean
             )) {
                 is NetResult.Success<*> -> {
 
@@ -198,7 +201,7 @@ class QrCodeViewModel @Inject constructor(
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(
                                         context,
-                                        "${defaultUserResponse.msg}",
+                                        "${defaultUserResponse.errmsg}",
                                         Toast.LENGTH_SHORT
                                     )
                                         .show()

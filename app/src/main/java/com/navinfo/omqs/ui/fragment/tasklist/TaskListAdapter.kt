@@ -1,16 +1,18 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
-import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.AdapterTaskListBinding
@@ -19,15 +21,10 @@ import com.navinfo.omqs.http.taskupload.TaskUploadManager
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import com.navinfo.omqs.tools.FileManager.Companion.FileUploadStatus
-import com.navinfo.omqs.ui.dialog.FirstDialog
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
+import com.navinfo.omqs.ui.other.OnLifecycleStateListener
 import com.navinfo.omqs.ui.widget.LeftDeleteView
-import io.realm.Realm
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * 离线地图城市列表 RecyclerView 适配器
@@ -51,8 +48,7 @@ class TaskListAdapter(
 
     private var isShowDeleteView = false
 
-    private
-    val downloadBtnClick = View.OnClickListener() {
+    private val downloadBtnClick = View.OnClickListener() {
         if (it.tag != null) {
             val taskBean = data[it.tag as Int]
             if (taskBean.hadLinkDvoList.isNotEmpty()) {
@@ -124,6 +120,7 @@ class TaskListAdapter(
     override fun onViewRecycled(holder: BaseViewHolder) {
         super.onViewRecycled(holder)
         //页面滑动时会用holder重构页面，但是对进度条的监听回调会一直返回，扰乱UI，所以当当前holder去重构的时候，移除监听
+        //这里 BaseViewHolder 的LifecycleOwner 状态很早就DESTROYED 了，这个回调比较晚，起到的作用很小
         downloadManager.removeObserver(holder.tag.toInt())
     }
 
@@ -131,6 +128,7 @@ class TaskListAdapter(
         holder: BaseViewHolder,
         @SuppressLint("RecyclerView") position: Int
     ) {
+
         val binding: AdapterTaskListBinding =
             holder.viewBinding as AdapterTaskListBinding
         val taskBean = data[position]
@@ -149,8 +147,22 @@ class TaskListAdapter(
         //tag 方便onclick里拿到数据
         holder.tag = taskBean.id.toString()
         changeViews(binding, taskBean)
+        holder.addObserver(object : OnLifecycleStateListener {
+            override fun onState(tag: String, state: Lifecycle.State) {
+                when (state) {
+                    Lifecycle.State.STARTED ->
+                        downloadManager.observer(
+                            taskBean.id,
+                            holder,
+                            DownloadObserver(taskBean.id, holder)
+                        )
+                    Lifecycle.State.DESTROYED ->
+                        downloadManager.removeObserver(tag.toInt())
+                    else -> {}
+                }
+            }
+        })
         downloadManager.addTask(taskBean)
-        downloadManager.observer(taskBean.id, holder, DownloadObserver(taskBean.id, holder))
         uploadManager.addTask(taskBean)
         uploadManager.observer(taskBean.id, holder, UploadObserver(taskBean.id, binding))
         if (taskBean.status == FileDownloadStatus.NONE) {
@@ -203,7 +215,12 @@ class TaskListAdapter(
         binding.taskDeleteLayout.setOnClickListener {
             //重置状态
             leftDeleteView?.resetDeleteStatus()
-            itemListener?.invoke(position, ItemClickStatus.DELETE_LAYOUT_CLICK, taskBean)
+            if (taskBean.syncStatus != FileUploadStatus.DONE) {
+                Toast.makeText(binding.taskUploadBtn.context, "数据未上传，不允许关闭！", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                itemListener?.invoke(position, ItemClickStatus.DELETE_LAYOUT_CLICK, taskBean)
+            }
         }
     }
 
@@ -212,7 +229,7 @@ class TaskListAdapter(
      * 重置item状态
      * @param point
      */
-    fun restoreItemView() {
+    private fun restoreItemView() {
         leftDeleteView?.let {
             if (isShowDeleteView)
                 it.resetDeleteStatus()
@@ -245,8 +262,9 @@ class TaskListAdapter(
             FileUploadStatus.DONE -> {
                 binding.taskUploadBtn.stopAnimator()
                 binding.taskUploadBtn.setText("已上传")
+                binding.taskUploadBtn.isEnabled = false
                 binding.taskUploadBtn.setProgress(0)
-                binding.taskUploadBtn.setBackgroundColor(binding.root.resources.getColor(R.color.ripple_end_color))
+                binding.taskUploadBtn.setBackgroundColor(binding.root.resources.getColor(R.color.gray_121))
             }
 
             FileUploadStatus.ERROR -> {
@@ -364,6 +382,17 @@ class TaskListAdapter(
                 binding.taskDownloadBtn.setText("安装")
             }
         }
+    }
+
+    fun initSelectTask(list: List<TaskBean>, id: Int?) {
+
+        for (i in list.indices) {
+            if (list[i].id == id) {
+                selectPosition = i
+                break
+            }
+        }
+        refreshData(list)
     }
 
     companion object {

@@ -15,14 +15,18 @@ import com.blankj.utilcode.util.UriUtils
 import com.github.k1rakishou.fsaf.FileChooser
 import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
 import com.github.k1rakishou.fsaf.callback.FileChooserCallback
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentPersonalCenterBinding
 import com.navinfo.omqs.db.ImportOMDBHelper
 import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
 import com.navinfo.omqs.tools.CoroutineUtils
+import com.navinfo.omqs.ui.activity.map.MainActivity
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.activity.scan.QrCodeActivity
+import com.navinfo.omqs.ui.fragment.console.ConsoleFragment
 import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 import org.oscim.core.GeoPoint
@@ -32,7 +36,7 @@ import javax.inject.Inject
  * 个人中心
  */
 @AndroidEntryPoint
-class PersonalCenterFragment(private var backListener: (() -> Unit?)? = null) : BaseFragment(),
+class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?)? = null) : BaseFragment(),
     FSAFActivityCallbacks {
 
     private var _binding: FragmentPersonalCenterBinding? = null
@@ -111,8 +115,15 @@ class PersonalCenterFragment(private var backListener: (() -> Unit?)? = null) : 
                         }
                     })
                 }
+                R.id.personal_center_menu_open_auto_location -> {
+                    Constant.AUTO_LOCATION = true
+                }
+                R.id.personal_center_menu_close_auto_location -> {
+                    Constant.AUTO_LOCATION = false
+                }
                 R.id.personal_center_menu_test -> {
                     viewModel.readRealmData()
+                    //116.25017070328308 40.061730653134696
                     // 定位到指定位置
                     niMapController.mMapView.vtmMap.animator()
                         .animateTo(GeoPoint( 39.7991980627346,116.50936676873703   ))
@@ -135,6 +146,9 @@ class PersonalCenterFragment(private var backListener: (() -> Unit?)? = null) : 
                 R.id.personal_center_menu_scan_qr_code -> {
                     //跳转二维码扫描界面
                     checkPermission()
+                }
+                R.id.personal_center_menu_scan_indoor_data -> {
+                    indoorDataListener?.invoke(true)
                 }
             }
             true

@@ -217,6 +217,13 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
         vectorNiLocationTileLayer.isEnabled = false
         labelNiLocationLayer.isEnabled = false
     }
+
+    fun omdbLayersUpdate(){
+//         omdbVectorTileLayer
+//         omdbReferenceTileLayer.
+         omdbLabelLayer.update()
+         omdbReferenceLabelLayer.update()
+    }
 }
 
 

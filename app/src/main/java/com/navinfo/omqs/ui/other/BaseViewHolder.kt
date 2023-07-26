@@ -16,6 +16,8 @@ open class BaseViewHolder(val viewBinding: ViewBinding) :
     private val lifecycleRegistry = LifecycleRegistry(this)
     var tag = ""
 
+    private var listener: OnLifecycleStateListener? = null
+
     init {
 //        dataBinding.lifecycleOwner = this
         lifecycleRegistry.currentState = Lifecycle.State.INITIALIZED
@@ -37,19 +39,33 @@ open class BaseViewHolder(val viewBinding: ViewBinding) :
     fun onStart() {
         lifecycleRegistry.currentState = Lifecycle.State.STARTED     //
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED     //   ON_RESUME EVENT
+        listener?.onState(tag,Lifecycle.State.STARTED)
     }
 
     fun onStop() {
         lifecycleRegistry.currentState = Lifecycle.State.STARTED    //
-        lifecycleRegistry.currentState = Lifecycle.State.CREATED    //     ON_STOP EVENT
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED    //
+//        listener?.onState(tag,Lifecycle.State.STARTED)// ON_STOP EVENT
     }
 
     fun onDestroy() {
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED   ///  ON_DESTROY EVENT
+        listener?.onState(tag,Lifecycle.State.DESTROYED)
     }
 
 
     override fun getLifecycle(): Lifecycle {
         return lifecycleRegistry
     }
+
+    fun addObserver(listener: OnLifecycleStateListener) {
+        this.listener = listener
+    }
+}
+
+/**
+ * 生命周期变化
+ */
+interface OnLifecycleStateListener {
+    fun onState(tag:String,state: Lifecycle.State)
 }

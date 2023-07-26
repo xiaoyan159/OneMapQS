@@ -12,6 +12,7 @@ import com.baidu.location.LocationClientOption.LocationMode
 import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.utils.DateUtils
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
@@ -66,18 +67,12 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
                 val errorCode = it.locType
                 mCurrentLocation = it
                 mLocationLayer.setPosition(it.latitude, it.longitude, it.radius)
-//                Log.e(
-//                    "qj",
-//                    "location==${it.longitude}==errorCode===$errorCode===${it.locTypeDescription}"
-//                )
+                Log.e("qj", "location==${it.longitude}==errorCode===$errorCode===${it.locTypeDescription}")
 
-//                if (niLocationListener != null) {
-                    getCurrentNiLocation()?.let { it1 ->
-                        mContext.lifecycleScope.launch {
-                            niLocationFlow.emit(it1)
-                        }
-
-//                    }// niLocationListener.call(it1) }
+                getCurrentNiLocation()?.let { it1 ->
+                    mContext.lifecycleScope.launch {
+                        niLocationFlow.emit(it1)
+                    }
                 }
                 //第一次定位成功显示当前位置
                 if (this.bFirst) {

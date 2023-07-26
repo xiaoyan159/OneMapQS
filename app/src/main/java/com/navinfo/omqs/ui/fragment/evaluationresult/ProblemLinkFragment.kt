@@ -1,8 +1,6 @@
 package com.navinfo.omqs.ui.fragment.evaluationresult
 
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,13 +48,11 @@ class ProblemLinkFragment : BaseFragment() {
         }
         binding.linkRightRecyclerview.adapter = rightAdapter
         //右侧菜单增加组标题
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            binding.linkRightRecyclerview.addItemDecoration(
-                RightGroupHeaderDecoration(
-                    requireContext()
-                )
+        binding.linkRightRecyclerview.addItemDecoration(
+            RightGroupHeaderDecoration(
+                requireContext()
             )
-        }
+        )
         //右侧菜单查询数据监听
         viewModel.liveDataRightTypeList.observe(viewLifecycleOwner) {
             rightAdapter.setSelectTitle(viewModel.liveDataQsRecordBean.value!!.cause)

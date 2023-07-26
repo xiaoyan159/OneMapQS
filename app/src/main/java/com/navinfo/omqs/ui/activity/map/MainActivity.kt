@@ -20,10 +20,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.collect.library.map.NIMapOptions
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.bean.SignBean
+import com.navinfo.omqs.bean.TraceVideoBean
 import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.tools.LayerConfigUtils
@@ -33,11 +35,14 @@ import com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapFragment
 import com.navinfo.omqs.ui.fragment.qsrecordlist.QsRecordListFragment
 import com.navinfo.omqs.ui.fragment.signMoreInfo.SignMoreInfoFragment
 import com.navinfo.omqs.ui.fragment.tasklist.TaskManagerFragment
+import com.navinfo.omqs.ui.other.BaseToast
 import com.navinfo.omqs.ui.widget.RecyclerViewSpacesItemDecoration
 import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.oscim.core.GeoPoint
+import org.oscim.renderer.GLViewport
 import org.videolan.vlc.Util
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -163,8 +168,7 @@ class MainActivity : BaseActivity() {
         viewModel.speakMode = SpeakMode(this)
         // 在mapController初始化前获取当前OMDB图层显隐
         viewModel.refreshOMDBLayer(LayerConfigUtils.getLayerConfigList())
-        mapController.mMapView.vtmMap.viewport().maxZoomLevel = 25
-        mapController.mMapView.vtmMap.viewport().maxTilt = 85f
+        mapController.mMapView.vtmMap.viewport().maxZoomLevel = Constant.MAX_ZOOM
         //关联生命周期
         binding.lifecycleOwner = this
         //给xml转递对象
@@ -177,6 +181,7 @@ class MainActivity : BaseActivity() {
                 MotionEvent.ACTION_DOWN -> {
                     voiceOnTouchStart()//Do Something
                 }
+
                 MotionEvent.ACTION_UP -> {
                     voiceOnTouchStop()//Do Something
                 }
@@ -185,9 +190,62 @@ class MainActivity : BaseActivity() {
         }
         //捕捉列表变化回调
         viewModel.liveDataQsRecordIdList.observe(this) {
-            //处理页面跳转
-            viewModel.navigationRightFragment(this, it)
+            //跳转到质检数据页面
+            //获取右侧fragment容器
+            val naviController = findNavController(R.id.main_activity_right_fragment)
+
+            naviController.currentDestination?.let { navDestination ->
+                when (navDestination.id) {
+                    R.id.RightEmptyFragment -> {
+                        if (it.size == 1) {
+                            val bundle = Bundle()
+                            bundle.putString("QsId", it[0])
+                            naviController.navigate(R.id.EvaluationResultFragment, bundle)
+                        }
+                    }
+                }
+            }
         }
+        //捕捉列表变化回调
+        viewModel.liveDataNoteId.observe(this) {
+            //跳转到质检数据页面
+            //获取右侧fragment容器
+            val naviController = findNavController(R.id.main_activity_right_fragment)
+
+            naviController.currentDestination?.let { navDestination ->
+                when (navDestination.id) {
+                    R.id.RightEmptyFragment -> {
+                        val bundle = Bundle()
+                        bundle.putString("NoteId", it)
+                        naviController.navigate(R.id.NoteFragment, bundle)
+                    }
+                }
+            }
+        }
+
+        viewModel.liveDataTaskLink.observe(this) {
+            val bundle = Bundle()
+            bundle.putString("TaskLinkId", it)
+            findNavController(R.id.main_activity_right_fragment).navigate(
+                R.id.TaskLinkFragment, bundle
+            )
+        }
+
+        //捕捉轨迹点
+        viewModel.liveDataNILocationList.observe(this) {
+            if (viewModel.isSelectTrace()) {
+                //Toast.makeText(this,"轨迹被点击了",Toast.LENGTH_LONG).show()
+                viewModel.showMarker(this, it)
+                viewModel.setCurrentIndexNiLocation(it)
+                val traceVideoBean = TraceVideoBean(
+                    command = "videotime?",
+                    userid = Constant.USER_ID,
+                    time = "${it.time}:000"
+                )
+                viewModel.sendServerCommand(this, traceVideoBean, IndoorToolsCommand.SELECT_POINT)
+            }
+        }
+
         //右上角菜单是否被点击
         viewModel.liveDataMenuState.observe(this) {
             binding.mainActivityMenu.isSelected = it
@@ -254,13 +312,62 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        viewModel.liveDataSignMoreInfo.observe(this){
+        viewModel.liveDataSignMoreInfo.observe(this) {
             val fragment =
                 supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
             if (fragment == null) {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment())
                     .commit()
+            }
+        }
+
+        viewModel.liveIndoorToolsResp.observe(this) {
+            when (it) {
+                IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_SUCCESS -> {
+
+                    if (viewModel.indoorToolsCommand == IndoorToolsCommand.SELECT_POINT) {
+                        selectPointFinish(true)
+                    }
+                    //启动自动播放
+                    if (viewModel.indoorToolsCommand == IndoorToolsCommand.PLAY) {
+                        viewModel.startTimer()
+                    }
+                }
+
+                IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE -> {
+                    if (viewModel.indoorToolsCommand == IndoorToolsCommand.SELECT_POINT) {
+                        selectPointFinish(false)
+                    }
+                }
+            }
+        }
+
+        //室内整理工具反向控制
+        viewModel.liveIndoorToolsCommand.observe(this) {
+            when (it) {
+                IndoorToolsCommand.PLAY -> {
+                    setPlayStatus()
+                }
+
+                IndoorToolsCommand.INDEXING -> {
+                    pausePlayTrace()
+                }
+
+                IndoorToolsCommand.SELECT_POINT -> {
+
+                }
+
+                IndoorToolsCommand.NEXT -> {
+                }
+
+                IndoorToolsCommand.REWIND -> {
+                }
+
+                IndoorToolsCommand.STOP -> {
+                    //切换为暂停状态
+                    pausePlayTrace()
+                }
             }
         }
 
@@ -283,8 +390,13 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        supportFragmentManager.beginTransaction()
-            .add(R.id.console_fragment_layout, ConsoleFragment()).commit()
+        //自动连接相机
+        if (viewModel.isAutoCamera()) {
+            viewModel.autoCamera()
+        } else {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.console_fragment_layout, ConsoleFragment()).commit()
+        }
     }
 
     //根据输入的经纬度跳转坐标
@@ -293,7 +405,7 @@ class MainActivity : BaseActivity() {
         val inputDialog = MaterialAlertDialogBuilder(
             this
         ).setTitle("坐标定位").setView(view)
-        var editText = view.findViewById<EditText>(R.id.dialog_edittext)
+        val editText = view.findViewById<EditText>(R.id.dialog_edittext)
         editText.hint = "请输入经纬度例如：\n116.1234567,39.1234567\n116.1234567 39.1234567"
         inputDialog.setNegativeButton("取消") { dialog, _ ->
             dialog.dismiss()
@@ -431,10 +543,39 @@ class MainActivity : BaseActivity() {
     }
 
     /**
+     * 准星的显隐控制
+     */
+    fun setHomeCenterVisibility(visible: Int) {
+        binding.mainActivityHomeCenter.visibility = visible
+        binding.mainActivityHomeCenterText.visibility = visible
+        if (visible != View.VISIBLE) {
+            binding.mainActivityHomeCenterText.text = ""
+        }
+    }
+
+    /**
+     * 设置屏幕中心文字内容
+     */
+    fun setHomeCenterText(str: String) {
+        binding.mainActivityHomeCenterText.text = str
+    }
+
+    /**
      * 隐藏或显示右侧展开按钮
      */
-    fun setRightSwitchButton(visibility: Int) {
+    fun setRightSwitchButtonVisibility(visibility: Int) {
         binding.mainActivityFragmentSwitch.visibility = visibility
+    }
+
+    /**
+     * 顶部菜单按钮
+     */
+    fun setTopMenuButtonVisibility(visibility: Int) {
+        binding.mainActivityMenu.visibility = visibility
+        if (visibility != View.VISIBLE) {
+            binding.mainActivityMenuGroup.visibility = View.INVISIBLE
+            binding.mainActivityMenu.isSelected = false
+        }
     }
 
     /**
@@ -453,6 +594,167 @@ class MainActivity : BaseActivity() {
         binding.mainActivitySelectLine.isSelected = viewModel.isSelectRoad()
     }
 
+    /**
+     * 点击线选择
+     */
+    fun tracePointsOnclick() {
+        viewModel.setSelectTrace(!viewModel.isSelectTrace())
+        binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
+
+        if (viewModel.isSelectTrace()) {
+            Toast.makeText(this, "请选择轨迹点!", Toast.LENGTH_LONG).show()
+            //调用撤销自动播放
+            setViewEnable(false)
+            viewModel.cancelTrace()
+        }
+    }
+
+    /**
+     * 点击结束轨迹操作
+     */
+    fun finishTraceOnclick() {
+        setIndoorGroupEnable(false)
+        viewModel.setSelectTrace(false)
+        viewModel.setMediaFlag(false)
+        viewModel.setSelectPauseTrace(false)
+        binding.mainActivityMenuIndoorGroup.visibility = View.GONE
+        binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
+        //binding.mainActivitySnapshotMediaFlag.isSelected = viewModel.isMediaFlag()
+        binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
+    }
+
+    /**
+     * 点击结束轨迹操作
+     */
+    fun mediaFlagOnclick() {
+/*        viewModel.setMediaFlag(!viewModel.isMediaFlag())
+        binding.mainActivitySnapshotMediaFlag.isSelected = viewModel.isMediaFlag()*/
+    }
+
+    /**
+     * 点击上一个轨迹点播放操作
+     */
+    fun rewindTraceOnclick() {
+        pausePlayTrace()
+        val item =
+            mapController.markerHandle.getNILocation(viewModel.getCurrentNiLocationIndex() - 1)
+        if (item != null) {
+            viewModel.setCurrentIndexLoction(viewModel.getCurrentNiLocationIndex() - 1)
+            viewModel.showMarker(this, item)
+            val traceVideoBean = TraceVideoBean(
+                command = "videotime?",
+                userid = Constant.USER_ID,
+                time = "${item.time}:000"
+            )
+            viewModel.sendServerCommand(this, traceVideoBean, IndoorToolsCommand.REWIND)
+        } else {
+            dealNoData()
+        }
+    }
+
+    /**
+     * 点击暂停播放轨迹操作
+     */
+    fun pauseTraceOnclick() {
+        viewModel.setSelectPauseTrace(!viewModel.isSelectPauseTrace())
+        binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
+        viewModel.setSelectTrace(false)
+        binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
+        if (viewModel.isSelectPauseTrace()) {
+            playVideo()
+        } else {
+            pauseVideo()
+            viewModel.cancelTrace()
+        }
+    }
+
+    private fun playVideo() {
+        if (mapController.markerHandle.getCurrentMark() == null) {
+            BaseToast.makeText(this, "请先选择轨迹点！", BaseToast.LENGTH_SHORT).show()
+            return
+        }
+        viewModel.setSelectTrace(false)
+        binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
+        val traceVideoBean = TraceVideoBean(command = "playVideo?", userid = Constant.USER_ID)
+        viewModel.sendServerCommand(this, traceVideoBean, IndoorToolsCommand.PLAY)
+    }
+
+    /**
+     * 设置为播放状态
+     */
+    private fun setPlayStatus() {
+        //切换为播放
+        viewModel.setSelectPauseTrace(true)
+        binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
+        playVideo()
+    }
+
+    private fun pauseVideo() {
+        val traceVideoBean = TraceVideoBean(command = "pauseVideo?", userid = Constant.USER_ID)
+        viewModel.sendServerCommand(this, traceVideoBean, IndoorToolsCommand.STOP)
+    }
+
+    /**
+     * 点击下一个轨迹点
+     */
+    fun nextTraceOnclick() {
+        pausePlayTrace()
+        val item =
+            mapController.markerHandle.getNILocation(viewModel.getCurrentNiLocationIndex() + 1)
+        if (item != null) {
+            viewModel.setCurrentIndexLoction(viewModel.getCurrentNiLocationIndex() + 1)
+            viewModel.showMarker(this, item)
+            val traceVideoBean = TraceVideoBean(
+                command = "videotime?",
+                userid = Constant.USER_ID,
+                time = "${item.time}:000"
+            )
+            viewModel.sendServerCommand(this, traceVideoBean, IndoorToolsCommand.NEXT)
+        } else {
+            dealNoData()
+        }
+    }
+
+    private fun dealNoData() {
+        BaseToast.makeText(this, "无数据了！", Toast.LENGTH_SHORT).show()
+
+        //无数据时自动暂停播放，并停止轨迹
+        if (viewModel.isSelectPauseTrace()) {
+            pauseVideo()
+            viewModel.cancelTrace()
+            viewModel.setSelectPauseTrace(false)
+            binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
+        }
+    }
+
+    fun pausePlayTrace() {
+        viewModel.setSelectTrace(false)
+        binding.mainActivityTraceSnapshotPoints.isSelected = viewModel.isSelectTrace()
+        viewModel.setSelectPauseTrace(false)
+        binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
+        viewModel.cancelTrace()
+    }
+
+    /**
+     * 选点结束
+     * @param value true 选点成功 false 选点失败
+     */
+    private fun selectPointFinish(value: Boolean) {
+        if (value) {
+            setViewEnable(true)
+            viewModel.setSelectPauseTrace(false)
+            binding.mainActivitySnapshotPause.isSelected = viewModel.isSelectPauseTrace()
+        }
+    }
+
+    private fun setViewEnable(value: Boolean) {
+        binding.mainActivitySnapshotRewind.isEnabled = value
+        binding.mainActivitySnapshotNext.isEnabled = value
+        binding.mainActivitySnapshotPause.isEnabled = value
+        binding.mainActivitySnapshotFinish.isEnabled = value
+        viewModel.cancelTrace()
+    }
+
 
     /**
      * 打开或关闭底部导航栏
@@ -466,9 +768,18 @@ class MainActivity : BaseActivity() {
             }
 
             binding.mainActivityBottomSheetGroup.visibility = View.GONE
+
+            mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 5)
         } else {
             binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
+            mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
         }
+        mapController.mMapView.vtmMap.animator().animateTo(
+            GeoPoint(
+                mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
+                mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude
+            )
+        )
     }
 
     private fun voiceOnTouchStart() {
@@ -524,6 +835,27 @@ class MainActivity : BaseActivity() {
     }
 
     /**
+     * 显示轨迹回放布局
+     */
+    fun showIndoorDataLayout() {
+        binding.mainActivityMenuIndoorGroup.visibility = View.VISIBLE
+        if (Constant.INDOOR_IP.isNotEmpty()) {
+            setIndoorGroupEnable(true)
+        } else {
+            setIndoorGroupEnable(false)
+        }
+    }
+
+    private fun setIndoorGroupEnable(enable: Boolean) {
+        binding.mainActivitySnapshotFinish.isEnabled = enable
+        binding.mainActivityTraceSnapshotPoints.isEnabled = enable
+        //binding.mainActivitySnapshotMediaFlag.isEnabled = enable
+        binding.mainActivitySnapshotRewind.isEnabled = enable
+        binding.mainActivitySnapshotPause.isEnabled = enable
+        binding.mainActivitySnapshotNext.isEnabled = enable
+    }
+
+    /**
      * 路径规划
      */
     fun onClickRouteFragment() {
@@ -557,5 +889,26 @@ class MainActivity : BaseActivity() {
         if (viewModel.liveDataRoadName.value != null) {
             viewModel.showSignMoreInfo(viewModel.liveDataRoadName.value!!)
         }
+    }
+
+    /**
+     * 新增便签,打开便签fragment
+     */
+    fun onClickNewNote() {
+        rightController.navigate(R.id.NoteFragment)
+    }
+
+    /**
+     * 新增评测link
+     */
+    fun onClickTaskLink() {
+        rightController.navigate(R.id.TaskLinkFragment)
+    }
+
+    /**
+     * 右侧按钮+经纬度按钮
+     */
+    fun setRightButtonsVisible(visible: Int) {
+        binding.mainActivityRightVisibilityButtonsGroup2.visibility = visible
     }
 }
