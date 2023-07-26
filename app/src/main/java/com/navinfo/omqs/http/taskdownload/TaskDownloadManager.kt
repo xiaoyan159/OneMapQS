@@ -104,7 +104,6 @@ class TaskDownloadManager constructor(
 
 
     fun addTask(taskBean: TaskBean) {
-        Log.e("jingo", "下载线程 ${taskBean.id}")
         if (!scopeMap.containsKey(taskBean.id)) {
             scopeMap[taskBean.id] = TaskDownloadScope(this, taskBean)
         }
@@ -114,7 +113,6 @@ class TaskDownloadManager constructor(
     fun observer(
         id: Int, lifecycleOwner: LifecycleOwner, observer: Observer<TaskBean>
     ) {
-        Log.e("jingo", "监听线程 ${id}")
         if (scopeMap.containsKey(id)) {
             scopeMap[id]!!.observer(lifecycleOwner, observer)
         }

@@ -99,6 +99,10 @@ class LoginActivity : CheckPermissionsActivity() {
             LoginStatus.LOGIN_STATUS_NET_OFFLINE_MAP -> {
                 loginDialog("检查离线地图...")
             }
+            LoginStatus.LOGIN_STATUS_NET_GET_TASK_LIST -> {
+                loginDialog("获取任务列表...")
+            }
+            else -> {}
         }
     }
 
@@ -113,6 +117,7 @@ class LoginActivity : CheckPermissionsActivity() {
      */
     private fun loginDialog(message: String) {
         if (loginDialog == null) {
+            Log.e("jingo", "登录dialog显示")
             loginDialog = MaterialAlertDialogBuilder(
                 this, com.google.android.material.R.style.MaterialAlertDialog_Material3
             ).setTitle("登录").setMessage(message).show()

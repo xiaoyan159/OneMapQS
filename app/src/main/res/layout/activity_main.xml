@@ -234,7 +234,7 @@
             android:textColor="@color/white"
             android:textSize="16sp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/main_activity_geometry"
+            app:layout_constraintBottom_toTopOf="@id/main_activity_bottom_sheet"
             app:layout_constraintLeft_toLeftOf="@id/main_activity_top_sign_recyclerview" />
 
 
@@ -387,7 +387,7 @@
         <View
             android:id="@+id/main_activity_bottom_sheet"
             android:layout_width="60dp"
-            android:layout_height="48dp"
+            android:layout_height="30dp"
             android:background="@drawable/baseline_minimize_24"
             android:onClick="@{()->mainActivity.onSwitchSheet()}"
             android:paddingBottom="10dp"
