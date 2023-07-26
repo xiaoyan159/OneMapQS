@@ -70,7 +70,7 @@ public class OMDBReferenceDecoder extends TileDecoder {
         listResult.stream().iterator().forEachRemaining(new Consumer<ReferenceEntity>() {
             @Override
             public void accept(ReferenceEntity renderEntity) {
-                if(mapLevel>=renderEntity.getZoomMin()&&mapLevel<=renderEntity.getZoomMax()){
+                if(!(mapLevel<renderEntity.getZoomMin()||mapLevel>renderEntity.getZoomMax())){
                     Map<String, Object> properties= new HashMap<>(renderEntity.getProperties().size());
                     properties.putAll(renderEntity.getProperties());
                     parseGeometry(renderEntity.getTable(), renderEntity.getWkt(), properties);

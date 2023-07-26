@@ -64,7 +64,7 @@ public class OMDBDataDecoder extends TileDecoder {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public boolean decode(int zoomLevel,Tile tile, ITileDataSink sink, List<RenderEntity> listResult) {
+    public boolean decode(int mapLevel,Tile tile, ITileDataSink sink, List<RenderEntity> listResult) {
         mTileDataSink = sink;
         mTileScale = 1 << tile.zoomLevel;
         mTileX = tile.tileX / mTileScale;
@@ -74,10 +74,12 @@ public class OMDBDataDecoder extends TileDecoder {
         listResult.stream().iterator().forEachRemaining(new Consumer<RenderEntity>() {
             @Override
             public void accept(RenderEntity renderEntity) {
-                if(zoomLevel>=renderEntity.getZoomMin()&&zoomLevel<=renderEntity.getZoomMax()){
+                if(!(mapLevel<renderEntity.getZoomMin()||mapLevel>renderEntity.getZoomMax())){
                     Map<String, Object> properties= new HashMap<>(renderEntity.getProperties().size());
                     properties.putAll(renderEntity.getProperties());
                     parseGeometry(renderEntity.getTable(), renderEntity.getWkt(), properties);
+                }else{
+                    Log.e("qj","render"+renderEntity.name+"=="+renderEntity.getZoomMin()+"==="+renderEntity.getZoomMax());
                 }
             }
         });
@@ -187,5 +189,11 @@ public class OMDBDataDecoder extends TileDecoder {
         }
         if (!hasName && fallbackName != null)
             mMapElement.tags.add(new Tag(Tag.KEY_NAME, fallbackName, false));
+    }
+
+    public void clean(){
+        if(mTileDataSink!=null){
+            mTileDataSink.notifyAll();
+        }
     }
 }
