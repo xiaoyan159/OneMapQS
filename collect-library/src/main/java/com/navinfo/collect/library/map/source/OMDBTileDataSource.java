@@ -50,7 +50,8 @@ public class OMDBTileDataSource implements ITileDataSource {
             }
             List<RenderEntity> listResult = realmQuery/*.distinct("id")*/.findAll();
             if (!listResult.isEmpty()) {
-                mThreadLocalDecoders.get().decode(tile, mapDataSink, listResult);
+                Log.e("qj","查询数据=="+listResult.size()+"==地图级别"+tile.zoomLevel);
+                mThreadLocalDecoders.get().decode(tile.zoomLevel,tile, mapDataSink, listResult);
             }
             mapDataSink.completed(QueryResult.SUCCESS);
 //            Log.d("RealmDBTileDataSource", "tile:"+tile.getBoundingBox().toString());

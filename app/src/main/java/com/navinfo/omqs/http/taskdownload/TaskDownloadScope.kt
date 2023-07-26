@@ -71,7 +71,7 @@ class TaskDownloadScope(
         downloadJob = launch() {
             FileManager.checkOMDBFileInfo(taskBean)
             if (taskBean.status == FileDownloadStatus.IMPORT) {
-                importData()
+                importData(taskId = taskBean.id)
             } else {
                 download()
             }
@@ -119,7 +119,7 @@ class TaskDownloadScope(
     /**
      * 导入数据
      */
-    private suspend fun importData(file: File? = null) {
+    private suspend fun importData(file: File? = null, taskId: Int?=0) {
         try {
             Log.e("jingo", "importData SSS")
             change(FileDownloadStatus.IMPORTING)
@@ -130,15 +130,17 @@ class TaskDownloadScope(
                     downloadManager.context,
                     fileNew
                 )
-            importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile).collect {
-                Log.e("jingo", "数据安装 $it")
-                if (it == "finish") {
-                    change(FileDownloadStatus.DONE)
-                    withContext(Dispatchers.Main) {
-                        downloadManager.mapController.mMapView.updateMap(true)
+            if (taskId != null) {
+                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile,taskId).collect {
+                    Log.e("jingo", "数据安装 $it")
+                    if (it == "finish") {
+                        change(FileDownloadStatus.DONE)
+                        withContext(Dispatchers.Main) {
+                            downloadManager.mapController.mMapView.updateMap(true)
+                        }
+                    } else {
+                        change(FileDownloadStatus.IMPORTING, it)
                     }
-                } else {
-                    change(FileDownloadStatus.IMPORTING, it)
                 }
             }
         } catch (e: Exception) {
@@ -177,7 +179,7 @@ class TaskDownloadScope(
                 startPosition = 0
             }
             if (fileTemp.length() > 0 && taskBean.fileSize > 0 && fileTemp.length() == taskBean.fileSize) {
-                importData(fileTemp)
+                importData(fileTemp,taskBean.id)
                 return
             }
 
@@ -218,7 +220,7 @@ class TaskDownloadScope(
                 randomAccessFile?.close()
                 inputStream = null
                 randomAccessFile = null
-                importData()
+                importData(taskId = taskBean.id)
             } else {
                 change(FileDownloadStatus.PAUSE)
             }

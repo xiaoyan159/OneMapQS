@@ -48,7 +48,7 @@ public class OMDBReferenceDataSource implements ITileDataSource {
             }
             List<ReferenceEntity> listResult = realmQuery/*.distinct("id")*/.findAll();
             if (!listResult.isEmpty()) {
-                mThreadLocalDecoders.get().decode(tile, mapDataSink, listResult);
+                mThreadLocalDecoders.get().decode(tile.zoomLevel,tile, mapDataSink, listResult);
             }
             mapDataSink.completed(QueryResult.SUCCESS);
 //            Log.d("RealmDBTileDataSource", "tile:"+tile.getBoundingBox().toString());

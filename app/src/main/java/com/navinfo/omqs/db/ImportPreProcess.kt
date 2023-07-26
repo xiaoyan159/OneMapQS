@@ -16,6 +16,7 @@ import org.oscim.core.GeoPoint
 class ImportPreProcess {
     val code2NameMap = Code2NameMap()
     lateinit var cacheRdLink: Map<String?, RenderEntity>
+    val defaultTranslateDistance = 3.0
 
     fun checkCircleRoad(renderEntity: RenderEntity): Boolean {
         val linkInId  = renderEntity.properties["linkIn"]
@@ -50,9 +51,9 @@ class ImportPreProcess {
         }
         if (Geometry.TYPENAME_POINT == geometry?.geometryType) { // angle为与正北方向的顺时针夹角
             var angle = if(renderEntity?.properties?.get("angle") == null) 0.0 else renderEntity?.properties?.get("angle")?.toDouble()!!
-            if (isReverse) {
-                angle += 180
-            }
+//            if (isReverse) {
+//                angle += 180
+//            }
             // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
             angle=(450-angle)%360
             radian = Math.toRadians(angle)
@@ -65,20 +66,26 @@ class ImportPreProcess {
             val p2: Coordinate = coordinates.get(coordinates.size - 1)
             // 计算线段的方向
             radian = Angle.angle(p1, p2)
-            point = p2
+            point = p1
         }
 
         // 计算偏移距离
-        val dx: Double = GeometryTools.convertDistanceToDegree(3.0, geometry?.coordinate?.y!!) * Math.cos(radian)
-        val dy: Double = GeometryTools.convertDistanceToDegree(3.0, geometry?.coordinate?.y!!) * Math.sin(radian)
+        val dx: Double = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.cos(radian)
+        val dy: Double = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.sin(radian)
 
         // 计算偏移后的点
         val coord =
             Coordinate(point.getX() + dy, point.getY() - dx)
 
-        // 将这个点记录在数据中
-        val geometryTranslate: Geometry = GeometryTools.createGeometry(doubleArrayOf(coord.x, coord.y))
-        renderEntity.geometry = geometryTranslate.toString()
+        // 记录偏移后的点位或线数据，如果数据为线时，记录的偏移后数据为倒数第二个点右移后，方向与线的最后两个点平行同向的单位向量
+        if (Geometry.TYPENAME_POINT == geometry?.geometryType) {
+            val geometryTranslate: Geometry = GeometryTools.createGeometry(doubleArrayOf(coord.x, coord.y))
+            renderEntity.geometry = geometryTranslate.toString()
+        } else {
+            val coorEnd = Coordinate(coord.x+dx, coord.y+dy)
+            val geometryTranslate: Geometry = GeometryTools.createLineString(arrayOf(coord, coorEnd))
+            renderEntity.geometry = geometryTranslate.toString()
+        }
     }
 
     /**
@@ -145,6 +152,10 @@ class ImportPreProcess {
         startEndReference.renderEntityId = renderEntity.id
         startEndReference.name = "${renderEntity.name}参考线"
         startEndReference.table = renderEntity.table
+        startEndReference.zoomMin = renderEntity.zoomMin
+        startEndReference.zoomMax = renderEntity.zoomMax
+        startEndReference.taskId = renderEntity.taskId
+
         // 起终点坐标组成的线
         startEndReference.geometry = GeometryTools.createLineString(arrayOf<Coordinate>(pointStart, pointEnd)).toString()
         startEndReference.properties["qi_table"] = renderEntity.table
@@ -163,6 +174,10 @@ class ImportPreProcess {
         startReference.renderEntityId = renderEntity.id
         startReference.name = "${renderEntity.name}参考线"
         startReference.table = renderEntity.table
+        startReference.zoomMin = renderEntity.zoomMin
+        startReference.zoomMax = renderEntity.zoomMax
+        startReference.taskId = renderEntity.taskId
+
         // 起点坐标
         startReference.geometry = GeometryTools.createGeometry(GeoPoint(pointStart.y,pointStart.x)).toString()
         startReference.properties["qi_table"] = renderEntity.table
@@ -173,6 +188,10 @@ class ImportPreProcess {
         endReference.renderEntityId = renderEntity.id
         endReference.name = "${renderEntity.name}参考线"
         endReference.table = renderEntity.table
+        endReference.zoomMin = renderEntity.zoomMin
+        endReference.zoomMax = renderEntity.zoomMax
+        endReference.taskId = renderEntity.taskId
+
         // 终点坐标
         endReference.geometry = GeometryTools.createGeometry(GeoPoint(pointEnd.y,pointEnd.x)).toString()
         endReference.properties["qi_table"] = renderEntity.table
@@ -226,6 +245,9 @@ class ImportPreProcess {
         angleReference.renderEntityId = renderEntity.id
         angleReference.name = "${renderEntity.name}参考方向"
         angleReference.table = renderEntity.table
+        angleReference.zoomMin = renderEntity.zoomMin
+        angleReference.zoomMax = renderEntity.zoomMax
+        angleReference.taskId = renderEntity.taskId
         // 与原有方向指向平行的线
         angleReference.geometry = GeometryTools.createLineString(arrayOf(point, coorEnd)).toString()
         angleReference.properties["qi_table"] = renderEntity.table
@@ -282,7 +304,40 @@ class ImportPreProcess {
         }
     }
 
+    /**
+     * 解析车信数据二级属性
+     * */
+    fun unpackingLaneInfo(renderEntity: RenderEntity) {
+        if (renderEntity.code == 4601) {
+            if (!renderEntity.properties["laneinfoGroup"].isNullOrEmpty()&&renderEntity.properties["laneinfoGroup"]!="null") {
+                // 解析laneinfoGroup，将数组中的属性放会properties
+                val laneinfoGroup = JSONArray(renderEntity.properties["laneinfoGroup"].toString().replace("{", "[").replace("}", "]"))
+                // 分别获取两个数组中的数据，取第一个作为主数据，另外两个作为辅助渲染数据
+                val laneInfoDirectArray = JSONArray(laneinfoGroup[0].toString())
+                val laneInfoTypeArray = JSONArray(laneinfoGroup[1].toString())
 
+                for (i in 0 until laneInfoDirectArray.length()) {
+                    // 根据后续的数据生成辅助表数据
+                    val referenceEntity = ReferenceEntity()
+                    referenceEntity.renderEntityId = renderEntity.id
+                    referenceEntity.name = "${renderEntity.name}参考方向"
+                    referenceEntity.table = renderEntity.table
+                    referenceEntity.zoomMin = renderEntity.zoomMin
+                    referenceEntity.zoomMax = renderEntity.zoomMax
+                    referenceEntity.taskId = renderEntity.taskId
+
+                    // 与原数据使用相同的geometry
+                    referenceEntity.geometry = renderEntity.geometry.toString()
+                    referenceEntity.properties["qi_table"] = renderEntity.table
+                    referenceEntity.properties["currentDirect"] = laneInfoDirectArray[i].toString().split(",").distinct().joinToString("_")
+                    referenceEntity.properties["currentType"] = laneInfoTypeArray[i].toString().split(",").distinct().joinToString("_")
+                    referenceEntity.properties["symbol"] = "assets:omdb/4601/bus/1301_"+referenceEntity.properties["currentDirect"]+".svg"
+                    Log.d("unpackingLaneInfo", referenceEntity.properties["symbol"].toString())
+                    Realm.getDefaultInstance().insert(referenceEntity)
+                }
+            }
+        }
+    }
 
     /**
      * 生成默认道路名数据
@@ -339,6 +394,9 @@ class ImportPreProcess {
         angleReference.geometry = renderEntity.geometry
         angleReference.properties["qi_table"] = renderEntity.table
         angleReference.properties["width"] = "3"
+        angleReference.zoomMin = renderEntity.zoomMin
+        angleReference.zoomMax = renderEntity.zoomMax
+        angleReference.taskId = renderEntity.taskId
         Realm.getDefaultInstance().insert(angleReference)
     }
 
@@ -356,6 +414,9 @@ class ImportPreProcess {
                 intersectionReference.renderEntityId = renderEntity.id
                 intersectionReference.name = "${renderEntity.name}参考点"
                 intersectionReference.table = renderEntity.table
+                intersectionReference.zoomMin = renderEntity.zoomMin
+                intersectionReference.zoomMax = renderEntity.zoomMax
+                intersectionReference.taskId = renderEntity.taskId
                 // 与原有方向指向平行的线
                 intersectionReference.geometry = GeometryTools.createGeometry(nodeJSONObject["geometry"].toString()).toString()
                 intersectionReference.properties["qi_table"] = renderEntity.table
