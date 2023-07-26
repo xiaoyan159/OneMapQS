@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.collect.library.map.NIMapOptions
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
@@ -167,7 +168,7 @@ class MainActivity : BaseActivity() {
         viewModel.speakMode = SpeakMode(this)
         // 在mapController初始化前获取当前OMDB图层显隐
         viewModel.refreshOMDBLayer(LayerConfigUtils.getLayerConfigList())
-        mapController.mMapView.vtmMap.viewport().maxZoomLevel = 25
+        mapController.mMapView.vtmMap.viewport().maxZoomLevel = Constant.MAX_ZOOM
         //关联生命周期
         binding.lifecycleOwner = this
         //给xml转递对象

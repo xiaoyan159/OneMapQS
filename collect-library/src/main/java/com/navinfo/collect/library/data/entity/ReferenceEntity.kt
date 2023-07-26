@@ -23,6 +23,9 @@ open class ReferenceEntity() : RealmObject() {
     lateinit var name: String //要素名
     lateinit var table: String //要素表名
     var code: Int = 0 // 要素编码
+    var zoomMin: Int = 18 //显示最小级别
+    var zoomMax: Int = 23 //显示最大级别
+    var taskId: Int = 0 //任务ID
     var geometry: String = "" // 要素渲染参考的geometry，该数据可能会在导入预处理环节被修改，原始geometry会保存在properties的geometry字段下
         get() {
             wkt = GeometryTools.createGeometry(field)

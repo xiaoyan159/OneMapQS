@@ -177,11 +177,11 @@ public final class NIMapView extends RelativeLayout {
     }
 
 
-//    public NIMapView(Context context, NIMapOptions options) {
-//        this(context, null, 0);
-//        this.options = options;
-//        initOptions();
-//    }
+/*    public NIMapView(Context context, NIMapOptions options) {
+        this(context, null, 0);
+        this.options = options;
+        initOptions();
+    }*/
 
     /**
      * 地图的单击事件监听

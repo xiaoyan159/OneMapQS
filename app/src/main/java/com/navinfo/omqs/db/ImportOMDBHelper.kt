@@ -123,7 +123,7 @@ class ImportOMDBHelper @AssistedInject constructor(
      * @param omdbZipFile omdb数据抽取生成的Zip文件
      * @param configFile 对应的配置文件
      * */
-    suspend fun importOmdbZipFile(omdbZipFile: File): Flow<String> = withContext(Dispatchers.IO) {
+    suspend fun importOmdbZipFile(omdbZipFile: File, taskId: Int): Flow<String> = withContext(Dispatchers.IO) {
         val unZipFolder = File(omdbZipFile.parentFile, "result")
         flow {
             if (unZipFolder.exists()) {
@@ -160,6 +160,9 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 map["qi_name"] = currentConfig.name
                                 map["qi_code"] =
                                     if (currentConfig.code == 0) currentConfig.code else currentEntry.key
+                                map["qi_code"] = if (currentConfig.code == 0) currentConfig.code else currentEntry.key
+                                map["qi_zoomMin"] = currentConfig.zoomMin
+                                map["qi_zoomMax"] = currentConfig.zoomMax
 
                                 // 先查询这个mesh下有没有数据，如果有则跳过即可
                                 // val meshEntity = Realm.getDefaultInstance().where(RenderEntity::class.java).equalTo("properties['mesh']", map["mesh"].toString()).findFirst()
@@ -167,6 +170,10 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 renderEntity.code = map["qi_code"].toString().toInt()
                                 renderEntity.name = map["qi_name"].toString()
                                 renderEntity.table = map["qi_table"].toString()
+                                renderEntity.taskId = taskId
+                                renderEntity.zoomMin = map["qi_zoomMin"].toString().toInt()
+                                renderEntity.zoomMax = map["qi_zoomMax"].toString().toInt()
+
                                 // 其他数据插入到Properties中
                                 renderEntity.geometry = map["geometry"].toString()
                                 for ((key, value) in map) {
