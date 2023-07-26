@@ -45,7 +45,7 @@ class TaskFragment : BaseFragment() {
                 }
             }
 
-            override fun editOnclick(position: Int, bean: HadLinkDvoBean) {
+            override fun editOnClick(position: Int, bean: HadLinkDvoBean) {
                 showLinkEditDialog(position, bean)
             }
         })

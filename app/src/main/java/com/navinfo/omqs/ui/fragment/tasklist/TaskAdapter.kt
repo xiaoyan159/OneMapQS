@@ -11,7 +11,7 @@ import com.navinfo.omqs.ui.other.BaseViewHolder
 
 interface TaskAdapterCallback {
     fun itemOnClick(bean: HadLinkDvoBean)
-    fun editOnclick(position: Int, bean: HadLinkDvoBean)
+    fun editOnClick(position: Int, bean: HadLinkDvoBean)
 }
 
 /**
@@ -54,7 +54,7 @@ class TaskAdapter(
         }
         binding.taskEdit.isSelected = bean.reason != ""
         binding.taskEdit.setOnClickListener {
-            callback.editOnclick(position, bean)
+            callback.editOnClick(position, bean)
         }
     }
 

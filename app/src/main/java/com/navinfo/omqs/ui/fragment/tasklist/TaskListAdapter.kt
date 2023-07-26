@@ -7,6 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.navinfo.collect.library.data.entity.TaskBean
@@ -19,6 +23,7 @@ import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import com.navinfo.omqs.tools.FileManager.Companion.FileUploadStatus
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
+import com.navinfo.omqs.ui.other.OnLifecycleStateListener
 import com.navinfo.omqs.ui.widget.LeftDeleteView
 
 /**
@@ -115,6 +120,7 @@ class TaskListAdapter(
     override fun onViewRecycled(holder: BaseViewHolder) {
         super.onViewRecycled(holder)
         //页面滑动时会用holder重构页面，但是对进度条的监听回调会一直返回，扰乱UI，所以当当前holder去重构的时候，移除监听
+        //这里 BaseViewHolder 的LifecycleOwner 状态很早就DESTROYED 了，这个回调比较晚，起到的作用很小
         downloadManager.removeObserver(holder.tag.toInt())
     }
 
@@ -122,7 +128,7 @@ class TaskListAdapter(
         holder: BaseViewHolder,
         @SuppressLint("RecyclerView") position: Int
     ) {
-        Log.e("jingo", "TaskListAdapter onBindViewHolder $position ")
+
         val binding: AdapterTaskListBinding =
             holder.viewBinding as AdapterTaskListBinding
         val taskBean = data[position]
@@ -141,8 +147,22 @@ class TaskListAdapter(
         //tag 方便onclick里拿到数据
         holder.tag = taskBean.id.toString()
         changeViews(binding, taskBean)
+        holder.addObserver(object : OnLifecycleStateListener {
+            override fun onState(tag: String, state: Lifecycle.State) {
+                when (state) {
+                    Lifecycle.State.STARTED ->
+                        downloadManager.observer(
+                            taskBean.id,
+                            holder,
+                            DownloadObserver(taskBean.id, holder)
+                        )
+                    Lifecycle.State.DESTROYED ->
+                        downloadManager.removeObserver(tag.toInt())
+                    else -> {}
+                }
+            }
+        })
         downloadManager.addTask(taskBean)
-        downloadManager.observer(taskBean.id, holder, DownloadObserver(taskBean.id, holder))
         uploadManager.addTask(taskBean)
         uploadManager.observer(taskBean.id, holder, UploadObserver(taskBean.id, binding))
         if (taskBean.status == FileDownloadStatus.NONE) {
@@ -195,9 +215,10 @@ class TaskListAdapter(
         binding.taskDeleteLayout.setOnClickListener {
             //重置状态
             leftDeleteView?.resetDeleteStatus()
-            if(taskBean.syncStatus != FileUploadStatus.DONE){
-                Toast.makeText(binding.taskUploadBtn.context, "数据未上传，不允许关闭！", Toast.LENGTH_SHORT).show()
-            }else{
+            if (taskBean.syncStatus != FileUploadStatus.DONE) {
+                Toast.makeText(binding.taskUploadBtn.context, "数据未上传，不允许关闭！", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
                 itemListener?.invoke(position, ItemClickStatus.DELETE_LAYOUT_CLICK, taskBean)
             }
         }

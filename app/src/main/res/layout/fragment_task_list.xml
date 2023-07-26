@@ -41,7 +41,7 @@
         app:layout_constraintRight_toRightOf="@id/task_list_search"
         app:layout_constraintTop_toTopOf="@id/task_list_search" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.yanzhenjie.recyclerview.SwipeRecyclerView
         android:id="@+id/task_list_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="0dp"

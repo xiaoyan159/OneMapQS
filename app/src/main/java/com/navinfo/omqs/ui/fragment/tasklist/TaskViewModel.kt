@@ -160,7 +160,7 @@ class TaskViewModel @Inject constructor(
         val objects =
             realm.where(TaskBean::class.java).notEqualTo("syncStatus", syncUpload).or()
                 .between("operationTime", beginNowTime, nowTime)
-                .equalTo("syncStatus", syncUpload).findAll()
+                .equalTo("syncStatus", syncUpload).findAll().sort("id")
         val taskList = realm.copyFromRealm(objects)
         for (item in taskList) {
             FileManager.checkOMDBFileInfo(item)
