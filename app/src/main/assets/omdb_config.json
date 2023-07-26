@@ -275,6 +275,16 @@
 			"table": "OMDB_AREA",
 			"code": 5002,
 			"name": "面测试"
+		},
+		"3005":{
+			"table": "OMDB_TRAFFIC_SIGN",
+			"code": 3005,
+			"name": "交通标牌"
+		},
+		"3006":{
+			"table": "OMDB_POLE",
+			"code": 3006,
+			"name": "杆状物"
 		}
 	}
 }

@@ -19,6 +19,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.oscim.core.MapElement;
+import org.oscim.core.MercatorProjection;
 import org.oscim.core.Tag;
 import org.oscim.core.Tile;
 import org.oscim.tiling.ITileDataSink;
@@ -139,8 +140,9 @@ public class OMDBDataDecoder extends TileDecoder {
     private void processCoordinateArray(Coordinate[] coordinates, boolean removeLast) {
         int length = removeLast ? coordinates.length - 1 : coordinates.length;
         for (int i = 0; i < length; i++) {
+            double z = longitudeToX(MercatorProjection.pixelXToLongitudeWithScale(MercatorProjection.metersToPixelsWithScale((float) coordinates[i].z, coordinates[i].y, mTileScale), mTileScale))* mTileScale/8;
             mMapElement.addPoint((float) ((longitudeToX(coordinates[i].x) - mTileX) * mTileScale),
-                    (float) ((latitudeToY(coordinates[i].y) - mTileY) * mTileScale), (float)coordinates[i].z);
+                    (float) ((latitudeToY(coordinates[i].y) - mTileY) * mTileScale), (float) coordinates[i].z);
         }
 
 //        int length = removeLast ? coordinates.length - 1 : coordinates.length;
