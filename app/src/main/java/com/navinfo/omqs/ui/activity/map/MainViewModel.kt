@@ -190,6 +190,8 @@ class MainViewModel @Inject constructor(
 
     private var disTime: Long = 1000
 
+    private var currentMapZoomLevel: Int = 0
+
     init {
 
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
@@ -197,8 +199,13 @@ class MainViewModel @Inject constructor(
                 Map.SCALE_EVENT, Map.MOVE_EVENT, Map.ROTATE_EVENT -> liveDataCenterPoint.value =
                     mapPosition
             }
+            if(mapController.mMapView.vtmMap.mapPosition.zoomLevel>=16){
+
+            }
+            currentMapZoomLevel = mapController.mMapView.vtmMap.mapPosition.zoomLevel
         })
 
+        currentMapZoomLevel = mapController.mMapView.vtmMap.mapPosition.zoomLevel
 
         shareUtil = ShareUtil(mapController.mMapView.context, 1)
 
