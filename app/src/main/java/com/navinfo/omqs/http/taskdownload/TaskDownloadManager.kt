@@ -83,6 +83,12 @@ class TaskDownloadManager constructor(
      * 只有等待中的任务和正在下载中的任务才可以进行暂停操作
      */
     fun pause(id: Int) {
+        if (scopeMap.containsKey(id)) {
+            val downloadScope = scopeMap[id]
+            downloadScope?.let {
+                downloadScope.pause()
+            }
+        }
         if (taskScopeMap.containsKey(id)) {
             val downloadScope = taskScopeMap[id]
             downloadScope?.let {

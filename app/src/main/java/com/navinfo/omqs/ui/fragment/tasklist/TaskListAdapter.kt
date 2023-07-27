@@ -306,7 +306,11 @@ class TaskListAdapter(
             binding.taskProgressText.text =
                 "$progress%"
             binding.taskDownloadBtn.setProgress(progress)
+        } else {
+            binding.taskDownloadBtn.setProgress(0)
+            binding.taskProgressText.text = ""
         }
+
         when (taskBean.status) {
             FileDownloadStatus.NONE -> {
                 if (binding.taskProgressText.visibility == View.VISIBLE) binding.taskProgressText.visibility =

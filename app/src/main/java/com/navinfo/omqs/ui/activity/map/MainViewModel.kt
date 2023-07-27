@@ -449,7 +449,7 @@ class MainViewModel @Inject constructor(
             )
 
             if(itemList.size == 1){
-
+                SignUtil.getSignNameText(itemList[0])
             }
         }
     }
