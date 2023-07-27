@@ -1490,12 +1490,6 @@
             <line stroke="#9c9c9c" width="1" />
         </m>
 
-        <!-- 检查点 -->
-        <m v="OMDB_CHECKPOINT">
-            <symbol src="assets:omdb/icon_1012_0.svg" symbol-height="64"
-                symbol-width="64"></symbol>
-        </m>
-
         <!--道路种别-->
         <m v="OMDB_RD_LINK_KIND">
             <outline-layer id="kind0" stroke="#44000000" width="0.1" />
@@ -1529,19 +1523,40 @@
             </m>
         </m>
 
+        <!--隧道-->
+        <m v="OMDB_TUNNEL">
+            <m k="formOfWay">
+                <line dasharray="4,4"  stroke="#4624FF" width="0.6" />
+            </m>
+            <m k="type" v="s_2_p">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2202_0.svg" symbol-height="24" symbol-width="24"></symbol>
+            </m>
+            <m k="type" v="e_2_p">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2202_1.svg" symbol-height="24" symbol-width="24"></symbol>
+            </m>
+        </m>
+
+        <!-- 检查点 -->
+        <m v="OMDB_CHECKPOINT">
+            <symbol src="assets:omdb/icon_1012_0.svg" symbol-height="56"
+                symbol-width="56"></symbol>
+        </m>
+
         <!--常规点限速-->
         <m v="OMDB_SPEEDLIMIT">
             <m k="speedFlag" v="0">
                 <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4002_0.svg" symbol-height="46"
-                    symbol-width="46"></symbol>
+                <symbol src="assets:omdb/icon_4002_0.svg" symbol-height="42"
+                    symbol-width="42"></symbol>
             </m>
             <m k="speedFlag" v="1">
                 <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4002_1.svg" symbol-height="46"
-                    symbol-width="46"></symbol>
+                <symbol src="assets:omdb/icon_4002_1.svg" symbol-height="42"
+                    symbol-width="42"></symbol>
             </m>
         </m>
 
@@ -1550,14 +1565,14 @@
             <m k="speedFlag" v="0">
                 <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4003_0.svg" symbol-height="46"
-                    symbol-width="46"></symbol>
+                <symbol src="assets:omdb/icon_4003_0.svg" symbol-height="42"
+                    symbol-width="42"></symbol>
             </m>
             <m k="speedFlag" v="1">
                 <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4003_1.svg" symbol-height="46"
-                    symbol-width="46"></symbol>
+                <symbol src="assets:omdb/icon_4003_1.svg" symbol-height="42"
+                    symbol-width="42"></symbol>
             </m>
         </m>
 
@@ -1566,14 +1581,14 @@
             <m k="speedFlag" v="0">
                 <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4004_0.svg" symbol-height="46"
-                    symbol-width="46"></symbol>
+                <symbol src="assets:omdb/icon_4004_0.svg" symbol-height="42"
+                    symbol-width="42"></symbol>
             </m>
             <m k="speedFlag" v="1">
                 <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4004_0.svg" symbol-height="46"
-                    symbol-width="46"></symbol>
+                <symbol src="assets:omdb/icon_4004_0.svg" symbol-height="42"
+                    symbol-width="42"></symbol>
             </m>
         </m>
 
@@ -1659,20 +1674,6 @@
             </m>
         </m>
 
-        <!--隧道-->
-        <m v="OMDB_TUNNEL">
-            <m k="formOfWay">
-                <line dasharray="0.2,0.2"  stroke="#d4237a" width="0.2" />
-            </m>
-            <m k="type" v="s_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_2202_0.svg" symbol-height="32" symbol-width="32"></symbol>
-            </m>
-            <m k="type" v="e_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_2202_1.svg" symbol-height="32" symbol-width="32"></symbol>
-            </m>
-        </m>
 
         <!--道路方向-->
         <m v="OMDB_LINK_DIRECT">
@@ -1689,19 +1690,19 @@
         <!--交通灯-->
         <m v="OMDB_TRAFFICLIGHT">
             <symbol repeat="false" rotate="false" src="assets:omdb/icon_4022_0.svg"
-                symbol-height="69" symbol-width="69"></symbol>
+                symbol-height="56" symbol-width="56"></symbol>
         </m>
 
         <!--普通交限-->
         <m v="OMDB_RESTRICTION">
             <m k="angle">
                 <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_4006_0.svg" symbol-height="69" symbol-width="69"></symbol>
+                    src="assets:omdb/icon_4006_0.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
-                    src="assets:omdb/icon_arrow_right.svg" symbol-height="76"
-                    symbol-width="76"></symbol>
+                    src="assets:omdb/icon_arrow_right.svg" symbol-height="64"
+                    symbol-width="64"></symbol>
             </m>
             <m k="type" v="s_2_e">
                 <line use="s2e" />
@@ -1714,7 +1715,7 @@
                 stroke="#ffffff" stroke-width="1.0"></caption>
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
-                    src="assets:omdb/icon_4010.svg" symbol-height="36" symbol-width="28"></symbol>
+                    src="assets:omdb/icon_4010.svg" symbol-height="24" symbol-width="18"></symbol>
             </m>
             <m k="type" v="s_2_e">
                 <line use="s2e" />

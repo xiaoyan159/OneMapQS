@@ -154,7 +154,7 @@
             android:id="@+id/main_activity_task_line"
             style="@style/top_right_drawer_btns_style"
             android:onClick="@{()->mainActivity.onClickTaskLink()}"
-            android:src="@drawable/icon_calc_disance" />
+            android:src="@drawable/icon_add_road" />
 
         <ImageButton
             android:id="@+id/main_activity_menu"

@@ -1,5 +1,6 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
@@ -37,6 +38,11 @@ class TaskAdapter(
         val binding: AdapterTaskBinding =
             holder.viewBinding as AdapterTaskBinding
         val bean = data[position]
+        if(bean.linkStatus==1){
+            binding.taskHead.background = binding.root.context.getDrawable(R.drawable.selector_task_head)
+        }else{
+            binding.taskHead.background = binding.root.context.getDrawable(R.drawable.selector_task_head_add_link)
+        }
         binding.taskLinkPid.text = "PID:${bean.linkPid}"
         binding.taskMesh.text = "mesh:${bean.mesh}"
         binding.root.isSelected = selectPosition == position
