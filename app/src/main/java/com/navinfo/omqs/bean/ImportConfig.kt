@@ -1,5 +1,6 @@
 package com.navinfo.omqs.bean
 
+import com.google.gson.annotations.Expose
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.omqs.db.ImportPreProcess
 import kotlin.reflect.KFunction
@@ -8,8 +9,11 @@ import kotlin.reflect.full.declaredMemberFunctions
 
 
 class ImportConfig {
+    @Expose
     var tableMap: MutableMap<String, TableInfo> = mutableMapOf()
+    @Expose
     val tableGroupName: String = "OMDB数据"
+    @Expose
     var checked : Boolean = true
     val preProcess: ImportPreProcess = ImportPreProcess()
 

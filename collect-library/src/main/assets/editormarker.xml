@@ -111,6 +111,8 @@
     <!-- src="assets:textures/water.png" -->
     <style-area fade="-1" fill="#99badf" id="water" />
 
+    <style-area fill="#3742fa" id="sign-bg" />
+
     <!--###### LINE styles ######-->
 
     <!-- base style for fixed width lines -->
@@ -2134,15 +2136,18 @@
         </m>
 
         <m v="OMDB_POLE">
-            <line stroke="#0000ff" width="2" cap="butt"></line>
+            <line stroke="#b2bec3" width="2" cap="butt"></line>
         </m>
 
         <m v="OMDB_TRAFFIC_SIGN">
-            <area use="water" repeat="false" stroke="#ff0000" stroke-width="2"></area>
+            <area use="sign-bg" repeat="false" stroke="#ff0000" stroke-width="2"></area>
+            <m k="type" v="angle">
+                <line stroke="#00ff00" width="0.1"></line>
+            </m>
         </m>
 
         <m v="OMDB_AREA">
-            <area use="water" repeat="true" src="assets:omdb/area_test.jpg" stroke="#ff0000" stroke-width="2"></area>
+            <area use="sign-bg" repeat="true" src="assets:omdb/area_test.jpg" stroke="#ff0000" stroke-width="2"></area>
         </m>
     </m>
 </rendertheme>

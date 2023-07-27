@@ -10,7 +10,9 @@ import org.json.JSONObject
 import org.locationtech.jts.algorithm.Angle
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.io.WKTWriter
 import org.oscim.core.GeoPoint
+import kotlin.math.min
 
 
 class ImportPreProcess {
@@ -208,7 +210,7 @@ class ImportPreProcess {
     /**
      * 生成与对应方向相同的方向线，用以绘制方向箭头
      * */
-    fun generateDirectReferenceLine(renderEntity: RenderEntity, direction: String = "") {
+    fun generateDirectReferenceLine(renderEntity: RenderEntity, direction: String = "", distance: String = "") {
         // 根据数据或angle计算方向对应的角度和偏移量
         val geometry = renderEntity.wkt
         var isReverse = false // 是否为逆向
@@ -219,13 +221,11 @@ class ImportPreProcess {
             }
         }
         var radian = 0.0 // geometry的角度，如果是点，获取angle，如果是线，获取最后两个点的方向
-        var point = Coordinate(geometry?.coordinate)
+        var pointStartArray = mutableListOf<Coordinate>()
         if (Geometry.TYPENAME_POINT == geometry?.geometryType) {
-            point = Coordinate(geometry?.coordinate)
+            val point = Coordinate(geometry?.coordinate)
+            pointStartArray.add(point)
             var angle = if(renderEntity?.properties?.get("angle") == null) 0.0 else renderEntity?.properties?.get("angle")?.toDouble()!!
-//            if (isReverse) {
-//                angle += 180
-//            }
             // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
             angle=(450-angle)%360
             radian = Math.toRadians(angle)
@@ -238,27 +238,48 @@ class ImportPreProcess {
             val p2: Coordinate = coordinates.get(coordinates.size - 1)
             // 计算线段的方向
             radian = Angle.angle(p1, p2)
-            point = p1
+            pointStartArray.add(p1)
+        } else if (Geometry.TYPENAME_POLYGON == geometry?.geometryType) {
+            // 记录下面数据的每一个点位
+            pointStartArray.addAll(geometry.coordinates)
+            // 获取当前的面数据对应的方向信息
+            var angle = if(renderEntity?.properties?.get("angle") == null) {
+                if (renderEntity?.properties?.get("heading") == null) {
+                    0.0
+                } else {
+                    renderEntity?.properties?.get("heading")?.toDouble()!!
+                }
+            } else renderEntity?.properties?.get("angle")?.toDouble()!!
+
+            angle=(450-angle)%360
+            radian = Math.toRadians(angle)
         }
 
         // 计算偏移距离
-        val dx: Double = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.cos(radian)
-        val dy: Double = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.sin(radian)
+        var dx: Double = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.cos(radian)
+        var dy: Double = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.sin(radian)
+        if (distance.isNotEmpty()) {
+            dx = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.cos(radian)
+            dy = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.sin(radian)
+        }
 
-        val coorEnd = Coordinate(point.getX() + dx, point.getY() + dy)
+        for (pointStart in pointStartArray) {
+            val coorEnd = Coordinate(pointStart.getX() + dx, pointStart.getY() + dy, pointStart.z)
 
-        val angleReference = ReferenceEntity()
-        angleReference.renderEntityId = renderEntity.id
-        angleReference.name = "${renderEntity.name}参考方向"
-        angleReference.table = renderEntity.table
-        angleReference.zoomMin = renderEntity.zoomMin
-        angleReference.zoomMax = renderEntity.zoomMax
-        angleReference.taskId = renderEntity.taskId
-        // 与原有方向指向平行的线
-        angleReference.geometry = GeometryTools.createLineString(arrayOf(point, coorEnd)).toString()
-        angleReference.properties["qi_table"] = renderEntity.table
-        angleReference.properties["type"] = "angle"
-        Realm.getDefaultInstance().insert(angleReference)
+            val angleReference = ReferenceEntity()
+            angleReference.renderEntityId = renderEntity.id
+            angleReference.name = "${renderEntity.name}参考方向"
+            angleReference.table = renderEntity.table
+            angleReference.zoomMin = renderEntity.zoomMin
+            angleReference.zoomMax = renderEntity.zoomMax
+            angleReference.taskId = renderEntity.taskId
+            // 与原有方向指向平行的线
+            angleReference.geometry = WKTWriter(3).write(GeometryTools.createLineString(arrayOf(pointStart, coorEnd)))
+            angleReference.properties["qi_table"] = renderEntity.table
+            angleReference.properties["type"] = "angle"
+            Realm.getDefaultInstance().insert(angleReference)
+        }
+
     }
 
     fun addAngleFromGeometry(renderEntity: RenderEntity): String {
@@ -426,6 +447,62 @@ class ImportPreProcess {
                 intersectionReference.properties["type"] = "node"
                 Realm.getDefaultInstance().insert(intersectionReference)
             }
+        }
+    }
+
+    /**
+     * 处理杆状物的高程数据
+     * */
+    fun normalizationPoleHeight(renderEntity: RenderEntity) {
+        // 获取杆状物的高程数据
+        val geometry = renderEntity.wkt
+        if (geometry!=null) {
+            var minHeight=Double.MAX_VALUE
+            var maxHeight=Double.MIN_VALUE
+            for (coordinate in geometry.coordinates) {
+                if (coordinate.z<minHeight) {
+                    minHeight = coordinate.z
+                }
+                if (coordinate.z>maxHeight) {
+                    maxHeight = coordinate.z
+                }
+            }
+            for (coordinate in geometry.coordinates) {
+                if (coordinate.z == minHeight) {
+                    coordinate.z = 0.0
+                }
+                if (coordinate.z == maxHeight) {
+                    coordinate.z = 40.0
+                }
+            }
+            renderEntity.geometry = WKTWriter(3).write(GeometryTools.createLineString(geometry.coordinates))
+        }
+    }
+
+    /**
+     * 处理交通标牌的高程数据
+     * */
+    fun normalizationTrafficSignHeight(renderEntity: RenderEntity) {
+        // 获取交通标牌的高程数据
+        val geometry = renderEntity.wkt
+        if (geometry!=null) {
+            // 获取所有的高程信息，计算高程的中位数，方便对高程做定制化处理
+            var midHeight=0.0
+            var countHeight = 0.0
+            for (coordinate in geometry.coordinates) {
+                countHeight+=coordinate.z
+            }
+            midHeight = countHeight/geometry.coordinates.size
+
+            // 对高程数据做特殊处理
+            for (coordinate in geometry.coordinates) {
+                if (coordinate.z>=midHeight) {
+                    coordinate.z = 40.0
+                } else {
+                    coordinate.z = 30.0
+                }
+            }
+            renderEntity.geometry = WKTWriter(3).write(GeometryTools.getPolygonGeometry(geometry.coordinates))
         }
     }
 }
