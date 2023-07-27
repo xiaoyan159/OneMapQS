@@ -79,7 +79,6 @@ class OfflineMapDownloadManager(
             }
             launchNext(id)
         }
-
     }
 
     /**

@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.AdapterOfflineMapCityBinding
@@ -14,6 +15,7 @@ import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
+import com.navinfo.omqs.ui.other.OnLifecycleStateListener
 import javax.inject.Inject
 
 /**
@@ -68,7 +70,26 @@ class OfflineMapCityListAdapter(
 
         changeViews(binding, cityBean)
         downloadManager.addTask(cityBean)
-        downloadManager.observer(cityBean.id, holder, DownloadObserver(cityBean.id, holder))
+
+        holder.addObserver(object : OnLifecycleStateListener {
+            override fun onState(tag: String, state: Lifecycle.State) {
+                when (state) {
+                    Lifecycle.State.STARTED -> {
+                        downloadManager.observer(
+                            cityBean.id,
+                            holder,
+                            DownloadObserver(cityBean.id, holder)
+                        )
+                    }
+                    Lifecycle.State.DESTROYED -> {
+                        downloadManager.removeObserver(cityBean.id)
+                    }
+                    else -> {}
+                }
+            }
+        })
+
+
         binding.offlineMapDownloadBtn.tag = position
         binding.offlineMapDownloadBtn.setOnClickListener(downloadBtnClick)
         binding.offlineMapCityName.text = cityBean.name

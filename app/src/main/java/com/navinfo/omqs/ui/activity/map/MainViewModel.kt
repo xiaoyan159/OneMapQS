@@ -174,7 +174,7 @@ class MainViewModel @Inject constructor(
      */
     private var bSelectPauseTrace = false
 
-    private var linkIdCache = ""
+    var linkIdCache = ""
 
     private var lastNiLocaion: NiLocation? = null
 

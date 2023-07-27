@@ -248,10 +248,6 @@ class TaskDownloadScope(
 ////            null
 ////        }
         if (lifecycleOwner != null) {
-            Log.e(
-                "jingo",
-                "移除的上一个监听者 ${lifecycleOwner.hashCode()} ${(lifecycleOwner as BaseViewHolder).tag}"
-            )
             downloadData.removeObservers(lifecycleOwner!!)
         }
     }
