@@ -5,42 +5,42 @@
 			"code": 1012,
 			"name": "检查点",
 			"zoomMin": 16,
-			"zoomMax": 19
+			"zoomMax": 21
 		},
 		"2001": {
 			"table": "OMDB_RD_LINK",
 			"code": 2001,
 			"name": "道路线",
 			"zoomMin": 16,
-			"zoomMax": 17
+			"zoomMax": 21
 		},
 		"2002": {
 			"table": "OMDB_RD_LINK_FUNCTION_CLASS",
 			"code": 2002,
 			"name": "道路功能等级",
 			"zoomMin": 16,
-			"zoomMax": 17
+			"zoomMax": 21
 		},
 		"2008": {
 			"table": "OMDB_RD_LINK_KIND",
 			"code": 2008,
 			"name": "道路种别",
 			"zoomMin": 16,
-			"zoomMax": 17
+			"zoomMax": 21
 		},
 		"2010": {
 			"table": "OMDB_LINK_DIRECT",
 			"code": 2010,
 			"name": "道路方向",
 			"zoomMin": 16,
-			"zoomMax": 17
+			"zoomMax": 21
 		},
 		"2011": {
 			"table": "OMDB_LINK_NAME",
 			"code": 2011,
 			"name": "道路名",
 			"zoomMin": 16,
-			"zoomMax": 17,
+			"zoomMax": 21,
 			"transformer": [
 				{
 					"k": "geometry",
@@ -70,21 +70,21 @@
 			"code": 2019,
 			"name": "常规线限速",
 			"zoomMin": 16,
-			"zoomMax": 17
+			"zoomMax": 21
 		},
 		"2020": {
 			"table": "OMDB_LINK_SPEEDLIMIT_COND",
 			"code": 2020,
 			"name": "条件线限速",
 			"zoomMin": 16,
-			"zoomMax": 17
+			"zoomMax": 21
 		},
 		"2021": {
 			"table": "OMDB_LINK_SPEEDLIMIT_VAR",
 			"code": 2021,
 			"name": "可变线限速",
 			"zoomMin": 16,
-			"zoomMax": 17
+			"zoomMax": 21
 		},
 		"2022": {
 			"table": "OMDB_CON_ACCESS",
@@ -138,7 +138,7 @@
             "code": 4001,
             "name": "路口",
 			"zoomMin": 16,
-			"zoomMax": 17,
+			"zoomMax": 21,
 			"transformer": [
 				{
 					"k": "geometry",
@@ -297,7 +297,7 @@
 			"code": 4601,
 			"name": "车信",
 			"zoomMin": 16,
-			"zoomMax": 17,
+			"zoomMax": 21,
 			"transformer": [
 				{
 					"k": "geometry",

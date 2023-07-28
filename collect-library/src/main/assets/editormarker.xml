@@ -1523,158 +1523,6 @@
             </m>
         </m>
 
-        <!--隧道-->
-        <m v="OMDB_TUNNEL">
-            <m k="formOfWay">
-                <line dasharray="4,4"  stroke="#4624FF" width="0.6" />
-            </m>
-            <m k="type" v="s_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_2202_0.svg" symbol-height="24" symbol-width="24"></symbol>
-            </m>
-            <m k="type" v="e_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_2202_1.svg" symbol-height="24" symbol-width="24"></symbol>
-            </m>
-        </m>
-
-        <!-- 检查点 -->
-        <m v="OMDB_CHECKPOINT">
-            <symbol src="assets:omdb/icon_1012_0.svg" symbol-height="56"
-                symbol-width="56"></symbol>
-        </m>
-
-        <!--常规点限速-->
-        <m v="OMDB_SPEEDLIMIT">
-            <m k="speedFlag" v="0">
-                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
-                    stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4002_0.svg" symbol-height="42"
-                    symbol-width="42"></symbol>
-            </m>
-            <m k="speedFlag" v="1">
-                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
-                    stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4002_1.svg" symbol-height="42"
-                    symbol-width="42"></symbol>
-            </m>
-        </m>
-
-        <!--条件点限速-->
-        <m v="OMDB_SPEEDLIMIT_COND">
-            <m k="speedFlag" v="0">
-                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
-                    stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4003_0.svg" symbol-height="42"
-                    symbol-width="42"></symbol>
-            </m>
-            <m k="speedFlag" v="1">
-                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
-                    stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4003_1.svg" symbol-height="42"
-                    symbol-width="42"></symbol>
-            </m>
-        </m>
-
-        <!--可变点限速-->
-        <m v="OMDB_SPEEDLIMIT_VAR" >
-            <m k="speedFlag" v="0">
-                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
-                    stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4004_0.svg" symbol-height="42"
-                    symbol-width="42"></symbol>
-            </m>
-            <m k="speedFlag" v="1">
-                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
-                    stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4004_0.svg" symbol-height="42"
-                    symbol-width="42"></symbol>
-            </m>
-        </m>
-
-        <!--车道中心线-->
-        <m v="OMDB_LANE_LINK_LG">
-            <m k="width" v="~">
-                <line stroke="#7A88A0" width="5" />
-            </m>
-        </m>0
-
-        <!-- 道路边界类型 -->
-        <m v="OMDB_RDBOUND_BOUNDARYTYPE">
-            <outline-layer id="boundaryType" stroke="#8e44ad" width="0.1" />
-            <m k="boundaryType" v="0|2|3|4|5|6|7|8|9">
-                <line stroke="#ffffff" use="boundaryType" width="0.1"/>
-            </m>
-            <m k="boundaryType" v="1">
-                <!--无标线无可区分边界-->
-                <line dasharray="12,6" repeat-start="0" stroke="#ffffff" width="0.2"/>
-            </m>
-        </m>
-
-        <!-- 车道边界类型 -->
-        <m v="OMDB_LANE_MARK_BOUNDARYTYPE">
-            <outline-layer id="boundary" stroke="#ffffff" width="0.1" />
-            <m k="boundaryType" v="2">
-                <!--标线-->
-                <m k="markType" v="0|1|4|5|6|7|8">
-                    <!--其他|实线-->
-                    <m k="markColor" v="1">
-                        <line stroke="#ffffff" use="boundaryType" />
-                    </m>
-                    <m k="markColor" v="2">
-                        <line stroke="#eccc68" use="boundaryType" />
-                    </m>
-
-                    <m k="markColor" v="6">
-                        <line stroke="#0000ff" use="boundaryType" />
-                    </m>
-
-                    <m k="markColor" v="7">
-                        <line stroke="#00ff00" use="boundaryType" />
-                    </m>
-
-                    <m k="markColor" v="0|9">
-                        <line stroke="#8e44ad" use="boundaryType" />
-                    </m>
-                </m>
-                <m k="markType" v="2|3">
-                    <!--其他|实线-->
-                    <m v="0|1|2|3|4|5|6|7|8">
-
-                        <!--其他|实线-->
-                        <m k="markColor" v="1">
-                            <line dasharray="12,6" repeat-start="0" stroke="#ffffff" width="0.1"/>
-                        </m>
-                        <m k="markColor" v="2">
-                            <line dasharray="12,6" repeat-start="0" stroke="#eccc68" width="0.1"/>
-                        </m>
-
-                        <m k="markColor" v="6">
-                            <line dasharray="12,6" repeat-start="0" stroke="#0000ff" width="0.1"/>
-                        </m>
-
-                        <m k="markColor" v="7">
-                            <line dasharray="12,6" repeat-start="0" stroke="#00ff00" width="0.1"/>
-                        </m>
-
-                        <m k="markColor" v="0|9">
-                            <line dasharray="12,6" repeat-start="0" stroke="#8e44ad" width="0.1"/>
-                        </m>
-
-                    </m>
-                </m>
-            </m>
-
-            <m k="boundaryType" v="0|3|4|5|6|7|8|9">
-                <line stroke="#ffffff" use="boundaryType" />
-            </m>
-            <!--只区分虚线与实线-->
-            <m k="boundaryType" v="1">
-                <line dasharray="12,6" repeat-start="0" stroke="#ffffff" width="0.1"/>
-            </m>
-        </m>
-
-
         <!--道路方向-->
         <m v="OMDB_LINK_DIRECT">
             <m k="direct">
@@ -1684,51 +1532,6 @@
                 <m v="3">
                     <lineSymbol src="assets:omdb/oneway_left.svg"></lineSymbol>
                 </m>
-            </m>
-        </m>
-
-        <!--交通灯-->
-        <m v="OMDB_TRAFFICLIGHT">
-            <symbol repeat="false" rotate="false" src="assets:omdb/icon_4022_0.svg"
-                symbol-height="56" symbol-width="56"></symbol>
-        </m>
-
-        <!--普通交限-->
-        <m v="OMDB_RESTRICTION">
-            <m k="angle">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_4006_0.svg" symbol-height="56" symbol-width="56"></symbol>
-            </m>
-            <m k="type" v="angle">
-                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
-                    src="assets:omdb/icon_arrow_right.svg" symbol-height="64"
-                    symbol-width="64"></symbol>
-            </m>
-            <m k="type" v="s_2_e">
-                <line use="s2e" />
-            </m>
-        </m>
-
-        <!--电子眼-->
-        <m v="OMDB_ELECTRONICEYE">
-            <caption dy="-30" fill="#000000" k="name" priority="0" size="14"
-                stroke="#ffffff" stroke-width="1.0"></caption>
-            <m k="type" v="angle">
-                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
-                    src="assets:omdb/icon_4010.svg" symbol-height="24" symbol-width="18"></symbol>
-            </m>
-            <m k="type" v="s_2_e">
-                <line use="s2e" />
-            </m>
-        </m>
-
-        <!-- 路口 -->
-        <m v="OMDB_INTERSECTION">
-            <m k="type" v="node">
-                <symbol src="assets:symbols/dot_blue_dark.svg"></symbol>
-            </m>
-            <m k="intersectionPid">
-                <symbol src="assets:symbols/dot_magenta.svg"></symbol>
             </m>
         </m>
 
@@ -2138,5 +1941,204 @@
                 </m>
             </m>
         </m>
+
+        <!-- 路口 -->
+        <m v="OMDB_INTERSECTION">
+            <m k="type" v="node">
+                <symbol src="assets:symbols/dot_blue_dark.svg"></symbol>
+            </m>
+            <m k="intersectionPid">
+                <symbol src="assets:symbols/dot_magenta.svg"></symbol>
+            </m>
+        </m>
+
+        <!--车道中心线-->
+        <m v="OMDB_LANE_LINK_LG">
+            <m k="width" v="~">
+                <line stroke="#7A88A0" width="5" />
+            </m>
+        </m>
+
+        <!--隧道-->
+        <m v="OMDB_TUNNEL">
+            <m k="formOfWay">
+                <line dasharray="4,4"  stroke="#4624FF" width="0.6" />
+            </m>
+            <m k="type" v="s_2_p">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2202_0.svg" symbol-height="24" symbol-width="24"></symbol>
+            </m>
+            <m k="type" v="e_2_p">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2202_1.svg" symbol-height="24" symbol-width="24"></symbol>
+            </m>
+        </m>
+
+        <!-- 检查点 -->
+        <m v="OMDB_CHECKPOINT">
+            <symbol src="assets:omdb/icon_1012_0.svg" symbol-height="56"
+                symbol-width="56"></symbol>
+        </m>
+
+
+        <!-- 道路边界类型 -->
+        <m v="OMDB_RDBOUND_BOUNDARYTYPE">
+            <outline-layer id="boundaryType" stroke="#8e44ad" width="0.1" />
+            <m k="boundaryType" v="0|2|3|4|5|6|7|8|9">
+                <line stroke="#ffffff" use="boundaryType" width="0.1"/>
+            </m>
+            <m k="boundaryType" v="1">
+                <!--无标线无可区分边界-->
+                <line dasharray="12,6" repeat-start="0" stroke="#ffffff" width="0.2"/>
+            </m>
+        </m>
+
+        <!-- 车道边界类型 -->
+        <m v="OMDB_LANE_MARK_BOUNDARYTYPE">
+            <outline-layer id="boundary" stroke="#ffffff" width="0.1" />
+            <m k="boundaryType" v="2">
+                <!--标线-->
+                <m k="markType" v="0|1|4|5|6|7|8">
+                    <!--其他|实线-->
+                    <m k="markColor" v="1">
+                        <line stroke="#ffffff" use="boundaryType" />
+                    </m>
+                    <m k="markColor" v="2">
+                        <line stroke="#eccc68" use="boundaryType" />
+                    </m>
+
+                    <m k="markColor" v="6">
+                        <line stroke="#0000ff" use="boundaryType" />
+                    </m>
+
+                    <m k="markColor" v="7">
+                        <line stroke="#00ff00" use="boundaryType" />
+                    </m>
+
+                    <m k="markColor" v="0|9">
+                        <line stroke="#8e44ad" use="boundaryType" />
+                    </m>
+                </m>
+                <m k="markType" v="2|3">
+                    <!--其他|实线-->
+                    <m v="0|1|2|3|4|5|6|7|8">
+
+                        <!--其他|实线-->
+                        <m k="markColor" v="1">
+                            <line dasharray="12,6" repeat-start="0" stroke="#ffffff" width="0.1"/>
+                        </m>
+                        <m k="markColor" v="2">
+                            <line dasharray="12,6" repeat-start="0" stroke="#eccc68" width="0.1"/>
+                        </m>
+
+                        <m k="markColor" v="6">
+                            <line dasharray="12,6" repeat-start="0" stroke="#0000ff" width="0.1"/>
+                        </m>
+
+                        <m k="markColor" v="7">
+                            <line dasharray="12,6" repeat-start="0" stroke="#00ff00" width="0.1"/>
+                        </m>
+
+                        <m k="markColor" v="0|9">
+                            <line dasharray="12,6" repeat-start="0" stroke="#8e44ad" width="0.1"/>
+                        </m>
+
+                    </m>
+                </m>
+            </m>
+
+            <m k="boundaryType" v="0|3|4|5|6|7|8|9">
+                <line stroke="#ffffff" use="boundaryType" />
+            </m>
+            <!--只区分虚线与实线-->
+            <m k="boundaryType" v="1">
+                <line dasharray="12,6" repeat-start="0" stroke="#ffffff" width="0.1"/>
+            </m>
+        </m>
+
+        <!--常规点限速-->
+        <m v="OMDB_SPEEDLIMIT">
+            <m k="speedFlag" v="0">
+                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
+                <symbol src="assets:omdb/icon_4002_0.svg" symbol-height="42"
+                    symbol-width="42"></symbol>
+            </m>
+            <m k="speedFlag" v="1">
+                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
+                <symbol src="assets:omdb/icon_4002_1.svg" symbol-height="42"
+                    symbol-width="42"></symbol>
+            </m>
+        </m>
+
+        <!--条件点限速-->
+        <m v="OMDB_SPEEDLIMIT_COND">
+            <m k="speedFlag" v="0">
+                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
+                <symbol src="assets:omdb/icon_4003_0.svg" symbol-height="42"
+                    symbol-width="42"></symbol>
+            </m>
+            <m k="speedFlag" v="1">
+                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
+                <symbol src="assets:omdb/icon_4003_1.svg" symbol-height="42"
+                    symbol-width="42"></symbol>
+            </m>
+        </m>
+
+        <!--可变点限速-->
+        <m v="OMDB_SPEEDLIMIT_VAR" >
+            <m k="speedFlag" v="0">
+                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
+                <symbol src="assets:omdb/icon_4004_0.svg" symbol-height="42"
+                    symbol-width="42"></symbol>
+            </m>
+            <m k="speedFlag" v="1">
+                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
+                    stroke-width="1.0"></caption>
+                <symbol src="assets:omdb/icon_4004_0.svg" symbol-height="42"
+                    symbol-width="42"></symbol>
+            </m>
+        </m>
+
+
+        <!--交通灯-->
+        <m v="OMDB_TRAFFICLIGHT">
+            <symbol repeat="false" rotate="false" src="assets:omdb/icon_4022_0.svg"
+                symbol-height="56" symbol-width="56"></symbol>
+        </m>
+
+        <!--普通交限-->
+        <m v="OMDB_RESTRICTION">
+            <m k="angle">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_4006_0.svg" symbol-height="56" symbol-width="56"></symbol>
+            </m>
+            <m k="type" v="angle">
+                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
+                    src="assets:omdb/icon_arrow_right.svg" symbol-height="64"
+                    symbol-width="64"></symbol>
+            </m>
+            <m k="type" v="s_2_e">
+                <line use="s2e" />
+            </m>
+        </m>
+
+        <!--电子眼-->
+        <m v="OMDB_ELECTRONICEYE">
+            <caption dy="-30" fill="#000000" k="name" priority="0" size="14"
+                stroke="#ffffff" stroke-width="1.0"></caption>
+            <m k="type" v="angle">
+                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
+                    src="assets:omdb/icon_4010.svg" symbol-height="24" symbol-width="18"></symbol>
+            </m>
+            <m k="type" v="s_2_e">
+                <line use="s2e" />
+            </m>
+        </m>
+
     </m>
 </rendertheme>
