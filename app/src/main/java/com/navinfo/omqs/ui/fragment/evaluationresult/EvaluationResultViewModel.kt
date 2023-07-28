@@ -652,14 +652,19 @@ class EvaluationResultViewModel @Inject constructor(
      * 监听任务选择变化
      */
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        if (key == Constant.SELECT_TASK_ID && oldBean == null) {
-            viewModelScope.launch(Dispatchers.IO) {
-                val taskId = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
-                val realm = Realm.getDefaultInstance()
-                val objects = realm.where(TaskBean::class.java).equalTo("id", taskId).findFirst()
-                if (objects != null) {
-                    liveDataTaskBean.postValue(realm.copyFromRealm(objects))
+        if (key == Constant.SELECT_TASK_ID) {
+            if (oldBean == null) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val taskId = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
+                    val realm = Realm.getDefaultInstance()
+                    val objects =
+                        realm.where(TaskBean::class.java).equalTo("id", taskId).findFirst()
+                    if (objects != null) {
+                        liveDataTaskBean.postValue(realm.copyFromRealm(objects))
+                    }
                 }
+            } else {
+                liveDataFinish.postValue(true)
             }
         }
     }
