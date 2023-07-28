@@ -174,7 +174,7 @@ class MainViewModel @Inject constructor(
      */
     private var bSelectPauseTrace = false
 
-    private var linkIdCache = ""
+    var linkIdCache = ""
 
     private var lastNiLocaion: NiLocation? = null
 
@@ -456,7 +456,7 @@ class MainViewModel @Inject constructor(
             )
 
             if(itemList.size == 1){
-
+                SignUtil.getSignNameText(itemList[0])
             }
         }
     }

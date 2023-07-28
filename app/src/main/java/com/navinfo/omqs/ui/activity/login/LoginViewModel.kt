@@ -362,6 +362,7 @@ class LoginViewModel @Inject constructor(
             .directory(userFolder)
             .name("OMQS.realm")
             .encryptionKey(password)
+            .allowQueriesOnUiThread(true)
 //            .modules(Realm.getDefaultModule(), MyRealmModule())
             .schemaVersion(2)
             .build()

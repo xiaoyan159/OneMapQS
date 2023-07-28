@@ -51,6 +51,23 @@ class OfflineMapCityListFragment : Fragment() {
         viewModel.cityListLiveData.observe(viewLifecycleOwner) {
             adapter.refreshData(it)
         }
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+    }
+
+    override fun onPause() {
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
         viewModel.getCityList()
     }
 

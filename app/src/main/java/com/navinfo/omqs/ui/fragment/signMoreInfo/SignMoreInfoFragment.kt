@@ -5,8 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.omqs.R
+import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.databinding.FragmentSignInfoBinding
 import com.navinfo.omqs.ui.activity.map.MainViewModel
 import com.navinfo.omqs.ui.fragment.BaseFragment
@@ -53,7 +56,7 @@ class SignMoreInfoFragment : BaseFragment() {
                     adapter.refreshData(SignUtil.getRoadNameList(it))
                 }
                 //常规点限速
-                4002->{
+                4002 -> {
                     val adapter = ElectronicEyeInfoAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getSpeedLimitMoreInfoText(it))
@@ -89,6 +92,33 @@ class SignMoreInfoFragment : BaseFragment() {
             activity?.run {
                 supportFragmentManager.beginTransaction().remove(this@SignMoreInfoFragment)
                     .commit()
+            }
+        }
+        binding.signInfoTitle.setOnClickListener {
+            activity?.run {
+                val rightController = findNavController(R.id.main_activity_right_fragment)
+                rightController.currentDestination?.let {
+                    if (it.id == R.id.RightEmptyFragment) {
+                        val bundle = Bundle()
+                        val element = viewModel.liveDataSignMoreInfo.value
+                        if (element != null) {
+                            val signBean = SignBean(
+                                iconId = SignUtil.getSignIcon(element),
+                                iconText = SignUtil.getSignIconText(element),
+                                linkId = element.properties[RenderEntity.Companion.LinkTable.linkPid]
+                                    ?: "",
+                                name = SignUtil.getSignNameText(element),
+                                bottomRightText = SignUtil.getSignBottomRightText(element),
+                                renderEntity = element,
+                                isMoreInfo = SignUtil.isMoreInfo(element),
+                                index = SignUtil.getRoadInfoIndex(element)
+                            )
+                            bundle.putParcelable("SignBean", signBean)
+                            bundle.putBoolean("AutoSave", false)
+                            rightController.navigate(R.id.EvaluationResultFragment, bundle)
+                        }
+                    }
+                }
             }
         }
     }

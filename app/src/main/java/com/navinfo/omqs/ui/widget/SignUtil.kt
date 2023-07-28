@@ -80,6 +80,8 @@ class SignUtil {
                 2008 -> "种别"
                 //道路方向
                 2010 -> "方向"
+                //车道边界类型
+                2013 -> "车道边界类型"
                 //常规线限速
                 2019 -> "线限速"
                 //车道数
@@ -404,7 +406,16 @@ class SignUtil {
             return stringBuffer.toString()
         }
 
+        /**
+         * 获取车道边界线详细信息
+         */
+        fun getLaneBoundaryInfo(data:RenderEntity){
 
+        }
+
+        /**
+         * 获取道路名列表
+         */
         fun getRoadNameList(data: RenderEntity): MutableList<RoadNameBean> {
             val list = mutableListOf<RoadNameBean>()
             if (data.code == 2011) {
