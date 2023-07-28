@@ -1537,7 +1537,7 @@
 
         <!-- 道路名 -->
         <m v="OMDB_LINK_NAME">
-            <text use="road"></text>
+            <text use="road" size="16"></text>
         </m>
 
         <!-- 车信 -->
@@ -1962,7 +1962,7 @@
         <!--隧道-->
         <m v="OMDB_TUNNEL">
             <m k="formOfWay">
-                <line dasharray="4,4"  stroke="#4624FF" width="0.6" />
+                <line dasharray="4,4"  stroke="#4624FF" width="0.4" />
             </m>
             <m k="type" v="s_2_p">
                 <symbol repeat="false" repeat-start="0" rotate="false"
@@ -2129,7 +2129,7 @@
 
         <!--电子眼-->
         <m v="OMDB_ELECTRONICEYE">
-            <caption dy="-30" fill="#000000" k="name" priority="0" size="14"
+            <caption dy="-30" fill="#0000FF" k="name" priority="0" size="12"
                 stroke="#ffffff" stroke-width="1.0"></caption>
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
