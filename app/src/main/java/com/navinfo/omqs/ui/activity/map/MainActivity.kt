@@ -465,7 +465,7 @@ class MainActivity : BaseActivity() {
         if (leftFragment != null) {
             supportFragmentManager.beginTransaction().remove(leftFragment!!).commit()
             leftFragment = null
-            binding.mainActivityBottomSheetGroup.visibility = View.GONE
+            hideMainActivityBottomSheetGroup()
             binding.mainActivityLeftFragment.visibility = View.GONE
         }
 //        binding.mainActivityDrawer.open()
@@ -767,19 +767,10 @@ class MainActivity : BaseActivity() {
                 binding.mainActivityLeftFragment.visibility = View.GONE
             }
 
-            binding.mainActivityBottomSheetGroup.visibility = View.GONE
-
-            mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 5)
+            hideMainActivityBottomSheetGroup()
         } else {
-            binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
-            mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
+            showMainActivityBottomSheetGroup()
         }
-        mapController.mMapView.vtmMap.animator().animateTo(
-            GeoPoint(
-                mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
-                mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude
-            )
-        )
     }
 
     private fun voiceOnTouchStart() {
@@ -800,7 +791,7 @@ class MainActivity : BaseActivity() {
     fun onClickTaskFragment() {
         if (leftFragment !is TaskManagerFragment) {
             if (leftFragment == null) {
-                binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
+                showMainActivityBottomSheetGroup()
                 binding.mainActivityLeftFragment.visibility = View.VISIBLE
             }
             leftFragment = TaskManagerFragment {
@@ -820,7 +811,7 @@ class MainActivity : BaseActivity() {
     fun onClickResFragment() {
         if (leftFragment !is QsRecordListFragment) {
             if (leftFragment == null) {
-                binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
+                showMainActivityBottomSheetGroup()
                 binding.mainActivityLeftFragment.visibility = View.VISIBLE
             }
             leftFragment = QsRecordListFragment {
@@ -832,6 +823,28 @@ class MainActivity : BaseActivity() {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.main_activity_left_fragment, leftFragment!!).commit()
         }
+    }
+
+    private fun showMainActivityBottomSheetGroup(){
+        binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
+        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
+        mapController.mMapView.vtmMap.animator().animateTo(
+            GeoPoint(
+                mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
+                mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude
+            )
+        )
+    }
+
+    private fun hideMainActivityBottomSheetGroup(){
+        binding.mainActivityBottomSheetGroup.visibility = View.GONE
+        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 5)
+        mapController.mMapView.vtmMap.animator().animateTo(
+            GeoPoint(
+                mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
+                mapController.mMapView.vtmMap.mapPosition.geoPoint.longitude
+            )
+        )
     }
 
     /**
@@ -868,7 +881,7 @@ class MainActivity : BaseActivity() {
     fun onClickOfflineMapFragment() {
         if (leftFragment !is OfflineMapFragment) {
             if (leftFragment == null) {
-                binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
+                showMainActivityBottomSheetGroup()
                 binding.mainActivityLeftFragment.visibility = View.VISIBLE
             }
             leftFragment = OfflineMapFragment {

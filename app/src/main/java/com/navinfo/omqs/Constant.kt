@@ -67,7 +67,7 @@ class Constant {
         /**
          * 地图最多缩放级别23
          */
-        const val MAX_ZOOM = 23
+        const val MAX_ZOOM = 22
 
         /**
          * 是否自动定位
