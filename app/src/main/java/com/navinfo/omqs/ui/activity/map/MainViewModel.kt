@@ -59,6 +59,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.locationtech.jts.geom.Point
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
 import org.oscim.layers.marker.MarkerItem
@@ -173,7 +174,7 @@ class MainViewModel @Inject constructor(
      */
     private var bSelectPauseTrace = false
 
-    private var linkIdCache = ""
+    var linkIdCache = ""
 
     private var lastNiLocaion: NiLocation? = null
 
@@ -189,6 +190,8 @@ class MainViewModel @Inject constructor(
 
     private var disTime: Long = 1000
 
+    private var currentMapZoomLevel: Int = 0
+
     init {
 
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
@@ -196,8 +199,13 @@ class MainViewModel @Inject constructor(
                 Map.SCALE_EVENT, Map.MOVE_EVENT, Map.ROTATE_EVENT -> liveDataCenterPoint.value =
                     mapPosition
             }
+            if(mapController.mMapView.vtmMap.mapPosition.zoomLevel>=16){
+
+            }
+            currentMapZoomLevel = mapController.mMapView.vtmMap.mapPosition.zoomLevel
         })
 
+        currentMapZoomLevel = mapController.mMapView.vtmMap.mapPosition.zoomLevel
 
         shareUtil = ShareUtil(mapController.mMapView.context, 1)
 
@@ -215,6 +223,8 @@ class MainViewModel @Inject constructor(
                             //线选择状态
                             if (bSelectRoad) {
                                 captureLink(point)
+                            } else {
+                                captureItem(point)
                             }
                         }
                     }
@@ -369,7 +379,7 @@ class MainViewModel @Inject constructor(
                     GeometryToolsKt.getTileYByGeometry(geometry.toString(), tileY)
 
                     //遍历存储tile对应的x与y的值
-                    tileX.forEach {   x ->
+                    tileX.forEach { x ->
                         tileY.forEach { y ->
                             location.tilex = x
                             location.tiley = y
@@ -382,10 +392,11 @@ class MainViewModel @Inject constructor(
 
                     }
 
-                    location.taskId = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1).toString()
+                    location.taskId =
+                        sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1).toString()
 
                     //判断如果是连接状态并处于录像模式，标记为有效点
-                    if (shareUtil?.connectstate == true&&shareUtil?.takeCameraMode==0) {
+                    if (shareUtil?.connectstate == true && shareUtil?.takeCameraMode == 0) {
                         location.media = 1
                     }
                     var disance = 0.0
@@ -432,6 +443,23 @@ class MainViewModel @Inject constructor(
         mapController.layerManagerHandler.showNiLocationLayer()
     }
 
+    /**
+     * 捕捉要素数据
+     */
+    private suspend fun captureItem(point: GeoPoint) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val itemList = realmOperateHelper.queryElement(
+                GeometryTools.createPoint(
+                    point.longitude,
+                    point.latitude
+                )
+            )
+
+            if(itemList.size == 1){
+                SignUtil.getSignNameText(itemList[0])
+            }
+        }
+    }
 
     /**
      * 捕获道路和面板

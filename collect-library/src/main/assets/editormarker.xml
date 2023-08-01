@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rendertheme xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" map-background="#f4f4f4"
+<rendertheme xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" map-background="#bfbfbf"
     version="1" xmlns="http://opensciencemap.org/rendertheme" xsi:schemaLocation="http://opensciencemap.org/rendertheme
     https://raw.githubusercontent.com/mapsforge/vtm/master/resources/rendertheme.xsd">
 
@@ -1483,18 +1483,18 @@
 
     <m k="qi_table">
         <!-- 道路线 -->
-        <m v="OMDB_RD_LINK" zoom-max="19">
+        <m v="OMDB_RD_LINK">
             <line stroke="#9c9c9c" width="1" />
         </m>
 
         <!-- 检查点 -->
-        <m v="OMDB_CHECKPOINT" zoom-max="19">
+        <m v="OMDB_CHECKPOINT">
             <symbol src="assets:omdb/icon_1012_0.svg" symbol-height="64"
                 symbol-width="64"></symbol>
         </m>
 
         <!--道路种别-->
-        <m v="OMDB_RD_LINK_KIND" zoom-max="19">
+        <m v="OMDB_RD_LINK_KIND">
             <outline-layer id="kind0" stroke="#44000000" width="0.1" />
             <outline-layer id="kind1" stroke="#aa807040" width="0.1" />
             <m k="kind" v="1">
@@ -1527,7 +1527,7 @@
         </m>
 
         <!--常规点限速-->
-        <m v="OMDB_SPEEDLIMIT" zoom-max="19">
+        <m v="OMDB_SPEEDLIMIT">
             <m k="speedFlag" v="0">
                 <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
@@ -1559,7 +1559,7 @@
         </m>
 
         <!--可变点限速-->
-        <m v="OMDB_SPEEDLIMIT_VAR" zoom-max="19">
+        <m v="OMDB_SPEEDLIMIT_VAR" >
             <m k="speedFlag" v="0">
                 <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
@@ -1575,14 +1575,14 @@
         </m>
 
         <!--车道中心线-->
-        <m v="OMDB_LANE_LINK_LG" zoom-min="20">
+        <m v="OMDB_LANE_LINK_LG">
             <m k="width" v="~">
                 <line stroke="#7A88A0" width="5" />
             </m>
         </m>
 
         <!-- 道路边界类型 -->
-        <m v="OMDB_RDBOUND_BOUNDARYTYPE" zoom-min="20">
+        <m v="OMDB_RDBOUND_BOUNDARYTYPE">
             <outline-layer id="boundaryType" stroke="#8e44ad" width="0.1" />
             <m k="boundaryType" v="0|2|3|4|5|6|7|8|9">
                 <line stroke="#ffffff" use="boundaryType" width="0.1"/>
@@ -1594,7 +1594,7 @@
         </m>
 
         <!-- 车道边界类型 -->
-        <m v="OMDB_LANE_MARK_BOUNDARYTYPE" zoom-min="20">
+        <m v="OMDB_LANE_MARK_BOUNDARYTYPE">
             <outline-layer id="boundary" stroke="#ffffff" width="0.1" />
             <m k="boundaryType" v="2">
                 <!--标线-->
@@ -1657,7 +1657,7 @@
         </m>
 
         <!--隧道-->
-        <m v="OMDB_TUNNEL" zoom-max="19">
+        <m v="OMDB_TUNNEL">
             <m k="formOfWay">
                 <line dasharray="0.2,0.2"  stroke="#d4237a" width="0.2" />
             </m>
@@ -1684,13 +1684,13 @@
         </m>
 
         <!--交通灯-->
-        <m v="OMDB_TRAFFICLIGHT" zoom-max="19">
+        <m v="OMDB_TRAFFICLIGHT">
             <symbol repeat="false" rotate="false" src="assets:omdb/icon_4022_0.svg"
                 symbol-height="69" symbol-width="69"></symbol>
         </m>
 
         <!--普通交限-->
-        <m v="OMDB_RESTRICTION" zoom-max="19">
+        <m v="OMDB_RESTRICTION">
             <m k="angle">
                 <symbol repeat="false" repeat-start="0" rotate="false"
                     src="assets:omdb/icon_4006_0.svg" symbol-height="69" symbol-width="69"></symbol>
@@ -1706,7 +1706,7 @@
         </m>
 
         <!--电子眼-->
-        <m v="OMDB_ELECTRONICEYE" zoom-max="19">
+        <m v="OMDB_ELECTRONICEYE">
             <caption dy="-30" fill="#000000" k="name" priority="0" size="14"
                 stroke="#ffffff" stroke-width="1.0"></caption>
             <m k="type" v="angle">
@@ -1719,7 +1719,7 @@
         </m>
 
         <!-- 路口 -->
-        <m v="OMDB_INTERSECTION" zoom-max="19">
+        <m v="OMDB_INTERSECTION">
             <m k="type" v="node">
                 <symbol src="assets:symbols/dot_blue_dark.svg"></symbol>
             </m>
@@ -1734,7 +1734,7 @@
         </m>
 
         <!-- 车信 -->
-        <m v="OMDB_LANEINFO" zoom-max="19">
+        <m v="OMDB_LANEINFO" >
             <m k="currentType" v="0">
                 <m k="currentDirect" v="1">
                     <symbol repeat="false" repeat-start="0" repeat-gap="2000"

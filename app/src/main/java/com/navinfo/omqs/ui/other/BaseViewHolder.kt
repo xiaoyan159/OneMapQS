@@ -1,5 +1,6 @@
 package com.navinfo.omqs.ui.other
 
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner

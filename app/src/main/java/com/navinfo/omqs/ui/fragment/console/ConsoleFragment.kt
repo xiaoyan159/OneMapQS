@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.transition.AutoTransition
 import androidx.transition.Scene
 import androidx.transition.TransitionManager
@@ -15,11 +17,8 @@ import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentConsoleBinding
 import com.navinfo.omqs.ui.activity.map.MainActivity
 import com.navinfo.omqs.ui.fragment.BaseFragment
-import com.navinfo.omqs.ui.fragment.evaluationresult.EvaluationResultFragment
 import com.navinfo.omqs.ui.fragment.layermanager.LayerManagerFragment
-import com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapFragment
 import com.navinfo.omqs.ui.fragment.personalcenter.PersonalCenterFragment
-import com.navinfo.omqs.ui.fragment.qsrecordlist.QsRecordListFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,6 +31,8 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
     private val bTransition = AutoTransition()
     private var mFragment: Fragment? = null
     private val fragmentId = R.id.console_fragment
+
+    private val viewModel by viewModels<ConsoleViewModel>()
 
     // 创建a场景
     private val aScene by lazy {
@@ -72,6 +73,7 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
 
             override fun onTransitionEnd(transition: androidx.transition.Transition) {
                 initOnClickListener()
+                initLiveData()
             }
 
             override fun onTransitionCancel(transition: androidx.transition.Transition) {
@@ -95,6 +97,7 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
 
             override fun onTransitionEnd(transition: androidx.transition.Transition) {
                 initOnClickListener()
+                initLiveData()
             }
 
             override fun onTransitionCancel(transition: androidx.transition.Transition) {
@@ -108,8 +111,26 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
 
         })
         initOnClickListener()
+
+        initLiveData()
     }
 
+    private fun initLiveData(){
+        /**
+         * 任务数量统计
+         */
+        viewModel.liveDataTaskCount.observe(viewLifecycleOwner) {
+            binding.consoleRoot.findViewById<TextView>(R.id.console_task_count_text).text =
+                "共 ${it} 条"
+        }
+        /**
+         * 评测数据数量统计
+         */
+        viewModel.liveDataEvaluationResultCount.observe(viewLifecycleOwner) {
+            binding.consoleRoot.findViewById<TextView>(R.id.console_evaluation_count_text).text =
+                "共 ${it} 条"
+        }
+    }
 
     /**
      * 设置点击事件
@@ -193,12 +214,13 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
                 R.id.console_personal_center_bg, R.id.console_personal_center_icon_bg -> {
                     if (sceneFlag) {
                         mFragment = PersonalCenterFragment {
-                            if(it){
+                            if (it) {
                                 activity?.let { a ->
-                                    a.supportFragmentManager.beginTransaction().remove(this).commit()
+                                    a.supportFragmentManager.beginTransaction().remove(this)
+                                        .commit()
                                     (a as MainActivity).showIndoorDataLayout()
                                 }
-                            }else{
+                            } else {
                                 TransitionManager.go(aScene, aTransition)
                             }
 
@@ -208,12 +230,13 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
                     } else {
                         if (mFragment !is PersonalCenterFragment) {
                             mFragment = PersonalCenterFragment {
-                                if(it){
+                                if (it) {
                                     activity?.let { a ->
-                                        a.supportFragmentManager.beginTransaction().remove(this).commit()
+                                        a.supportFragmentManager.beginTransaction().remove(this)
+                                            .commit()
                                         (a as MainActivity).showIndoorDataLayout()
                                     }
-                                }else{
+                                } else {
                                     TransitionManager.go(aScene, aTransition)
                                 }
                             }

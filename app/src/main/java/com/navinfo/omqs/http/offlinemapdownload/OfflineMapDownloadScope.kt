@@ -34,7 +34,7 @@ class OfflineMapDownloadScope(
     /**
      * 管理观察者，同时只有一个就行了
      */
-    private val observer = Observer<Any> {}
+//    private val observer = Observer<Any> {}
 //    private var lifecycleOwner: LifecycleOwner? = null
 
     /**
@@ -58,7 +58,13 @@ class OfflineMapDownloadScope(
      */
     fun pause() {
         downloadJob?.cancel("pause")
-        change(FileDownloadStatus.PAUSE)
+        launch {
+            if (cityBean.fileSize == 0L) {
+                change(FileDownloadStatus.NONE)
+            } else {
+                change(FileDownloadStatus.PAUSE)
+            }
+        }
     }
 
     /**
@@ -99,7 +105,6 @@ class OfflineMapDownloadScope(
      * 添加下载任务观察者
      */
     fun observer(owner: LifecycleOwner, ob: Observer<OfflineMapCityBean>) {
-        removeObserver()
 //        this.lifecycleOwner = owner
         downloadData.observe(owner, ob)
     }
@@ -167,11 +172,15 @@ class OfflineMapDownloadScope(
         }
     }
 
+
     fun removeObserver() {
-        downloadData.observeForever(observer)
-//        lifecycleOwner?.let {
-        downloadData.removeObserver(observer)
-//            null
+//        downloadData.observeForever(observer)
+////        lifecycleOwner?.let {
+//        downloadData.removeObserver(observer)
+////            null
+////        }
+//        if (lifecycleOwner != null) {
+//            downloadData.removeObservers(lifecycleOwner!!)
 //        }
     }
 }

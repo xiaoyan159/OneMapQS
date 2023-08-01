@@ -444,10 +444,11 @@ class EvaluationResultViewModel @Inject constructor(
      */
 
     fun initData(id: String) {
-
-        viewModelScope.launch(Dispatchers.IO) {
+        Log.e("jingo", "捕捉到的要素 id = $id")
+        viewModelScope.launch(Dispatchers.Main) {
 
             val realm = Realm.getDefaultInstance()
+
             val objects = realm.where(QsRecordBean::class.java).equalTo("id", id).findFirst()
             Log.e("jingo", "查询数据 id= $id")
             if (objects != null) {
@@ -487,163 +488,163 @@ class EvaluationResultViewModel @Inject constructor(
                     liveDataQsRecordBean.value?.attachmentBeanList = it.attachmentBeanList
                     // 显示语音数据到界面
                     getChatMsgEntityList()
-        }
+                }
             } else {
                 liveDataToastMessage.postValue("数据读取失败")
+            }
+        }
     }
-}
-}
 
-/**
- * 查询问题类型列表
- */
+    /**
+     * 查询问题类型列表
+     */
     private suspend fun getChatMsgEntityList() {
-    val chatMsgEntityList: MutableList<ChatMsgEntity> = ArrayList()
-    liveDataQsRecordBean.value?.attachmentBeanList?.forEach {
-        //1 录音
-        if (it.type == 1) {
-            val chatMsgEntity = ChatMsgEntity()
-            chatMsgEntity.name = it.name
-            chatMsgEntity.voiceUri = Constant.USER_DATA_ATTACHEMNT_PATH
-            chatMsgEntityList.add(chatMsgEntity)
+        val chatMsgEntityList: MutableList<ChatMsgEntity> = ArrayList()
+        liveDataQsRecordBean.value?.attachmentBeanList?.forEach {
+            //1 录音
+            if (it.type == 1) {
+                val chatMsgEntity = ChatMsgEntity()
+                chatMsgEntity.name = it.name
+                chatMsgEntity.voiceUri = Constant.USER_DATA_ATTACHEMNT_PATH
+                chatMsgEntityList.add(chatMsgEntity)
+            }
         }
-    }
-    listDataChatMsgEntityList.postValue(chatMsgEntityList)
-}
-
-fun addChatMsgEntity(filePath: String) {
-
-    if (filePath.isNotEmpty()) {
-        var chatMsgEntityList: MutableList<ChatMsgEntity> = ArrayList()
-        if (listDataChatMsgEntityList.value?.isEmpty() == false) {
-            chatMsgEntityList = listDataChatMsgEntityList.value!!
-        }
-        val chatMsgEntity = ChatMsgEntity()
-        chatMsgEntity.name = filePath.replace(Constant.USER_DATA_ATTACHEMNT_PATH, "").toString()
-        chatMsgEntity.voiceUri = Constant.USER_DATA_ATTACHEMNT_PATH
-        chatMsgEntityList.add(chatMsgEntity)
-
-
-        var attachmentList: RealmList<AttachmentBean> = RealmList()
-
-        //赋值处理
-        if (liveDataQsRecordBean.value?.attachmentBeanList?.isEmpty() == false) {
-            attachmentList = liveDataQsRecordBean.value?.attachmentBeanList!!
-        }
-
-        val attachmentBean = AttachmentBean()
-        attachmentBean.name = chatMsgEntity.name!!
-        attachmentBean.type = 1
-        attachmentList.add(attachmentBean)
-        liveDataQsRecordBean.value?.attachmentBeanList = attachmentList
-
         listDataChatMsgEntityList.postValue(chatMsgEntityList)
     }
-}
 
-fun startSoundMetter(activity: Activity, v: View) {
+    fun addChatMsgEntity(filePath: String) {
 
-    if (mSpeakMode == null) {
-        mSpeakMode = SpeakMode(activity)
-    }
+        if (filePath.isNotEmpty()) {
+            var chatMsgEntityList: MutableList<ChatMsgEntity> = ArrayList()
+            if (listDataChatMsgEntityList.value?.isEmpty() == false) {
+                chatMsgEntityList = listDataChatMsgEntityList.value!!
+            }
+            val chatMsgEntity = ChatMsgEntity()
+            chatMsgEntity.name = filePath.replace(Constant.USER_DATA_ATTACHEMNT_PATH, "").toString()
+            chatMsgEntity.voiceUri = Constant.USER_DATA_ATTACHEMNT_PATH
+            chatMsgEntityList.add(chatMsgEntity)
 
-    //语音识别动画
-    if (pop == null) {
-        pop = PopupWindow()
-        pop!!.width = ViewGroup.LayoutParams.MATCH_PARENT
-        pop!!.height = ViewGroup.LayoutParams.WRAP_CONTENT
-        pop!!.setBackgroundDrawable(BitmapDrawable())
-        val view =
-            View.inflate(activity as Context, R.layout.cv_card_voice_rcd_hint_window, null)
-        pop!!.contentView = view
-        volume = view.findViewById(R.id.volume)
-    }
 
-    pop!!.update()
+            var attachmentList: RealmList<AttachmentBean> = RealmList()
 
-    Constant.IS_VIDEO_SPEED = true
-    //录音动画
-    if (pop != null) {
-        pop!!.showAtLocation(v, Gravity.CENTER, 0, 0)
-    }
-    volume!!.setBackgroundResource(R.drawable.pop_voice_img)
-    val animation = volume!!.background as AnimationDrawable
-    animation.start()
-
-    val name: String = DateTimeUtil.getTimeSSS().toString() + ".m4a"
-    if (mSoundMeter == null) {
-        mSoundMeter = SoundMeter()
-    }
-    mSoundMeter!!.setmListener(object : SoundMeter.OnSoundMeterListener {
-        @RequiresApi(Build.VERSION_CODES.Q)
-        override fun onSuccess(filePath: String?) {
-            if (!TextUtils.isEmpty(filePath) && File(filePath).exists()) {
-                if (File(filePath) == null || File(filePath).length() < 1600) {
-                    ToastUtils.showLong("语音时间太短，无效！")
-                    mSpeakMode!!.speakText("语音时间太短，无效")
-                    stopSoundMeter()
-                    return
-                }
+            //赋值处理
+            if (liveDataQsRecordBean.value?.attachmentBeanList?.isEmpty() == false) {
+                attachmentList = liveDataQsRecordBean.value?.attachmentBeanList!!
             }
 
-            mSpeakMode!!.speakText("结束录音")
+            val attachmentBean = AttachmentBean()
+            attachmentBean.name = chatMsgEntity.name!!
+            attachmentBean.type = 1
+            attachmentList.add(attachmentBean)
+            liveDataQsRecordBean.value?.attachmentBeanList = attachmentList
 
-            addChatMsgEntity(filePath!!)
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.Q)
-        override fun onfaild(message: String?) {
-            ToastUtils.showLong("录制失败！")
-            mSpeakMode!!.speakText("录制失败")
-            stopSoundMeter()
-        }
-    })
-
-    mSoundMeter!!.start(Constant.USER_DATA_ATTACHEMNT_PATH + name)
-    ToastUtils.showLong("开始录音")
-    mSpeakMode!!.speakText("开始录音")
-}
-
-//停止语音录制
-@RequiresApi(api = Build.VERSION_CODES.Q)
-fun stopSoundMeter() {
-    //先重置标识，防止按钮抬起时触发语音结束
-    Constant.IS_VIDEO_SPEED = false
-    if (mSoundMeter != null && mSoundMeter!!.isStartSound) {
-        mSoundMeter!!.stop()
-    }
-    pop?.let {
-        if (it.isShowing) {
-            it.dismiss()
+            listDataChatMsgEntityList.postValue(chatMsgEntityList)
         }
     }
-}
+
+    fun startSoundMetter(activity: Activity, v: View) {
+
+        if (mSpeakMode == null) {
+            mSpeakMode = SpeakMode(activity)
+        }
+
+        //语音识别动画
+        if (pop == null) {
+            pop = PopupWindow()
+            pop!!.width = ViewGroup.LayoutParams.MATCH_PARENT
+            pop!!.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            pop!!.setBackgroundDrawable(BitmapDrawable())
+            val view =
+                View.inflate(activity as Context, R.layout.cv_card_voice_rcd_hint_window, null)
+            pop!!.contentView = view
+            volume = view.findViewById(R.id.volume)
+        }
+
+        pop!!.update()
+
+        Constant.IS_VIDEO_SPEED = true
+        //录音动画
+        if (pop != null) {
+            pop!!.showAtLocation(v, Gravity.CENTER, 0, 0)
+        }
+        volume!!.setBackgroundResource(R.drawable.pop_voice_img)
+        val animation = volume!!.background as AnimationDrawable
+        animation.start()
+
+        val name: String = DateTimeUtil.getTimeSSS().toString() + ".m4a"
+        if (mSoundMeter == null) {
+            mSoundMeter = SoundMeter()
+        }
+        mSoundMeter!!.setmListener(object : SoundMeter.OnSoundMeterListener {
+            @RequiresApi(Build.VERSION_CODES.Q)
+            override fun onSuccess(filePath: String?) {
+                if (!TextUtils.isEmpty(filePath) && File(filePath).exists()) {
+                    if (File(filePath) == null || File(filePath).length() < 1600) {
+                        ToastUtils.showLong("语音时间太短，无效！")
+                        mSpeakMode!!.speakText("语音时间太短，无效")
+                        stopSoundMeter()
+                        return
+                    }
+                }
+
+                mSpeakMode!!.speakText("结束录音")
+
+                addChatMsgEntity(filePath!!)
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.Q)
+            override fun onfaild(message: String?) {
+                ToastUtils.showLong("录制失败！")
+                mSpeakMode!!.speakText("录制失败")
+                stopSoundMeter()
+            }
+        })
+
+        mSoundMeter!!.start(Constant.USER_DATA_ATTACHEMNT_PATH + name)
+        ToastUtils.showLong("开始录音")
+        mSpeakMode!!.speakText("开始录音")
+    }
+
+    //停止语音录制
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    fun stopSoundMeter() {
+        //先重置标识，防止按钮抬起时触发语音结束
+        Constant.IS_VIDEO_SPEED = false
+        if (mSoundMeter != null && mSoundMeter!!.isStartSound) {
+            mSoundMeter!!.stop()
+        }
+        pop?.let {
+            if (it.isShowing) {
+                it.dismiss()
+            }
+        }
+    }
 
 
-fun savePhoto(bitmap: Bitmap) {
-    viewModelScope.launch(Dispatchers.IO) {
-        // 创建一个名为 "MyApp" 的文件夹
-        val myAppDir = File(Constant.USER_DATA_ATTACHEMNT_PATH)
+    fun savePhoto(bitmap: Bitmap) {
+        viewModelScope.launch(Dispatchers.IO) {
+            // 创建一个名为 "MyApp" 的文件夹
+            val myAppDir = File(Constant.USER_DATA_ATTACHEMNT_PATH)
             if (!myAppDir.exists()) myAppDir.mkdirs() // 确保文件夹已创建
 
-        // 创建一个名为 fileName 的文件
-        val file = File(myAppDir, "${UUID.randomUUID()}.png")
-        file.createNewFile() // 创建文件
+            // 创建一个名为 fileName 的文件
+            val file = File(myAppDir, "${UUID.randomUUID()}.png")
+            file.createNewFile() // 创建文件
 
-        // 将 Bitmap 压缩为 JPEG 格式，并将其写入文件中
-        val out = FileOutputStream(file)
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
-        out.flush()
-        out.close()
-        var picList = mutableListOf<String>()
-        if (liveDataPictureList.value == null) {
-            picList.add(file.absolutePath)
-        } else {
-            picList.addAll(liveDataPictureList.value!!)
-            picList.add(file.absolutePath)
+            // 将 Bitmap 压缩为 JPEG 格式，并将其写入文件中
+            val out = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+            out.flush()
+            out.close()
+            var picList = mutableListOf<String>()
+            if (liveDataPictureList.value == null) {
+                picList.add(file.absolutePath)
+            } else {
+                picList.addAll(liveDataPictureList.value!!)
+                picList.add(file.absolutePath)
+            }
+            liveDataPictureList.postValue(picList)
         }
-        liveDataPictureList.postValue(picList)
-    }
 
     }
 
@@ -651,15 +652,20 @@ fun savePhoto(bitmap: Bitmap) {
      * 监听任务选择变化
      */
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        if (key == Constant.SELECT_TASK_ID && oldBean == null) {
-            viewModelScope.launch(Dispatchers.IO) {
-                val taskId = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
-                val realm = Realm.getDefaultInstance()
-                val objects = realm.where(TaskBean::class.java).equalTo("id", taskId).findFirst()
-                if (objects != null) {
-                    liveDataTaskBean.postValue(realm.copyFromRealm(objects))
+        if (key == Constant.SELECT_TASK_ID) {
+            if (oldBean == null) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val taskId = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
+                    val realm = Realm.getDefaultInstance()
+                    val objects =
+                        realm.where(TaskBean::class.java).equalTo("id", taskId).findFirst()
+                    if (objects != null) {
+                        liveDataTaskBean.postValue(realm.copyFromRealm(objects))
+                    }
                 }
+            } else {
+                liveDataFinish.postValue(true)
             }
         }
-}
+    }
 }

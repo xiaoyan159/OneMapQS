@@ -29,12 +29,7 @@ class OfflineMapStateListViewModel @Inject constructor(
     fun getCityList() {
         viewModelScope.launch(Dispatchers.IO) {
             val list = roomDatabase.getOfflineMapDao().getOfflineMapListWithOutNone()
-            if (cityListLiveData.value != null) {
-                if (cityListLiveData.value!!.size != list.size)
-                    cityListLiveData.postValue(list)
-            }else{
-                cityListLiveData.postValue(list)
-            }
+            cityListLiveData.postValue(list)
         }
     }
 }

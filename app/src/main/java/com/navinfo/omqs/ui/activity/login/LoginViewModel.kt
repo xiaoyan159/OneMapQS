@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.ResourceUtils
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.LoginUserBean
 import com.navinfo.omqs.bean.SysUserBean
@@ -17,6 +18,7 @@ import com.navinfo.omqs.http.DefaultResponse
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager
+import com.navinfo.omqs.util.DateTimeUtil
 import com.navinfo.omqs.util.NetUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
@@ -36,6 +38,11 @@ enum class LoginStatus {
      * 访问离线地图列表
      */
     LOGIN_STATUS_NET_OFFLINE_MAP,
+
+    /**
+     * 访问任务列表
+     */
+    LOGIN_STATUS_NET_GET_TASK_LIST,
 
     /**
      * 初始化文件夹
@@ -108,11 +115,12 @@ class LoginViewModel @Inject constructor(
         val userCodeCache = sharedPreferences?.getString("userCode", null)
         val userRealName = sharedPreferences?.getString("userRealName", null)
         //增加缓存记录，不用每次连接网络登录
-        if (userNameCache != null && passwordCache != null && userCodeCache != null&&userRealName!=null) {
+        if (userNameCache != null && passwordCache != null && userCodeCache != null && userRealName != null) {
             if (userNameCache == userName && passwordCache == password) {
                 viewModelScope.launch(Dispatchers.IO) {
-                    createUserFolder(context, userCodeCache,userRealName)
-                    loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
+                    createUserFolder(context, userCodeCache, userRealName)
+                    getOfflineCityList(context)
+//                    loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
                 }
                 return
             }
@@ -156,6 +164,14 @@ class LoginViewModel @Inject constructor(
                             } else {
                                 userCode = defaultUserResponse.obj?.userCode.toString()
                                 userRealName = defaultUserResponse.obj?.userName.toString()
+                                folderInit(
+                                    context = context,
+                                    userName = userName,
+                                    password = password,
+                                    userCode = userCode,
+                                    userRealName = userRealName
+                                )
+                                getOfflineCityList(context)
                             }
                         } else {
                             withContext(Dispatchers.Main) {
@@ -197,21 +213,13 @@ class LoginViewModel @Inject constructor(
             else -> {}
         }
 
-        //文件夹初始化
-        try {
-            loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_INIT)
-            sharedPreferences?.edit()?.putString("userName", userName)?.commit()
-            sharedPreferences?.edit()?.putString("passWord", password)?.commit()
-            sharedPreferences?.edit()?.putString("userCode", userCode)?.commit()
-            sharedPreferences?.edit()?.putString("userRealName", userRealName)?.commit()
+    }
 
-            createUserFolder(context, userCode,userRealName)
-        } catch (e: IOException) {
-            loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_FAILURE)
-        }
+    /**
+     * 获取离线地图
+     */
+    private suspend fun getOfflineCityList(context: Context) {
 
-        //假装解压文件等
-        delay(1000)
         loginStatus.postValue(LoginStatus.LOGIN_STATUS_NET_OFFLINE_MAP)
         when (val result = networkService.getOfflineMapCityList()) {
             is NetResult.Success -> {
@@ -222,6 +230,7 @@ class LoginViewModel @Inject constructor(
                     }
                     roomAppDatabase.getOfflineMapDao().insertOrUpdate(result.data)
                 }
+                getTaskList(context)
             }
 
             is NetResult.Error<*> -> {
@@ -229,6 +238,7 @@ class LoginViewModel @Inject constructor(
                     Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)
                         .show()
                 }
+                getTaskList(context)
             }
 
             is NetResult.Failure<*> -> {
@@ -236,18 +246,101 @@ class LoginViewModel @Inject constructor(
                     Toast.makeText(context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
                         .show()
                 }
+                getTaskList(context)
             }
 
             is NetResult.Loading -> {}
-            else -> {}
         }
-        loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
+
+    }
+
+    /**
+     * 获取任务列表
+     */
+    private suspend fun getTaskList(context: Context) {
+        loginStatus.postValue(LoginStatus.LOGIN_STATUS_NET_GET_TASK_LIST)
+        when (val result = networkService.getTaskList(Constant.USER_ID)) {
+            is NetResult.Success -> {
+                if (result.data != null) {
+                    val realm = Realm.getDefaultInstance()
+                    realm.executeTransaction {
+                        result.data.obj?.let { list ->
+                            for (index in list.indices) {
+                                val task = list[index]
+                                val item = realm.where(TaskBean::class.java).equalTo(
+                                    "id", task.id
+                                ).findFirst()
+                                if (item != null) {
+                                    task.fileSize = item.fileSize
+                                    task.status = item.status
+                                    task.currentSize = item.currentSize
+                                    task.hadLinkDvoList = item.hadLinkDvoList
+                                    //已上传后不在更新操作时间
+                                    if (task.syncStatus != FileManager.Companion.FileUploadStatus.DONE) {
+                                        //赋值时间，用于查询过滤
+                                        task.operationTime = DateTimeUtil.getNowDate().time
+                                    }
+                                } else {
+                                    //赋值时间，用于查询过滤
+                                    task.operationTime = DateTimeUtil.getNowDate().time
+                                }
+                                realm.copyToRealmOrUpdate(task)
+                            }
+                        }
+
+                    }
+                }
+                loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
+            }
+
+            is NetResult.Error<*> -> {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
+            }
+
+            is NetResult.Failure<*> -> {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
+            }
+
+            is NetResult.Loading -> {}
+        }
+    }
+
+    /**
+     * 初始化文件夹
+     */
+    private fun folderInit(
+        context: Context,
+        userName: String,
+        password: String,
+        userCode: String,
+        userRealName: String
+    ) {
+        //文件夹初始化
+        try {
+            loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_INIT)
+            sharedPreferences?.edit()?.putString("userName", userName)?.commit()
+            sharedPreferences?.edit()?.putString("passWord", password)?.commit()
+            sharedPreferences?.edit()?.putString("userCode", userCode)?.commit()
+            sharedPreferences?.edit()?.putString("userRealName", userRealName)?.commit()
+
+            createUserFolder(context, userCode, userRealName)
+        } catch (e: IOException) {
+            loginStatus.postValue(LoginStatus.LOGIN_STATUS_FOLDER_FAILURE)
+        }
     }
 
     /**
      * 创建用户目录
      */
-    private fun createUserFolder(context: Context, userId: String,userRealName:String) {
+    private fun createUserFolder(context: Context, userId: String, userRealName: String) {
         Constant.IS_VIDEO_SPEED = false
         Constant.USER_ID = userId
         Constant.USER_REAL_NAME = userRealName
@@ -269,6 +362,7 @@ class LoginViewModel @Inject constructor(
             .directory(userFolder)
             .name("OMQS.realm")
             .encryptionKey(password)
+            .allowQueriesOnUiThread(true)
 //            .modules(Realm.getDefaultModule(), MyRealmModule())
             .schemaVersion(2)
             .build()

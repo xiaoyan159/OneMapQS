@@ -119,8 +119,8 @@ class ImportConfig {
 class TableInfo {
     val table: String = ""
     val code: Int = 0
-    val zoomMin: Int = 18
-    val zoomMax: Int = 23
+    val zoomMin: Int = 16
+    val zoomMax: Int = 21
     val name: String = ""
     var checked : Boolean = true
     var transformer: MutableList<Transform> = mutableListOf()
