@@ -1706,7 +1706,7 @@
         </m>
 
         <!--电子眼-->
-        <m v="OMDB_ELECTRONICEYE">
+        <m v="OMDB_ELECTRONICEYE" zoom-max="18">
             <caption dy="-30" fill="#000000" k="name" priority="0" size="14"
                 stroke="#ffffff" stroke-width="1.0"></caption>
             <m k="type" v="angle">
