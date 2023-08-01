@@ -281,6 +281,9 @@ class LoginViewModel @Inject constructor(
                                         task.operationTime = DateTimeUtil.getNowDate().time
                                     }
                                 } else {
+                                    for (hadLink in task.hadLinkDvoList) {
+                                        hadLink.taskId = task.id
+                                    }
                                     //赋值时间，用于查询过滤
                                     task.operationTime = DateTimeUtil.getNowDate().time
                                 }

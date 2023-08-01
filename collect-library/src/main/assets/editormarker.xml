@@ -1486,9 +1486,9 @@
         </m>
 
         <!-- 道路线 -->
-        <m v="OMDB_RD_LINK">
+<!--        <m v="OMDB_RD_LINK">
             <line stroke="#9c9c9c" width="1" />
-        </m>
+        </m>-->
 
         <!--道路种别-->
         <m v="OMDB_RD_LINK_KIND">
@@ -1955,7 +1955,7 @@
         <!--车道中心线-->
         <m v="OMDB_LANE_LINK_LG">
             <m k="width" v="~">
-                <line stroke="#7A88A0" width="5" />
+                <line stroke="#7A88A0" width="3.8" />
             </m>
         </m>
 
