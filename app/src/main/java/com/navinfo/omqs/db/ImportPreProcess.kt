@@ -259,8 +259,8 @@ class ImportPreProcess {
         var dx: Double = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.cos(radian)
         var dy: Double = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.sin(radian)
         if (distance.isNotEmpty()) {
-            dx = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.cos(radian)
-            dy = GeometryTools.convertDistanceToDegree(defaultTranslateDistance, geometry?.coordinate?.y!!) * Math.sin(radian)
+            dx = GeometryTools.convertDistanceToDegree(distance.toDouble(), geometry?.coordinate?.y!!) * Math.cos(radian)
+            dy = GeometryTools.convertDistanceToDegree(distance.toDouble(), geometry?.coordinate?.y!!) * Math.sin(radian)
         }
 
         for (pointStart in pointStartArray) {

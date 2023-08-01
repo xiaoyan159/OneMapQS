@@ -2136,7 +2136,7 @@
         </m>
 
         <m v="OMDB_POLE">
-            <line stroke="#b2bec3" width="2" cap="butt"></line>
+            <line stroke="#000000" width="2" cap="butt"></line>
         </m>
 
         <m v="OMDB_TRAFFIC_SIGN">
