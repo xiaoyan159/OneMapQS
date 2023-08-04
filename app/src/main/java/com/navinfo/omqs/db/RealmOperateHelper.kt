@@ -121,16 +121,14 @@ class RealmOperateHelper() {
 
     suspend fun queryLink(linkPid: String): RenderEntity? {
         var link: RenderEntity? = null
-        withContext(Dispatchers.IO) {
-            val realm = Realm.getDefaultInstance()
-            val realmR = realm.where(RenderEntity::class.java)
-                .equalTo("table", "OMDB_RD_LINK")
-                .and()
-                .equalTo("properties['${LinkTable.linkPid}']", linkPid)
-                .findFirst()
-            if (realmR != null) {
-                link = realm.copyFromRealm(realmR)
-            }
+        val realm = Realm.getDefaultInstance()
+        val realmR = realm.where(RenderEntity::class.java)
+            .equalTo("table", "OMDB_RD_LINK")
+            .and()
+            .equalTo("properties['${LinkTable.linkPid}']", linkPid)
+            .findFirst()
+        if (realmR != null) {
+            link = realm.copyFromRealm(realmR)
         }
         return link
     }
@@ -150,38 +148,38 @@ class RealmOperateHelper() {
         sort: Boolean = true
     ): MutableList<RenderEntity> {
         val result = mutableListOf<RenderEntity>()
-        withContext(Dispatchers.IO) {
-            val polygon = getPolygonFromPoint(point, buffer, bufferType)
-            // 根据polygon查询相交的tile号
-            val tileXSet = mutableSetOf<Int>()
-            tileXSet.toString()
-            GeometryToolsKt.getTileXByGeometry(polygon.toString(), tileXSet)
-            val tileYSet = mutableSetOf<Int>()
-            GeometryToolsKt.getTileYByGeometry(polygon.toString(), tileYSet)
+        val polygon = getPolygonFromPoint(point, buffer, bufferType)
+        // 根据polygon查询相交的tile号
+        val tileXSet = mutableSetOf<Int>()
+        tileXSet.toString()
+        GeometryToolsKt.getTileXByGeometry(polygon.toString(), tileXSet)
+        val tileYSet = mutableSetOf<Int>()
+        GeometryToolsKt.getTileYByGeometry(polygon.toString(), tileYSet)
 
-            // 对tileXSet和tileYSet查询最大最小值
-            val xStart = tileXSet.stream().min(Comparator.naturalOrder()).orElse(null)
-            val xEnd = tileXSet.stream().max(Comparator.naturalOrder()).orElse(null)
-            val yStart = tileYSet.stream().min(Comparator.naturalOrder()).orElse(null)
-            val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
-            // 查询realm中对应tile号的数据
-            val realmList = Realm.getDefaultInstance().where(RenderEntity::class.java)
-                .notEqualTo("table", "OMDB_RD_LINK")
-                .and()
-                .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd")
-                .findAll()
-            // 将获取到的数据和查询的polygon做相交，只返回相交的数据
-            val queryResult = realmList?.stream()?.filter {
-                polygon.intersects(it.wkt)
-            }?.toList()
-            queryResult?.let {
-                result.addAll(queryResult)
-            }
+        // 对tileXSet和tileYSet查询最大最小值
+        val xStart = tileXSet.stream().min(Comparator.naturalOrder()).orElse(null)
+        val xEnd = tileXSet.stream().max(Comparator.naturalOrder()).orElse(null)
+        val yStart = tileYSet.stream().min(Comparator.naturalOrder()).orElse(null)
+        val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
+        val realm = Realm.getDefaultInstance()
+        // 查询realm中对应tile号的数据
+        val realmList = realm.where(RenderEntity::class.java)
+            .notEqualTo("table", "OMDB_RD_LINK")
+            .and()
+            .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd")
+            .findAll()
+        // 将获取到的数据和查询的polygon做相交，只返回相交的数据
+        val queryResult = realmList?.stream()?.filter {
+            polygon.intersects(it.wkt)
+        }?.toList()
+        queryResult?.let {
             if (sort) {
-                result.clear()
-                result.addAll(sortRenderEntity(point, result))
+                result.addAll(sortRenderEntity(point, realm.copyFromRealm(it)))
+            } else {
+                result.addAll(realm.copyFromRealm(it))
             }
         }
+
         return result
     }
 
@@ -213,8 +211,7 @@ class RealmOperateHelper() {
     @RequiresApi(Build.VERSION_CODES.N)
     fun sortRenderEntity(point: Point, unSortList: List<RenderEntity>): List<RenderEntity> {
         val sortList = unSortList.stream().sorted { renderEntity, renderEntity2 ->
-            val near = point.distance(renderEntity.wkt) - point.distance(renderEntity2.wkt)
-            if (near < 0) -1 else 1
+            point.distance(renderEntity.wkt).compareTo(point.distance(renderEntity2.wkt))
         }.toList()
         return sortList
     }

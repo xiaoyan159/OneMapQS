@@ -180,10 +180,10 @@ class TaskListAdapter(
             binding.taskUploadBtn.visibility = View.INVISIBLE
         }
         if (taskBean.syncStatus == FileUploadStatus.DONE) {
-            binding.taskUploadBtn.setProgress(0)
+//            binding.taskUploadBtn.setProgress(0)
             binding.taskUploadBtn.setBackgroundColor(binding.root.resources.getColor(R.color.ripple_end_color))
         } else {
-            binding.taskUploadBtn.setProgress(100)
+//            binding.taskUploadBtn.setProgress(100)
             binding.taskUploadBtn.setBackgroundColor(Color.parseColor("#888FB3"))
         }
         binding.taskDownloadBtn.tag = position
@@ -301,7 +301,7 @@ class TaskListAdapter(
             binding.taskDownloadBtn.setTextColor(Color.WHITE)
         }
 
-        if (taskBean.fileSize > 0L) {
+        if (taskBean.fileSize > 0L && taskBean.status != FileDownloadStatus.DONE) {
             val progress = (taskBean.currentSize * 100 / taskBean.fileSize).toInt()
             binding.taskProgressText.text =
                 "$progress%"
