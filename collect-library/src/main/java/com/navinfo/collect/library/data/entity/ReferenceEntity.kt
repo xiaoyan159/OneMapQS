@@ -1,6 +1,5 @@
 package com.navinfo.collect.library.data.entity
 
-import com.navinfo.collect.library.system.Constant
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import io.realm.RealmDictionary
@@ -8,9 +7,7 @@ import io.realm.RealmObject
 import io.realm.RealmSet
 import io.realm.annotations.Ignore
 import io.realm.annotations.PrimaryKey
-import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.Geometry
-import org.oscim.core.MercatorProjection
 import java.util.*
 
 /**

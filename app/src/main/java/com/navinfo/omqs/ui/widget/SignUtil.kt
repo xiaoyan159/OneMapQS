@@ -6,8 +6,10 @@ import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.RoadNameBean
 import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.ui.activity.map.LaneInfoItem
-import com.navinfo.omqs.ui.fragment.signMoreInfo.ElectronicEyeMoreInfoAdapterItem
+import com.navinfo.omqs.ui.fragment.signMoreInfo.LaneBoundaryItem
+import com.navinfo.omqs.ui.fragment.signMoreInfo.TwoItemAdapterItem
 import org.json.JSONArray
+import org.json.JSONObject
 import java.lang.reflect.Field
 
 class SignUtil {
@@ -105,6 +107,96 @@ class SignUtil {
         }
 
         /**
+         * 获取车道边界类型详细信息
+         */
+
+        fun getLaneBoundaryTypeInfo(renderEntity: RenderEntity): List<LaneBoundaryItem> {
+            val list = mutableListOf<LaneBoundaryItem>()
+            list.add(LaneBoundaryItem("车道边界线ID", "${renderEntity.properties["featurePid"]}", null))
+            val type = renderEntity.properties["boundaryType"]
+            if (type != null) {
+                val typeStr = when (type.toInt()) {
+                    0 -> "不应用"
+                    1 -> "无标线无可区分边界"
+                    2 -> "标线"
+                    3 -> "路牙"
+                    4 -> "护栏"
+                    5 -> "墙"
+                    6 -> "铺设路面边缘"
+                    7 -> "虚拟三角岛"
+                    8 -> "障碍物"
+                    9 -> "杆状障碍物"
+                    else -> ""
+                }
+                list.add(LaneBoundaryItem("边界类型", typeStr, null))
+            }
+            try {
+                val shapeList = renderEntity.properties["shapeList"]
+                if (shapeList != null && shapeList != "" && shapeList != "null") {
+                    val itemList = mutableListOf<TwoItemAdapterItem>()
+                    val jsonArray = JSONArray(shapeList)
+                    for (i in 0 until jsonArray.length()) {
+                        val arrayObject: JSONObject = jsonArray[i] as JSONObject
+                        var markType = when (arrayObject.getInt("markType")) {
+                            0 -> "其他"
+                            1 -> "实线"
+                            2 -> "虚线"
+                            4 -> "Gore(导流区边线)"
+                            5 -> "铺设路面边缘(标线)"
+                            6 -> "菱形减速标线"
+                            7 -> "可变导向标线"
+                            8 -> "短粗虚线"
+                            else -> ""
+                        }
+                        itemList.add(TwoItemAdapterItem("车道标线类型", markType))
+
+                        val markColor = when (arrayObject.getInt("markColor")) {
+                            0 -> "不应用"
+                            1 -> "白色"
+                            2 -> "黄色"
+                            6 -> "蓝色"
+                            7 -> "绿色"
+                            9 -> "其他"
+                            else -> ""
+                        }
+                        itemList.add(TwoItemAdapterItem("车道标线颜色", markColor))
+                        itemList.add(
+                            TwoItemAdapterItem(
+                                "车道标线宽度(mm)",
+                                "${arrayObject.getInt("markWidth")}"
+                            )
+                        )
+
+                        val markMaterial = when (arrayObject.getInt("markMaterial")) {
+                            0 -> "不应用"
+                            1 -> "油漆"
+                            2 -> "突起"
+                            3 -> "油漆和突起"
+                            else -> ""
+                        }
+                        itemList.add(TwoItemAdapterItem("车道标线材质", markMaterial))
+                        itemList.add(
+                            TwoItemAdapterItem(
+                                "横向偏移(mm)",
+                                "${arrayObject.getInt("lateralOffset")}"
+                            )
+                        )
+                        list.add(
+                            LaneBoundaryItem(
+                                "车道标线序号${arrayObject.getInt("markSeqNum")}",
+                                null,
+                                itemList
+                            )
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+
+            }
+            return list
+        }
+
+        /**
          * 右下角文字
          */
         fun getSignBottomRightText(data: RenderEntity): String {
@@ -121,26 +213,26 @@ class SignUtil {
         /**
          * 条件点限速更多信息
          */
-        fun getConditionLimitMoreInfoText(renderEntity: RenderEntity): List<ElectronicEyeMoreInfoAdapterItem> {
+        fun getConditionLimitMoreInfoText(renderEntity: RenderEntity): List<TwoItemAdapterItem> {
 
-            val list = mutableListOf<ElectronicEyeMoreInfoAdapterItem>()
+            val list = mutableListOf<TwoItemAdapterItem>()
             val maxSpeed = renderEntity.properties["maxSpeed"]
             if (maxSpeed != null) {
                 list.add(
-                    ElectronicEyeMoreInfoAdapterItem(
+                    TwoItemAdapterItem(
                         title = "最高限速值(km/h)", text = maxSpeed
                     )
                 )
             }
             list.add(
-                ElectronicEyeMoreInfoAdapterItem(
+                TwoItemAdapterItem(
                     title = "限速条件", text = getConditionLimitText(renderEntity)
                 )
             )
             val carType = renderEntity.properties["vehicleType"]
             if (carType != "0") {
                 list.add(
-                    ElectronicEyeMoreInfoAdapterItem(
+                    TwoItemAdapterItem(
                         title = "车辆类型", text = getElectronicEyeVehicleType(carType!!.toInt())
                     )
                 )
@@ -148,7 +240,7 @@ class SignUtil {
             val time = renderEntity.properties["validPeriod"]
             if (time?.isNotEmpty() == true) {
                 list.add(
-                    ElectronicEyeMoreInfoAdapterItem(
+                    TwoItemAdapterItem(
                         title = "时间段", text = time
                     )
                 )
@@ -241,16 +333,16 @@ class SignUtil {
         /**
          * 常规点限速更多信息
          */
-        fun getSpeedLimitMoreInfoText(renderEntity: RenderEntity): List<ElectronicEyeMoreInfoAdapterItem> {
+        fun getSpeedLimitMoreInfoText(renderEntity: RenderEntity): List<TwoItemAdapterItem> {
 
-            val list = mutableListOf<ElectronicEyeMoreInfoAdapterItem>()
+            val list = mutableListOf<TwoItemAdapterItem>()
             list.add(
-                ElectronicEyeMoreInfoAdapterItem(
+                TwoItemAdapterItem(
                     title = "最高限速值(km/h)", text = getSpeedLimitMaxText(renderEntity)
                 )
             )
             list.add(
-                ElectronicEyeMoreInfoAdapterItem(
+                TwoItemAdapterItem(
                     title = "最低限速值(km/h)", text = getSpeedLimitMinText(renderEntity)
                 )
             )
@@ -407,13 +499,6 @@ class SignUtil {
         }
 
         /**
-         * 获取车道边界线详细信息
-         */
-        fun getLaneBoundaryInfo(data:RenderEntity){
-
-        }
-
-        /**
          * 获取道路名列表
          */
         fun getRoadNameList(data: RenderEntity): MutableList<RoadNameBean> {
@@ -466,21 +551,49 @@ class SignUtil {
             return isMore
         }
 
+        /**
+         * 可变点限速详细信息
+         */
+        fun getChangeLimitSpeedInfo(renderEntity: RenderEntity): List<TwoItemAdapterItem> {
+            val list = mutableListOf<TwoItemAdapterItem>()
+            val kindCode = renderEntity.properties["location"]
+            if (kindCode != null) {
+                when (kindCode.toInt()) {
+                    1 -> list.add(
+                        TwoItemAdapterItem(
+                            title = "标牌位置", text = "左"
+                        )
+                    )
+                    2 -> list.add(
+                        TwoItemAdapterItem(
+                            title = "标牌位置", text = "右"
+                        )
+                    )
+                    3 -> list.add(
+                        TwoItemAdapterItem(
+                            title = "标牌位置", text = "上"
+                        )
+                    )
+                }
+            }
+            return list
+
+        }
 
         /**
          * 获取电子眼详细信息
          */
-        fun getElectronicEyeMoreInfo(renderEntity: RenderEntity): List<ElectronicEyeMoreInfoAdapterItem> {
-            val list = mutableListOf<ElectronicEyeMoreInfoAdapterItem>()
+        fun getElectronicEyeMoreInfo(renderEntity: RenderEntity): List<TwoItemAdapterItem> {
+            val list = mutableListOf<TwoItemAdapterItem>()
             val kindCode = renderEntity.properties["kind"]!!.toInt()
-            val kind = ElectronicEyeMoreInfoAdapterItem(
+            val kind = TwoItemAdapterItem(
                 title = "电子眼类型", text = getElectronicEyeKindType(kindCode)
             )
             list.add(kind)
             when (kindCode) {
                 1, 2, 3, 4, 5, 6, 20, 21 -> {
                     list.add(
-                        ElectronicEyeMoreInfoAdapterItem(
+                        TwoItemAdapterItem(
                             title = "限速值(km/h)",
                             text = renderEntity.properties["speedLimit"].toString()
                         )
@@ -490,23 +603,22 @@ class SignUtil {
             val carType = renderEntity.properties["vehicleType"]
             if (carType != null && carType != "0") {
                 list.add(
-                    ElectronicEyeMoreInfoAdapterItem(
-                        title = "车辆类型",
-                        text = getElectronicEyeVehicleType(carType.toInt())
+                    TwoItemAdapterItem(
+                        title = "车辆类型", text = getElectronicEyeVehicleType(carType.toInt())
                     )
                 )
             }
             val time = renderEntity.properties["validPeriod"]
             if (time?.isNotEmpty() == true) {
                 list.add(
-                    ElectronicEyeMoreInfoAdapterItem(
+                    TwoItemAdapterItem(
                         title = "时间段", text = time
                     )
                 )
             }
             if (kindCode == 20 || kindCode == 21) {
                 list.add(
-                    ElectronicEyeMoreInfoAdapterItem(
+                    TwoItemAdapterItem(
                         title = "区间测试配对", text = renderEntity.properties["pairEleceyeId"].toString()
                     )
                 )

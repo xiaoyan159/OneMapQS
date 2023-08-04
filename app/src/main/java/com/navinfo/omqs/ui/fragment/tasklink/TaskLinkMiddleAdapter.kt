@@ -1,11 +1,8 @@
 package com.navinfo.omqs.ui.fragment.tasklink
 
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import com.navinfo.omqs.R
-import com.navinfo.omqs.databinding.AdapterElectronicEyeBinding
 import com.navinfo.omqs.databinding.AdapterTaskLinkInfoBinding
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder

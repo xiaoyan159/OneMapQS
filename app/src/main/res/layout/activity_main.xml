@@ -90,7 +90,7 @@
         <FrameLayout
             android:id="@+id/main_activity_sign_more_info_fragment"
             android:layout_width="240dp"
-            android:layout_height="wrap_content"
+            android:layout_height="300dp"
             android:layout_marginTop="80dp"
             android:minHeight="140dp"
             app:layout_constraintLeft_toLeftOf="@id/main_activity_top_sign_recyclerview"

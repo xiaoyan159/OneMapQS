@@ -38,8 +38,8 @@ public class OMDBTileDataSource implements ITileDataSource {
             int xEnd = (int) ((tile.tileX + 1) << m);
             int yStart = (int) tile.tileY << m;
             int yEnd = (int) ((tile.tileY + 1) << m);
-
-            RealmQuery<RenderEntity> realmQuery = Realm.getDefaultInstance().where(RenderEntity.class).rawPredicate("tileX>=" + xStart + " and tileX<=" + xEnd + " and tileY>=" + yStart + " and tileY<=" + yEnd);
+            Log.e("jingo", Constant.TASK_ID + " " + xStart + " " + xEnd + " " + yStart + " " + yEnd);
+            RealmQuery<RenderEntity> realmQuery = Realm.getDefaultInstance().where(RenderEntity.class).rawPredicate("taskId=" + Constant.TASK_ID + " and tileX>=" + xStart + " and tileX<=" + xEnd + " and tileY>=" + yStart + " and tileY<=" + yEnd);
             // 筛选不显示的数据
             if (Constant.HAD_LAYER_INVISIABLE_ARRAY != null && Constant.HAD_LAYER_INVISIABLE_ARRAY.length > 0) {
                 realmQuery.beginGroup();
@@ -50,9 +50,10 @@ public class OMDBTileDataSource implements ITileDataSource {
             }
             List<RenderEntity> listResult = realmQuery/*.distinct("id")*/.findAll();
             if (!listResult.isEmpty()) {
-                Log.e("qj","查询数据=="+listResult.size()+"==地图级别"+tile.zoomLevel);
-                mThreadLocalDecoders.get().decode(tile.zoomLevel,tile, mapDataSink, listResult);
+                Log.e("qj", "查询数据==" + listResult.size() + "==地图级别" + tile.zoomLevel);
+                mThreadLocalDecoders.get().decode(tile.zoomLevel, tile, mapDataSink, listResult);
             }
+            Log.e("jingo",listResult.size() + "条数据 主");
             mapDataSink.completed(QueryResult.SUCCESS);
 //            Log.d("RealmDBTileDataSource", "tile:"+tile.getBoundingBox().toString());
         } else {
