@@ -23,7 +23,7 @@ open class ReferenceEntity() : RealmObject() {
     var zoomMin: Int = 18 //显示最小级别
     var zoomMax: Int = 23 //显示最大级别
     var taskId: Int = 0 //任务ID
-    var visable:Int = 0 // 默认0不是显示 1为渲染显示
+    var enable:Int = 0 // 默认0不是显示 1为渲染显示
 
     var geometry: String = "" // 要素渲染参考的geometry，该数据可能会在导入预处理环节被修改，原始geometry会保存在properties的geometry字段下
         get() {
@@ -62,5 +62,4 @@ open class ReferenceEntity() : RealmObject() {
     constructor(name: String): this() {
         this.name = name
     }
-
 }

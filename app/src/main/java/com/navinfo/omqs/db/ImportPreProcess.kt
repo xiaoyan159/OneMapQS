@@ -194,7 +194,7 @@ class ImportPreProcess {
         startEndReference.zoomMin = renderEntity.zoomMin
         startEndReference.zoomMax = renderEntity.zoomMax
         startEndReference.taskId = renderEntity.taskId
-        startEndReference.visable = renderEntity.visable
+        startEndReference.enable = renderEntity.enable
         // 起终点坐标组成的线
         startEndReference.geometry =
             GeometryTools.createLineString(arrayOf<Coordinate>(pointStart, pointEnd)).toString()
@@ -221,7 +221,7 @@ class ImportPreProcess {
         startReference.zoomMin = renderEntity.zoomMin
         startReference.zoomMax = renderEntity.zoomMax
         startReference.taskId = renderEntity.taskId
-        startReference.visable = renderEntity.visable
+        startReference.enable = renderEntity.enable
 
         // 起点坐标
         startReference.geometry =
@@ -248,7 +248,7 @@ class ImportPreProcess {
         endReference.zoomMin = renderEntity.zoomMin
         endReference.zoomMax = renderEntity.zoomMax
         endReference.taskId = renderEntity.taskId
-        endReference.visable = renderEntity.visable
+        endReference.enable = renderEntity.enable
 
         // 终点坐标
         endReference.geometry =
@@ -350,7 +350,7 @@ class ImportPreProcess {
             angleReference.zoomMin = renderEntity.zoomMin
             angleReference.zoomMax = renderEntity.zoomMax
             angleReference.taskId = renderEntity.taskId
-            angleReference.visable = renderEntity.visable
+            angleReference.enable = renderEntity.enable
             // 与原有方向指向平行的线
             angleReference.geometry =
                 WKTWriter(3).write(GeometryTools.createLineString(arrayOf(pointStart, coorEnd)))
@@ -511,7 +511,7 @@ class ImportPreProcess {
         angleReference.zoomMin = renderEntity.zoomMin
         angleReference.zoomMax = renderEntity.zoomMax
         angleReference.taskId = renderEntity.taskId
-        angleReference.visable = renderEntity.visable
+        angleReference.enable = renderEntity.enable
         Realm.getDefaultInstance().insert(angleReference)
     }
 
@@ -532,7 +532,7 @@ class ImportPreProcess {
                 intersectionReference.zoomMin = renderEntity.zoomMin
                 intersectionReference.zoomMax = renderEntity.zoomMax
                 intersectionReference.taskId = renderEntity.taskId
-                intersectionReference.visable = renderEntity.visable
+                intersectionReference.enable = renderEntity.enable
                 // 与原有方向指向平行的线
                 intersectionReference.geometry =
                     GeometryTools.createGeometry(nodeJSONObject["geometry"].toString()).toString()

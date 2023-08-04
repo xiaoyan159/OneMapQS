@@ -71,12 +71,13 @@ public class OMDBDataDecoder extends TileDecoder {
         listResult.stream().iterator().forEachRemaining(new Consumer<RenderEntity>() {
             @Override
             public void accept(RenderEntity renderEntity) {
+
                 if(!(mapLevel<renderEntity.getZoomMin()||mapLevel>renderEntity.getZoomMax())){
                     Map<String, Object> properties= new HashMap<>(renderEntity.getProperties().size());
                     properties.putAll(renderEntity.getProperties());
                     parseGeometry(renderEntity.getTable(), renderEntity.getWkt(), properties);
                 }else{
-                    Log.e("qj","render"+renderEntity.name+"=="+renderEntity.getZoomMin()+"==="+renderEntity.getZoomMax());
+                    Log.e("qj","render"+renderEntity.name+"=="+renderEntity.getZoomMin()+"==="+renderEntity.getZoomMax()+"==="+renderEntity.getEnable());
                 }
             }
         });
