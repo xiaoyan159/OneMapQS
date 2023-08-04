@@ -11,7 +11,7 @@
         android:layout_margin="8dp"
         android:background="@drawable/shape_rect_white_2dp_bg"
         android:hint="请备注无需作业原因"
-        android:lines="5"
+        android:lines="4"
         android:textSize="13dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

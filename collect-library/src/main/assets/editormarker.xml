@@ -1966,7 +1966,7 @@
         <!--车道中心线-->
         <m v="OMDB_LANE_LINK_LG">
             <m k="width" v="~">
-                <line stroke="#7A88A0" width="3.8" />
+                <line stroke="#7A88A0" width="2.8" />
             </m>
         </m>
 
@@ -1982,6 +1982,38 @@
             <m k="type" v="e_2_p">
                 <symbol repeat="false" repeat-start="0" rotate="false"
                     src="assets:omdb/icon_2202_1.svg" symbol-height="24" symbol-width="24"></symbol>
+            </m>
+        </m>
+
+        <!--桥-->
+        <m v="OMDB_BRIDGE">
+            <m k="bridgeType" v="1|2|3">
+                <line stroke="#335431B2" width="1" />
+                <lineSymbol  repeat-gap="24" repeat-start="0" symbol-height="24" src="assets:omdb/icon_2201_1.svg" />
+            </m>
+            <m k="type" v="s_2_p_1">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2201_1_1.svg" symbol-height="56" symbol-width="56"></symbol>
+            </m>
+            <m k="type" v="e_2_p_1">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2201_1_2.svg" symbol-height="56" symbol-width="56"></symbol>
+            </m>
+            <m k="type" v="s_2_p_2">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2201_2_1.svg" symbol-height="56" symbol-width="56"></symbol>
+            </m>
+            <m k="type" v="e_2_p_2">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2201_2_2.svg" symbol-height="56" symbol-width="56"></symbol>
+            </m>
+            <m k="type" v="s_2_p_3">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2201_3_1.svg" symbol-height="56" symbol-width="56"></symbol>
+            </m>
+            <m k="type" v="e_2_p_3">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2201_3_2.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
         </m>
 

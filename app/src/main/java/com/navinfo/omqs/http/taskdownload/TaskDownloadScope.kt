@@ -77,7 +77,7 @@ class TaskDownloadScope(
         downloadJob = launch() {
             FileManager.checkOMDBFileInfo(taskBean)
             if (taskBean.status == FileDownloadStatus.IMPORT) {
-                importData(taskId = taskBean.id)
+                importData(task = taskBean)
             } else {
                 download()
             }
@@ -127,7 +127,7 @@ class TaskDownloadScope(
     /**
      * 导入数据
      */
-    private suspend fun importData(file: File? = null, taskId: Int? = 0) {
+    private suspend fun importData(file: File? = null, task: TaskBean? = null) {
         try {
             Log.e("jingo", "importData SSS")
             change(FileDownloadStatus.IMPORTING)
@@ -138,8 +138,8 @@ class TaskDownloadScope(
                     downloadManager.context,
                     fileNew
                 )
-            if (taskId != null) {
-                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, taskId).collect {
+            if (task != null) {
+                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, task).collect {
                     Log.e("jingo", "数据安装 $it")
                     if (it == "finish") {
                         change(FileDownloadStatus.DONE)
@@ -187,7 +187,7 @@ class TaskDownloadScope(
                 startPosition = 0
             }
             if (fileTemp.length() > 0 && taskBean.fileSize > 0 && fileTemp.length() == taskBean.fileSize) {
-                importData(fileTemp, taskBean.id)
+                importData(fileTemp, taskBean)
                 return
             }
 
@@ -228,7 +228,7 @@ class TaskDownloadScope(
                 randomAccessFile?.close()
                 inputStream = null
                 randomAccessFile = null
-                importData(taskId = taskBean.id)
+                importData(task = taskBean)
             } else {
                 change(FileDownloadStatus.PAUSE)
             }

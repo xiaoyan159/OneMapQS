@@ -121,6 +121,7 @@ class TableInfo {
     val code: Int = 0
     val zoomMin: Int = 16
     val zoomMax: Int = 21
+    val checkLinkId: Boolean = true//是否需要校验linkid
     val name: String = ""
     var checked : Boolean = true
     var transformer: MutableList<Transform> = mutableListOf()

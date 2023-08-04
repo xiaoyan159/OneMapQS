@@ -11,6 +11,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.hilt.OMDBDataBaseHiltFactory
@@ -123,7 +124,7 @@ class ImportOMDBHelper @AssistedInject constructor(
      * @param omdbZipFile omdb数据抽取生成的Zip文件
      * @param configFile 对应的配置文件
      * */
-    suspend fun importOmdbZipFile(omdbZipFile: File, taskId: Int): Flow<String> = withContext(Dispatchers.IO) {
+    suspend fun importOmdbZipFile(omdbZipFile: File, task: TaskBean): Flow<String> = withContext(Dispatchers.IO) {
         val unZipFolder = File(omdbZipFile.parentFile, "result")
         flow {
             if (unZipFolder.exists()) {
@@ -170,7 +171,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 renderEntity.code = map["qi_code"].toString().toInt()
                                 renderEntity.name = map["qi_name"].toString()
                                 renderEntity.table = map["qi_table"].toString()
-                                renderEntity.taskId = taskId
+                                renderEntity.taskId = task.id
                                 renderEntity.zoomMin = map["qi_zoomMin"].toString().toInt()
                                 renderEntity.zoomMax = map["qi_zoomMax"].toString().toInt()
 
@@ -189,6 +190,19 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         )
                                         else -> renderEntity.properties.put(key, value.toString())
                                     }
+                                }
+                                //遍历判断只显示与任务Link相关的任务数据
+                                if(renderEntity.properties.containsKey("linkPid")){
+                                    task.hadLinkDvoList.forEach{
+                                        if(it.linkPid==renderEntity.properties["linkPid"]){
+                                            renderEntity.visable = 1
+                                            Log.e("qj","${renderEntity.name}==包括任务link")
+                                            return@forEach
+                                        }
+                                    }
+                                }else{
+                                    renderEntity.visable = 1
+                                    Log.e("qj","${renderEntity.name}==不包括任务linkPid")
                                 }
                                 listResult.add(renderEntity)
                                 // 对renderEntity做预处理后再保存

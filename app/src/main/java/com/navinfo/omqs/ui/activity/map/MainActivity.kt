@@ -406,7 +406,7 @@ class MainActivity : BaseActivity() {
             this
         ).setTitle("坐标定位").setView(view)
         val editText = view.findViewById<EditText>(R.id.dialog_edittext)
-        editText.hint = "请输入经纬度例如：\n116.1234567,39.1234567\n116.1234567 39.1234567"
+        editText.hint = "请输入经纬度例如：116.1234567,39.1234567"
         inputDialog.setNegativeButton("取消") { dialog, _ ->
             dialog.dismiss()
         }
@@ -505,7 +505,7 @@ class MainActivity : BaseActivity() {
      * 点击搜索
      */
     fun onClickSearch() {
-
+        jumpPosition()
     }
 
     /**
