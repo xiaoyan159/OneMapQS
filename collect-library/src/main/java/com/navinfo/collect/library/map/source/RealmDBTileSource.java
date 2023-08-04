@@ -12,7 +12,8 @@ public class RealmDBTileSource extends TileSource {
 
     @Override
     public ITileDataSource getDataSource() {
-        return new OverzoomTileDataSource(new RealmDBTileDataSource(), Constant.OVER_ZOOM);
+        //return new OverzoomTileDataSource(new RealmDBTileDataSource(), Constant.OVER_ZOOM);
+        return new RealmDBTileDataSource();
     }
 
     @Override

@@ -10,7 +10,8 @@ public class OMDBReferenceTileSource extends TileSource {
 
     @Override
     public ITileDataSource getDataSource() {
-        return new OverzoomTileDataSource(new OMDBReferenceDataSource(), Constant.OVER_ZOOM);
+        //return new OverzoomTileDataSource(new OMDBReferenceDataSource(), Constant.OVER_ZOOM);
+        return new OMDBReferenceDataSource();
     }
 
     @Override

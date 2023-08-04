@@ -30,8 +30,8 @@ public class Constant {
     }
 
     public static String[] HAD_LAYER_INVISIABLE_ARRAY;
-    public static final int OVER_ZOOM = 21;
-    public static final int MAX_ZOOM = 23;
+    public static final int OVER_ZOOM = 22;
+    public static final int MAX_ZOOM = 22;
     public static final int OMDB_MIN_ZOOM = 16;
 
     public static int TASK_ID = -1;

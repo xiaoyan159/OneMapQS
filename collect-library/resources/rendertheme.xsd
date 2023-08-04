@@ -144,6 +144,7 @@
         <xs:attribute name="blend" default="-1" type="xs:integer" use="optional"/>
         <xs:attribute name="blend-fill" default="#000000" type="tns:color" use="optional"/>
         <xs:attribute name="mesh" default="false" type="xs:boolean" use="optional"/>
+        <xs:attribute name="repeat" default="true" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="caption">

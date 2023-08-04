@@ -72,7 +72,7 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
         vectorNiLocationTileLayer = VectorTileLayer(mMapView.vtmMap, mapLifeNiLocationTileSource)
 
         labelNiLocationLayer =
-            LabelLayer(mMapView.vtmMap, vectorNiLocationTileLayer, LabelTileLoaderHook(), 15)
+            LabelLayer(mMapView.vtmMap, vectorNiLocationTileLayer, LabelTileLoaderHook())
 
         if (vectorNiLocationTileLayer != null) {
             addLayer(vectorNiLocationTileLayer, NIMapView.LAYER_GROUPS.BASE)
@@ -110,8 +110,7 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
         omdbReferenceLabelLayer = LabelLayer(
             mMapView.vtmMap,
             omdbReferenceTileLayer,
-            LabelTileLoaderHook(),
-            Constant.OMDB_MIN_ZOOM
+            LabelTileLoaderHook()
         )
         if (omdbReferenceTileLayer != null) {
             addLayer(omdbReferenceTileLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
@@ -124,8 +123,7 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
         omdbLabelLayer = LabelLayer(
             mMapView.vtmMap,
             omdbVectorTileLayer,
-            LabelTileLoaderHook(),
-            Constant.OMDB_MIN_ZOOM
+            LabelTileLoaderHook()
         )
         if (omdbVectorTileLayer != null) {
             addLayer(omdbVectorTileLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)

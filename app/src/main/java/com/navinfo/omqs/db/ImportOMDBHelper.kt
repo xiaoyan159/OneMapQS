@@ -150,11 +150,11 @@ class ImportOMDBHelper @AssistedInject constructor(
                         if (list != null) {
                             // 将list数据转换为map
                             for ((index, line) in list.withIndex()) {
-                                Log.d("ImportOMDBHelper", "解析第：${index + 1}行")
-                                val map = gson.fromJson<Map<String, Any>>(
-                                    line,
-                                    object : TypeToken<Map<String, Any>>() {}.getType()
-                                )
+                                if (line == null || line.trim() == "") {
+                                    continue
+                                }
+                                Log.d("ImportOMDBHelper", "解析第：${index+1}行")
+                                val map = gson.fromJson<Map<String, Any>>(line, object:TypeToken<Map<String, Any>>(){}.getType())
                                     .toMutableMap()
                                 map["qi_table"] = currentConfig.table
                                 map["qi_name"] = currentConfig.name

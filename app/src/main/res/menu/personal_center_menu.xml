@@ -17,7 +17,7 @@
         <item
             android:id="@+id/personal_center_menu_import_data"
             android:icon="@drawable/ic_baseline_import_export_24"
-            android:visible="false"
+            android:visible="true"
             android:title="导入数据" />
         <item
             android:id="@+id/personal_center_menu_import_yuan_data"
@@ -38,7 +38,7 @@
         <item
             android:id="@+id/personal_center_menu_version"
             android:icon="@drawable/ic_baseline_layers_24"
-            android:title="版本：ONE_QE_V1.4.0_20230721_A" />
+            android:title="版本：ONE_QE_V1.5.0_20230728_A" />
     </group>
     <group android:checkableBehavior="single">
         <item android:title="小标题">

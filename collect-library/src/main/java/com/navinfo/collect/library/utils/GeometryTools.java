@@ -222,9 +222,7 @@ public class GeometryTools {
 
         Geometry geometry;
         try {
-
             geometry = reader.read(wkt);
-
             if (geometry != null) {
                 return geometry;
             }

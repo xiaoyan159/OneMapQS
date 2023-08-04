@@ -164,7 +164,7 @@ class TaskUploadScope(
 
                     val objects = realm.where(QsRecordBean::class.java)
                         .equalTo("linkId", /*"84207223282277331"*/hadLinkDvoBean.linkPid).and()
-                        .equalTo("taskId", hadLinkDvoBean.taskId).findAll()
+                        .equalTo("taskId", taskBean.id).findAll()
 
                     if (objects != null && objects.size > 0) {
                         val copyList = realm.copyFromRealm(objects)
@@ -241,7 +241,7 @@ class TaskUploadScope(
                     change(FileUploadStatus.ERROR)
                 }
             } else {
-                change(FileUploadStatus.NONE)
+                change(FileUploadStatus.NONE,"无可上传数据")
             }
         } catch (e: Throwable) {
             change(FileUploadStatus.ERROR)
