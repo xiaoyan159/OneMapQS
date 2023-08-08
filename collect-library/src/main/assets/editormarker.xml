@@ -1483,9 +1483,9 @@
 
     <m k="qi_table">
         <!-- 道路线 -->
-<!--        <m v="OMDB_RD_LINK">
+        <m v="OMDB_RD_LINK">
             <line stroke="#9c9c9c" width="1" />
-        </m>-->
+        </m>
 
         <!--道路种别-->
         <m v="OMDB_RD_LINK_KIND">
@@ -1955,11 +1955,14 @@
         </m>
         <!-- 路口 -->
         <m v="OMDB_INTERSECTION">
-            <m k="type" v="node">
-                <symbol src="assets:symbols/dot_blue_dark.svg"></symbol>
-            </m>
-            <m k="intersectionPid">
-                <symbol src="assets:symbols/dot_magenta.svg"></symbol>
+<!--            <m k="type" v="node">-->
+<!--                <symbol src="assets:symbols/dot_blue_dark.svg"></symbol>-->
+<!--            </m>-->
+<!--            <m k="intersectionPid">-->
+<!--                <symbol src="assets:symbols/dot_magenta.svg"></symbol>-->
+<!--            </m>-->
+            <m k="geometry">
+                <symbol src="@typesrc"></symbol>
             </m>
         </m>
 
