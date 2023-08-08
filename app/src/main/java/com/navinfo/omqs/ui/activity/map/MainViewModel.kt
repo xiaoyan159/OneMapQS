@@ -199,7 +199,7 @@ class MainViewModel @Inject constructor(
                 Map.SCALE_EVENT, Map.MOVE_EVENT, Map.ROTATE_EVENT -> liveDataCenterPoint.value =
                     mapPosition
             }
-            if(mapController.mMapView.vtmMap.mapPosition.zoomLevel>=16){
+            if (mapController.mMapView.vtmMap.mapPosition.zoomLevel >= 16) {
 
             }
             currentMapZoomLevel = mapController.mMapView.vtmMap.mapPosition.zoomLevel
@@ -219,7 +219,7 @@ class MainViewModel @Inject constructor(
             object : OnGeoPointClickListener {
                 override fun onMapClick(tag: String, point: GeoPoint) {
                     if (tag == TAG) {
-                        viewModelScope.launch(Dispatchers.Default) {
+                        viewModelScope.launch(Dispatchers.IO) {
                             //线选择状态
                             if (bSelectRoad) {
                                 captureLink(point)
@@ -280,6 +280,8 @@ class MainViewModel @Inject constructor(
             initNILocationData()
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        com.navinfo.collect.library.system.Constant.TASK_ID =
+            sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
         socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
     }
 
@@ -455,8 +457,8 @@ class MainViewModel @Inject constructor(
                 )
             )
 
-            if(itemList.size == 1){
-                SignUtil.getSignNameText(itemList[0])
+            if (itemList.size > 0) {
+                liveDataSignMoreInfo.postValue(itemList[0])
             }
         }
     }

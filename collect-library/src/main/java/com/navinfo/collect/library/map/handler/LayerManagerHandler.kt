@@ -24,7 +24,7 @@ import java.io.File
  */
 class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, tracePath: String) :
     BaseHandler(context, mapView) {
-    private var baseGroupLayer // 用于盛放所有基础底图的图层组，便于统一管理
+    private var baseGroupLayer // 用于盛放所有基础底图的图层组，便于统一管理LabelTileLoaderHook
             : GroupLayer? = null
     private val mTracePath: String = tracePath
 
@@ -216,11 +216,11 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
         labelNiLocationLayer.isEnabled = false
     }
 
-    fun omdbLayersUpdate(){
-//         omdbVectorTileLayer
+    fun omdbLayersClear(){
+//         omdbVectorTileLayer.
 //         omdbReferenceTileLayer.
-         omdbLabelLayer.update()
-         omdbReferenceLabelLayer.update()
+         omdbLabelLayer.clearLabels()
+         omdbReferenceLabelLayer.clearLabels()
     }
 }
 

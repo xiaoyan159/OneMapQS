@@ -17,10 +17,10 @@ public class Constant {
     public static String MAP_PATH = Environment.getExternalStorageDirectory() + "/map/";
 
     public static void setVisibleTypeMap(Map<String, Boolean> visibleTypeMap) {
-        Map<String, Boolean> HD_LAYER_VISIABLE_MAP= new HashMap<>();
+        Map<String, Boolean> HD_LAYER_VISIABLE_MAP = new HashMap<>();
         // 只记录不显示的类型
-        if (visibleTypeMap!=null&&!visibleTypeMap.isEmpty()) {
-            for (Map.Entry<String, Boolean> e:visibleTypeMap.entrySet()) {
+        if (visibleTypeMap != null && !visibleTypeMap.isEmpty()) {
+            for (Map.Entry<String, Boolean> e : visibleTypeMap.entrySet()) {
                 if (!e.getValue()) {
                     HD_LAYER_VISIABLE_MAP.put(e.getKey(), e.getValue());
                 }
@@ -28,11 +28,13 @@ public class Constant {
         }
         HAD_LAYER_INVISIABLE_ARRAY = HD_LAYER_VISIABLE_MAP.keySet().toArray(new String[HD_LAYER_VISIABLE_MAP.keySet().size()]);
     }
+
     public static String[] HAD_LAYER_INVISIABLE_ARRAY;
     public static final int OVER_ZOOM = 22;
     public static final int MAX_ZOOM = 22;
     public static final int OMDB_MIN_ZOOM = 16;
 
+    public static int TASK_ID = -1;
     /**
      * 服务器地址
      */

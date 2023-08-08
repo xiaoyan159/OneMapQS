@@ -55,15 +55,27 @@ class SignMoreInfoFragment : BaseFragment() {
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getRoadNameList(it))
                 }
+                //车道边界类型
+                2013 -> {
+                    val adapter = LaneBoundaryAdapter()
+                    binding.signInfoRecyclerview.adapter = adapter
+                    adapter.refreshData(SignUtil.getLaneBoundaryTypeInfo(it))
+                }
+                //可变点限速
+                2021 -> {
+                    val adapter = TwoItemAdapter()
+                    binding.signInfoRecyclerview.adapter = adapter
+                    adapter.refreshData(SignUtil.getChangeLimitSpeedInfo(it))
+                }
                 //常规点限速
                 4002 -> {
-                    val adapter = ElectronicEyeInfoAdapter()
+                    val adapter = TwoItemAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getSpeedLimitMoreInfoText(it))
                 }
                 //条件点限速
                 4003 -> {
-                    val adapter = ElectronicEyeInfoAdapter()
+                    val adapter = TwoItemAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getConditionLimitMoreInfoText(it))
                 }
@@ -80,11 +92,14 @@ class SignMoreInfoFragment : BaseFragment() {
                     binding.signInfoTitle.setCompoundDrawables(
                         drawable, null, null, null
                     )
-                    val adapter = ElectronicEyeInfoAdapter()
+                    val adapter = TwoItemAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getElectronicEyeMoreInfo(it))
                 }
-
+                else -> {
+                    val adapter = TwoItemAdapter()
+                    binding.signInfoRecyclerview.adapter = adapter
+                }
             }
         }
 

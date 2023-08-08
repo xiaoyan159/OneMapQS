@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Build
 import android.view.View
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,7 +18,6 @@ import com.navinfo.collect.library.map.OnGeoPointClickListener
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.db.RealmOperateHelper
-import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.ui.dialog.FirstDialog
@@ -27,7 +25,6 @@ import com.navinfo.omqs.util.DateTimeUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collectLatest
 import org.oscim.core.GeoPoint
 import javax.inject.Inject
 
@@ -144,6 +141,10 @@ class TaskViewModel @Inject constructor(
 
         liveDataTaskLinks.value = taskBean.hadLinkDvoList
         showTaskLinks(taskBean)
+        com.navinfo.collect.library.system.Constant.TASK_ID = taskBean.id
+        mapController.layerManagerHandler.omdbLayersClear()
+        mapController.mMapView.updateMap(true)
+
     }
 
     private fun showTaskLinks(taskBean: TaskBean) {
@@ -420,8 +421,21 @@ class TaskViewModel @Inject constructor(
                                             r.copyToRealmOrUpdate(hadLinkDvoBean)
                                             r.copyToRealmOrUpdate(currentSelectTaskBean!!)
                                         }
+                                        //根据Link数据查询对应数据上要素，对要素进行显示重置
+                                        l.properties["linkPid"]?.let {
+                                            realmOperateHelper.queryLinkToMutableRenderEntityList(it)
+                                                ?.forEach { renderEntity ->
+                                                    if(renderEntity.enable!=1){
+                                                        renderEntity.enable = 1
+                                                        realm.executeTransaction { r ->
+                                                            r.copyToRealmOrUpdate(renderEntity)
+                                                        }
+                                                    }
+                                                }
+                                        }
                                         liveDataTaskLinks.postValue(currentSelectTaskBean!!.hadLinkDvoList)
                                         mapController.lineHandler.addTaskLink(hadLinkDvoBean)
+                                        mapController.mMapView.vtmMap.updateMap(true)
                                     }
                                 }
                             }
@@ -460,7 +474,23 @@ class TaskViewModel @Inject constructor(
             ) { dialog, _ ->
                 dialog.dismiss()
                 viewModelScope.launch(Dispatchers.IO) {
+
                     val realm = Realm.getDefaultInstance()
+
+                    //重置数据为隐藏
+                    if(hadLinkDvoBean.linkStatus==2){
+                        realmOperateHelper.queryLinkToMutableRenderEntityList(hadLinkDvoBean.linkPid)
+                            ?.forEach { renderEntity ->
+                                if(renderEntity.enable==1){
+                                    renderEntity.enable = 0
+                                    realm.executeTransaction { r ->
+                                        r.copyToRealmOrUpdate(renderEntity)
+                                    }
+                                }
+                            }
+                        mapController.mMapView.vtmMap.updateMap(true)
+                    }
+
                     realm.executeTransaction {
                         for (link in currentSelectTaskBean!!.hadLinkDvoList) {
                             if (link.linkPid == hadLinkDvoBean.linkPid) {
@@ -475,8 +505,8 @@ class TaskViewModel @Inject constructor(
                             .equalTo("linkId", hadLinkDvoBean.linkPid)
                             .and().equalTo("taskId", hadLinkDvoBean.taskId)
                             .findAll()
-                        if(markers != null){
-                            for(marker in markers){
+                        if (markers != null) {
+                            for (marker in markers) {
                                 mapController.markerHandle.removeQsRecordMark(marker)
                             }
                             markers.deleteAllFromRealm()

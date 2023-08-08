@@ -41,7 +41,7 @@ public class RealmDBTileDataSource implements ITileDataSource {
             int yStart = (int)tile.tileY<<m;
             int yEnd = (int)((tile.tileY+1)<<m);
 
-            RealmQuery<GeometryFeatureEntity> realmQuery = Realm.getInstance(RealmUtils.getInstance().getRealmConfiguration()).where(GeometryFeatureEntity.class)
+            RealmQuery<GeometryFeatureEntity> realmQuery = Realm.getDefaultInstance().where(GeometryFeatureEntity.class)
                     .rawPredicate("tileX>="+xStart+" and tileX<="+xEnd+" and tileY>="+yStart+" and tileY<="+yEnd);
             // 筛选不显示的数据
             if (Constant.HAD_LAYER_INVISIABLE_ARRAY!=null&&Constant.HAD_LAYER_INVISIABLE_ARRAY.length>0) {
