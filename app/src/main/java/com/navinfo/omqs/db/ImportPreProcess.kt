@@ -425,6 +425,30 @@ class ImportPreProcess {
     }
 
 
+//    /**
+//     * 生成默认路口数据的参考数据
+//     * */
+//    fun generateIntersectionReference(renderEntity: RenderEntity) {
+//        // 路口数据的其他点位，是保存在nodeList对应的数组下
+//        if (renderEntity.properties.containsKey("nodeList")) {
+//            val nodeListJsonArray: JSONArray = JSONArray(renderEntity.properties["nodeList"])
+//            for (i in 0 until nodeListJsonArray.length()) {
+//                val nodeJSONObject = nodeListJsonArray.getJSONObject(i)
+//                val intersectionReference = ReferenceEntity()
+//                intersectionReference.renderEntityId = renderEntity.id
+//                intersectionReference.name = "${renderEntity.name}参考点"
+//                intersectionReference.table = renderEntity.table
+//                intersectionReference.zoomMin = renderEntity.zoomMin
+//                intersectionReference.zoomMax = renderEntity.zoomMax
+//                intersectionReference.taskId = renderEntity.taskId
+//                // 与原有方向指向平行的线
+//                intersectionReference.geometry = GeometryTools.createGeometry(nodeJSONObject["geometry"].toString()).toString()
+//                intersectionReference.properties["qi_table"] = renderEntity.table
+//                intersectionReference.properties["type"] = "node"
+//                Realm.getDefaultInstance().insert(intersectionReference)
+//            }
+//        }
+//    }
     /**
      * 生成默认路口数据的参考数据
      * */

@@ -126,7 +126,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                     //116.25017070328308 40.061730653134696
                     // 定位到指定位置
                     niMapController.mMapView.vtmMap.animator()
-                        .animateTo(GeoPoint( 40.055878135289966, 116.3011588289057    ))
+                        .animateTo(GeoPoint( 39.91831047339841,116.36009639042146   ))
                 }
 //                R.id.personal_center_menu_task_list -> {
 //                    findNavController().navigate(R.id.TaskManagerFragment)
