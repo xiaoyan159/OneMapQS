@@ -169,6 +169,12 @@ class PersonalCenterViewModel @Inject constructor(
                 importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, task).collect {
                     Log.d("importOMDBData", it)
                 }
+            } else {
+                val newTask = TaskBean()
+                newTask.id = 9999
+                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, newTask).collect {
+                    Log.d("importOMDBData", it)
+                }
             }
             Log.d("OMQSApplication", "导入数据完成")
         }
