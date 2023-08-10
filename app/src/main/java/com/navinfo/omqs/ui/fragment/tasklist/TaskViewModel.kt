@@ -436,6 +436,7 @@ class TaskViewModel @Inject constructor(
                                         }
                                         liveDataTaskLinks.postValue(currentSelectTaskBean!!.hadLinkDvoList)
                                         mapController.lineHandler.addTaskLink(hadLinkDvoBean)
+                                        mapController.layerManagerHandler.updateOMDBVectorTileLayer()
                                         mapController.mMapView.vtmMap.updateMap(true)
                                     }
                                 }
@@ -489,6 +490,7 @@ class TaskViewModel @Inject constructor(
                                     }
                                 }
                             }
+                        mapController.layerManagerHandler.updateOMDBVectorTileLayer()
                         mapController.mMapView.vtmMap.updateMap(true)
                     }
 
