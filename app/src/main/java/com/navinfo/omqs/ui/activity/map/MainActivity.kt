@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -20,7 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.navinfo.collect.library.map.NIMapController
-import com.navinfo.collect.library.map.NIMapOptions
+import com.navinfo.collect.library.map.handler.MeasureLayerHandler
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
@@ -397,9 +398,124 @@ class MainActivity : BaseActivity() {
             supportFragmentManager.beginTransaction()
                 .add(R.id.console_fragment_layout, ConsoleFragment()).commit()
         }
+
+        initMeasuringTool()
     }
 
-    //根据输入的经纬度跳转坐标
+    /**
+     *初始化测量工具栏的点击事件
+     */
+
+    private fun initMeasuringTool() {
+        val root = binding.mainActivityMeasuringTool.root
+        root.findViewById<View>(R.id.measuring_tool_select_point)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_close)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_backspace)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_reset)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_distance)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_area)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_angle)
+            .setOnClickListener(measuringToolClickListener)
+    }
+
+    /**
+     * 测量工具点击事件
+     */
+    private val measuringToolClickListener = View.OnClickListener {
+        when (it.id) {
+            //选点
+            R.id.measuring_tool_select_point -> {
+                viewModel.addPointForMeasuringTool()
+            }
+            //关闭
+            R.id.measuring_tool_close -> {
+                measuringToolOff()
+            }
+            //上一步
+            R.id.measuring_tool_backspace -> {
+                viewModel.backPointForMeasuringTool()
+            }
+            //重绘
+            R.id.measuring_tool_reset -> {
+                viewModel.resetMeasuringTool()
+            }
+            //测距
+            R.id.measuring_tool_distance -> {
+                it.isSelected = true
+                viewModel.setMeasuringToolType(MeasureLayerHandler.MEASURE_TYPE.DISTANCE)
+                val root = binding.mainActivityMeasuringTool.root
+                root.findViewById<View>(R.id.measuring_tool_area).isSelected = false
+                root.findViewById<View>(R.id.measuring_tool_angle).isSelected = false
+            }
+            //测面积
+            R.id.measuring_tool_area -> {
+                it.isSelected = true
+                viewModel.setMeasuringToolType(MeasureLayerHandler.MEASURE_TYPE.AREA)
+                val root = binding.mainActivityMeasuringTool.root
+                root.findViewById<View>(R.id.measuring_tool_distance).isSelected = false
+                root.findViewById<View>(R.id.measuring_tool_angle).isSelected = false
+            }
+            //测角度
+            R.id.measuring_tool_angle -> {
+                it.isSelected = true
+                viewModel.setMeasuringToolType(MeasureLayerHandler.MEASURE_TYPE.ANGLE)
+                val root = binding.mainActivityMeasuringTool.root
+                root.findViewById<View>(R.id.measuring_tool_distance).isSelected = false
+                root.findViewById<View>(R.id.measuring_tool_area).isSelected = false
+            }
+        }
+    }
+
+    /**
+     * 开始测量
+     */
+    private fun measuringToolOn() {
+        val root = binding.mainActivityMeasuringTool.root
+        val valueView = root.findViewById<TextView>(R.id.measuring_tool_value)
+        val unitView = root.findViewById<TextView>(R.id.measuring_tool_value_unit)
+        val centerTextView = binding.mainActivityHomeCenterText
+        //监听测距值
+        mapController.measureLayerHandler.measureValueLiveData.observe(this) {
+            valueView.text = it.valueString
+            unitView.text = it.unit
+        }
+        mapController.measureLayerHandler.tempMeasureValueLiveData.observe(this)
+        {
+            centerTextView.text = "${it.valueString}${it.unit}"
+        }
+        viewModel.setMeasuringToolEnable(true)
+        binding.mainActivityHomeCenter.visibility = View.VISIBLE
+        binding.mainActivityHomeCenterText.visibility = View.VISIBLE
+        viewModel.setMeasuringToolType(MeasureLayerHandler.MEASURE_TYPE.DISTANCE)
+        root.visibility = View.VISIBLE
+        root.findViewById<View>(R.id.measuring_tool_distance).isSelected = true
+        root.findViewById<View>(R.id.measuring_tool_area).isSelected = false
+        root.findViewById<View>(R.id.measuring_tool_angle).isSelected = false
+    }
+
+
+    /**
+     * 结束测量
+     */
+    private fun measuringToolOff() {
+        //监听测距值
+        mapController.measureLayerHandler.measureValueLiveData.removeObservers(this)
+        mapController.measureLayerHandler.tempMeasureValueLiveData.removeObservers(this)
+        viewModel.setMeasuringToolEnable(false)
+        binding.mainActivityHomeCenter.visibility = View.GONE
+        binding.mainActivityHomeCenterText.visibility = View.GONE
+        binding.mainActivityMeasuringTool.root.visibility = View.GONE
+    }
+
+    /**
+     * 根据输入的经纬度跳转坐标
+     */
     fun jumpPosition() {
         val view = this.layoutInflater.inflate(R.layout.dialog_view_edittext, null)
         val inputDialog = MaterialAlertDialogBuilder(
@@ -488,10 +604,10 @@ class MainActivity : BaseActivity() {
     }
 
     /**
-     * 点击计算
+     * 点击测速
      */
-    fun onClickCalcDisance() {
-
+    fun onClickCalcDistance() {
+        measuringToolOn()
     }
 
     /**
@@ -825,7 +941,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun showMainActivityBottomSheetGroup(){
+    private fun showMainActivityBottomSheetGroup() {
         binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
         mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
         mapController.mMapView.vtmMap.animator().animateTo(
@@ -836,7 +952,7 @@ class MainActivity : BaseActivity() {
         )
     }
 
-    private fun hideMainActivityBottomSheetGroup(){
+    private fun hideMainActivityBottomSheetGroup() {
         binding.mainActivityBottomSheetGroup.visibility = View.GONE
         mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 5)
         mapController.mMapView.vtmMap.animator().animateTo(
