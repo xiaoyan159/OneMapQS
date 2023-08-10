@@ -107,7 +107,7 @@ class TaskDownloadScope(
             if (status != FileDownloadStatus.LOADING && status != FileDownloadStatus.IMPORTING) {
                 val realm = Realm.getDefaultInstance()
                 realm.executeTransaction {
-                    it.copyToRealmOrUpdate(taskBean)
+                    it.insertOrUpdate(taskBean)
                 }
             }
         }

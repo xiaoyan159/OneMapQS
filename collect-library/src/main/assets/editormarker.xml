@@ -1482,10 +1482,10 @@
     </m>
 
     <m k="qi_table">
-        <!-- 道路线 -->
-<!--        <m v="OMDB_RD_LINK">
-            <line stroke="#9c9c9c" width="1" />
-        </m>-->
+<!--        &lt;!&ndash; 道路线 &ndash;&gt;-->
+<!--        <m v="OMDB_RD_LINK">-->
+<!--            <line stroke="#9c9c9c" width="1" />-->
+<!--        </m>-->
 
         <!--道路种别-->
         <m v="OMDB_RD_LINK_KIND">
@@ -1951,15 +1951,19 @@
         </m>
 
         <m v="OMDB_AREA">
-            <area use="sign-bg" repeat="true" src="assets:omdb/area_test.jpg" stroke="#ff0000" stroke-width="2"></area>
+<!--            <area use="sign-bg" repeat="false" src="assets:omdb/veer_side_walk.jpg" stroke="#ff0000" stroke-width="2"></area>-->
+            <area use="sign-bg" repeat="false" src="@text:人行横道" stroke="#ff0000" stroke-width="2"></area>
         </m>
         <!-- 路口 -->
         <m v="OMDB_INTERSECTION">
-            <m k="type" v="node">
-                <symbol src="assets:symbols/dot_blue_dark.svg"></symbol>
-            </m>
-            <m k="intersectionPid">
-                <symbol src="assets:symbols/dot_magenta.svg"></symbol>
+<!--            <m k="type" v="node">-->
+<!--                <symbol src="assets:symbols/dot_blue_dark.svg"></symbol>-->
+<!--            </m>-->
+<!--            <m k="intersectionPid">-->
+<!--                <symbol src="assets:symbols/dot_magenta.svg"></symbol>-->
+<!--            </m>-->
+            <m k="geometry">
+                <symbol src="@typesrc"></symbol>
             </m>
         </m>
 

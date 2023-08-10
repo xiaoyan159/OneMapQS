@@ -544,6 +544,19 @@ class ImportPreProcess {
             }
         }
     }
+    /**
+     * 生成默认路口数据的参考数据
+     * */
+    fun generateIntersectionDynamic(renderEntity: RenderEntity) {
+        // 路口数据的其他点位，是保存在nodeList对应的数组下
+        if (renderEntity.properties.containsKey("type")) {
+            if (renderEntity.properties["type"] == "0") {
+                renderEntity.properties["typesrc"] = "assets:symbols/dot_blue_dark.svg"
+            } else {
+                renderEntity.properties["typesrc"] = "assets:symbols/volcano.svg"
+            }
+        }
+    }
 
     /**
      * 处理杆状物的高程数据
