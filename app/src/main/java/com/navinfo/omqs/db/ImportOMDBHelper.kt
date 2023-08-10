@@ -9,17 +9,15 @@ import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.ZipUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.ImportConfig
-import com.navinfo.omqs.db.deep.ListList
+import com.navinfo.omqs.db.deep.LinkList
 import com.navinfo.omqs.hilt.OMDBDataBaseHiltFactory
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.realm.Realm
-import io.realm.RealmQuery
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -194,18 +192,12 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 }
                                 //遍历判断只显示与任务Link相关的任务数据
                                 if(currentConfig.checkLinkId){
-                                    if(renderEntity.properties.containsKey("linkPid")&&renderEntity.properties["linkPid"]!=null){
-                                        task.hadLinkDvoList.forEach{
-                                            if(it.linkPid==renderEntity.properties["linkPid"]){
-                                                renderEntity.enable = 1
-                                                Log.e("qj","${renderEntity.name}==包括任务link")
-                                                return@forEach
-                                            }
-                                        }
-                                    }else if(renderEntity.table == "OMDB_RESTRICTION" && renderEntity.properties.containsKey("linkIn")){
-                                        if (renderEntity.properties["linkIn"] != null) {
 
-                                            var currentLinkPid = renderEntity.properties["linkIn"]
+                                    if(renderEntity.properties.containsKey("linkPid")){
+
+                                        var currentLinkPid = renderEntity.properties["linkPid"]
+
+                                        if(!currentLinkPid.isNullOrEmpty()&&currentLinkPid!="null"){
 
                                             task.hadLinkDvoList.forEach{
                                                 if(it.linkPid==renderEntity.properties["linkPid"]){
@@ -215,29 +207,51 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                 }
                                             }
                                         }
-                                    }else if(renderEntity.table == "OMDB_INTERSECTION" &&renderEntity.properties.containsKey("type")&& renderEntity.properties.containsKey("linkList")){
-                                        if (renderEntity.properties["type"]!=null&&renderEntity.properties["linkList"] != null) {
 
-                                            val type = renderEntity.properties["type"]
+                                    }else if(renderEntity.table == "OMDB_RESTRICTION" && renderEntity.properties.containsKey("linkIn")){
 
-                                            if(type=="1"){
+                                        if (renderEntity.properties["linkIn"] != null) {
 
-                                                if (renderEntity.properties["linkList"] != null) {
+                                            var currentLinkPid = renderEntity.properties["linkIn"]
 
-                                                    val list: List<ListList> = gson.fromJson(renderEntity.properties["linkList"], object : TypeToken<List<ListList>>() {}.type)
+                                            if(!currentLinkPid.isNullOrEmpty()&&currentLinkPid!="null"){
 
-                                                    if (list != null) {
-                                                        m@for (link in list){
-                                                            for(hadLink in task.hadLinkDvoList){
-                                                                if (link.featureType == 1 && hadLink.linkPid == link.linkPid) {
-                                                                    renderEntity.enable = 1
-                                                                    Log.e("qj", "${renderEntity.name}==包括任务link")
-                                                                    break@m
-                                                                }
+                                                task.hadLinkDvoList.forEach{
+                                                    if(it.linkPid==currentLinkPid){
+                                                        renderEntity.enable = 1
+                                                        Log.e("qj","${renderEntity.name}==包括任务link")
+                                                        return@forEach
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }else if(renderEntity.table == "OMDB_INTERSECTION" && renderEntity.properties.containsKey("linkList")){
+
+                                        if (renderEntity.properties["linkList"] != null) {
+
+                                            Log.e("qj", "linkList==开始${renderEntity.name}==${renderEntity.properties["linkList"]}}")
+
+                                            val linkList = renderEntity.properties["linkList"]
+
+                                            if (!linkList.isNullOrEmpty()&&linkList!="null") {
+
+                                                Log.e("qj", "linkList==${renderEntity.name}==${renderEntity.properties["linkList"]}}")
+
+                                                val list: List<LinkList> = gson.fromJson(linkList, object : TypeToken<List<LinkList>>() {}.type)
+
+                                                if (list != null) {
+                                                    m@for (link in list){
+                                                        for(hadLink in task.hadLinkDvoList){
+                                                            if (hadLink.linkPid == link.linkPid) {
+                                                                renderEntity.enable = 1
+                                                                Log.e("qj", "${renderEntity.name}==包括任务link==${renderEntity.geometry}")
+                                                                break@m
                                                             }
                                                         }
                                                     }
                                                 }
+                                            }else{
+                                                Log.e("qj", "linkList==$linkList}")
                                             }
                                         }
                                     }else{

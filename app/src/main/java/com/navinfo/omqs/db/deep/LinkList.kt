@@ -1,6 +1,6 @@
 package com.navinfo.omqs.db.deep
 
-data class ListList(
+data class LinkList(
     var featureType: Int = -1,
     var linkPid: String = ""
 )
