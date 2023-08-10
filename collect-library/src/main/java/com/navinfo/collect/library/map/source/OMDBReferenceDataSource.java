@@ -51,7 +51,6 @@ public class OMDBReferenceDataSource implements ITileDataSource {
             if (!listResult.isEmpty()) {
                 mThreadLocalDecoders.get().decode(tile.zoomLevel, tile, mapDataSink, listResult);
             }
-            Log.e("jingo",listResult.size() + "条数据");
             mapDataSink.completed(QueryResult.SUCCESS);
 //            Log.d("RealmDBTileDataSource", "tile:"+tile.getBoundingBox().toString());
         } else {

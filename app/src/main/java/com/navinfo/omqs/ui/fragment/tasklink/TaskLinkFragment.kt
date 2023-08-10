@@ -97,7 +97,7 @@ class TaskLinkFragment : BaseFragment(), View.OnClickListener {
          * 线长度
          */
         mapController.measureLayerHandler.measureValueLiveData.observe(viewLifecycleOwner) {
-            binding.taskLinkLength.text = "${it}米"
+            binding.taskLinkLength.text = "${it.valueString}${it.unit}"
         }
         mapController.measureLayerHandler.tempMeasureValueLiveData.observe(viewLifecycleOwner) {
             (activity as MainActivity).setHomeCenterText("${it.valueString}${it.unit}")
@@ -110,6 +110,7 @@ class TaskLinkFragment : BaseFragment(), View.OnClickListener {
          * 显示地图准星
          */
         activity?.let {
+            (activity as MainActivity).measuringToolOff()
             (activity as MainActivity).setHomeCenterVisibility(View.VISIBLE)
         }
     }

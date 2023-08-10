@@ -296,9 +296,11 @@ class TaskLinkViewModel @Inject constructor(
             if (task != null) {
                 liveDataTaskBean.postValue(realm.copyFromRealm(task))
             }
-            hadLinkDvoBean = realm.copyFromRealm(objects)
-            withContext(Dispatchers.Main) {
-                mapController.measureLayerHandler.initPathLine(hadLinkDvoBean?.geometry!!)
+            if(objects != null) {
+                hadLinkDvoBean = realm.copyFromRealm(objects)
+                withContext(Dispatchers.Main) {
+                    mapController.measureLayerHandler.initPathLine(hadLinkDvoBean?.geometry!!)
+                }
             }
         }
     }

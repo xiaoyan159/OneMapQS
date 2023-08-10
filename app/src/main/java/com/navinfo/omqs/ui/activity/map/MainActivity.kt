@@ -503,7 +503,7 @@ class MainActivity : BaseActivity() {
     /**
      * 结束测量
      */
-    private fun measuringToolOff() {
+    fun measuringToolOff() {
         //监听测距值
         mapController.measureLayerHandler.measureValueLiveData.removeObservers(this)
         mapController.measureLayerHandler.tempMeasureValueLiveData.removeObservers(this)
