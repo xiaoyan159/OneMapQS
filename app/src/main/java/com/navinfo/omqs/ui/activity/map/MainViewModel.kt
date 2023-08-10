@@ -583,6 +583,7 @@ class MainViewModel @Inject constructor(
      * 点击我的位置，回到我的位置
      */
     fun onClickLocationButton() {
+        mapController.markerHandle.removeMarker("location")
         mapController.locationLayerHandler.animateToCurrentPosition()
     }
 
@@ -1113,6 +1114,7 @@ class MainViewModel @Inject constructor(
                         val x = parts[0].toDouble()
                         val y = parts[1].toDouble()
                         mapController.animationHandler.animationByLatLon(y, x)
+                        mapController.markerHandle.addMarker(GeoPoint(y,x),"location")
                         dialog.dismiss()
                     } else {
                         Toast.makeText(mapController.mMapView.context, "输入格式不正确", Toast.LENGTH_SHORT).show()

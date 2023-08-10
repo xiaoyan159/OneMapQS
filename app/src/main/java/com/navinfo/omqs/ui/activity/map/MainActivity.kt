@@ -424,6 +424,7 @@ class MainActivity : BaseActivity() {
                 editText.text = null
                 //清理已绘制线
                 mapController.lineHandler.removeLine()
+                mapController.markerHandle.removeMarker("location")
                 when (p0.position) {
                     0 -> editText.hint = "请输入LinkPid例如：12345678"
                     1 -> editText.hint = "请输入MarkId例如：123456789"
