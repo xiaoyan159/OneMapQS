@@ -133,6 +133,24 @@ class RealmOperateHelper() {
         return link
     }
 
+    suspend fun queryLinkToMutableRenderEntityList(linkPid: String): MutableList<RenderEntity>? {
+        val resultList = mutableListOf<RenderEntity>()
+
+        val realm = Realm.getDefaultInstance()
+
+        val realmR = realm.where(RenderEntity::class.java)
+            .equalTo("properties['${LinkTable.linkPid}']", linkPid)
+            .findAll()
+
+        val dataList = realm.copyFromRealm(realmR)
+
+        dataList.forEach {
+            resultList.add(it)
+        }
+
+        return resultList
+    }
+
     /**
      * 根据当前点位查询匹配的除Link外的其他要素数据
      * @param point 点位经纬度信息

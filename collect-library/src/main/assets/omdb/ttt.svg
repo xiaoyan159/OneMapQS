@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="168" height="38" viewBox="0 0 168 38">
+    <defs>
+        <style>.a{fill:#5431b2;opacity:0.2;}.b{fill:#5b57c1;}.c{fill:#c18557;}</style>
+    </defs>
+    <g transform="translate(-153 -1049)">
+        <g transform="translate(0 51)">
+            <rect class="a" width="38" height="168" transform="translate(321 998) rotate(90)" />
+            <rect class="b" width="6" height="168" transform="translate(321 1003) rotate(90)" />
+            <rect class="b" width="6" height="168" transform="translate(321 1025) rotate(90)" />
+            <rect class="c" width="6" height="28" transform="translate(156 1003)" />
+            <rect class="c" width="6" height="28" transform="translate(176 1003)" />
+            <rect class="c" width="6" height="28" transform="translate(215 1003)" />
+            <rect class="c" width="6" height="28" transform="translate(195 1003)" />
+            <rect class="c" width="6" height="28" transform="translate(254 1003)" />
+            <rect class="c" width="6" height="28" transform="translate(234 1003)" />
+            <rect class="c" width="6" height="28" transform="translate(312 1003)" />
+            <rect class="c" width="6" height="28" transform="translate(293 1003)" />
+            <rect class="c" width="6" height="28" transform="translate(273 1003)" />
+        </g>
+    </g>
+</svg>

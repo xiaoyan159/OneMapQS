@@ -11,6 +11,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.hilt.OMDBDataBaseHiltFactory
@@ -101,10 +102,13 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         FIELD_TYPE_NULL -> rowMap[columnName] = ""
                                         FIELD_TYPE_INTEGER -> rowMap[columnName] =
                                             getInt(columnIndex)
+
                                         FIELD_TYPE_FLOAT -> rowMap[columnName] =
                                             getFloat(columnIndex)
+
                                         FIELD_TYPE_BLOB -> rowMap[columnName] =
                                             String(getBlob(columnIndex), Charsets.UTF_8)
+
                                         else -> rowMap[columnName] = getString(columnIndex)
                                     }
                                 }
@@ -123,99 +127,132 @@ class ImportOMDBHelper @AssistedInject constructor(
      * @param omdbZipFile omdb数据抽取生成的Zip文件
      * @param configFile 对应的配置文件
      * */
-    suspend fun importOmdbZipFile(omdbZipFile: File, taskId: Int): Flow<String> = withContext(Dispatchers.IO) {
-        val unZipFolder = File(omdbZipFile.parentFile, "result")
-        flow {
-            if (unZipFolder.exists()) {
-                unZipFolder.deleteRecursively()
-            }
-            unZipFolder.mkdirs()
-            // 开始解压zip文件
-            val unZipFiles = ZipUtils.unzipFile(omdbZipFile, unZipFolder)
-            // 将listResult数据插入到Realm数据库中
-            val realm = Realm.getDefaultInstance()
-            realm.beginTransaction()
-            try {
-                // 遍历解压后的文件，读取该数据返回
-                for ((index, currentEntry) in importConfig.tableMap.entries.withIndex()) {
-                    val currentConfig = currentEntry.value
-                    val txtFile = unZipFiles.find {
-                        it.name == currentConfig.table
-                    }
+    suspend fun importOmdbZipFile(omdbZipFile: File, task: TaskBean): Flow<String> =
+        withContext(Dispatchers.IO) {
+            val unZipFolder = File(omdbZipFile.parentFile, "result")
+            flow {
+                if (unZipFolder.exists()) {
+                    unZipFolder.deleteRecursively()
+                }
+                unZipFolder.mkdirs()
+                // 开始解压zip文件
+                val unZipFiles = ZipUtils.unzipFile(omdbZipFile, unZipFolder)
+                // 将listResult数据插入到Realm数据库中
+                val realm = Realm.getDefaultInstance()
+                realm.beginTransaction()
+                try {
+                    // 遍历解压后的文件，读取该数据返回
+                    for ((index, currentEntry) in importConfig.tableMap.entries.withIndex()) {
+                        val currentConfig = currentEntry.value
+                        val txtFile = unZipFiles.find {
+                            it.name == currentConfig.table
+                        }
 
-                    val listResult = mutableListOf<RenderEntity>()
-                    currentConfig?.let {
-                        val list = FileIOUtils.readFile2List(txtFile, "UTF-8")
-                        Log.d("ImportOMDBHelper", "开始解析：${txtFile?.name}")
-                        if (list != null) {
-                            // 将list数据转换为map
-                            for ((index, line) in list.withIndex()) {
-                                if (line == null || line.trim() == "") {
-                                    continue
-                                }
-                                Log.d("ImportOMDBHelper", "解析第：${index+1}行")
-                                val map = gson.fromJson<Map<String, Any>>(line, object:TypeToken<Map<String, Any>>(){}.getType())
-                                    .toMutableMap()
-                                map["qi_table"] = currentConfig.table
-                                map["qi_name"] = currentConfig.name
-                                map["qi_code"] =
-                                    if (currentConfig.code == 0) currentConfig.code else currentEntry.key
-                                map["qi_code"] = if (currentConfig.code == 0) currentConfig.code else currentEntry.key
-                                map["qi_zoomMin"] = currentConfig.zoomMin
-                                map["qi_zoomMax"] = currentConfig.zoomMax
-
-                                // 先查询这个mesh下有没有数据，如果有则跳过即可
-                                // val meshEntity = Realm.getDefaultInstance().where(RenderEntity::class.java).equalTo("properties['mesh']", map["mesh"].toString()).findFirst()
-                                val renderEntity = RenderEntity()
-                                renderEntity.code = map["qi_code"].toString().toInt()
-                                renderEntity.name = map["qi_name"].toString()
-                                renderEntity.table = map["qi_table"].toString()
-                                renderEntity.taskId = taskId
-                                renderEntity.zoomMin = map["qi_zoomMin"].toString().toInt()
-                                renderEntity.zoomMax = map["qi_zoomMax"].toString().toInt()
-
-                                // 其他数据插入到Properties中
-                                renderEntity.geometry = map["geometry"].toString()
-                                for ((key, value) in map) {
-                                    when (value) {
-                                        is String -> renderEntity.properties.put(key, value)
-                                        is Int -> renderEntity.properties.put(
-                                            key,
-                                            value.toInt().toString()
-                                        )
-                                        is Double -> renderEntity.properties.put(
-                                            key,
-                                            value.toDouble().toString()
-                                        )
-                                        else -> renderEntity.properties.put(key, value.toString())
+                        val listResult = mutableListOf<RenderEntity>()
+                        currentConfig?.let {
+                            val list = FileIOUtils.readFile2List(txtFile, "UTF-8")
+                            Log.d("ImportOMDBHelper", "开始解析：${txtFile?.name}")
+                            if (list != null) {
+                                // 将list数据转换为map
+                                for ((index, line) in list.withIndex()) {
+                                    if (line == null || line.trim() == "") {
+                                        continue
                                     }
-                                }
-                                listResult.add(renderEntity)
-                                // 对renderEntity做预处理后再保存
-                                val resultEntity = importConfig.transformProperties(renderEntity)
-                                if (resultEntity != null) {
-                                    realm.insert(renderEntity)
+                                    Log.d("ImportOMDBHelper", "解析第：${index + 1}行")
+                                    val map = gson.fromJson<Map<String, Any>>(
+                                        line,
+                                        object : TypeToken<Map<String, Any>>() {}.getType()
+                                    )
+                                        .toMutableMap()
+                                    map["qi_table"] = currentConfig.table
+                                    map["qi_name"] = currentConfig.name
+                                    map["qi_code"] =
+                                        if (currentConfig.code == 0) currentConfig.code else currentEntry.key
+                                    map["qi_code"] =
+                                        if (currentConfig.code == 0) currentConfig.code else currentEntry.key
+                                    map["qi_zoomMin"] = currentConfig.zoomMin
+                                    map["qi_zoomMax"] = currentConfig.zoomMax
+
+                                    // 先查询这个mesh下有没有数据，如果有则跳过即可
+                                    // val meshEntity = Realm.getDefaultInstance().where(RenderEntity::class.java).equalTo("properties['mesh']", map["mesh"].toString()).findFirst()
+                                    val renderEntity = RenderEntity()
+                                    renderEntity.code = map["qi_code"].toString().toInt()
+                                    renderEntity.name = map["qi_name"].toString()
+                                    renderEntity.table = map["qi_table"].toString()
+                                    renderEntity.taskId = task.id
+                                    renderEntity.zoomMin = map["qi_zoomMin"].toString().toInt()
+                                    renderEntity.zoomMax = map["qi_zoomMax"].toString().toInt()
+
+                                    // 其他数据插入到Properties中
+                                    renderEntity.geometry = map["geometry"].toString()
+
+                                    for ((key, value) in map) {
+                                        when (value) {
+
+                                            is String -> renderEntity.properties[key] = value
+
+                                            is Int -> renderEntity.properties[key] = value.toInt().toString()
+
+                                            is Double -> renderEntity.properties[key] = value.toDouble().toString()
+
+                                            else -> renderEntity.properties[key] = value.toString()
+                                        }
+                                    }
+
+                                    //如果要素不包括linkPid，需要从其他字段获得
+                                    if(!renderEntity.properties.containsKey("linkPid")){
+                                        //交限从进入线获取
+                                        if(renderEntity.properties.containsKey("linkIn")){
+                                            renderEntity.properties["linkPid"]= renderEntity.properties["linkIn"]
+                                        }
+                                    }
+
+                                    //遍历判断只显示与任务Link相关的任务数据
+                                    if (currentConfig.checkLinkId && renderEntity.properties.containsKey("linkPid")) {
+
+                                        var currentLinkPid = renderEntity.properties["linkPid"]
+
+                                        task.hadLinkDvoList.forEach {
+                                            if (it.linkPid == currentLinkPid) {
+                                                renderEntity.enable = 1
+                                                Log.e("qj", "${renderEntity.name}==包括任务link")
+                                                return@forEach
+                                            }
+                                        }
+                                    } else {
+                                        renderEntity.enable = 2
+                                        Log.e("qj", "${renderEntity.name}==不包括任务linkPid")
+                                    }
+
+                                    listResult.add(renderEntity)
+
+                                    // 对renderEntity做预处理后再保存
+                                    val resultEntity = importConfig.transformProperties(renderEntity)
+
+                                    if (resultEntity != null) {
+                                        realm.insert(renderEntity)
+                                    }
+
                                 }
                             }
                         }
+                        // 1个文件发送一次flow流
+                        emit("${index + 1}/${importConfig.tableMap.size}")
+                        // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
+                        if (currentConfig.table == "OMDB_RD_LINK") {
+                            importConfig.preProcess.cacheRdLink =
+                                listResult.associateBy { it.properties["linkPid"] }
+                        }
                     }
-                    // 1个文件发送一次flow流
-                    emit("${index + 1}/${importConfig.tableMap.size}")
-                    // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
-                    if (currentConfig.table == "OMDB_RD_LINK") {
-                        importConfig.preProcess.cacheRdLink =
-                            listResult.associateBy { it.properties["linkPid"] }
-                    }
+                    realm.commitTransaction()
+                    realm.close()
+                } catch (e: Exception) {
+                    realm.cancelTransaction()
+                    throw e
                 }
-                realm.commitTransaction()
-                realm.close()
-            } catch (e: Exception) {
-                realm.cancelTransaction()
-                throw e
+                emit("finish")
             }
-            emit("finish")
         }
-    }
 
     // 获取指定数据表的列名
     fun getColumns(db: SQLiteDatabase, tableName: String): List<String> {

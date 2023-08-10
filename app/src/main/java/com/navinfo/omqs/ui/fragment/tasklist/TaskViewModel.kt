@@ -421,8 +421,21 @@ class TaskViewModel @Inject constructor(
                                             r.copyToRealmOrUpdate(hadLinkDvoBean)
                                             r.copyToRealmOrUpdate(currentSelectTaskBean!!)
                                         }
+                                        //根据Link数据查询对应数据上要素，对要素进行显示重置
+                                        l.properties["linkPid"]?.let {
+                                            realmOperateHelper.queryLinkToMutableRenderEntityList(it)
+                                                ?.forEach { renderEntity ->
+                                                    if(renderEntity.enable!=1){
+                                                        renderEntity.enable = 1
+                                                        realm.executeTransaction { r ->
+                                                            r.copyToRealmOrUpdate(renderEntity)
+                                                        }
+                                                    }
+                                                }
+                                        }
                                         liveDataTaskLinks.postValue(currentSelectTaskBean!!.hadLinkDvoList)
                                         mapController.lineHandler.addTaskLink(hadLinkDvoBean)
+                                        mapController.mMapView.vtmMap.updateMap(true)
                                     }
                                 }
                             }
@@ -461,7 +474,23 @@ class TaskViewModel @Inject constructor(
             ) { dialog, _ ->
                 dialog.dismiss()
                 viewModelScope.launch(Dispatchers.IO) {
+
                     val realm = Realm.getDefaultInstance()
+
+                    //重置数据为隐藏
+                    if(hadLinkDvoBean.linkStatus==2){
+                        realmOperateHelper.queryLinkToMutableRenderEntityList(hadLinkDvoBean.linkPid)
+                            ?.forEach { renderEntity ->
+                                if(renderEntity.enable==1){
+                                    renderEntity.enable = 0
+                                    realm.executeTransaction { r ->
+                                        r.copyToRealmOrUpdate(renderEntity)
+                                    }
+                                }
+                            }
+                        mapController.mMapView.vtmMap.updateMap(true)
+                    }
+
                     realm.executeTransaction {
                         for (link in currentSelectTaskBean!!.hadLinkDvoList) {
                             if (link.linkPid == hadLinkDvoBean.linkPid) {
