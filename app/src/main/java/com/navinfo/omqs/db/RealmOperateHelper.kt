@@ -4,11 +4,14 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
+import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.data.entity.RenderEntity.Companion.LinkTable
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
+import com.navinfo.collect.library.utils.RealmDBParamUtils
+import com.navinfo.omqs.bean.QRCodeBean
 import io.realm.Realm
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -60,7 +63,7 @@ class RealmOperateHelper() {
         val realmList = realm.where(RenderEntity::class.java)
             .equalTo("table", "OMDB_RD_LINK")
             .and()
-            .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd")
+            .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd").and().equalTo("taskId",RealmDBParamUtils.getTaskId())
             .findAll()
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
         val dataList = realm.copyFromRealm(realmList)
@@ -85,9 +88,7 @@ class RealmOperateHelper() {
         return result
     }
 
-
     suspend fun captureTaskLink(
-        taskId: Int,
         point: GeoPoint,
         buffer: Double = DEFAULT_BUFFER,
         bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE,
@@ -101,7 +102,7 @@ class RealmOperateHelper() {
 
         val realm = Realm.getDefaultInstance()
         val realmList = realm.where(HadLinkDvoBean::class.java)
-            .equalTo("taskId", taskId)
+            .equalTo("taskId",RealmDBParamUtils.getTaskId())
             .findAll()
         var linkBean: HadLinkDvoBean? = null
         var nearLast: Double = 99999.99
@@ -125,12 +126,30 @@ class RealmOperateHelper() {
         val realmR = realm.where(RenderEntity::class.java)
             .equalTo("table", "OMDB_RD_LINK")
             .and()
-            .equalTo("properties['${LinkTable.linkPid}']", linkPid)
+            .equalTo("properties['${LinkTable.linkPid}']", linkPid).and().equalTo("taskId",RealmDBParamUtils.getTaskId())
             .findFirst()
         if (realmR != null) {
             link = realm.copyFromRealm(realmR)
         }
         return link
+    }
+
+    /**
+     * 根据markid查询获取对应数据
+     * @param markId
+     * */
+    suspend fun queryQcRecordBean(markId: String): QsRecordBean? {
+        var qsRecordBean: QsRecordBean? = null
+        val realm = Realm.getDefaultInstance()
+        val realmR = realm.where(QsRecordBean::class.java)
+            .equalTo("table", "QsRecordBean")
+            .and()
+            .equalTo("id", markId).and().equalTo("taskId",RealmDBParamUtils.getTaskId())
+            .findFirst()
+        if (realmR != null) {
+            qsRecordBean = realm.copyFromRealm(realmR)
+        }
+        return qsRecordBean
     }
 
     suspend fun queryLinkToMutableRenderEntityList(linkPid: String): MutableList<RenderEntity>? {
@@ -139,7 +158,7 @@ class RealmOperateHelper() {
         val realm = Realm.getDefaultInstance()
 
         val realmR = realm.where(RenderEntity::class.java)
-            .equalTo("properties['${LinkTable.linkPid}']", linkPid)
+            .equalTo("properties['${LinkTable.linkPid}']", linkPid).and().equalTo("taskId",RealmDBParamUtils.getTaskId())
             .findAll()
 
         val dataList = realm.copyFromRealm(realmR)
@@ -184,7 +203,7 @@ class RealmOperateHelper() {
         val realmList = realm.where(RenderEntity::class.java)
             .notEqualTo("table", "OMDB_RD_LINK")
             .and()
-            .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd")
+            .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd").and().equalTo("taskId",RealmDBParamUtils.getTaskId())
             .findAll()
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
         val queryResult = realmList?.stream()?.filter {
@@ -214,7 +233,7 @@ class RealmOperateHelper() {
         val realmList = realm.where(RenderEntity::class.java)
             .notEqualTo("table", "OMDB_RD_LINK")
             .and()
-            .equalTo("properties['${LinkTable.linkPid}']", linkPid)
+            .equalTo("properties['${LinkTable.linkPid}']", linkPid).and().equalTo("taskId",RealmDBParamUtils.getTaskId())
             .findAll()
         result.addAll(realm.copyFromRealm(realmList))
         return result

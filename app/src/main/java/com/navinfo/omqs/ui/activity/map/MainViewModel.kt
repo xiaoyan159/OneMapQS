@@ -34,6 +34,7 @@ import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
 import com.navinfo.collect.library.map.handler.OnTaskLinkItemClickListener
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
+import com.navinfo.collect.library.utils.RealmDBParamUtils
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
@@ -280,8 +281,7 @@ class MainViewModel @Inject constructor(
             initNILocationData()
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-        com.navinfo.collect.library.system.Constant.TASK_ID =
-            sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
+        RealmDBParamUtils.setTaskId(sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1))
         socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
     }
 
@@ -1052,6 +1052,74 @@ class MainViewModel @Inject constructor(
      */
     fun cancelTrace() {
         timer?.cancel()
+    }
+
+    fun click2Dor3D(){
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.e(
+                "qj",
+                "${
+                    Realm.getDefaultInstance().where(RenderEntity::class.java).findAll().size
+                }==安装数量"
+            )
+        }
+    }
+
+    /**
+     * 搜索接口
+     * @param searchEnum 枚举类
+     * @param msg 搜索内容
+     */
+     fun search(searchEnum: SearchEnum,msg:String,dialog:DialogInterface){
+        if(searchEnum!=null&&msg.isNotEmpty()&&dialog!=null){
+            when (searchEnum) {
+                SearchEnum.LINK -> {
+                     viewModelScope.launch(Dispatchers.IO) {
+                         val link = realmOperateHelper.queryLink(linkPid = msg)
+                         if(link!=null){
+                             link?.let { l ->
+                                 mapController.lineHandler.showLine(l.geometry)
+                                 dialog.dismiss()
+                             }
+                         }else{
+                             withContext(Dispatchers.Main){
+                                 Toast.makeText(mapController.mMapView.context, "未查询到数据", Toast.LENGTH_SHORT).show()
+                             }
+                         }
+                     }
+                }
+                SearchEnum.MARK -> {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        val qsRecordBean = realmOperateHelper.queryQcRecordBean(markId = msg)
+                        if(qsRecordBean!=null){
+                            qsRecordBean?.let { l ->
+                                val naviController = (mapController.mMapView.context as Activity).findNavController(R.id.main_activity_right_fragment)
+                                val bundle = Bundle()
+                                bundle.putString("QsId", l.id)
+                                naviController.navigate(R.id.EvaluationResultFragment, bundle)
+                                ToastUtils.showLong(l.classType)
+                                dialog.dismiss()
+                            }
+                        }else{
+                            withContext(Dispatchers.Main){
+                                Toast.makeText(mapController.mMapView.context, "未查询到数据", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+                SearchEnum.LOCATION -> {
+                    val parts = msg.split("[,，\\s]".toRegex())
+                    if (parts.size == 2) {
+                        val x = parts[0].toDouble()
+                        val y = parts[1].toDouble()
+                        mapController.animationHandler.animationByLatLon(y, x)
+                        dialog.dismiss()
+                    } else {
+                        Toast.makeText(mapController.mMapView.context, "输入格式不正确", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
     }
 }
 

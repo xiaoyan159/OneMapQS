@@ -25,4 +25,7 @@ public class RealmDBTileSource extends TileSource {
     public void close() {
 
     }
+
+    public void update(){
+    }
 }

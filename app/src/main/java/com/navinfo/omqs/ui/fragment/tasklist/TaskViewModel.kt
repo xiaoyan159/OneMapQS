@@ -16,6 +16,7 @@ import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.OnGeoPointClickListener
 import com.navinfo.collect.library.utils.GeometryTools
+import com.navinfo.collect.library.utils.RealmDBParamUtils
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.http.NetworkService
@@ -141,8 +142,8 @@ class TaskViewModel @Inject constructor(
 
         liveDataTaskLinks.value = taskBean.hadLinkDvoList
         showTaskLinks(taskBean)
-        com.navinfo.collect.library.system.Constant.TASK_ID = taskBean.id
-        mapController.layerManagerHandler.omdbLayersClear()
+        RealmDBParamUtils.setTaskId(taskBean.id)
+        mapController.layerManagerHandler.updateOMDBVectorTileLayer()
         mapController.mMapView.updateMap(true)
 
     }

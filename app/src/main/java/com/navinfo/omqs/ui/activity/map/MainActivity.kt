@@ -19,8 +19,8 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.tabs.TabLayout
 import com.navinfo.collect.library.map.NIMapController
-import com.navinfo.collect.library.map.NIMapOptions
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
@@ -41,6 +41,7 @@ import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.oscim.android.theme.AssetsRenderTheme
 import org.oscim.core.GeoPoint
 import org.oscim.renderer.GLViewport
 import org.videolan.vlc.Util
@@ -406,30 +407,48 @@ class MainActivity : BaseActivity() {
             this
         ).setTitle("坐标定位").setView(view)
         val editText = view.findViewById<EditText>(R.id.dialog_edittext)
-        editText.hint = "请输入经纬度例如：116.1234567,39.1234567"
+        val tabItemLayout = view.findViewById<TabLayout>(R.id.search_tab_layout)
+        editText.hint = "请输入LinkPid例如：12345678"
+        var index:Int = 0
+        tabItemLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(p0: TabLayout.Tab) {
+
+            }
+
+            override fun onTabUnselected(p0: TabLayout.Tab) {
+
+            }
+
+            override fun onTabSelected(p0: TabLayout.Tab) {
+                index = p0.position
+                editText.text = null
+                //清理已绘制线
+                mapController.lineHandler.removeLine()
+                when (p0.position) {
+                    0 -> editText.hint = "请输入LinkPid例如：12345678"
+                    1 -> editText.hint = "请输入MarkId例如：123456789"
+                    2 -> editText.hint = "请输入经纬度例如：116.1234567,39.1234567"
+                }
+            }
+        })
         inputDialog.setNegativeButton("取消") { dialog, _ ->
             dialog.dismiss()
         }
         inputDialog.setPositiveButton("确定") { dialog, _ ->
             if (editText.text.isNotEmpty()) {
                 try {
-                    val parts = editText.text.toString().split("[,，\\s]".toRegex())
-                    if (parts.size == 2) {
-                        val x = parts[0].toDouble()
-                        val y = parts[1].toDouble()
-                        mapController.animationHandler.animationByLatLon(y, x)
-                    } else {
-                        Toast.makeText(this, "输入格式不正确", Toast.LENGTH_SHORT).show()
+                    when (index) {
+                        0 -> viewModel.search(SearchEnum.LINK,editText.text.toString(),dialog)
+                        1 -> viewModel.search(SearchEnum.MARK,editText.text.toString(),dialog)
+                        2 -> viewModel.search(SearchEnum.LOCATION,editText.text.toString(),dialog)
                     }
                 } catch (e: Exception) {
                     Toast.makeText(this, "输入格式不正确", Toast.LENGTH_SHORT).show()
                 }
             }
-            dialog.dismiss()
         }
         inputDialog.show()
     }
-
 
     override fun onStart() {
         super.onStart()
@@ -512,7 +531,7 @@ class MainActivity : BaseActivity() {
      * 点击2\3D
      */
     fun onClick2DOr3D() {
-
+        viewModel.click2Dor3D()
     }
 
     /**
@@ -627,8 +646,8 @@ class MainActivity : BaseActivity() {
      * 点击结束轨迹操作
      */
     fun mediaFlagOnclick() {
-/*        viewModel.setMediaFlag(!viewModel.isMediaFlag())
-        binding.mainActivitySnapshotMediaFlag.isSelected = viewModel.isMediaFlag()*/
+        /*        viewModel.setMediaFlag(!viewModel.isMediaFlag())
+                binding.mainActivitySnapshotMediaFlag.isSelected = viewModel.isMediaFlag()*/
     }
 
     /**
@@ -825,7 +844,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun showMainActivityBottomSheetGroup(){
+    private fun showMainActivityBottomSheetGroup() {
         binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
         mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
         mapController.mMapView.vtmMap.animator().animateTo(
@@ -836,7 +855,7 @@ class MainActivity : BaseActivity() {
         )
     }
 
-    private fun hideMainActivityBottomSheetGroup(){
+    private fun hideMainActivityBottomSheetGroup() {
         binding.mainActivityBottomSheetGroup.visibility = View.GONE
         mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 5)
         mapController.mMapView.vtmMap.animator().animateTo(

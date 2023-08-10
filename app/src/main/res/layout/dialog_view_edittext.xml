@@ -1,10 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="12dp">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/search_tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/fragment_tabLayout_height"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="11dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/transparent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:tabBackground="@drawable/selector_bg_gradient_checkbox"
+        app:tabGravity="center"
+        app:tabIndicator="@null"
+        app:tabIndicatorHeight="0dp"
+        app:tabMaxWidth="110dp"
+        app:tabMinWidth="110dp"
+        app:tabMode="scrollable"
+        app:tabPaddingEnd="6dp"
+        app:tabPaddingStart="6dp"
+        app:tabSelectedTextColor="@color/white"
+        app:tabTextAppearance="@style/TabLayoutTextStyle"
+        app:tabTextColor="@color/black"
+        tools:ignore="MissingConstraints">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="link" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mark" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="经纬度" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+
     <EditText
+        app:layout_constraintTop_toBottomOf="@id/search_tab_layout"
         android:id="@+id/dialog_edittext"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

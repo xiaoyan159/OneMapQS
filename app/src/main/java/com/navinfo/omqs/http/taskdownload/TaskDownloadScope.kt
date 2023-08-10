@@ -1,7 +1,6 @@
 package com.navinfo.omqs.http.taskdownload
 
 import android.util.Log
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -10,10 +9,10 @@ import com.navinfo.omqs.Constant
 import com.navinfo.omqs.db.ImportOMDBHelper
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
-import com.navinfo.omqs.ui.other.BaseViewHolder
 import com.navinfo.omqs.util.DateTimeUtil
 import io.realm.Realm
 import kotlinx.coroutines.*
+import org.oscim.android.theme.AssetsRenderTheme
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -144,7 +143,7 @@ class TaskDownloadScope(
                     if (it == "finish") {
                         change(FileDownloadStatus.DONE)
                         withContext(Dispatchers.Main) {
-                            downloadManager.mapController.mMapView.updateMap(true)
+                            downloadManager.mapController.layerManagerHandler.updateOMDBVectorTileLayer()
                         }
                     } else {
                         change(FileDownloadStatus.IMPORTING, it)
