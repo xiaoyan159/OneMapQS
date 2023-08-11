@@ -251,7 +251,8 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                     }
                                                 }
                                             }else{
-                                                Log.e("qj", "linkList==$linkList}")
+                                                renderEntity.enable = 2
+                                                Log.e("qj", "简单路口")
                                             }
                                         }
                                     }else{
