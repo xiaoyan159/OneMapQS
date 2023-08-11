@@ -212,7 +212,6 @@
             android:drawableLeft="@drawable/icon_main_geometry"
             android:elevation="2dp"
             android:gravity="center"
-            android:onClick="@{()->mainActivity.jumpPosition()}"
             android:paddingLeft="9dp"
             android:text="经纬度:116.99388424,38.8403844"
             android:textSize="10sp"
