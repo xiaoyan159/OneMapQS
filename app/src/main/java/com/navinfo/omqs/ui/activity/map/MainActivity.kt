@@ -43,7 +43,6 @@ import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import org.oscim.android.theme.AssetsRenderTheme
 import org.oscim.core.GeoPoint
 import org.oscim.renderer.GLViewport
 import org.videolan.vlc.Util
@@ -399,6 +398,77 @@ class MainActivity : BaseActivity() {
         } else {
             supportFragmentManager.beginTransaction()
                 .add(R.id.console_fragment_layout, ConsoleFragment()).commit()
+        }
+        initMeasuringTool()
+    }
+
+    /**
+     *初始化测量工具栏的点击事件
+     */
+
+    private fun initMeasuringTool() {
+        val root = binding.mainActivityMeasuringTool.root
+        root.findViewById<View>(R.id.measuring_tool_select_point)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_close)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_backspace)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_reset)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_distance)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_area)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_angle)
+            .setOnClickListener(measuringToolClickListener)
+    }
+
+    /**
+     * 测量工具点击事件
+     */
+    private val measuringToolClickListener = View.OnClickListener {
+        when (it.id) {
+            //选点
+            R.id.measuring_tool_select_point -> {
+                viewModel.addPointForMeasuringTool()
+            }
+            //关闭
+            R.id.measuring_tool_close -> {
+                measuringToolOff()
+            }
+            //上一步
+            R.id.measuring_tool_backspace -> {
+                viewModel.backPointForMeasuringTool()
+            }
+            //重绘
+            R.id.measuring_tool_reset -> {
+                viewModel.resetMeasuringTool()
+            }
+            //测距
+            R.id.measuring_tool_distance -> {
+                it.isSelected = true
+                viewModel.setMeasuringToolType(MeasureLayerHandler.MEASURE_TYPE.DISTANCE)
+                val root = binding.mainActivityMeasuringTool.root
+                root.findViewById<View>(R.id.measuring_tool_area).isSelected = false
+                root.findViewById<View>(R.id.measuring_tool_angle).isSelected = false
+            }
+            //测面积
+            R.id.measuring_tool_area -> {
+                it.isSelected = true
+                viewModel.setMeasuringToolType(MeasureLayerHandler.MEASURE_TYPE.AREA)
+                val root = binding.mainActivityMeasuringTool.root
+                root.findViewById<View>(R.id.measuring_tool_distance).isSelected = false
+                root.findViewById<View>(R.id.measuring_tool_angle).isSelected = false
+            }
+            //测角度
+            R.id.measuring_tool_angle -> {
+                it.isSelected = true
+                viewModel.setMeasuringToolType(MeasureLayerHandler.MEASURE_TYPE.ANGLE)
+                val root = binding.mainActivityMeasuringTool.root
+                root.findViewById<View>(R.id.measuring_tool_distance).isSelected = false
+                root.findViewById<View>(R.id.measuring_tool_area).isSelected = false
+            }
         }
     }
 
