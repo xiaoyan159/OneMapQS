@@ -1,14 +1,18 @@
 package com.navinfo.collect.library.map.handler
 
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.map.source.MapLifeNiLocationTileSource
 import com.navinfo.collect.library.map.source.NavinfoMultiMapFileTileSource
 import com.navinfo.collect.library.map.source.OMDBReferenceTileSource
 import com.navinfo.collect.library.map.source.OMDBTileSource
 import com.navinfo.collect.library.system.Constant
+import io.realm.Realm
 import okhttp3.Cache
 import okhttp3.OkHttpClient
+import org.oscim.android.theme.AssetsRenderTheme
 import org.oscim.layers.GroupLayer
 import org.oscim.layers.tile.buildings.BuildingLayer
 import org.oscim.layers.tile.vector.VectorTileLayer
@@ -131,6 +135,39 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
         if (omdbLabelLayer != null) {
             addLayer(omdbLabelLayer, NIMapView.LAYER_GROUPS.LABEL)
         }
+    }
+
+    private fun resetOMDBVectorTileLayer() {
+
+        if (omdbReferenceTileLayer != null) {
+            removeLayer(omdbReferenceTileLayer)
+        }
+
+        if (omdbReferenceLabelLayer != null) {
+            removeLayer(omdbReferenceLabelLayer)
+        }
+
+        if (omdbVectorTileLayer != null) {
+            removeLayer(omdbVectorTileLayer)
+        }
+        if (omdbLabelLayer != null) {
+            removeLayer(omdbLabelLayer)
+        }
+
+        mMapView.vtmMap.updateMap(true)
+
+        Log.e("qj", "重新加载")
+    }
+
+    public fun updateOMDBVectorTileLayer(){
+
+        omdbTileSource.update()
+
+        omdbReferenceTileSource.update()
+
+        mMapView.vtmMap.setTheme(AssetsRenderTheme(mMapView.context.assets, "", "editormarker.xml"), true)
+
+        mMapView.vtmMap.updateMap(true)
 
     }
 
@@ -214,13 +251,6 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
     fun hideNiLocationLayer() {
         vectorNiLocationTileLayer.isEnabled = false
         labelNiLocationLayer.isEnabled = false
-    }
-
-    fun omdbLayersClear(){
-//         omdbVectorTileLayer.
-//         omdbReferenceTileLayer.
-         omdbLabelLayer.clearLabels()
-         omdbReferenceLabelLayer.clearLabels()
     }
 }
 

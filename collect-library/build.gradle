@@ -55,6 +55,10 @@ android {
     }
 }
 
+realm {
+    syncEnabled = true
+}
+
 //configurations.all {
 //    resolutionStrategy {
 //        force 'com.intellij:annotations:13.0'

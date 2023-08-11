@@ -220,7 +220,7 @@ class EvaluationResultViewModel @Inject constructor(
             liveDataQsRecordBean.value?.let {
 
                 val taskLink =
-                    realmOperateHelper.captureTaskLink(liveDataTaskBean.value!!.id, point)
+                    realmOperateHelper.captureTaskLink(point)
                 if (taskLink != null) {
                     it.linkId = taskLink.linkPid
                     mapController.lineHandler.showLine(taskLink.geometry)

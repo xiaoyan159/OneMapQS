@@ -1,7 +1,10 @@
 package com.navinfo.collect.library.map.handler
 
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.map.NIMapView
+import io.realm.Realm
 import org.oscim.core.BoundingBox
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition

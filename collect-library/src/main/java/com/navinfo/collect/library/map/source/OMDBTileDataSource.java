@@ -9,6 +9,7 @@ import com.navinfo.collect.library.data.RealmUtils;
 import com.navinfo.collect.library.data.entity.GeometryFeatureEntity;
 import com.navinfo.collect.library.data.entity.RenderEntity;
 import com.navinfo.collect.library.system.Constant;
+import com.navinfo.collect.library.utils.RealmDBParamUtils;
 
 import org.oscim.layers.tile.MapTile;
 import org.oscim.tiling.ITileDataSink;
@@ -21,6 +22,7 @@ import io.realm.Realm;
 import io.realm.RealmQuery;
 
 public class OMDBTileDataSource implements ITileDataSource {
+    private boolean isUpdate;
     private final ThreadLocal<OMDBDataDecoder> mThreadLocalDecoders = new ThreadLocal<OMDBDataDecoder>() {
         @Override
         protected OMDBDataDecoder initialValue() {
@@ -38,7 +40,11 @@ public class OMDBTileDataSource implements ITileDataSource {
             int xEnd = (int) ((tile.tileX + 1) << m);
             int yStart = (int) tile.tileY << m;
             int yEnd = (int) ((tile.tileY + 1) << m);
-            RealmQuery<RenderEntity> realmQuery = Realm.getDefaultInstance().where(RenderEntity.class).rawPredicate("tileX>=" + xStart + " and tileX<=" + xEnd + " and tileY>=" + yStart + " and tileY<=" + yEnd + " and enable>=1");
+            if(isUpdate){
+                Realm.getDefaultInstance().refresh();
+                isUpdate = false;
+            }
+            RealmQuery<RenderEntity> realmQuery = Realm.getDefaultInstance().where(RenderEntity.class).rawPredicate("taskId ="+RealmDBParamUtils.getTaskId() +" and tileX>=" + xStart + " and tileX<=" + xEnd + " and tileY>=" + yStart + " and tileY<=" + yEnd + " and enable>=1");
             // 筛选不显示的数据
             if (Constant.HAD_LAYER_INVISIABLE_ARRAY != null && Constant.HAD_LAYER_INVISIABLE_ARRAY.length > 0) {
                 realmQuery.beginGroup();
@@ -67,5 +73,10 @@ public class OMDBTileDataSource implements ITileDataSource {
         if (Realm.getDefaultInstance().isInTransaction()) {
             Realm.getDefaultInstance().cancelTransaction();
         }
+    }
+
+    public void update(){
+        isUpdate = true;
+        Log.e("qj",Thread.currentThread().getName());
     }
 }

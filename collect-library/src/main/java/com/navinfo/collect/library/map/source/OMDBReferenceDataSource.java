@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi;
 
 import com.navinfo.collect.library.data.entity.ReferenceEntity;
 import com.navinfo.collect.library.system.Constant;
+import com.navinfo.collect.library.utils.RealmDBParamUtils;
 
 import org.oscim.layers.tile.MapTile;
 import org.oscim.tiling.ITileDataSink;
@@ -19,6 +20,8 @@ import io.realm.Realm;
 import io.realm.RealmQuery;
 
 public class OMDBReferenceDataSource implements ITileDataSource {
+    private boolean isUpdate;
+
     private final ThreadLocal<OMDBReferenceDecoder> mThreadLocalDecoders = new ThreadLocal<OMDBReferenceDecoder>() {
         @Override
         protected OMDBReferenceDecoder initialValue() {
@@ -36,8 +39,12 @@ public class OMDBReferenceDataSource implements ITileDataSource {
             int xEnd = (int) ((tile.tileX + 1) << m);
             int yStart = (int) tile.tileY << m;
             int yEnd = (int) ((tile.tileY + 1) << m);
+            if(isUpdate){
+                Realm.getDefaultInstance().refresh();
+                isUpdate = false;
+            }
             RealmQuery<ReferenceEntity> realmQuery = Realm.getDefaultInstance().where(ReferenceEntity.class)
-                    .rawPredicate("taskId=" + Constant.TASK_ID + " and tileX>=" + xStart + " and tileX<=" + xEnd + " and tileY>=" + yStart + " and tileY<=" + yEnd + " and enable>=1");
+                    .rawPredicate("taskId="+RealmDBParamUtils.getTaskId() +" and tileX>=" + xStart + " and tileX<=" + xEnd + " and tileY>=" + yStart + " and tileY<=" + yEnd + " and enable>=1" );
             // 筛选不显示的数据
             if (Constant.HAD_LAYER_INVISIABLE_ARRAY != null && Constant.HAD_LAYER_INVISIABLE_ARRAY.length > 0) {
                 realmQuery.beginGroup();
@@ -67,5 +74,10 @@ public class OMDBReferenceDataSource implements ITileDataSource {
         if (Realm.getDefaultInstance().isInTransaction()) {
             Realm.getDefaultInstance().cancelTransaction();
         }
+    }
+
+    public void update(){
+        isUpdate = true;
+        Log.e("qj",Thread.currentThread().getName());
     }
 }

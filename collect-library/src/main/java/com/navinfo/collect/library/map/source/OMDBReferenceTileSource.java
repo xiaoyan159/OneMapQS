@@ -1,17 +1,23 @@
 package com.navinfo.collect.library.map.source;
 
+import android.util.Log;
+
+import com.navinfo.collect.library.data.entity.RenderEntity;
 import com.navinfo.collect.library.system.Constant;
 
 import org.oscim.tiling.ITileDataSource;
 import org.oscim.tiling.OverzoomTileDataSource;
 import org.oscim.tiling.TileSource;
 
-public class OMDBReferenceTileSource extends TileSource {
+import io.realm.Realm;
+
+public class OMDBReferenceTileSource extends RealmDBTileSource {
+    private OMDBReferenceDataSource omdbReferenceTileSource = new OMDBReferenceDataSource();
 
     @Override
     public ITileDataSource getDataSource() {
         //return new OverzoomTileDataSource(new OMDBReferenceDataSource(), Constant.OVER_ZOOM);
-        return new OMDBReferenceDataSource();
+        return omdbReferenceTileSource;
     }
 
     @Override
@@ -22,5 +28,11 @@ public class OMDBReferenceTileSource extends TileSource {
     @Override
     public void close() {
 
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        omdbReferenceTileSource.update();
     }
 }
