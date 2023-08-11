@@ -941,9 +941,12 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    /**
+     * 打开底部导航栏
+     */
     private fun showMainActivityBottomSheetGroup() {
         binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
-        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
+        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 10, 60)
         mapController.mMapView.vtmMap.animator().animateTo(
             GeoPoint(
                 mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
@@ -951,10 +954,12 @@ class MainActivity : BaseActivity() {
             )
         )
     }
-
+    /**
+     * 关闭底部导航栏
+     */
     private fun hideMainActivityBottomSheetGroup() {
         binding.mainActivityBottomSheetGroup.visibility = View.GONE
-        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 5)
+        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 10, 0)
         mapController.mMapView.vtmMap.animator().animateTo(
             GeoPoint(
                 mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,

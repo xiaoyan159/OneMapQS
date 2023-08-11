@@ -36,7 +36,6 @@ public class OMDBReferenceDataSource implements ITileDataSource {
             int xEnd = (int) ((tile.tileX + 1) << m);
             int yStart = (int) tile.tileY << m;
             int yEnd = (int) ((tile.tileY + 1) << m);
-            Log.e("jingo", Constant.TASK_ID + " " + xStart + " " + xEnd + " " + yStart + " " + yEnd);
             RealmQuery<ReferenceEntity> realmQuery = Realm.getDefaultInstance().where(ReferenceEntity.class)
                     .rawPredicate("taskId=" + Constant.TASK_ID + " and tileX>=" + xStart + " and tileX<=" + xEnd + " and tileY>=" + yStart + " and tileY<=" + yEnd + " and enable>=1");
             // 筛选不显示的数据

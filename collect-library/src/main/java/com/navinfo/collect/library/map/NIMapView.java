@@ -262,7 +262,7 @@ public final class NIMapView extends RelativeLayout {
 
         // 增加比例尺图层
         NaviMapScaleBar naviMapScaleBar = new NaviMapScaleBar(getVtmMap());
-        mapScaleBarLayer = naviMapScaleBar.initScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 5);
+        mapScaleBarLayer = naviMapScaleBar.initScaleBarLayer(GLViewport.Position.BOTTOM_LEFT, 10, 0);
 
 //        if (gridLayer == null) {
 //            gridLayer = new TileGridLayer(getVtmMap());
@@ -898,7 +898,7 @@ public final class NIMapView extends RelativeLayout {
             mapScaleBarLayer = null;
         }
         NaviMapScaleBar naviMapScaleBar = new NaviMapScaleBar(getVtmMap());
-        mapScaleBarLayer = naviMapScaleBar.initScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, xOffset, yOffset);
+        mapScaleBarLayer = naviMapScaleBar.initScaleBarLayer(GLViewport.Position.BOTTOM_LEFT, xOffset, yOffset);
     }
 
     /**
