@@ -2031,9 +2031,12 @@
         <!-- 道路边界类型 -->
         <m v="OMDB_RDBOUND_BOUNDARYTYPE">
             <outline-layer id="boundaryType" stroke="#8e44ad" width="0.1" />
-            <m k="boundaryType" v="0|2|3|4|5|6|7|8|9">
+            <m k="boundaryType" v="2|6|8">
                 <line stroke="#ffffff" use="boundaryType" width="0.1"/>
             </m>
+<!--            <m k="boundaryType" v="0|2|3|4|5|6|7|8|9">
+                <line stroke="#ffffff" use="boundaryType" width="0.1"/>
+            </m>-->
             <m k="boundaryType" v="1">
                 <!--无标线无可区分边界-->
                 <line dasharray="5,5" repeat-start="0" stroke="#ffffff" width="0.2"/>
@@ -2046,9 +2049,9 @@
             <outline-layer id="boundary" stroke="#ffffff" width="0.1" />
 
             <!--只区分虚线与实线-->
-            <m k="boundaryType" v="1">
+<!--            <m k="boundaryType" v="1">
                 <line dasharray="5,5" repeat-start="5" stroke="#90A0BD" width="0.05"/>
-            </m>
+            </m>-->
 
             <m k="boundaryType" v="2">
                 <!--标线-->
@@ -2100,10 +2103,12 @@
                     </m>
                 </m>
             </m>
-
-            <m k="boundaryType" v="0|3|4|5|6|7|8|9">
+            <m k="boundaryType" v="3|4|5|7">
                 <line stroke="#ffffff" use="boundaryType" />
             </m>
+<!--            <m k="boundaryType" v="0|3|4|5|6|7|8|9">
+                <line stroke="#ffffff" use="boundaryType" />
+            </m>-->
         </m>
 
         <!--常规点限速-->
