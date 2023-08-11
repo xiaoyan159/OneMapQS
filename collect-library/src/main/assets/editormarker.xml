@@ -2036,13 +2036,20 @@
             </m>
             <m k="boundaryType" v="1">
                 <!--无标线无可区分边界-->
-                <line dasharray="12,6" repeat-start="0" stroke="#ffffff" width="0.2"/>
+                <line dasharray="5,5" repeat-start="0" stroke="#ffffff" width="0.2"/>
             </m>
         </m>
 
         <!-- 车道边界类型 -->
         <m v="OMDB_LANE_MARK_BOUNDARYTYPE">
+
             <outline-layer id="boundary" stroke="#ffffff" width="0.1" />
+
+            <!--只区分虚线与实线-->
+            <m k="boundaryType" v="1">
+                <line dasharray="5,5" repeat-start="5" stroke="#90A0BD" width="0.05"/>
+            </m>
+
             <m k="boundaryType" v="2">
                 <!--标线-->
                 <m k="markType" v="0|1|4|5|6|7|8">
@@ -2072,22 +2079,22 @@
 
                         <!--其他|实线-->
                         <m k="markColor" v="1">
-                            <line dasharray="12,6" repeat-start="0" stroke="#ffffff" width="0.1"/>
+                            <line dasharray="5,5" repeat-start="0" stroke="#ffffff" width="0.1"/>
                         </m>
                         <m k="markColor" v="2">
-                            <line dasharray="12,6" repeat-start="0" stroke="#eccc68" width="0.1"/>
+                            <line dasharray="5,5" repeat-start="0" stroke="#eccc68" width="0.1"/>
                         </m>
 
                         <m k="markColor" v="6">
-                            <line dasharray="12,6" repeat-start="0" stroke="#0000ff" width="0.1"/>
+                            <line dasharray="5,5" repeat-start="0" stroke="#0000ff" width="0.1"/>
                         </m>
 
                         <m k="markColor" v="7">
-                            <line dasharray="12,6" repeat-start="0" stroke="#00ff00" width="0.1"/>
+                            <line dasharray="5,5" repeat-start="0" stroke="#00ff00" width="0.1"/>
                         </m>
 
                         <m k="markColor" v="0|9">
-                            <line dasharray="12,6" repeat-start="0" stroke="#8e44ad" width="0.1"/>
+                            <line dasharray="5,5" repeat-start="0" stroke="#8e44ad" width="0.1"/>
                         </m>
 
                     </m>
@@ -2096,10 +2103,6 @@
 
             <m k="boundaryType" v="0|3|4|5|6|7|8|9">
                 <line stroke="#ffffff" use="boundaryType" />
-            </m>
-            <!--只区分虚线与实线-->
-            <m k="boundaryType" v="1">
-                <line dasharray="12,6" repeat-start="0" stroke="#ffffff" width="0.1"/>
             </m>
         </m>
 

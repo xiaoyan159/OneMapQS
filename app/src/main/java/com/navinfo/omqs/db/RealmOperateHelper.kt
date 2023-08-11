@@ -88,6 +88,69 @@ class RealmOperateHelper() {
         return result
     }
 
+    /**
+     * 根据当前点位查询匹配的Link数据
+     * @param point 点位经纬度信息
+     * @param buffer 点位的外扩距离
+     * @param bufferType 点位外扩距离的单位： 米-Meter，像素-PIXEL
+     * @param sort 是否需要排序
+     * */
+    @RequiresApi(Build.VERSION_CODES.N)
+    suspend fun queryLine(
+        point: GeoPoint,
+        buffer: Double = DEFAULT_BUFFER,
+        bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE,
+        table: String,
+        sort: Boolean = true
+    ): MutableList<RenderEntity> {
+        val result = mutableListOf<RenderEntity>()
+        val polygon = getPolygonFromPoint(
+            GeometryTools.createPoint(point.longitude, point.latitude),
+            buffer,
+            bufferType
+        )
+        // 根据polygon查询相交的tile号
+        val tileXSet = mutableSetOf<Int>()
+
+        GeometryToolsKt.getTileXByGeometry(polygon.toString(), tileXSet)
+        val tileYSet = mutableSetOf<Int>()
+        GeometryToolsKt.getTileYByGeometry(polygon.toString(), tileYSet)
+
+        // 对tileXSet和tileYSet查询最大最小值
+        val xStart = tileXSet.stream().min(Comparator.naturalOrder()).orElse(null)
+        val xEnd = tileXSet.stream().max(Comparator.naturalOrder()).orElse(null)
+        val yStart = tileYSet.stream().min(Comparator.naturalOrder()).orElse(null)
+        val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
+        // 查询realm中对应tile号的数据
+        val realm = Realm.getDefaultInstance()
+        val realmList = realm.where(RenderEntity::class.java)
+            .equalTo("table", table)
+            .and()
+            .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd").and().equalTo("taskId",RealmDBParamUtils.getTaskId())
+            .findAll()
+        // 将获取到的数据和查询的polygon做相交，只返回相交的数据
+        val dataList = realm.copyFromRealm(realmList)
+        val queryResult = dataList?.stream()?.filter {
+            polygon.intersects(it.wkt)
+        }?.toList()
+
+        queryResult?.let {
+            if (sort) {
+                result.addAll(
+                    sortRenderEntity(
+                        GeometryTools.createPoint(
+                            point.longitude,
+                            point.latitude
+                        ), it
+                    )
+                )
+            } else {
+                result.addAll(it)
+            }
+        }
+        return result
+    }
+
     suspend fun captureTaskLink(
         point: GeoPoint,
         buffer: Double = DEFAULT_BUFFER,
