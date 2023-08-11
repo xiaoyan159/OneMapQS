@@ -258,7 +258,7 @@ public class GeometryTools {
      * @return Polygon
      */
     public static Polygon createPolygon(List<GeoPoint> geoPointList) {
-        if (geoPointList != null && geoPointList.size() >= 3) {
+        if (geoPointList != null && geoPointList.size() > 2) {
             Coordinate[] coordinates = new Coordinate[geoPointList.size()];
             for (int i = 0; i < geoPointList.size(); i++) {
                 coordinates[i] = new Coordinate(geoPointList.get(i).getLongitude(), geoPointList.get(i).getLatitude());

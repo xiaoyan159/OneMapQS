@@ -1,10 +1,7 @@
 package com.navinfo.omqs.ui.fragment.tasklink
 
-import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,18 +10,15 @@ import com.navinfo.collect.library.data.entity.LinkInfoBean
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.collect.library.map.handler.MeasureLayerHandler
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.ui.dialog.FirstDialog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.bson.codecs.UuidCodec
-import org.bson.internal.UuidHelper
-import org.oscim.core.GeoPoint
 import java.util.UUID
 import javax.inject.Inject
 
@@ -136,7 +130,7 @@ class TaskLinkViewModel @Inject constructor(
      * 编辑点
      */
     fun addPoint() {
-        mapController.measureLayerHandler.drawLineOrPolygon(false)
+        mapController.measureLayerHandler.addPoint(MeasureLayerHandler.MEASURE_TYPE.DISTANCE)
     }
 
     /**
@@ -198,7 +192,7 @@ class TaskLinkViewModel @Inject constructor(
             if (hadLinkDvoBean != null) {
                 hadLinkDvoBean!!.taskId = liveDataTaskBean.value!!.id
                 hadLinkDvoBean!!.length =
-                    mapController.measureLayerHandler.lineLengthLiveData.value!!
+                    mapController.measureLayerHandler.measureValueLiveData.value!!.value
                 hadLinkDvoBean!!.geometry =
                     GeometryTools.getLineString(mapController.measureLayerHandler.mPathLayer.points)
                 hadLinkDvoBean!!.linkInfo = LinkInfoBean(
@@ -218,7 +212,7 @@ class TaskLinkViewModel @Inject constructor(
                     taskId = liveDataTaskBean.value!!.id,
                     linkPid = UUID.randomUUID().toString(),
                     linkStatus = 3,
-                    length = mapController.measureLayerHandler.lineLengthLiveData.value!!,
+                    length = mapController.measureLayerHandler.measureValueLiveData.value!!.value,
                     geometry = GeometryTools.getLineString(mapController.measureLayerHandler.mPathLayer.points),
                     linkInfo = LinkInfoBean(
                         kind = liveDataSelectKind.value!!.type,
@@ -256,7 +250,7 @@ class TaskLinkViewModel @Inject constructor(
      * 绘制线的时候回退点
      */
     fun removeLinkLastPoint() {
-        mapController.measureLayerHandler.drawLineBackspace()
+        mapController.measureLayerHandler.backspacePoint()
     }
 
     /**
@@ -302,9 +296,11 @@ class TaskLinkViewModel @Inject constructor(
             if (task != null) {
                 liveDataTaskBean.postValue(realm.copyFromRealm(task))
             }
-            hadLinkDvoBean = realm.copyFromRealm(objects)
-            withContext(Dispatchers.Main) {
-                mapController.measureLayerHandler.initPathLine(hadLinkDvoBean?.geometry!!)
+            if(objects != null) {
+                hadLinkDvoBean = realm.copyFromRealm(objects)
+                withContext(Dispatchers.Main) {
+                    mapController.measureLayerHandler.initPathLine(hadLinkDvoBean?.geometry!!)
+                }
             }
         }
     }

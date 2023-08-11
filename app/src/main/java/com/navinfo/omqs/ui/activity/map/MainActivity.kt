@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.collect.library.map.handler.MeasureLayerHandler
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
@@ -447,9 +449,11 @@ class MainActivity : BaseActivity() {
                     Toast.makeText(this, "输入格式不正确", Toast.LENGTH_SHORT).show()
                 }
             }
+            dialog.dismiss()
         }
         inputDialog.show()
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -508,10 +512,10 @@ class MainActivity : BaseActivity() {
     }
 
     /**
-     * 点击计算
+     * 点击测速
      */
-    fun onClickCalcDisance() {
-
+    fun onClickCalcDistance() {
+        measuringToolOn()
     }
 
     /**

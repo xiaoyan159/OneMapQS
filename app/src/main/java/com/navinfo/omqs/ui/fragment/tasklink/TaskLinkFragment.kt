@@ -1,6 +1,5 @@
 package com.navinfo.omqs.ui.fragment.tasklink
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -38,7 +37,7 @@ class TaskLinkFragment : BaseFragment(), View.OnClickListener {
 
         arguments?.let {
             val id = it.getString("TaskLinkId")
-            if (id != null && id.isNotEmpty()){
+            if (id != null && id.isNotEmpty()) {
                 viewModel.initData(id)
             }
         }
@@ -97,11 +96,11 @@ class TaskLinkFragment : BaseFragment(), View.OnClickListener {
         /**
          * 线长度
          */
-        mapController.measureLayerHandler.lineLengthLiveData.observe(viewLifecycleOwner) {
-            binding.taskLinkLength.text = "${it}米"
+        mapController.measureLayerHandler.measureValueLiveData.observe(viewLifecycleOwner) {
+            binding.taskLinkLength.text = "${it.valueString}${it.unit}"
         }
-        mapController.measureLayerHandler.tempLineDistanceLiveData.observe(viewLifecycleOwner) {
-            (activity as MainActivity).setHomeCenterText(it)
+        mapController.measureLayerHandler.tempMeasureValueLiveData.observe(viewLifecycleOwner) {
+            (activity as MainActivity).setHomeCenterText("${it.valueString}${it.unit}")
         }
     }
 
@@ -111,6 +110,7 @@ class TaskLinkFragment : BaseFragment(), View.OnClickListener {
          * 显示地图准星
          */
         activity?.let {
+            (activity as MainActivity).measuringToolOff()
             (activity as MainActivity).setHomeCenterVisibility(View.VISIBLE)
         }
     }
@@ -159,7 +159,7 @@ class TaskLinkFragment : BaseFragment(), View.OnClickListener {
             binding.taskLinkClear -> {
                 viewModel.clearLink()
             }
-            binding.taskLinkBarDelete ->{
+            binding.taskLinkBarDelete -> {
                 viewModel.deleteData(requireContext())
             }
         }

@@ -101,7 +101,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/top_right_drawer_btns_mr"
-            app:constraint_referenced_ids="main_activity_note,main_activity_task_line,main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_calc_disance,main_activity_menu"
+            app:constraint_referenced_ids="main_activity_note,main_activity_task_line,main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_calc_distance,main_activity_menu"
             app:flow_horizontalGap="6dp"
             app:flow_wrapMode="aligned"
             app:layout_constraintRight_toLeftOf="@id/main_activity_right_fragment"
@@ -112,7 +112,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="invisible"
-            app:constraint_referenced_ids="main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_note,main_activity_task_line,main_activity_calc_disance" />
+            app:constraint_referenced_ids="main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_note,main_activity_task_line,main_activity_calc_distance" />
 
         <ImageButton
             android:id="@+id/main_activity_serach"
@@ -139,9 +139,9 @@
             android:src="@drawable/icon_trace" />
 
         <ImageButton
-            android:id="@+id/main_activity_calc_disance"
+            android:id="@+id/main_activity_calc_distance"
             style="@style/top_right_drawer_btns_style"
-            android:onClick="@{()->mainActivity.onClickCalcDisance()}"
+            android:onClick="@{()->mainActivity.onClickCalcDistance()}"
             android:src="@drawable/icon_calc_disance" />
 
         <ImageButton
@@ -164,6 +164,15 @@
             android:elevation="2dp"
             android:onClick="@{()->mainActivity.onClickMenu()}" />
 
+        <include
+            android:id="@+id/main_activity_measuring_tool"
+            layout="@layout/main_measuring_tool"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            app:layout_constraintRight_toRightOf="@id/main_activity_calc_distance"
+            app:layout_constraintTop_toBottomOf="@id/main_activity_flow" />
 
         <androidx.constraintlayout.widget.Barrier
             android:layout_width="wrap_content"
@@ -333,12 +342,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/five"
-            app:constraint_referenced_ids="main_activity_snapshot_finish,main_activity_trace_snapshot_points,main_activity_snapshot_media_flag,main_activity_snapshot_rewind,main_activity_snapshot_pause,main_activity_snapshot_next,main_activity_menu_indoor_group"
+            app:constraint_referenced_ids="main_activity_snapshot_finish,main_activity_trace_snapshot_points,main_activity_snapshot_rewind,main_activity_snapshot_pause,main_activity_snapshot_next,main_activity_menu_indoor_group"
             app:flow_horizontalGap="6dp"
             app:flow_wrapMode="aligned"
+            app:layout_constraintBottom_toTopOf="@id/main_activity_bottom_sheet"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/main_activity_bottom_sheet" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/main_activity_menu_indoor_group"
@@ -359,12 +368,12 @@
             android:onClick="@{()->mainActivity.tracePointsOnclick()}"
             android:src="@drawable/map_trace_select_point" />
 
-<!--        <ImageButton
-            android:id="@+id/main_activity_snapshot_media_flag"
-            style="@style/top_right_drawer_btns_style"
-            android:visibility="gone"
-            android:onClick="@{()->mainActivity.mediaFlagOnclick()}"
-            android:src="@drawable/map_trace_mediaflag" />-->
+        <!--        <ImageButton
+                    android:id="@+id/main_activity_snapshot_media_flag"
+                    style="@style/top_right_drawer_btns_style"
+                    android:visibility="gone"
+                    android:onClick="@{()->mainActivity.mediaFlagOnclick()}"
+                    android:src="@drawable/map_trace_mediaflag" />-->
 
         <ImageButton
             android:id="@+id/main_activity_snapshot_rewind"

@@ -3,31 +3,48 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/shape_rect_white_6dp_bg"
+    android:clickable="true"
     android:gravity="center"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="5dp">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:gravity="center"
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/measuring_tool_value"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="24dp"
             android:background="@drawable/shape_bg_blue_bg_4_radius"
-            android:textColor="@color/white" />
+            android:gravity="center"
+            android:minWidth="65dp"
+            android:text="0"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
 
         <TextView
+            android:id="@+id/measuring_tool_value_unit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/blue" />
+            android:text="米"
+            android:textColor="@color/blue"
+            android:textSize="12sp" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/measuring_tool_select_point"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp">
 
         <ImageView
             android:layout_width="24dp"
@@ -43,10 +60,16 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/measuring_tool_distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/selector_default_button_white_bg"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp">
 
         <ImageView
             android:layout_width="24dp"
@@ -62,8 +85,12 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/measuring_tool_area"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/selector_default_button_white_bg"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -81,8 +108,12 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/measuring_tool_angle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/selector_default_button_white_bg"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -100,20 +131,36 @@
     </LinearLayout>
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/measuring_tool_backspace"
+        android:layout_width="80dp"
+        android:layout_height="32dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/shape_rect_transparent_blue_6dp_bg"
         android:drawableLeft="@drawable/baseline_arrow_left_24"
+        android:drawablePadding="-15dp"
         android:gravity="center"
         android:text="上一步"
         android:textColor="@color/blue"
         android:textSize="12sp" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/baseline_arrow_left_24"
+        android:id="@+id/measuring_tool_reset"
+        android:layout_width="80dp"
+        android:layout_height="32dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/shape_rect_transparent_blue_6dp_bg"
         android:gravity="center"
-        android:text="重复"
+        android:text="重绘"
         android:textColor="@color/blue"
         android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/measuring_tool_close"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/measuring_tool_close" />
 </LinearLayout>

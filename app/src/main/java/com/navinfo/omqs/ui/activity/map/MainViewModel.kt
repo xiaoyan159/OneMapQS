@@ -22,16 +22,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
-import com.blankj.utilcode.util.ViewUtils.runOnUiThread
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.*
 import com.navinfo.collect.library.garminvirbxe.HostBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.OnGeoPointClickListener
-import com.navinfo.collect.library.map.handler.ONNoteItemClickListener
-import com.navinfo.collect.library.map.handler.OnNiLocationItemListener
-import com.navinfo.collect.library.map.handler.OnQsRecordItemClickListener
-import com.navinfo.collect.library.map.handler.OnTaskLinkItemClickListener
+import com.navinfo.collect.library.map.handler.*
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.collect.library.utils.RealmDBParamUtils
@@ -60,10 +56,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.locationtech.jts.geom.Point
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
-import org.oscim.layers.marker.MarkerItem
 import org.oscim.map.Map
 import org.videolan.libvlc.LibVlcUtil
 import java.io.File
@@ -175,6 +169,17 @@ class MainViewModel @Inject constructor(
      */
     private var bSelectPauseTrace = false
 
+    /**
+     * 是不是开启测距
+     */
+    private var bMeasuringTool = false
+
+    /**
+     * 测量类型
+     */
+    var measuringType: MeasureLayerHandler.MEASURE_TYPE =
+        MeasureLayerHandler.MEASURE_TYPE.DISTANCE
+
     var linkIdCache = ""
 
     private var lastNiLocaion: NiLocation? = null
@@ -220,12 +225,16 @@ class MainViewModel @Inject constructor(
             object : OnGeoPointClickListener {
                 override fun onMapClick(tag: String, point: GeoPoint) {
                     if (tag == TAG) {
-                        viewModelScope.launch(Dispatchers.IO) {
-                            //线选择状态
-                            if (bSelectRoad) {
-                                captureLink(point)
-                            } else {
-                                captureItem(point)
+                        if (bMeasuringTool) {
+                            mapController.measureLayerHandler.addPoint(measuringType, point)
+                        } else {
+                            viewModelScope.launch(Dispatchers.IO) {
+                                //线选择状态
+                                if (bSelectRoad) {
+                                    captureLink(point)
+                                } else {
+                                    captureItem(point)
+                                }
                             }
                         }
                     }
@@ -586,7 +595,6 @@ class MainViewModel @Inject constructor(
      * 点击我的位置，回到我的位置
      */
     fun onClickLocationButton() {
-        mapController.markerHandle.removeMarker("location")
         mapController.locationLayerHandler.animateToCurrentPosition()
     }
 
@@ -1032,12 +1040,12 @@ class MainViewModel @Inject constructor(
                 val nextNiLocation =
                     mapController.markerHandle.getNILocation(currentIndexNiLocation + 1)
                 if (nextNiLocation != null && niLocation != null) {
-                    var nilocationDisTime =
+                    var niLocationDisTime =
                         nextNiLocation.timeStamp.toLong() - niLocation.timeStamp.toLong()
-                    disTime = if (nilocationDisTime < 1000) {
+                    disTime = if (niLocationDisTime < 1000) {
                         1000
                     } else {
-                        nilocationDisTime
+                        niLocationDisTime
                     }
                     showMarker(mapController.mMapView.context, nextNiLocation)
                     currentIndexNiLocation += 1
@@ -1056,6 +1064,46 @@ class MainViewModel @Inject constructor(
      */
     fun cancelTrace() {
         timer?.cancel()
+    }
+
+
+    /**
+     *  开启测量工具
+     */
+    fun setMeasuringToolEnable(b: Boolean) {
+        bMeasuringTool = b
+        mapController.measureLayerHandler.clear()
+    }
+
+    /**
+     * 测量打点
+     */
+    fun addPointForMeasuringTool() {
+        mapController.measureLayerHandler.addPoint(measuringType)
+    }
+
+    /**
+     * 测距回退点
+     */
+    fun backPointForMeasuringTool() {
+        mapController.measureLayerHandler.backspacePoint()
+    }
+
+    /**
+     * 重绘
+     */
+    fun resetMeasuringTool() {
+        mapController.measureLayerHandler.clear()
+    }
+
+    /**
+     * 设置测量类型 0：距离 2：面积 3：角度
+     */
+    fun setMeasuringToolType(type: MeasureLayerHandler.MEASURE_TYPE) {
+        if(measuringType != type) {
+            measuringType = type
+            mapController.measureLayerHandler.clear()
+        }
     }
 
     fun click2Dor3D(){

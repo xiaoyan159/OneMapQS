@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/shape_rect_white_press_6dp_bg" android:state_selected="true"></item>
     <item android:drawable="@drawable/shape_rect_white_press_6dp_bg" android:state_pressed="true"></item>
     <item android:drawable="@drawable/shape_rect_white_6dp_bg" />
 </selector>
