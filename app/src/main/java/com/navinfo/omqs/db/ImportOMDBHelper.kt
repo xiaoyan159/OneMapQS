@@ -209,7 +209,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             }
                                         }
 
-                                    }else if(renderEntity.table == "OMDB_RESTRICTION" && renderEntity.properties.containsKey("linkIn")){
+                                    }else if(renderEntity.code == DataCodeEnum.OMDB_RESTRICTION.code && renderEntity.properties.containsKey("linkIn")){
 
                                         if (renderEntity.properties["linkIn"] != null) {
 
@@ -226,7 +226,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                 }
                                             }
                                         }
-                                    }else if(renderEntity.table == "OMDB_INTERSECTION" && renderEntity.properties.containsKey("linkList")){
+                                    }else if(renderEntity.code == DataCodeEnum.OMDB_INTERSECTION.code && renderEntity.properties.containsKey("linkList")){
 
                                         if (renderEntity.properties["linkList"] != null) {
 
@@ -266,7 +266,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 }
 
                                 //道路属性code编码需要特殊处理 存在多个属性值时，渲染优先级：SA>PA,存在多个属性值时，渲染优先级：FRONTAGE>MAIN_SIDE_A CCESS
-                                if(renderEntity.table == "OMDB_LINK_ATTRIBUTE"){
+                                if(renderEntity.code == DataCodeEnum.OMDB_LINK_ATTRIBUTE.code){
 
                                     var type = renderEntity.properties["SA"]
 
@@ -285,12 +285,14 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                 if(type!=null&&type=="1"){
                                                     renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code
                                                 }else{
+                                                    renderEntity.enable=0
+                                                    Log.e("qj","过滤不显示数据${renderEntity.table}")
                                                     continue
                                                 }
                                             }
                                         }
                                     }
-                                }else if(renderEntity.table == "OMDB_RAMP"){
+                                }else if(renderEntity.code == DataCodeEnum.OMDB_RAMP.code){
                                     /*匝道*/
                                     var formWay = renderEntity.properties["FORM_OF_WAY"]
                                     if(formWay!=null){
@@ -304,7 +306,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             "104"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_7.code
                                         }
                                     }
-                                }else if(renderEntity.table == "OMDB_LINK_FORM1"){
+                                }else if(renderEntity.code == DataCodeEnum.OMDB_LINK_FORM1.code){
                                     /*道路形态1*/
                                     var formWay = renderEntity.properties["FORM_OF_WAY"]
                                     if(formWay!=null){
@@ -314,7 +316,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             "38"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM1_3.code
                                         }
                                     }
-                                }else if(renderEntity.table == "OMDB_LINK_FORM2"){
+                                }else if(renderEntity.code == DataCodeEnum.OMDB_LINK_FORM2.code){
                                     /*道路形态2*/
                                     var formWay = renderEntity.properties["FORM_OF_WAY"]
                                     if(formWay!=null){
@@ -332,6 +334,29 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             "60"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_11.code
                                             "84"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_12.code
                                             "85"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_13.code
+                                        }
+                                    }
+                                }else if(renderEntity.code == DataCodeEnum.OMDB_LANE_MARK_BOUNDARYTYPE.code){
+                                    var boundaryType = renderEntity.properties["boundaryType"]
+                                    if(boundaryType!=null){
+                                        when (boundaryType) {
+                                            "0","1","6","8","9"->{
+                                                renderEntity.enable=0
+                                                Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                                continue
+                                            }
+                                        }
+                                    }
+                                }else if(renderEntity.code == DataCodeEnum.OMDB_RDBOUND_BOUNDARYTYPE.code){
+                                    //过滤不需要渲染的要素
+                                    var boundaryType = renderEntity.properties["boundaryType"]
+                                    if(boundaryType!=null){
+                                        when (boundaryType) {
+                                            "0","3","4","5","7","9"->{
+                                                renderEntity.enable=0
+                                                Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                                continue
+                                            }
                                         }
                                     }
                                 }

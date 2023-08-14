@@ -9,6 +9,7 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
         "2001"
     ),
     OMDB_RD_LINK_FUNCTION_CLASS("道路功能等级", "2002"),
+    OMDB_LINK_ATTRIBUTE("道路属性", "2004"),
     OMDB_LINK_ATTRIBUTE_SA("道路属性-SA", "2004-1"), OMDB_LINK_ATTRIBUTE_PA(
         "道路属性-PA",
         "2004-2"
@@ -32,7 +33,12 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
         "2020"
     ),
     OMDB_LINK_SPEEDLIMIT_VAR("可变线限速", "2021"),
-    OMDB_CON_ACCESS("全封闭", "2022"), OMDB_RAMP_1(
+    OMDB_CON_ACCESS("全封闭", "2022"),
+    OMDB_RAMP(
+        "匝道",
+        "2037"
+    ),
+    OMDB_RAMP_1(
         "普通路连接匝道",
         "2037-1"
     ),
@@ -71,6 +77,10 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
         "环岛",
         "2204"
     ),
+    OMDB_LINK_FORM1(
+        "道路形态1",
+        "2205"
+    ),
     OMDB_LINK_FORM1_1(
         "U-Turn",
         "2205-1"
@@ -82,6 +92,10 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
     OMDB_LINK_FORM1_3(
         "提前左转",
         "2205-3"
+    ),
+    OMDB_LINK_FORM2(
+        "道路形态2",
+        "2206"
     ),
     OMDB_LINK_FORM2_1(
         "IC",
