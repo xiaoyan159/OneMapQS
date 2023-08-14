@@ -265,7 +265,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                     Log.e("qj","${renderEntity.name}==不包括任务linkPid")
                                 }
 
-                                //道路属性code编码需要特殊处理 存在多个属性值时，渲染优先级：SA>PA
+                                //道路属性code编码需要特殊处理 存在多个属性值时，渲染优先级：SA>PA,存在多个属性值时，渲染优先级：FRONTAGE>MAIN_SIDE_A CCESS
                                 if(renderEntity.table == "OMDB_LINK_ATTRIBUTE"){
 
                                     var type = renderEntity.properties["SA"]
@@ -276,8 +276,62 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         type = renderEntity.properties["PA"]
                                         if(type!=null&&type=="1"){
                                             renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code
-                                        }else{//不满足条件时过滤该数据
-                                            continue
+                                        } else{
+                                            type = renderEntity.properties["FRONTAGE"]
+                                            if(type!=null&&type=="1"){
+                                                renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code
+                                            }else{
+                                                type = renderEntity.properties["MAIN_SIDE_ACCESS"]
+                                                if(type!=null&&type=="1"){
+                                                    renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code
+                                                }else{
+                                                    continue
+                                                }
+                                            }
+                                        }
+                                    }
+                                }else if(renderEntity.table == "OMDB_RAMP"){
+                                    /*匝道*/
+                                    var formWay = renderEntity.properties["FORM_OF_WAY"]
+                                    if(formWay!=null){
+                                        when (formWay) {
+                                            "93"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_1.code
+                                            "98"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_2.code
+                                            "99"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_3.code
+                                            "100"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_4.code
+                                            "102"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_5.code
+                                            "103"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_6.code
+                                            "104"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_7.code
+                                        }
+                                    }
+                                }else if(renderEntity.table == "OMDB_LINK_FORM1"){
+                                    /*道路形态1*/
+                                    var formWay = renderEntity.properties["FORM_OF_WAY"]
+                                    if(formWay!=null){
+                                        when (formWay) {
+                                            "35"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM1_1.code
+                                            "37"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM1_2.code
+                                            "38"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM1_3.code
+                                        }
+                                    }
+                                }else if(renderEntity.table == "OMDB_LINK_FORM2"){
+                                    /*道路形态2*/
+                                    var formWay = renderEntity.properties["FORM_OF_WAY"]
+                                    if(formWay!=null){
+                                        when (formWay) {
+                                            "10"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_1.code
+                                            "11"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_2.code
+                                            "17"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_3.code
+                                            "18"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_4.code
+                                            "20"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_5.code
+                                            "22"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_6.code
+                                            "36"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_7.code
+                                            "52"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_8.code
+                                            "53"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_9.code
+                                            "54"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_10.code
+                                            "60"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_11.code
+                                            "84"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_12.code
+                                            "85"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_13.code
                                         }
                                     }
                                 }

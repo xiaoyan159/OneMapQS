@@ -3,6 +3,7 @@ package com.navinfo.omqs.db
 import android.util.Log
 import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
+import com.navinfo.collect.library.enum.DataCodeEnum
 import com.navinfo.collect.library.utils.GeometryTools
 import io.realm.Realm
 import org.json.JSONArray
@@ -457,10 +458,14 @@ class ImportPreProcess {
     fun generateRoadText(renderEntity: RenderEntity) {
         // 根据类型进行文字转换
         if (renderEntity.code != null) {
-            if(renderEntity.code=="2004-1"){
+            if(renderEntity.code==DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code){
                 renderEntity.properties["name"] = "SA"
-            }else if(renderEntity.code=="2004-2"){
+            }else if(renderEntity.code==DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code){
                 renderEntity.properties["name"] = "PA"
+            }else if(renderEntity.code==DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code){
+                renderEntity.properties["name"] = "FRONTAGE"
+            }else if(renderEntity.code==DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code){
+                renderEntity.properties["name"] = "MAIN"
             }
         }
     }
