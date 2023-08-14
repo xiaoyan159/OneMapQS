@@ -2,6 +2,7 @@ package com.navinfo.omqs.ui.widget
 
 import android.util.Log
 import com.navinfo.collect.library.data.entity.RenderEntity
+import com.navinfo.collect.library.enum.DataCodeEnum
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.RoadNameBean
 import com.navinfo.omqs.bean.SignBean
@@ -21,17 +22,17 @@ class SignUtil {
         fun getSignIconText(data: RenderEntity): String {
             return when (data.code) {
                 //道路功能等级
-                2002 -> getLinkFunctionClassText(data)
+                DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code -> getLinkFunctionClassText(data)
                 //道路种别
-                2008 -> getKindText(data)
+                DataCodeEnum.OMDB_RD_LINK_KIND.code -> getKindText(data)
                 //道路方向
-                2010 -> getRoadDirectionText(data)
+                DataCodeEnum.OMDB_LINK_DIRECT.code -> getRoadDirectionText(data)
                 //常规线限速
-                2019 -> getLineSpeedLimitText(data)
+                DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> getLineSpeedLimitText(data)
                 //车道数
-                2041 -> getLaneNumText(data)
+                DataCodeEnum.OMDB_LANE_NUM.code -> getLaneNumText(data)
                 //常规点限速,条件点限速
-                4002, 4003 -> getSpeedLimitMaxText(data)
+                DataCodeEnum.OMDB_SPEEDLIMIT.code, DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> getSpeedLimitMaxText(data)
                 else -> ""
             }
         }
@@ -77,31 +78,31 @@ class SignUtil {
         fun getSignNameText(data: RenderEntity): String {
             return when (data.code) {
                 //道路功能等级
-                2002 -> "功能等级"
+                DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code -> "功能等级"
                 //道路种别
-                2008 -> "种别"
+                DataCodeEnum.OMDB_RD_LINK_KIND.code -> "种别"
                 //道路方向
-                2010 -> "方向"
+                DataCodeEnum.OMDB_LINK_DIRECT.code -> "方向"
                 //车道边界类型
-                2013 -> "车道边界类型"
+                DataCodeEnum.OMDB_LANE_MARK_BOUNDARYTYPE.code -> "车道边界类型"
                 //常规线限速
-                2019 -> "线限速"
+                DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> "线限速"
                 //车道数
-                2041 -> "车道数"
+                DataCodeEnum.OMDB_LANE_NUM.code -> "车道数"
                 //常规点限速
-                4002 -> "常规点限速"
+                DataCodeEnum.OMDB_SPEEDLIMIT.code -> "常规点限速"
                 //常点限速
-                4003 -> "条件点限速"
+                DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> "条件点限速"
                 //可变点限速
-                4004 -> "可变点限速"
+                DataCodeEnum.OMDB_SPEEDLIMIT_VAR.code -> "可变点限速"
                 //普通交限
-                4006 -> "普通交限"
+                DataCodeEnum.OMDB_RESTRICTION.code -> "普通交限"
                 //电子眼
-                4010 -> "电子眼"
+                DataCodeEnum.OMDB_ELECTRONICEYE.code -> "电子眼"
                 //交通灯
-                4022 -> "交通灯"
-                //交限
-                4601 -> "车信"
+                DataCodeEnum.OMDB_TRAFFICLIGHT.code -> "交通灯"
+                //车信
+                DataCodeEnum.OMDB_LANEINFO.code -> "车信"
                 else -> ""
             }
         }
@@ -203,9 +204,9 @@ class SignUtil {
             return when (data.code) {
 
                 //条件点限速
-                4003 -> getConditionLimitText(data)
+                DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> getConditionLimitText(data)
                 //电子眼
-                4010 -> data.properties["name"].toString()
+                DataCodeEnum.OMDB_ELECTRONICEYE.code -> data.properties["name"].toString()
                 else -> ""
             }
         }
@@ -394,15 +395,15 @@ class SignUtil {
 //                //车道数
 //                2041 -> getLaneNumIcon(data)
                 //普通点限速
-                4002 -> getSpeedLimitIcon(data)
+                DataCodeEnum.OMDB_SPEEDLIMIT.code -> getSpeedLimitIcon(data)
                 //条件点限速
-                4003 -> getConditionalSpeedLimitIcon(data)
+                DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> getConditionalSpeedLimitIcon(data)
                 //可变点限速
-                4004 -> R.drawable.icon_change_limit
+                DataCodeEnum.OMDB_SPEEDLIMIT_VAR.code -> R.drawable.icon_change_limit
                 //电子眼
-                4010 -> R.drawable.icon_electronic_eye
+                DataCodeEnum.OMDB_ELECTRONICEYE.code -> R.drawable.icon_electronic_eye
                 //交通灯
-                4022 -> R.drawable.icon_traffic_light
+                DataCodeEnum.OMDB_TRAFFICLIGHT.code -> R.drawable.icon_traffic_light
                 else -> 0
             }
 
@@ -489,10 +490,10 @@ class SignUtil {
             stringBuffer.append("当前道路")
             for (item in topSignList) {
                 when (item.renderEntity.code) {
-                    2002 -> stringBuffer.append("功能等级${item.iconText.substring(2)}级,")
-                    2008 -> stringBuffer.append("种别${item.iconText},")
-                    2010 -> stringBuffer.append("${item.iconText},")
-                    2041 -> stringBuffer.append("${item.iconText.substringBefore("|")}车道")
+                    DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code -> stringBuffer.append("功能等级${item.iconText.substring(2)}级,")
+                    DataCodeEnum.OMDB_RD_LINK_KIND.code -> stringBuffer.append("种别${item.iconText},")
+                    DataCodeEnum.OMDB_LINK_DIRECT.code -> stringBuffer.append("${item.iconText},")
+                    DataCodeEnum.OMDB_LANE_NUM.code -> stringBuffer.append("${item.iconText.substringBefore("|")}车道")
                 }
             }
             return stringBuffer.toString()
@@ -503,7 +504,7 @@ class SignUtil {
          */
         fun getRoadNameList(data: RenderEntity): MutableList<RoadNameBean> {
             val list = mutableListOf<RoadNameBean>()
-            if (data.code == 2011) {
+            if (data.code == "2011") {
                 try {
                     val shapeStr = data.properties["shapeList"]
                     val array = JSONArray(shapeStr)
@@ -541,11 +542,11 @@ class SignUtil {
         fun isMoreInfo(element: RenderEntity): Boolean {
             val isMore = when (element.code) {
                 //常规点限速
-                4002 -> getSpeedLimitMinText(element) != "0"
+                DataCodeEnum.OMDB_SPEEDLIMIT.code -> getSpeedLimitMinText(element) != "0"
                 //条件点限速
-                4003 -> true
+                DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> true
                 //电子眼
-                4010 -> true
+                DataCodeEnum.OMDB_ELECTRONICEYE.code -> true
                 else -> false
             }
             return isMore
@@ -755,11 +756,11 @@ class SignUtil {
          */
         fun getRoadInfoIndex(element: RenderEntity): Int {
             return when (element.code) {
-                2041 -> 0
-                2008 -> 1
-                2002 -> 2
-                2019 -> 3
-                2010 -> 4
+                DataCodeEnum.OMDB_LANE_NUM.code -> 0
+                DataCodeEnum.OMDB_RD_LINK_KIND.code -> 1
+                DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code -> 2
+                DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> 3
+                DataCodeEnum.OMDB_LINK_DIRECT.code -> 4
                 else -> 999
             }
         }

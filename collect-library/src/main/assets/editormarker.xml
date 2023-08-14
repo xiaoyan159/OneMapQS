@@ -2111,6 +2111,11 @@
             </m>-->
         </m>
 
+        <!-- 道路属性 -->
+        <m v="OMDB_LINK_ATTRIBUTE">
+            <text use="road" size="16"></text>
+        </m>
+
         <!--常规点限速-->
         <m v="OMDB_SPEEDLIMIT">
             <m k="speedFlag" v="0">

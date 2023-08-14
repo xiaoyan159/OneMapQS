@@ -11,6 +11,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.collect.library.enum.DataCodeEnum
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.db.deep.LinkList
@@ -167,7 +168,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 // 先查询这个mesh下有没有数据，如果有则跳过即可
                                 // val meshEntity = Realm.getDefaultInstance().where(RenderEntity::class.java).equalTo("properties['mesh']", map["mesh"].toString()).findFirst()
                                 val renderEntity = RenderEntity()
-                                renderEntity.code = map["qi_code"].toString().toInt()
+                                renderEntity.code = map["qi_code"].toString()
                                 renderEntity.name = map["qi_name"].toString()
                                 renderEntity.table = map["qi_table"].toString()
                                 renderEntity.taskId = task.id
@@ -263,6 +264,24 @@ class ImportOMDBHelper @AssistedInject constructor(
                                     renderEntity.enable = 2
                                     Log.e("qj","${renderEntity.name}==不包括任务linkPid")
                                 }
+
+                                //道路属性code编码需要特殊处理 存在多个属性值时，渲染优先级：SA>PA
+                                if(renderEntity.table == "OMDB_LINK_ATTRIBUTE"){
+
+                                    var type = renderEntity.properties["SA"]
+
+                                    if(type!=null&&type=="1"){
+                                        renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code
+                                    }else{
+                                        type = renderEntity.properties["PA"]
+                                        if(type!=null&&type=="1"){
+                                            renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code
+                                        }else{//不满足条件时过滤该数据
+                                            continue
+                                        }
+                                    }
+                                }
+
                                 listResult.add(renderEntity)
                                 // 对renderEntity做预处理后再保存
                                 val resultEntity = importConfig.transformProperties(renderEntity)

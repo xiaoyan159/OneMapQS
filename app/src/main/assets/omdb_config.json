@@ -21,6 +21,21 @@
 			"zoomMin": 15,
 			"zoomMax": 17
 		},
+		"2004": {
+			"table": "OMDB_LINK_ATTRIBUTE",
+			"code": 2004,
+			"name": "道路属性",
+			"zoomMin": 15,
+			"zoomMax": 19,
+			"transformer": [
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateRoadText()"
+				}
+			]
+		},
 		"2008": {
 			"table": "OMDB_RD_LINK_KIND",
 			"code": 2008,
@@ -139,14 +154,7 @@
 			"name": "隧道",
 			"zoomMin": 15,
 			"zoomMax": 20,
-			"transformer": [
-				{
-					"k": "geometry",
-					"v": "~",
-					"klib": "geometry",
-					"vlib": "generateS2EReferencePoint()"
-				}
-			]
+			"transformer2Code": ""
 		},
 		"4001": {
 			"table": "OMDB_INTERSECTION",
