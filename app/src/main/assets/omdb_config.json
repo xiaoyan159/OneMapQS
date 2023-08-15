@@ -158,12 +158,19 @@
 			"transformer2Code": ""
 		},
 		"2204":{
-			"table": "OMDB_RoundAbout",
+			"table": "OMDB_ROUNDABOUT",
 			"code": 2204,
 			"name": "环岛",
 			"zoomMin": 15,
 			"zoomMax": 17,
-			"transformer2Code": ""
+			"transformer": [
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateS2EReferencePoint()"
+				}
+			]
 		},
 		"2205":{
 			"table": "OMDB_LINK_FORM1",

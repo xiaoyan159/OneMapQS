@@ -218,6 +218,7 @@ class ImportPreProcess {
         val startReference = ReferenceEntity()
         startReference.renderEntityId = renderEntity.id
         startReference.name = "${renderEntity.name}参考点"
+        startReference.code = renderEntity.code
         startReference.table = renderEntity.table
         startReference.zoomMin = renderEntity.zoomMin
         startReference.zoomMax = renderEntity.zoomMax
@@ -225,8 +226,7 @@ class ImportPreProcess {
         startReference.enable = renderEntity.enable
 
         // 起点坐标
-        startReference.geometry =
-            GeometryTools.createGeometry(GeoPoint(pointStart.y, pointStart.x)).toString()
+        startReference.geometry = GeometryTools.createGeometry(GeoPoint(pointStart.y, pointStart.x)).toString()
         startReference.properties = renderEntity.properties
         startReference.properties["qi_table"] = renderEntity.table
         Log.e("qj","generateS2EReferencePoint===$table===$proKey")
@@ -238,13 +238,16 @@ class ImportPreProcess {
             }
         } else {
             startReference.properties["type"] = "s_2_p"
+            Log.e("qj","generateS2EReferencePoint===s_2_p${renderEntity.name}")
         }
+        startReference.properties["geometry"] = startReference.geometry
 
         Realm.getDefaultInstance().insert(startReference)
 
         val endReference = ReferenceEntity()
         endReference.renderEntityId = renderEntity.id
         endReference.name = "${renderEntity.name}参考点"
+        endReference.code = renderEntity.code
         endReference.table = renderEntity.table
         endReference.zoomMin = renderEntity.zoomMin
         endReference.zoomMax = renderEntity.zoomMax
@@ -252,8 +255,7 @@ class ImportPreProcess {
         endReference.enable = renderEntity.enable
 
         // 终点坐标
-        endReference.geometry =
-            GeometryTools.createGeometry(GeoPoint(pointEnd.y, pointEnd.x)).toString()
+        endReference.geometry = GeometryTools.createGeometry(GeoPoint(pointEnd.y, pointEnd.x)).toString()
         endReference.properties = renderEntity.properties
         endReference.properties["qi_table"] = renderEntity.table
         if (renderEntity.table == table) {
@@ -262,7 +264,9 @@ class ImportPreProcess {
             }
         } else {
             endReference.properties["type"] = "e_2_p"
+            Log.e("qj","generateS2EReferencePoint===e_2_p${renderEntity.name}")
         }
+        endReference.properties["geometry"] = endReference.geometry
         Realm.getDefaultInstance().insert(endReference)
     }
 

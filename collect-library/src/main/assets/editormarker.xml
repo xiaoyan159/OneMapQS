@@ -180,7 +180,7 @@
         width="0.1" />
 
     <!--道路形态-->
-    <style-line dasharray="8,2,2,2,2,2" id="road_morphology" repeat-gap="3" repeat-start="0" stroke="#1afa29" width="0.2" />
+    <style-line dasharray="8,2,2,2,2,2" id="road_morphology" repeat-gap="3" repeat-start="0" stroke="#1afa29" width="0.5" />
 
     <!--###### ASSIGNMENT ######-->
 
@@ -1976,56 +1976,9 @@
             <m k="width" v="~">
                 <line stroke="#7A88A0" width="2.8" />
             </m>
-            <m k="width" v="~">
+<!--            <m k="width" v="~">
                 <line stroke="#4624FF" width="0.1" />
-            </m>
-        </m>
-
-        <!--隧道-->
-        <m v="OMDB_TUNNEL">
-            <m k="formOfWay">
-                <line dasharray="4,4"  stroke="#4624FF" width="0.4" />
-            </m>
-            <m k="type" v="s_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_2202_0.svg" symbol-height="24" symbol-width="24"></symbol>
-            </m>
-            <m k="type" v="e_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_2202_1.svg" symbol-height="24" symbol-width="24"></symbol>
-            </m>
-        </m>
-
-        <!--桥-->
-        <m v="OMDB_BRIDGE">
-            <m k="bridgeType" v="1|2|3">
-                <line stroke="#335431B2" width="1" />
-                <lineSymbol  repeat-gap="24" repeat-start="0" symbol-height="24" src="assets:omdb/icon_2201_1.svg" />
-            </m>
-            <m k="type" v="s_2_p_1">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_2201_1_1.svg" symbol-height="56" symbol-width="56"></symbol>
-            </m>
-            <m k="type" v="e_2_p_1">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_2201_1_2.svg" symbol-height="56" symbol-width="56"></symbol>
-            </m>
-            <m k="type" v="s_2_p_2">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_2201_2_1.svg" symbol-height="56" symbol-width="56"></symbol>
-            </m>
-            <m k="type" v="e_2_p_2">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_2201_2_2.svg" symbol-height="56" symbol-width="56"></symbol>
-            </m>
-            <m k="type" v="s_2_p_3">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_2201_3_1.svg" symbol-height="56" symbol-width="56"></symbol>
-            </m>
-            <m k="type" v="e_2_p_3">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_2201_3_2.svg" symbol-height="56" symbol-width="56"></symbol>
-            </m>
+            </m>-->
         </m>
 
         <!-- 检查点 -->
@@ -2122,13 +2075,13 @@
         <m v="OMDB_LINK_ATTRIBUTE">
 
             <m k="type" v="1">
-                <text use="road" stroke="#fcba5a" size="16"></text>
-                <line stroke="#1afa29" width="0.25" />
+                <text use="road" size="12"></text>
+                <line stroke="#1afa29" width="0.5" />
             </m>
 
             <m k="type" v="2">
-                <text use="road" stroke="#fcba5a" size="16"></text>
-                <line stroke="#1afa29" width="0.25" />
+                <text use="road" size="12"></text>
+                <line stroke="#1afa29" width="0.5" />
             </m>
 
             <m k="type" v="3">
@@ -2169,6 +2122,66 @@
         <!-- 道路形态2 -->
         <m v="OMDB_LINK_FORM2">
             <line use="road_morphology" />
+        </m>
+
+        <!-- 环岛 -->
+        <m v="OMDB_ROUNDABOUT">
+            <line stroke="#fcba5a" width="0.5" />
+            <m k="type" v="s_2_p">
+                <symbol repeat="false" repeat-start="0" rotate="false" repeat-gap="0"
+                    src="assets:omdb/icon_2201_0.svg" symbol-height="24" symbol-width="24"></symbol>
+            </m>
+            <m k="type" v="e_2_p">
+                <symbol repeat="false" repeat-start="0" rotate="false" repeat-gap="0"
+                    src="assets:omdb/icon_2204_0.svg" symbol-height="24" symbol-width="24"></symbol>
+            </m>
+        </m>
+
+        <!--隧道-->
+        <m v="OMDB_TUNNEL">
+            <m k="formOfWay">
+                <line dasharray="4,4"  stroke="#4624FF" width="0.4" />
+            </m>
+            <m k="type" v="s_2_p">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2202_0.svg" symbol-height="24" symbol-width="24"></symbol>
+            </m>
+            <m k="type" v="e_2_p">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2202_1.svg" symbol-height="24" symbol-width="24"></symbol>
+            </m>
+        </m>
+
+        <!--桥-->
+        <m v="OMDB_BRIDGE">
+            <m k="bridgeType" v="1|2|3">
+                <line stroke="#665431B2" width="1" />
+                <lineSymbol  repeat-gap="24" repeat-start="0" symbol-height="24" src="assets:omdb/icon_2201_1.svg" />
+            </m>
+            <m k="type" v="s_2_p_1">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2201_1_1.svg" symbol-height="56" symbol-width="56"></symbol>
+            </m>
+            <m k="type" v="e_2_p_1">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2201_1_2.svg" symbol-height="56" symbol-width="56"></symbol>
+            </m>
+            <m k="type" v="s_2_p_2">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2201_2_1.svg" symbol-height="56" symbol-width="56"></symbol>
+            </m>
+            <m k="type" v="e_2_p_2">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2201_2_2.svg" symbol-height="56" symbol-width="56"></symbol>
+            </m>
+            <m k="type" v="s_2_p_3">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2201_3_1.svg" symbol-height="56" symbol-width="56"></symbol>
+            </m>
+            <m k="type" v="e_2_p_3">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_2201_3_2.svg" symbol-height="56" symbol-width="56"></symbol>
+            </m>
         </m>
 
         <!--常规点限速-->

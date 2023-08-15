@@ -73,7 +73,7 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
         "2201"
     ),
     OMDB_TUNNEL("隧道", "2202"),
-    OMDB_RoundAbout(
+    OMDB_ROUNDABOUT(
         "环岛",
         "2204"
     ),
