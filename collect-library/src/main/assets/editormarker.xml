@@ -2075,13 +2075,13 @@
         <m v="OMDB_LINK_ATTRIBUTE">
 
             <m k="type" v="1">
-                <text use="road" size="12"></text>
                 <line stroke="#1afa29" width="0.5" />
+                <lineSymbol repeat-gap="240" src="assets:omdb/icon_2004_1.svg"></lineSymbol>
             </m>
 
             <m k="type" v="2">
-                <text use="road" size="12"></text>
                 <line stroke="#1afa29" width="0.5" />
+                <lineSymbol repeat-gap="240" src="assets:omdb/icon_2004_2.svg"></lineSymbol>
             </m>
 
             <m k="type" v="3">
@@ -2122,19 +2122,6 @@
         <!-- 道路形态2 -->
         <m v="OMDB_LINK_FORM2">
             <line use="road_morphology" />
-        </m>
-
-        <!-- 环岛 -->
-        <m v="OMDB_ROUNDABOUT">
-            <line stroke="#fcba5a" width="0.5" />
-            <m k="type" v="s_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false" repeat-gap="0"
-                    src="assets:omdb/icon_2201_0.svg" symbol-height="24" symbol-width="24"></symbol>
-            </m>
-            <m k="type" v="e_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false" repeat-gap="0"
-                    src="assets:omdb/icon_2204_0.svg" symbol-height="24" symbol-width="24"></symbol>
-            </m>
         </m>
 
         <!--隧道-->
@@ -2181,6 +2168,21 @@
             <m k="type" v="e_2_p_3">
                 <symbol repeat="false" repeat-start="0" rotate="false"
                     src="assets:omdb/icon_2201_3_2.svg" symbol-height="56" symbol-width="56"></symbol>
+            </m>
+        </m>
+
+        <!-- 环岛 -->
+        <m v="OMDB_ROUNDABOUT">
+            <line stroke="#fcba5a" width="0.5" />
+
+            <m k="type" v="s_2_p">
+                <symbol repeat="false" repeat-start="0" rotate="false" repeat-gap="0"
+                    src="assets:omdb/icon_2204_0.svg" symbol-height="24" symbol-width="24"></symbol>
+            </m>
+
+            <m k="type" v="e_2_p">
+                <symbol repeat="false" repeat-start="0" rotate="false" repeat-gap="0"
+                    src="assets:omdb/icon_2204_0.svg" symbol-height="12" symbol-width="12"></symbol>
             </m>
         </m>
 
