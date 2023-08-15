@@ -180,7 +180,7 @@
         width="0.1" />
 
     <!--道路形态-->
-    <style-line dasharray="8,2,2,2,2,2" id="road_morphology" repeat-gap="3" repeat-start="0" stroke="#fcba5a" width="0.2" />
+    <style-line dasharray="8,2,2,2,2,2" id="road_morphology" repeat-gap="3" repeat-start="0" stroke="#1afa29" width="0.2" />
 
     <!--###### ASSIGNMENT ######-->
 
@@ -2121,19 +2121,21 @@
         <!-- 道路属性 -->
         <m v="OMDB_LINK_ATTRIBUTE">
 
-            <m k="code" v="OMDB_LINK_ATTRIBUTE_SA">
+            <m k="type" v="1">
                 <text use="road" stroke="#fcba5a" size="16"></text>
+                <line stroke="#1afa29" width="0.25" />
             </m>
 
-            <m k="code" v="OMDB_LINK_ATTRIBUTE_PA">
+            <m k="type" v="2">
                 <text use="road" stroke="#fcba5a" size="16"></text>
+                <line stroke="#1afa29" width="0.25" />
             </m>
 
-            <m k="code" v="OMDB_LINK_ATTRIBUTE_FORNTAGE">
+            <m k="type" v="3">
                 <line use="road_morphology" />
             </m>
 
-            <m k="code" v="OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS">
+            <m k="type" v="4">
                 <line use="road_morphology" />
             </m>
 

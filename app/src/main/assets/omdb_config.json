@@ -12,7 +12,8 @@
 			"code": 2001,
 			"name": "道路线",
 			"zoomMin": 15,
-			"zoomMax": 17
+			"zoomMax": 17,
+			"checkLinkId": false
 		},
 		"2002": {
 			"table": "OMDB_RD_LINK_FUNCTION_CLASS",
@@ -111,7 +112,7 @@
 			"name": "全封闭"
 		},
 		"2037": {
-			"table": "OMDB_TAMP",
+			"table": "OMDB_RAMP",
 			"code": 2037,
 			"name": "匝道"
 		},

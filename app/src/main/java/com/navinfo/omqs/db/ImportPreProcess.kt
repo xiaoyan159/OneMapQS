@@ -458,14 +458,30 @@ class ImportPreProcess {
     fun generateRoadText(renderEntity: RenderEntity) {
         // 根据类型进行文字转换
         if (renderEntity.code != null) {
-            if(renderEntity.code==DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code){
+
+            var type = renderEntity.properties["sa"]
+
+            if(type!=null&&type=="1"){
                 renderEntity.properties["name"] = "SA"
-            }else if(renderEntity.code==DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code){
-                renderEntity.properties["name"] = "PA"
-            }else if(renderEntity.code==DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code){
-                renderEntity.properties["name"] = "FRONTAGE"
-            }else if(renderEntity.code==DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code){
-                renderEntity.properties["name"] = "MAIN"
+                renderEntity.properties["type"] = "1"
+            }else{
+                type = renderEntity.properties["pa"]
+                if(type!=null&&type=="1"){
+                    renderEntity.properties["type"] = "2"
+                    Log.e("qj","generateRoadText===2")
+                } else{
+                    type = renderEntity.properties["frontage"]
+                    if(type!=null&&type=="1"){
+                        renderEntity.properties["name"] = "FRONTAGE"
+                        renderEntity.properties["type"] = "3"
+                    }else{
+                        type = renderEntity.properties["mainSideAccess"]
+                        if(type!=null&&type=="1"){
+                            renderEntity.properties["name"] = "MAIN"
+                            renderEntity.properties["type"] = "4"
+                        }
+                    }
+                }
             }
         }
     }
