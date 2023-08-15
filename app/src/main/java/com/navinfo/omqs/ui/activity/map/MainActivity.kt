@@ -158,9 +158,13 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val checkIntent = Intent()
-        checkIntent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
-        someActivityResultLauncher.launch(checkIntent)
+        try {
+            val checkIntent = Intent()
+            checkIntent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
+            someActivityResultLauncher.launch(checkIntent)
+        } catch (e: Exception) {
+            Log.e("jingo", "检查TTS失败 $e")
+        }
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 

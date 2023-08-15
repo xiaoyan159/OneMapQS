@@ -28,6 +28,10 @@ class SignUtil {
                 2010 -> getRoadDirectionText(data)
                 //常规线限速
                 2019 -> getLineSpeedLimitText(data)
+                //全封闭
+                2022 -> getConAccessText(data)
+                //匝道
+                2037 -> getRampText(data)
                 //车道数
                 2041 -> getLaneNumText(data)
                 //常规点限速,条件点限速
@@ -41,6 +45,45 @@ class SignUtil {
          */
         private fun getLineSpeedLimitText(data: RenderEntity): String {
             return "${data.properties["maxSpeed"]}"
+        }
+
+        /**
+         * 获取全封闭值
+         */
+        private fun getConAccessText(data: RenderEntity): String {
+            val conAccess = data.properties["conAccess"]
+            try {
+                if (conAccess?.toInt() == 1)
+                    return "是"
+            } catch (e: Throwable) {
+
+            }
+            return ""
+        }
+
+        /**
+         * 获取匝道值
+         */
+        private fun getRampText(data: RenderEntity): String {
+            try {
+                val ramp = data.properties["formOfWay"]
+                return when (ramp?.toInt()) {
+                    93 -> "普通匝"
+                    98 -> "高入匝"
+                    99 -> "高出匝"
+                    100 -> "高连匝"
+                    102 -> "直入匝"
+                    103 -> "直出匝"
+                    104 -> "出入匝"
+
+                    else -> {
+                        ""
+                    }
+                }
+            } catch (e: Throwable) {
+
+            }
+            return ""
         }
 
         /**
@@ -86,6 +129,10 @@ class SignUtil {
                 2013 -> "车道边界类型"
                 //常规线限速
                 2019 -> "线限速"
+                //全封闭
+                2022 -> "全封闭"
+                //匝道
+                2037 -> "匝道"
                 //车道数
                 2041 -> "车道数"
                 //常规点限速

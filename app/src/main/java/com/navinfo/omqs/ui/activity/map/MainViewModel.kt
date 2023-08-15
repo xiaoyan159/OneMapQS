@@ -484,11 +484,11 @@ class MainViewModel @Inject constructor(
             captureLinkState = true
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-/*                val linkList = realmOperateHelper.queryLink(
+                val linkList = realmOperateHelper.queryLink(
                     point = point,
-                )*/
+                )
 
-                val linkList = realmOperateHelper.queryLine(point = point, buffer = 2.5, table = "OMDB_LANE_MARK_BOUNDARYTYPE")
+//                val linkList = realmOperateHelper.queryLine(point = point, buffer = 2.5, table = "OMDB_LANE_MARK_BOUNDARYTYPE")
 
                 var hisRoadName = false
 
@@ -532,11 +532,19 @@ class MainViewModel @Inject constructor(
                                 )
                                 Log.e("jingo", "捕捉到的数据code ${element.code}")
                                 when (element.code) {
+                                    //全封闭
+                                    2022 -> {
+                                        if (signBean.iconText.isNotEmpty()) {
+                                            topSignList.add(
+                                                signBean
+                                            )
+                                        }
+                                    }
                                     //车道数，种别，功能等级,线限速,道路方向
-                                    2041, 2008, 2002, 2019, 2010 -> topSignList.add(
-                                        signBean
-                                    )
-
+                                    2041, 2008, 2002, 2019, 2010, 2037 ->
+                                        topSignList.add(
+                                            signBean
+                                        )
                                     4002, 4003, 4004, 4010, 4022, 4601 -> signList.add(
                                         signBean
                                     )
@@ -1100,13 +1108,13 @@ class MainViewModel @Inject constructor(
      * 设置测量类型 0：距离 2：面积 3：角度
      */
     fun setMeasuringToolType(type: MeasureLayerHandler.MEASURE_TYPE) {
-        if(measuringType != type) {
+        if (measuringType != type) {
             measuringType = type
             mapController.measureLayerHandler.clear()
         }
     }
 
-    fun click2Dor3D(){
+    fun click2Dor3D() {
         viewModelScope.launch(Dispatchers.IO) {
             Log.e(
                 "qj",
@@ -1122,39 +1130,48 @@ class MainViewModel @Inject constructor(
      * @param searchEnum 枚举类
      * @param msg 搜索内容
      */
-     fun search(searchEnum: SearchEnum,msg:String,dialog:DialogInterface){
-        if(searchEnum!=null&&msg.isNotEmpty()&&dialog!=null){
+    fun search(searchEnum: SearchEnum, msg: String, dialog: DialogInterface) {
+        if (searchEnum != null && msg.isNotEmpty() && dialog != null) {
             when (searchEnum) {
                 SearchEnum.LINK -> {
-                     viewModelScope.launch(Dispatchers.IO) {
-                         val link = realmOperateHelper.queryLink(linkPid = msg)
-                         if(link!=null){
-                             link?.let { l ->
-                                 mapController.lineHandler.showLine(l.geometry)
-                                 dialog.dismiss()
-                             }
-                         }else{
-                             withContext(Dispatchers.Main){
-                                 Toast.makeText(mapController.mMapView.context, "未查询到数据", Toast.LENGTH_SHORT).show()
-                             }
-                         }
-                     }
+                    viewModelScope.launch(Dispatchers.IO) {
+                        val link = realmOperateHelper.queryLink(linkPid = msg)
+                        if (link != null) {
+                            link?.let { l ->
+                                mapController.lineHandler.showLine(l.geometry)
+                                dialog.dismiss()
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    mapController.mMapView.context,
+                                    "未查询到数据",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
                 }
                 SearchEnum.MARK -> {
                     viewModelScope.launch(Dispatchers.IO) {
                         val qsRecordBean = realmOperateHelper.queryQcRecordBean(markId = msg)
-                        if(qsRecordBean!=null){
+                        if (qsRecordBean != null) {
                             qsRecordBean?.let { l ->
-                                val naviController = (mapController.mMapView.context as Activity).findNavController(R.id.main_activity_right_fragment)
+                                val naviController =
+                                    (mapController.mMapView.context as Activity).findNavController(R.id.main_activity_right_fragment)
                                 val bundle = Bundle()
                                 bundle.putString("QsId", l.id)
                                 naviController.navigate(R.id.EvaluationResultFragment, bundle)
                                 ToastUtils.showLong(l.classType)
                                 dialog.dismiss()
                             }
-                        }else{
-                            withContext(Dispatchers.Main){
-                                Toast.makeText(mapController.mMapView.context, "未查询到数据", Toast.LENGTH_SHORT).show()
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    mapController.mMapView.context,
+                                    "未查询到数据",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     }
@@ -1165,10 +1182,14 @@ class MainViewModel @Inject constructor(
                         val x = parts[0].toDouble()
                         val y = parts[1].toDouble()
                         mapController.animationHandler.animationByLatLon(y, x)
-                        mapController.markerHandle.addMarker(GeoPoint(y,x),"location")
+                        mapController.markerHandle.addMarker(GeoPoint(y, x), "location")
                         dialog.dismiss()
                     } else {
-                        Toast.makeText(mapController.mMapView.context, "输入格式不正确", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            mapController.mMapView.context,
+                            "输入格式不正确",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
