@@ -5,8 +5,6 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.navinfo.collect.library.data.RealmUtils;
-import com.navinfo.collect.library.data.entity.GeometryFeatureEntity;
 import com.navinfo.collect.library.data.entity.RenderEntity;
 import com.navinfo.collect.library.system.Constant;
 import com.navinfo.collect.library.utils.RealmDBParamUtils;
@@ -57,7 +55,7 @@ public class OMDBTileDataSource implements ITileDataSource {
             if (!listResult.isEmpty()) {
                 mThreadLocalDecoders.get().decode(tile.zoomLevel, tile, mapDataSink, listResult);
             }
-            Log.e("jingo", listResult.size() + "条数据 主");
+//            Log.e("jingo", listResult.size() + "条数据 主");
             mapDataSink.completed(QueryResult.SUCCESS);
         } else {
             mapDataSink.completed(QueryResult.SUCCESS);
