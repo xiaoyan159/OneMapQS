@@ -179,6 +179,13 @@
 			"zoomMax": 17,
 			"transformer2Code": ""
 		},
+		"3012":{
+			"table": "OMDB_FILL_AREA",
+			"code": 3012,
+			"name": "导流区",
+			"zoomMin": 16,
+			"zoomMax": 20
+		},
 		"4001": {
 			"table": "OMDB_INTERSECTION",
 			"code": 4001,
