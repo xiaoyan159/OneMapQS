@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.navinfo.collect.library.enum.DataCodeEnum
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.databinding.AdapterSignBinding
@@ -30,7 +31,7 @@ class SignAdapter(private var listener: OnSignAdapterClickListener?) :
     private var selectMoreInfoTag: String = ""
 
     override fun getItemViewType(position: Int): Int {
-        if (data.isNotEmpty() && data[position].renderEntity.code == 4601) {
+        if (data.isNotEmpty() && data[position].renderEntity.code == "4601") {
             return 4601
         }
         return 0
@@ -77,7 +78,7 @@ class SignAdapter(private var listener: OnSignAdapterClickListener?) :
                 bd.signMainInfo.visibility = View.GONE
             }
             bd.signSecondIcon.text = ""
-            if (item.renderEntity.code == 4002) {
+            if (item.renderEntity.code == DataCodeEnum.OMDB_SPEEDLIMIT.code) {
                 val minSpeed = SignUtil.getSpeedLimitMinText(item.renderEntity)
                 if (minSpeed != "0") {
                     bd.signSecondIcon.text = minSpeed

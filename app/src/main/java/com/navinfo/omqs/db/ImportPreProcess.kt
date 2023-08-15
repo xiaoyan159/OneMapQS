@@ -3,6 +3,7 @@ package com.navinfo.omqs.db
 import android.util.Log
 import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
+import com.navinfo.collect.library.enum.DataCodeEnum
 import com.navinfo.collect.library.utils.GeometryTools
 import io.realm.Realm
 import org.json.JSONArray
@@ -397,7 +398,7 @@ class ImportPreProcess {
                 "markingCount" to 1
             )
         )
-        if (renderEntity.code == 2013 && !renderEntity.properties["shapeList"].isNullOrEmpty() && renderEntity.properties["shapeList"] != "null") {
+        if (renderEntity.code == "2013" && !renderEntity.properties["shapeList"].isNullOrEmpty() && renderEntity.properties["shapeList"] != "null") {
             // 解析shapeList，将数组中的属性放会properties
             val shapeList = JSONArray(renderEntity.properties["shapeList"])
             for (i in 0 until shapeList.length()) {
@@ -416,7 +417,7 @@ class ImportPreProcess {
      * 解析车信数据二级属性
      * */
     fun unpackingLaneInfo(renderEntity: RenderEntity) {
-        if (renderEntity.code == 4601) {
+        if (renderEntity.code == "4601") {
             if (!renderEntity.properties["laneinfoGroup"].isNullOrEmpty() && renderEntity.properties["laneinfoGroup"] != "null") {
                 // 解析laneinfoGroup，将数组中的属性放会properties
                 val laneinfoGroup = JSONArray(
@@ -447,6 +448,24 @@ class ImportPreProcess {
                     Log.d("unpackingLaneInfo", referenceEntity.properties["symbol"].toString())
                     Realm.getDefaultInstance().insert(referenceEntity)
                 }
+            }
+        }
+    }
+
+    /**
+     * 生成默认道路名数据
+     * */
+    fun generateRoadText(renderEntity: RenderEntity) {
+        // 根据类型进行文字转换
+        if (renderEntity.code != null) {
+            if(renderEntity.code==DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code){
+                renderEntity.properties["name"] = "SA"
+            }else if(renderEntity.code==DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code){
+                renderEntity.properties["name"] = "PA"
+            }else if(renderEntity.code==DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code){
+                renderEntity.properties["name"] = "FRONTAGE"
+            }else if(renderEntity.code==DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code){
+                renderEntity.properties["name"] = "MAIN"
             }
         }
     }

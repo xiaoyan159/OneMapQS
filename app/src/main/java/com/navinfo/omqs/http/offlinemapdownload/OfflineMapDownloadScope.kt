@@ -158,13 +158,19 @@ class OfflineMapDownloadScope(
                 val res =
                     fileTemp.renameTo(File("${Constant.OFFLINE_MAP_PATH}${cityBean.fileName}"))
                 change(FileDownloadStatus.DONE)
-                withContext(Dispatchers.Main) {
-                    downloadManager.mapController.layerManagerHandler.loadBaseMap()
+                try {
+                    withContext(Dispatchers.Main) {
+                        downloadManager.mapController.layerManagerHandler.loadBaseMap()
+                    }
+                }catch (e:Throwable){
+                    Log.e("jingo", "下载离线地图 load map ${e.message}")
                 }
+
             } else {
                 change(FileDownloadStatus.PAUSE)
             }
         } catch (e: Throwable) {
+            Log.e("jingo", "下载离线地图 ${e.message}")
             change(FileDownloadStatus.ERROR)
         } finally {
             inputStream?.close()

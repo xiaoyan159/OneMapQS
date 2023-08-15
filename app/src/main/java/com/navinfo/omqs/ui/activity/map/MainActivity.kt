@@ -1,6 +1,9 @@
 package com.navinfo.omqs.ui.activity.map
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -8,6 +11,7 @@ import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnLongClickListener
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -19,6 +23,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.blankj.utilcode.util.ClipboardUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.navinfo.collect.library.map.NIMapController
@@ -43,7 +48,6 @@ import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import org.oscim.android.theme.AssetsRenderTheme
 import org.oscim.core.GeoPoint
 import org.oscim.renderer.GLViewport
 import org.videolan.vlc.Util
@@ -178,6 +182,14 @@ class MainActivity : BaseActivity() {
         binding.mainActivity = this
         //给xml传递viewModel对象
         binding.viewModel = viewModel
+
+        binding.mainActivityGeometry.setOnLongClickListener {
+            var text = (it as TextView).text
+            text = text.substring(4)
+            ClipboardUtils.copyText(text)
+            BaseToast.makeText(this, "坐标已复制到剪切板", BaseToast.LENGTH_SHORT).show()
+            true
+        }
 
         binding.mainActivityVoice.setOnTouchListener { v, event ->
             when (event?.action) {
@@ -400,6 +412,84 @@ class MainActivity : BaseActivity() {
             supportFragmentManager.beginTransaction()
                 .add(R.id.console_fragment_layout, ConsoleFragment()).commit()
         }
+        initMeasuringTool()
+    }
+
+    /**
+     *初始化测量工具栏的点击事件
+     */
+
+    private fun initMeasuringTool() {
+        val root = binding.mainActivityMeasuringTool.root
+        root.findViewById<View>(R.id.measuring_tool_select_point)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_close)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_backspace)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_reset)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_distance)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_area)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_angle)
+            .setOnClickListener(measuringToolClickListener)
+        root.findViewById<View>(R.id.measuring_tool_value_layout).setOnLongClickListener {
+            val value = root.findViewById<TextView>(R.id.measuring_tool_value).text
+            val unit = root.findViewById<TextView>(R.id.measuring_tool_value_unit).text
+            ClipboardUtils.copyText("$value$unit")
+            BaseToast.makeText(this, "测量结果已复制到剪切板", BaseToast.LENGTH_SHORT).show()
+            true
+        }
+    }
+
+    /**
+     * 测量工具点击事件
+     */
+    private val measuringToolClickListener = View.OnClickListener {
+        when (it.id) {
+            //选点
+            R.id.measuring_tool_select_point -> {
+                viewModel.addPointForMeasuringTool()
+            }
+            //关闭
+            R.id.measuring_tool_close -> {
+                measuringToolOff()
+            }
+            //上一步
+            R.id.measuring_tool_backspace -> {
+                viewModel.backPointForMeasuringTool()
+            }
+            //重绘
+            R.id.measuring_tool_reset -> {
+                viewModel.resetMeasuringTool()
+            }
+            //测距
+            R.id.measuring_tool_distance -> {
+                it.isSelected = true
+                viewModel.setMeasuringToolType(MeasureLayerHandler.MEASURE_TYPE.DISTANCE)
+                val root = binding.mainActivityMeasuringTool.root
+                root.findViewById<View>(R.id.measuring_tool_area).isSelected = false
+                root.findViewById<View>(R.id.measuring_tool_angle).isSelected = false
+            }
+            //测面积
+            R.id.measuring_tool_area -> {
+                it.isSelected = true
+                viewModel.setMeasuringToolType(MeasureLayerHandler.MEASURE_TYPE.AREA)
+                val root = binding.mainActivityMeasuringTool.root
+                root.findViewById<View>(R.id.measuring_tool_distance).isSelected = false
+                root.findViewById<View>(R.id.measuring_tool_angle).isSelected = false
+            }
+            //测角度
+            R.id.measuring_tool_angle -> {
+                it.isSelected = true
+                viewModel.setMeasuringToolType(MeasureLayerHandler.MEASURE_TYPE.ANGLE)
+                val root = binding.mainActivityMeasuringTool.root
+                root.findViewById<View>(R.id.measuring_tool_distance).isSelected = false
+                root.findViewById<View>(R.id.measuring_tool_area).isSelected = false
+            }
+        }
     }
 
     /**
@@ -443,6 +533,7 @@ class MainActivity : BaseActivity() {
         binding.mainActivityMeasuringTool.root.visibility = View.GONE
     }
 
+
     //根据输入的经纬度跳转坐标
     fun jumpPosition() {
         val view = this.layoutInflater.inflate(R.layout.dialog_view_edittext, null)
@@ -452,7 +543,7 @@ class MainActivity : BaseActivity() {
         val editText = view.findViewById<EditText>(R.id.dialog_edittext)
         val tabItemLayout = view.findViewById<TabLayout>(R.id.search_tab_layout)
         editText.hint = "请输入LinkPid例如：12345678"
-        var index:Int = 0
+        var index = 0
         tabItemLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(p0: TabLayout.Tab) {
 
@@ -482,9 +573,9 @@ class MainActivity : BaseActivity() {
             if (editText.text.isNotEmpty()) {
                 try {
                     when (index) {
-                        0 -> viewModel.search(SearchEnum.LINK,editText.text.toString(),dialog)
-                        1 -> viewModel.search(SearchEnum.MARK,editText.text.toString(),dialog)
-                        2 -> viewModel.search(SearchEnum.LOCATION,editText.text.toString(),dialog)
+                        0 -> viewModel.search(SearchEnum.LINK, editText.text.toString(), dialog)
+                        1 -> viewModel.search(SearchEnum.MARK, editText.text.toString(), dialog)
+                        2 -> viewModel.search(SearchEnum.LOCATION, editText.text.toString(), dialog)
                     }
                 } catch (e: Exception) {
                     Toast.makeText(this, "输入格式不正确", Toast.LENGTH_SHORT).show()
@@ -890,9 +981,12 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    /**
+     * 打开底部导航栏
+     */
     private fun showMainActivityBottomSheetGroup() {
         binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
-        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 65)
+        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 10, 60)
         mapController.mMapView.vtmMap.animator().animateTo(
             GeoPoint(
                 mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
@@ -901,9 +995,12 @@ class MainActivity : BaseActivity() {
         )
     }
 
+    /**
+     * 关闭底部导航栏
+     */
     private fun hideMainActivityBottomSheetGroup() {
         binding.mainActivityBottomSheetGroup.visibility = View.GONE
-        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 5)
+        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 10, 0)
         mapController.mMapView.vtmMap.animator().animateTo(
             GeoPoint(
                 mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,

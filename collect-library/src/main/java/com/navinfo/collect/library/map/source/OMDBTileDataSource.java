@@ -55,7 +55,6 @@ public class OMDBTileDataSource implements ITileDataSource {
             if (!listResult.isEmpty()) {
                 mThreadLocalDecoders.get().decode(tile.zoomLevel, tile, mapDataSink, listResult);
             }
-//            Log.e("jingo", listResult.size() + "条数据 主");
             mapDataSink.completed(QueryResult.SUCCESS);
         } else {
             mapDataSink.completed(QueryResult.SUCCESS);
