@@ -60,7 +60,7 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
                 .fillColor(context.resources.getColor(R.color.draw_line_red_color))
                 .fillAlpha(0.5f)
                 .strokeColor(context.resources.getColor(R.color.draw_line_red_color))
-                .strokeWidth(8f)
+                .strokeWidth(2f)
                 .fixed(true).build()
         )
         addLayer(layer, NIMapView.LAYER_GROUPS.VECTOR)
