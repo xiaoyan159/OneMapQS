@@ -169,8 +169,7 @@
 			"code": 2205,
 			"name": "道路形态1",
 			"zoomMin": 15,
-			"zoomMax": 17,
-			"transformer2Code": ""
+			"zoomMax": 17
 		},
 		"2206":{
 			"table": "OMDB_LINK_FORM2",

@@ -178,6 +178,10 @@
     <style-line id="boundaryType" stipple-width="0.1" width="0.1" />
     <style-line dasharray="1,1" id="s2e" repeat-gap="3" repeat-start="0" stroke="#14582c"
         width="0.1" />
+
+    <!--道路形态-->
+    <style-line dasharray="8,2,2,2,2,2" id="road_morphology" repeat-gap="3" repeat-start="0" stroke="#fcba5a" width="0.2" />
+
     <!--###### ASSIGNMENT ######-->
 
     <m e="way" k="natural" v="issea|sea">
@@ -1972,6 +1976,9 @@
             <m k="width" v="~">
                 <line stroke="#7A88A0" width="2.8" />
             </m>
+            <m k="width" v="~">
+                <line stroke="#4624FF" width="0.1" />
+            </m>
         </m>
 
         <!--隧道-->
@@ -2082,22 +2089,22 @@
 
                         <!--其他|实线-->
                         <m k="markColor" v="1">
-                            <line dasharray="5,5" repeat-start="0" stroke="#ffffff" width="0.1"/>
+                            <line dasharray="2,2" repeat-start="0" stroke="#ffffff" width="0.1"/>
                         </m>
                         <m k="markColor" v="2">
-                            <line dasharray="5,5" repeat-start="0" stroke="#eccc68" width="0.1"/>
+                            <line dasharray="2,2" repeat-start="0" stroke="#eccc68" width="0.1"/>
                         </m>
 
                         <m k="markColor" v="6">
-                            <line dasharray="5,5" repeat-start="0" stroke="#0000ff" width="0.1"/>
+                            <line dasharray="2,2" repeat-start="0" stroke="#0000ff" width="0.1"/>
                         </m>
 
                         <m k="markColor" v="7">
-                            <line dasharray="5,5" repeat-start="0" stroke="#00ff00" width="0.1"/>
+                            <line dasharray="2,2" repeat-start="0" stroke="#00ff00" width="0.1"/>
                         </m>
 
                         <m k="markColor" v="0|9">
-                            <line dasharray="5,5" repeat-start="0" stroke="#8e44ad" width="0.1"/>
+                            <line dasharray="2,2" repeat-start="0" stroke="#8e44ad" width="0.1"/>
                         </m>
 
                     </m>
@@ -2123,43 +2130,43 @@
             </m>
 
             <m k="code" v="OMDB_LINK_ATTRIBUTE_FORNTAGE">
-                <line dasharray="10,2,2,2,2,2" repeat-start="0" stroke="#fcba5a" width="0.2" />
+                <line use="road_morphology" />
             </m>
 
             <m k="code" v="OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS">
-                <line dasharray="10,2,2,2,2,2" repeat-start="0" stroke="#fcba5a" width="0.2" />
+                <line use="road_morphology" />
             </m>
 
         </m>
 
         <!-- 匝道 -->
         <m v="OMDB_RAMP">
-             <line dasharray="10,2,2,2,2,2" repeat-start="0" stroke="#fcba5a" width="0.2" />
+            <line use="road_morphology" />
         </m>
 
         <!-- 上下线分离 -->
         <m v="OMDB_MULTI_DIGITIZED">
-            <line dasharray="10,2,2,2,2,2" repeat-start="0" stroke="#fcba5a" width="0.2" />
+            <line use="road_morphology" />
         </m>
 
         <!-- 全封闭 -->
         <m v="OMDB_CON_ACESS">
-            <line dasharray="10,2,2,2,2,2" repeat-start="0" stroke="#fcba5a" width="0.2" />
+            <line use="road_morphology" />
         </m>
 
         <!-- 高架 -->
         <m v="OMDB_VIADUCT">
-            <line dasharray="10,2,2,2,2,2" repeat-start="0" stroke="#fcba5a" width="0.2" />
+            <line use="road_morphology" />
         </m>
 
         <!-- 道路形态1 -->
         <m v="OMDB_LINK_FORM1">
-            <line dasharray="10,2,2,2,2,2" repeat-start="0" stroke="#fcba5a" width="0.2" />
+            <line use="road_morphology" />
         </m>
 
         <!-- 道路形态2 -->
         <m v="OMDB_LINK_FORM2">
-            <line dasharray="10,2,2,2,2,2" repeat-start="0" stroke="#fcba5a" width="0.2" />
+            <line use="road_morphology" />
         </m>
 
         <!--常规点限速-->
