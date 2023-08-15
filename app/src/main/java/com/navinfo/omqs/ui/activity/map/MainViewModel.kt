@@ -24,6 +24,7 @@ import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.*
+import com.navinfo.collect.library.enum.DataCodeEnum
 import com.navinfo.collect.library.garminvirbxe.HostBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.OnGeoPointClickListener
@@ -509,7 +510,7 @@ class MainViewModel @Inject constructor(
                             var elementList = realmOperateHelper.queryLinkByLinkPid(it)
                             for (element in elementList) {
 
-                                if (element.code == 2011) {
+                                if (element.code == "2011") {
                                     hisRoadName = true
                                     liveDataRoadName.postValue(element)
                                     continue
@@ -540,12 +541,19 @@ class MainViewModel @Inject constructor(
                                             )
                                         }
                                     }
-                                    //车道数，种别，功能等级,线限速,道路方向
-                                    2041, 2008, 2002, 2019, 2010, 2037 ->
-                                        topSignList.add(
-                                            signBean
-                                        )
-                                    4002, 4003, 4004, 4010, 4022, 4601 -> signList.add(
+//                                    //车道数，种别，功能等级,线限速,道路方向
+//                                    2041, 2008, 2002, 2019, 2010, 2037 ->
+//                                        topSignList.add(
+//                                            signBean
+//                                        )
+//                                    4002, 4003, 4004, 4010, 4022, 4601 -> signList.add(
+//                                        signBean
+//                                    )
+                                    DataCodeEnum.OMDB_LANE_NUM.code, DataCodeEnum.OMDB_RD_LINK_KIND.code, DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code, DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code, DataCodeEnum.OMDB_LINK_DIRECT.code -> topSignList.add(
+                                        signBean
+                                    )
+
+                                    DataCodeEnum.OMDB_SPEEDLIMIT.code, DataCodeEnum.OMDB_SPEEDLIMIT_COND.code, DataCodeEnum.OMDB_SPEEDLIMIT_VAR.code, DataCodeEnum.OMDB_ELECTRONICEYE.code, DataCodeEnum.OMDB_TRAFFICLIGHT.code, DataCodeEnum.OMDB_LANEINFO.code -> signList.add(
                                         signBean
                                     )
                                 }
@@ -1061,7 +1069,8 @@ class MainViewModel @Inject constructor(
                     startTimer()
                 }
             } else {
-                Toast.makeText(mapController.mMapView.context, "无数据了！", Toast.LENGTH_LONG).show()
+                Toast.makeText(mapController.mMapView.context, "无数据了！", Toast.LENGTH_LONG)
+                    .show()
                 cancelTrace()
             }
         }
@@ -1152,6 +1161,7 @@ class MainViewModel @Inject constructor(
                         }
                     }
                 }
+
                 SearchEnum.MARK -> {
                     viewModelScope.launch(Dispatchers.IO) {
                         val qsRecordBean = realmOperateHelper.queryQcRecordBean(markId = msg)
@@ -1176,6 +1186,7 @@ class MainViewModel @Inject constructor(
                         }
                     }
                 }
+
                 SearchEnum.LOCATION -> {
                     val parts = msg.split("[,，\\s]".toRegex())
                     if (parts.size == 2) {

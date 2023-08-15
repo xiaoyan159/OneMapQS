@@ -8,6 +8,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.navinfo.collect.library.data.entity.RenderEntity
+import com.navinfo.collect.library.enum.DataCodeEnum
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.databinding.FragmentSignInfoBinding
@@ -50,37 +51,37 @@ class SignMoreInfoFragment : BaseFragment() {
 
             when (it.code) {
                 //道路名
-                2011 -> {
+                DataCodeEnum.OMDB_RD_LINK.code -> {
                     val adapter = RoadNameInfoAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getRoadNameList(it))
                 }
                 //车道边界类型
-                2013 -> {
+                DataCodeEnum.OMDB_LANE_MARK_BOUNDARYTYPE.code -> {
                     val adapter = LaneBoundaryAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getLaneBoundaryTypeInfo(it))
                 }
                 //可变点限速
-                2021 -> {
+                DataCodeEnum.OMDB_LINK_SPEEDLIMIT_VAR.code -> {
                     val adapter = TwoItemAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getChangeLimitSpeedInfo(it))
                 }
                 //常规点限速
-                4002 -> {
+                DataCodeEnum.OMDB_SPEEDLIMIT.code -> {
                     val adapter = TwoItemAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getSpeedLimitMoreInfoText(it))
                 }
                 //条件点限速
-                4003 -> {
+                DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> {
                     val adapter = TwoItemAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getConditionLimitMoreInfoText(it))
                 }
                 //电子眼
-                4010
+                DataCodeEnum.OMDB_ELECTRONICEYE.code
                 -> {
                     val drawable = resources.getDrawable(R.drawable.icon_electronic_eye_left, null);
                     drawable.setBounds(

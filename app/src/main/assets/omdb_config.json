@@ -21,6 +21,21 @@
 			"zoomMin": 15,
 			"zoomMax": 17
 		},
+		"2004": {
+			"table": "OMDB_LINK_ATTRIBUTE",
+			"code": 2004,
+			"name": "道路属性",
+			"zoomMin": 15,
+			"zoomMax": 19,
+			"transformer": [
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateRoadText()"
+				}
+			]
+		},
 		"2008": {
 			"table": "OMDB_RD_LINK_KIND",
 			"code": 2008,
@@ -96,7 +111,7 @@
 			"name": "全封闭"
 		},
 		"2037": {
-			"table": "OMDB_FORM_OF_WAY",
+			"table": "OMDB_TAMP",
 			"code": 2037,
 			"name": "匝道"
 		},
@@ -139,14 +154,31 @@
 			"name": "隧道",
 			"zoomMin": 15,
 			"zoomMax": 20,
-			"transformer": [
-				{
-					"k": "geometry",
-					"v": "~",
-					"klib": "geometry",
-					"vlib": "generateS2EReferencePoint()"
-				}
-			]
+			"transformer2Code": ""
+		},
+		"2204":{
+			"table": "OMDB_RoundAbout",
+			"code": 2204,
+			"name": "环岛",
+			"zoomMin": 15,
+			"zoomMax": 17,
+			"transformer2Code": ""
+		},
+		"2205":{
+			"table": "OMDB_LINK_FORM1",
+			"code": 2205,
+			"name": "道路形态1",
+			"zoomMin": 15,
+			"zoomMax": 17,
+			"transformer2Code": ""
+		},
+		"2206":{
+			"table": "OMDB_LINK_FORM2",
+			"code": 2206,
+			"name": "道路形态2",
+			"zoomMin": 15,
+			"zoomMax": 17,
+			"transformer2Code": ""
 		},
 		"4001": {
 			"table": "OMDB_INTERSECTION",

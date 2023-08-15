@@ -180,7 +180,7 @@ class EvaluationResultViewModel @Inject constructor(
                 }
             } else {
                 liveDataQsRecordBean.value?.run {
-                    elementId = bean.renderEntity.code.toString()
+                    elementId = bean.renderEntity.code
                     linkId = bean.linkId
                     if (linkId.isNotEmpty()) {
                         viewModelScope.launch {
@@ -257,7 +257,7 @@ class EvaluationResultViewModel @Inject constructor(
                         if (classType2 != null) {
                             classType = classType2
                         }
-                        classCode = bean.renderEntity.code.toString()
+                        classCode = bean.renderEntity.code
                     }
                     //如果右侧栏没数据，给个默认值
                     if (liveDataQsRecordBean.value!!.classType.isEmpty()) {
