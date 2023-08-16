@@ -8,6 +8,7 @@ import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
+import android.provider.ContactsContract.Data
 import android.text.TextUtils
 import android.util.Log
 import android.view.Gravity
@@ -510,7 +511,7 @@ class MainViewModel @Inject constructor(
                             var elementList = realmOperateHelper.queryLinkByLinkPid(it)
                             for (element in elementList) {
 
-                                if (element.code == "2011") {
+                                if (element.code == DataCodeEnum.OMDB_LINK_NAME.code) {
                                     hisRoadName = true
                                     liveDataRoadName.postValue(element)
                                     continue
@@ -533,27 +534,36 @@ class MainViewModel @Inject constructor(
                                 )
                                 Log.e("jingo", "捕捉到的数据code ${element.code}")
                                 when (element.code) {
-                                    //全封闭
-                                    2022 -> {
-                                        if (signBean.iconText.isNotEmpty()) {
+                                    DataCodeEnum.OMDB_MULTI_DIGITIZED.code,//上下线分离
+                                    DataCodeEnum.OMDB_CON_ACCESS.code,//全封闭
+                                    -> {
+                                        if (signBean.iconText != "") {
                                             topSignList.add(
                                                 signBean
                                             )
                                         }
                                     }
-//                                    //车道数，种别，功能等级,线限速,道路方向
-//                                    2041, 2008, 2002, 2019, 2010, 2037 ->
-//                                        topSignList.add(
-//                                            signBean
-//                                        )
-//                                    4002, 4003, 4004, 4010, 4022, 4601 -> signList.add(
-//                                        signBean
-//                                    )
-                                    DataCodeEnum.OMDB_LANE_NUM.code, DataCodeEnum.OMDB_RD_LINK_KIND.code, DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code, DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code, DataCodeEnum.OMDB_LINK_DIRECT.code -> topSignList.add(
+                                    DataCodeEnum.OMDB_LANE_NUM.code, //车道数
+                                    DataCodeEnum.OMDB_RD_LINK_KIND.code,//种别，
+                                    DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code, // 功能等级,
+                                    DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code, //线限速,
+                                    DataCodeEnum.OMDB_LINK_DIRECT.code,//道路方向,
+                                    DataCodeEnum.OMDB_RAMP.code, //匝道
+                                    DataCodeEnum.OMDB_BRIDGE.code,//桥
+                                    DataCodeEnum.OMDB_TUNNEL.code,//隧道
+                                    DataCodeEnum.OMDB_ROUNDABOUT.code,//环岛
+                                    DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code,//出入口
+                                    -> topSignList.add(
                                         signBean
                                     )
 
-                                    DataCodeEnum.OMDB_SPEEDLIMIT.code, DataCodeEnum.OMDB_SPEEDLIMIT_COND.code, DataCodeEnum.OMDB_SPEEDLIMIT_VAR.code, DataCodeEnum.OMDB_ELECTRONICEYE.code, DataCodeEnum.OMDB_TRAFFICLIGHT.code, DataCodeEnum.OMDB_LANEINFO.code -> signList.add(
+                                    DataCodeEnum.OMDB_SPEEDLIMIT.code,//常规点限速
+                                    DataCodeEnum.OMDB_SPEEDLIMIT_COND.code,//条件点限速
+                                    DataCodeEnum.OMDB_SPEEDLIMIT_VAR.code,//可变点限速
+                                    DataCodeEnum.OMDB_ELECTRONICEYE.code,//电子眼
+                                    DataCodeEnum.OMDB_TRAFFICLIGHT.code,//交通灯
+                                    DataCodeEnum.OMDB_LANEINFO.code,//车信
+                                    -> signList.add(
                                         signBean
                                     )
                                 }

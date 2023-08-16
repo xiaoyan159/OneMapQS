@@ -3,6 +3,7 @@ package com.navinfo.omqs.ui.activity.map
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.navinfo.collect.library.enum.DataCodeEnum
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.databinding.AdapterTopSignBinding
@@ -23,7 +24,15 @@ class TopSignAdapter(private var itemListener: ((Int, SignBean) -> Unit?)? = nul
         val item = data[position]
         if (item.iconId != 0)
             bd.topSignText.background = holder.viewBinding.root.context.getDrawable(item.iconId)
-        bd.topSignName.text = item.name
+        when (item.renderEntity.code) {
+            DataCodeEnum.OMDB_CON_ACCESS.code,
+            DataCodeEnum.OMDB_MULTI_DIGITIZED.code,
+            DataCodeEnum.OMDB_TUNNEL.code,
+            DataCodeEnum.OMDB_ROUNDABOUT.code
+            -> bd.topSignName.text = ""
+            else -> bd.topSignName.text = item.name
+        }
+
         bd.topSignText.text = item.iconText
         if (data.size == 1) {
             bd.topSignLeftLine.visibility = View.GONE

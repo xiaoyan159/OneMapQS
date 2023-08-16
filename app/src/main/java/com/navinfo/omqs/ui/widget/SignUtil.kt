@@ -30,15 +30,44 @@ class SignUtil {
                 //常规线限速
                 DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> getLineSpeedLimitText(data)
                 //全封闭
-                2022 -> getConAccessText(data)
+                DataCodeEnum.OMDB_CON_ACCESS.code -> getConAccessText(data)
                 //匝道
-                2037 -> getRampText(data)
+                DataCodeEnum.OMDB_RAMP.code -> getRampText(data)
                 //车道数
                 DataCodeEnum.OMDB_LANE_NUM.code -> getLaneNumText(data)
                 //常规点限速,条件点限速
-                DataCodeEnum.OMDB_SPEEDLIMIT.code, DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> getSpeedLimitMaxText(data)
+                DataCodeEnum.OMDB_SPEEDLIMIT.code, DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> getSpeedLimitMaxText(
+                    data
+                )
+                //上下线分离
+                DataCodeEnum.OMDB_MULTI_DIGITIZED.code -> getMultiDigitized(data)
+                //桥
+                DataCodeEnum.OMDB_BRIDGE.code -> getBridgeType(data)
+                //隧道
+                DataCodeEnum.OMDB_TUNNEL.code -> "隧道"
+                //环岛
+                DataCodeEnum.OMDB_ROUNDABOUT.code -> "环岛"
+                //主辅路出入口
+                DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code ->"道路属性"
                 else -> ""
             }
+        }
+
+        /**
+         * 获取桥的类型值
+         */
+        private fun getBridgeType(data: RenderEntity): String {
+            val bridgeType = data.properties["bridgeType"]
+            try {
+                when (bridgeType?.toInt()) {
+                    1 -> return "固定桥"
+                    2 -> return "可移桥"
+                    3 -> return "跨线桥"
+                }
+            } catch (e: Throwable) {
+
+            }
+            return ""
         }
 
         /**
@@ -55,7 +84,7 @@ class SignUtil {
             val conAccess = data.properties["conAccess"]
             try {
                 if (conAccess?.toInt() == 1)
-                    return "是"
+                    return "全封闭"
             } catch (e: Throwable) {
 
             }
@@ -131,9 +160,9 @@ class SignUtil {
                 //常规线限速
                 DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> "线限速"
                 //全封闭
-                2022 -> "全封闭"
+                DataCodeEnum.OMDB_CON_ACCESS.code -> "全封闭" //暂时不要标题
                 //匝道
-                2037 -> "匝道"
+                DataCodeEnum.OMDB_RAMP.code -> "匝道"
                 //车道数
                 DataCodeEnum.OMDB_LANE_NUM.code -> "车道数"
                 //常规点限速
@@ -150,9 +179,20 @@ class SignUtil {
                 DataCodeEnum.OMDB_TRAFFICLIGHT.code -> "交通灯"
                 //车信
                 DataCodeEnum.OMDB_LANEINFO.code -> "车信"
+                //上下线分离
+                DataCodeEnum.OMDB_MULTI_DIGITIZED.code -> "上下线分离"
+                //桥
+                DataCodeEnum.OMDB_BRIDGE.code -> "桥"
+                //隧道
+                DataCodeEnum.OMDB_TUNNEL.code -> "隧道"
+                //环岛
+                DataCodeEnum.OMDB_ROUNDABOUT.code -> "环岛"
+                //主辅路出入口
+                DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code ->"出入口"
                 else -> ""
             }
         }
+
 
         /**
          * 获取车道边界类型详细信息
@@ -341,6 +381,21 @@ class SignUtil {
 
             // 判断运算结果是否为 0
             return result != 0
+        }
+
+        /**
+         * 获取上下线分离值
+         */
+        private fun getMultiDigitized(data: RenderEntity): String {
+
+            val multiDigitized = data.properties["multiDigitized"]
+            try {
+                if (multiDigitized?.toInt() == 1)
+                    return "上下线"
+            } catch (e: Throwable) {
+
+            }
+            return ""
         }
 
         /**
@@ -537,10 +592,22 @@ class SignUtil {
             stringBuffer.append("当前道路")
             for (item in topSignList) {
                 when (item.renderEntity.code) {
-                    DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code -> stringBuffer.append("功能等级${item.iconText.substring(2)}级,")
+                    DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code -> stringBuffer.append(
+                        "功能等级${
+                            item.iconText.substring(
+                                2
+                            )
+                        }级,"
+                    )
                     DataCodeEnum.OMDB_RD_LINK_KIND.code -> stringBuffer.append("种别${item.iconText},")
                     DataCodeEnum.OMDB_LINK_DIRECT.code -> stringBuffer.append("${item.iconText},")
-                    DataCodeEnum.OMDB_LANE_NUM.code -> stringBuffer.append("${item.iconText.substringBefore("|")}车道")
+                    DataCodeEnum.OMDB_LANE_NUM.code -> stringBuffer.append(
+                        "${
+                            item.iconText.substringBefore(
+                                "|"
+                            )
+                        }车道"
+                    )
                 }
             }
             return stringBuffer.toString()
