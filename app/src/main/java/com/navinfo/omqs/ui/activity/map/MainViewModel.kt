@@ -328,7 +328,7 @@ class MainViewModel @Inject constructor(
             val realm = realmOperateHelper.getRealmDefaultInstance()
             realm.executeTransaction {
                 val objects =
-                    realmOperateHelper.getRealmTools(QsRecordBean::class.java,false).findAll()
+                    realmOperateHelper.getRealmTools(QsRecordBean::class.java, false).findAll()
                 list = realm.copyFromRealm(objects)
             }
             mapController.markerHandle.removeAllQsMarker()
@@ -345,7 +345,7 @@ class MainViewModel @Inject constructor(
         var list = mutableListOf<NoteBean>()
         val realm = realmOperateHelper.getRealmDefaultInstance()
         realm.executeTransaction {
-            val objects = realmOperateHelper.getRealmTools(NoteBean::class.java,false).findAll()
+            val objects = realmOperateHelper.getRealmTools(NoteBean::class.java, false).findAll()
             list = realm.copyFromRealm(objects)
         }
 
@@ -487,7 +487,7 @@ class MainViewModel @Inject constructor(
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
-                 val linkList = realmOperateHelper.queryLink(point = point)
+                val linkList = realmOperateHelper.queryLink(point = point)
 
 /*                val linkList = realmOperateHelper.queryLine(
                     point = point,
@@ -559,6 +559,26 @@ class MainViewModel @Inject constructor(
                                     DataCodeEnum.OMDB_TUNNEL.code,//隧道
                                     DataCodeEnum.OMDB_ROUNDABOUT.code,//环岛
                                     DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code,//出入口
+                                    DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code,//辅路
+                                    DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code,//SA
+                                    DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code,//PA
+                                    DataCodeEnum.OMDB_LINK_FORM1_1.code,
+                                    DataCodeEnum.OMDB_LINK_FORM1_2.code,
+                                    DataCodeEnum.OMDB_LINK_FORM1_3.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_1.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_2.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_3.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_4.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_5.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_6.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_7.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_8.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_9.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_10.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_11.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_12.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_13.code,
+                                    DataCodeEnum.OMDB_VIADUCT.code,
                                     -> topSignList.add(
                                         signBean
                                     )
@@ -578,17 +598,23 @@ class MainViewModel @Inject constructor(
 
                             val realm = realmOperateHelper.getRealmDefaultInstance()
 
-                            val entity = realmOperateHelper.getRealmTools(RenderEntity::class.java,true).and()
-                                .equalTo("table", DataCodeEnum.OMDB_RESTRICTION.tableName).and().equalTo(
-                                    "properties['linkIn']", it
-                                ).findFirst()
+                            val entity =
+                                realmOperateHelper.getRealmTools(RenderEntity::class.java, true)
+                                    .and()
+                                    .equalTo("table", DataCodeEnum.OMDB_RESTRICTION.tableName).and()
+                                    .equalTo(
+                                        "properties['linkIn']", it
+                                    ).findFirst()
                             if (entity != null) {
                                 val outLink = entity.properties["linkOut"]
-                                val linkOutEntity = realmOperateHelper.getRealmTools(RenderEntity::class.java,true).and()
-                                    .equalTo("table", DataCodeEnum.OMDB_RD_LINK.tableName).and().equalTo(
-                                        "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
-                                        outLink
-                                    ).findFirst()
+                                val linkOutEntity =
+                                    realmOperateHelper.getRealmTools(RenderEntity::class.java, true)
+                                        .and()
+                                        .equalTo("table", DataCodeEnum.OMDB_RD_LINK.tableName).and()
+                                        .equalTo(
+                                            "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
+                                            outLink
+                                        ).findFirst()
                                 if (linkOutEntity != null) {
                                     mapController.lineHandler.linksLayer.addLine(
                                         linkOutEntity.geometry, 0x7DFF0000

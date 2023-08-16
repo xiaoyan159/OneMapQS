@@ -51,7 +51,7 @@ class SignMoreInfoFragment : BaseFragment() {
 
             when (it.code) {
                 //道路名
-                DataCodeEnum.OMDB_RD_LINK.code -> {
+                DataCodeEnum.OMDB_LINK_NAME.code -> {
                     val adapter = RoadNameInfoAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getRoadNameList(it))

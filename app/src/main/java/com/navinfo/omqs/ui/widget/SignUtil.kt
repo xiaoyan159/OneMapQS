@@ -48,7 +48,30 @@ class SignUtil {
                 //环岛
                 DataCodeEnum.OMDB_ROUNDABOUT.code -> "环岛"
                 //主辅路出入口
-                DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code ->"道路属性"
+                DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code -> "出入口"
+                //辅路
+                DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code -> "辅路"
+                //SA
+                DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code -> "SA"
+                //PA
+                DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code -> "PA"
+                DataCodeEnum.OMDB_LINK_FORM1_1.code -> "U-T"
+                DataCodeEnum.OMDB_LINK_FORM1_2.code -> "提右"
+                DataCodeEnum.OMDB_LINK_FORM1_3.code -> "提左"
+                DataCodeEnum.OMDB_LINK_FORM2_1.code -> "IC"
+                DataCodeEnum.OMDB_LINK_FORM2_2.code -> "JCT"
+                DataCodeEnum.OMDB_LINK_FORM2_3.code -> "跨线地"
+                DataCodeEnum.OMDB_LINK_FORM2_4.code -> "私道"
+                DataCodeEnum.OMDB_LINK_FORM2_5.code -> "步行街"
+                DataCodeEnum.OMDB_LINK_FORM2_6.code -> "公交道"
+                DataCodeEnum.OMDB_LINK_FORM2_7.code -> "POI"
+                DataCodeEnum.OMDB_LINK_FORM2_8.code -> "区域内"
+                DataCodeEnum.OMDB_LINK_FORM2_9.code -> "P出入"
+                DataCodeEnum.OMDB_LINK_FORM2_10.code -> "P虚拟"
+                DataCodeEnum.OMDB_LINK_FORM2_11.code -> "风景路"
+                DataCodeEnum.OMDB_LINK_FORM2_12.code -> "测试路"
+                DataCodeEnum.OMDB_LINK_FORM2_13.code -> "驾考路"
+                DataCodeEnum.OMDB_VIADUCT.code->"高架"
                 else -> ""
             }
         }
@@ -187,8 +210,31 @@ class SignUtil {
                 DataCodeEnum.OMDB_TUNNEL.code -> "隧道"
                 //环岛
                 DataCodeEnum.OMDB_ROUNDABOUT.code -> "环岛"
-                //主辅路出入口
-                DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code ->"出入口"
+
+                DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code,
+                DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code,
+                DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code,
+                DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code -> "道路属性"
+
+                DataCodeEnum.OMDB_LINK_FORM1_1.code,
+                DataCodeEnum.OMDB_LINK_FORM1_2.code,
+                DataCodeEnum.OMDB_LINK_FORM1_3.code,
+                DataCodeEnum.OMDB_LINK_FORM2_1.code,
+                DataCodeEnum.OMDB_LINK_FORM2_2.code,
+                DataCodeEnum.OMDB_LINK_FORM2_3.code,
+                DataCodeEnum.OMDB_LINK_FORM2_4.code,
+                DataCodeEnum.OMDB_LINK_FORM2_5.code,
+                DataCodeEnum.OMDB_LINK_FORM2_6.code,
+                DataCodeEnum.OMDB_LINK_FORM2_7.code,
+                DataCodeEnum.OMDB_LINK_FORM2_8.code,
+                DataCodeEnum.OMDB_LINK_FORM2_9.code,
+                DataCodeEnum.OMDB_LINK_FORM2_10.code,
+                DataCodeEnum.OMDB_LINK_FORM2_11.code,
+                DataCodeEnum.OMDB_LINK_FORM2_12.code,
+                DataCodeEnum.OMDB_LINK_FORM2_13.code -> "道路形态"
+
+                DataCodeEnum.OMDB_VIADUCT.code -> "高架"
+
                 else -> ""
             }
         }
@@ -618,34 +664,32 @@ class SignUtil {
          */
         fun getRoadNameList(data: RenderEntity): MutableList<RoadNameBean> {
             val list = mutableListOf<RoadNameBean>()
-            if (data.code == "2011") {
-                try {
-                    val shapeStr = data.properties["shapeList"]
-                    val array = JSONArray(shapeStr)
-                    for (i in 0 until array.length()) {
-                        val jsonObject = array.getJSONObject(0)
-                        val name = jsonObject.optString("name", "")
-                        val type = jsonObject.optInt("nameType", 0)
-                        val seqNum = jsonObject.optInt("seqNum", 1)
-                        val nameClass = jsonObject.optInt("nameClass", 1)
-                        val bean = RoadNameBean(
-                            name = name, type = type, seqNum = seqNum, nameClass = nameClass
-                        )
-                        list.add(bean)
-                    }
-                    /**
-                     * 排序
-                     */
-                    list.sortWith { n1, n2 ->
-                        if (n1.nameClass != n2.nameClass) {
-                            n1.nameClass.compareTo(n2.nameClass)
-                        } else {
-                            n1.seqNum.compareTo(n2.seqNum)
-                        }
-                    }
-                } catch (e: Exception) {
-
+            try {
+                val shapeStr = data.properties["shapeList"]
+                val array = JSONArray(shapeStr)
+                for (i in 0 until array.length()) {
+                    val jsonObject = array.getJSONObject(i)
+                    val name = jsonObject.optString("name", "")
+                    val type = jsonObject.optInt("nameType", 0)
+                    val seqNum = jsonObject.optInt("seqNum", 1)
+                    val nameClass = jsonObject.optInt("nameClass", 1)
+                    val bean = RoadNameBean(
+                        name = name, type = type, seqNum = seqNum, nameClass = nameClass
+                    )
+                    list.add(bean)
                 }
+                /**
+                 * 排序
+                 */
+                list.sortWith { n1, n2 ->
+                    if (n1.nameClass != n2.nameClass) {
+                        n1.nameClass.compareTo(n2.nameClass)
+                    } else {
+                        n1.seqNum.compareTo(n2.seqNum)
+                    }
+                }
+            } catch (e: Exception) {
+
             }
             return list
         }
