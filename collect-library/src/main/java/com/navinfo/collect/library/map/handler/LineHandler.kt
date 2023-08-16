@@ -209,6 +209,11 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
         omdbTaskLinkLayer.update()
         mMapView.vtmMap.updateMap(true)
     }
+
+    fun taskMarkerLayerEnable(boolean: Boolean){
+        omdbTaskLinkLayer.isEnabled = boolean
+        mMapView.vtmMap.updateMap(true)
+    }
 }
 
 interface OnTaskLinkItemClickListener : BaseClickListener {

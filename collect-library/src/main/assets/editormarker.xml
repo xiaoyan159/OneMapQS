@@ -2063,7 +2063,16 @@
                     </m>
                 </m>
             </m>
-            <m k="boundaryType" v="3|4|5|7">
+            <m k="boundaryType" v="3">
+                <symbol repeat-gap="6" repeat="true" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="12" symbol-height="12"></symbol>
+                <line stroke="#ffffff" use="boundaryType" />
+            </m>
+            <m k="boundaryType" v="4">
+                <line stroke="#ffffff" use="boundaryType" />
+                <symbol repeat="true" repeat-gap="6" repeat-start="0" src="assets:omdb/icon_2013_41.svg" symbol-width="12" symbol-height="12"></symbol>
+            </m>
+
+            <m k="boundaryType" v="5|7">
                 <line stroke="#ffffff" use="boundaryType" />
             </m>
 <!--            <m k="boundaryType" v="0|3|4|5|6|7|8|9">
@@ -2174,16 +2183,7 @@
         <!-- 环岛 -->
         <m v="OMDB_ROUNDABOUT">
             <line stroke="#fcba5a" width="0.5" />
-
-            <m k="type" v="s_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false" repeat-gap="0"
-                    src="assets:omdb/icon_2204_0.svg" symbol-height="56" symbol-width="56"></symbol>
-            </m>
-
-            <m k="type" v="e_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false" repeat-gap="0"
-                    src="assets:omdb/icon_2204_0.svg" symbol-height="56" symbol-width="56"></symbol>
-            </m>
+            <symbol repeat="true" repeat-start="0" repeat-gap="32" src="assets:omdb/icon_2204_0.svg"></symbol>
         </m>
 
         <!--常规点限速-->

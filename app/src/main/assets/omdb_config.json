@@ -162,15 +162,7 @@
 			"code": 2204,
 			"name": "环岛",
 			"zoomMin": 15,
-			"zoomMax": 17,
-			"transformer": [
-				{
-					"k": "geometry",
-					"v": "~",
-					"klib": "geometry",
-					"vlib": "generateS2EReferencePoint()"
-				}
-			]
+			"zoomMax": 19
 		},
 		"2205":{
 			"table": "OMDB_LINK_FORM1",

@@ -156,6 +156,11 @@ class MainViewModel @Inject constructor(
     private var bSelectRoad = false
 
     /**
+     * 是不是高亮任务线
+     */
+    private var bHighRoad = true
+
+    /**
      * 是不是选择轨迹点
      */
     private var bSelectTrace = false
@@ -486,13 +491,13 @@ class MainViewModel @Inject constructor(
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
-                 val linkList = realmOperateHelper.queryLink(point = point)
+                 //val linkList = realmOperateHelper.queryLink(point = point)
 
-/*                val linkList = realmOperateHelper.queryLine(
+                val linkList = realmOperateHelper.queryLine(
                     point = point,
                     buffer = 2.5,
                     table = "OMDB_LANE_MARK_BOUNDARYTYPE"
-                )*/
+                )
 
                 var hisRoadName = false
 
@@ -775,6 +780,21 @@ class MainViewModel @Inject constructor(
      */
     fun isSelectRoad(): Boolean {
         return bSelectRoad
+    }
+
+    /**
+     * 开启线高亮
+     */
+    fun setHighRoad(select: Boolean) {
+        bHighRoad = select
+
+    }
+
+    /**
+     * 是否开启线高亮
+     */
+    fun isHighRoad(): Boolean {
+        return bHighRoad
     }
 
     /**
