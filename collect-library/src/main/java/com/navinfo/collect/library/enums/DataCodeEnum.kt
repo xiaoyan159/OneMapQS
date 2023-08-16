@@ -1,4 +1,4 @@
-package com.navinfo.collect.library.enum
+package com.navinfo.collect.library.enums
 
 /*
 * 要素枚举定义

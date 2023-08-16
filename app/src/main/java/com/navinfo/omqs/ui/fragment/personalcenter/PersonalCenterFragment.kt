@@ -3,11 +3,13 @@ package com.navinfo.omqs.ui.fragment.personalcenter
 import android.Manifest
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.blankj.utilcode.util.ToastUtils
@@ -15,7 +17,9 @@ import com.blankj.utilcode.util.UriUtils
 import com.github.k1rakishou.fsaf.FileChooser
 import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
 import com.github.k1rakishou.fsaf.callback.FileChooserCallback
+import com.navinfo.collect.library.enums.DataLayerEnum
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.collect.library.utils.MapParamUtils
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentPersonalCenterBinding
@@ -67,6 +71,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         override fun onCancel(reason: String) {
                         }
 
+                        @RequiresApi(Build.VERSION_CODES.N)
                         override fun onResult(uri: Uri) {
                             val file = UriUtils.uri2File(uri)
                             // 开始导入数据
@@ -125,6 +130,16 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                     niMapController.mMapView.vtmMap.animator()
 //                        .animateTo(GeoPoint( 40.05108004733645, 116.29187746293708    ))
                         .animateTo(GeoPoint( 40.45403725443716, 115.81488271796577))
+                }
+                R.id.personal_center_menu_open_all_layer -> {
+                    MapParamUtils.setDataLayerEnum(DataLayerEnum.SHOW_ALL_LAYERS)
+                    niMapController.layerManagerHandler.updateOMDBVectorTileLayer()
+                    viewModel.realmOperateHelper.updateRealmDefaultInstance()
+                }
+                R.id.personal_center_menu_close_hide_layer -> {
+                    MapParamUtils.setDataLayerEnum(DataLayerEnum.ONLY_ENABLE_LAYERS)
+                    niMapController.layerManagerHandler.updateOMDBVectorTileLayer()
+                    viewModel.realmOperateHelper.updateRealmDefaultInstance()
                 }
 //                R.id.personal_center_menu_task_list -> {
 //                    findNavController().navigate(R.id.TaskManagerFragment)

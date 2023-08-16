@@ -7,7 +7,7 @@ import androidx.annotation.RequiresApi;
 
 import com.navinfo.collect.library.data.entity.RenderEntity;
 import com.navinfo.collect.library.system.Constant;
-import com.navinfo.collect.library.utils.RealmDBParamUtils;
+import com.navinfo.collect.library.utils.MapParamUtils;
 
 import org.oscim.layers.tile.MapTile;
 import org.oscim.tiling.ITileDataSink;
@@ -42,7 +42,16 @@ public class OMDBTileDataSource implements ITileDataSource {
                 Realm.getDefaultInstance().refresh();
                 isUpdate = false;
             }
-            RealmQuery<RenderEntity> realmQuery = Realm.getDefaultInstance().where(RenderEntity.class).rawPredicate("taskId ="+RealmDBParamUtils.getTaskId() +" and tileX>=" + xStart + " and tileX<=" + xEnd + " and tileY>=" + yStart + " and tileY<=" + yEnd /*+ " and enable>=1"*/);
+
+            String sql = "taskId="+ MapParamUtils.getTaskId() +" and tileX>=" + xStart + " and tileX<=" + xEnd + " and tileY>=" + yStart + " and tileY<=" + yEnd + "";
+
+            if(MapParamUtils.getDataLayerEnum()!=null){
+                sql += " and enable" + MapParamUtils.getDataLayerEnum().getSql();
+            }else{
+                sql += " and 1=1";
+            }
+
+            RealmQuery<RenderEntity> realmQuery = Realm.getDefaultInstance().where(RenderEntity.class).rawPredicate(sql);
             // 筛选不显示的数据
             if (Constant.HAD_LAYER_INVISIABLE_ARRAY != null && Constant.HAD_LAYER_INVISIABLE_ARRAY.length > 0) {
                 realmQuery.beginGroup();
