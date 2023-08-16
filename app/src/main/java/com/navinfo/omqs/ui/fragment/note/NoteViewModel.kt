@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.data.entity.NoteBean
 import com.navinfo.collect.library.map.NIMapController
+import com.navinfo.collect.library.utils.MapParamUtils
 import com.navinfo.omqs.ui.dialog.FirstDialog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
@@ -108,6 +109,7 @@ class NoteViewModel @Inject constructor(
                     noteBean.id = mNoteBean!!.id
                     noteBean.description = noteBeanDescription
                 }
+                noteBean.taskId = MapParamUtils.getTaskId()
                 mNoteBean = noteBean
                 val realm = Realm.getDefaultInstance()
                 realm.executeTransaction {

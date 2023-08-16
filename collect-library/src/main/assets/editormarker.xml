@@ -2177,12 +2177,12 @@
 
             <m k="type" v="s_2_p">
                 <symbol repeat="false" repeat-start="0" rotate="false" repeat-gap="0"
-                    src="assets:omdb/icon_2204_0.svg" symbol-height="24" symbol-width="24"></symbol>
+                    src="assets:omdb/icon_2204_0.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
 
             <m k="type" v="e_2_p">
                 <symbol repeat="false" repeat-start="0" rotate="false" repeat-gap="0"
-                    src="assets:omdb/icon_2204_0.svg" symbol-height="12" symbol-width="12"></symbol>
+                    src="assets:omdb/icon_2204_0.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
         </m>
 

@@ -3,7 +3,6 @@ package com.navinfo.omqs.db
 import android.util.Log
 import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
-import com.navinfo.collect.library.enum.DataCodeEnum
 import com.navinfo.collect.library.utils.GeometryTools
 import io.realm.Realm
 import org.json.JSONArray
@@ -13,7 +12,6 @@ import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.io.WKTWriter
 import org.oscim.core.GeoPoint
-import kotlin.math.min
 
 
 class ImportPreProcess {

@@ -24,14 +24,14 @@ import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.*
-import com.navinfo.collect.library.enum.DataCodeEnum
+import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.garminvirbxe.HostBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.OnGeoPointClickListener
 import com.navinfo.collect.library.map.handler.*
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
-import com.navinfo.collect.library.utils.RealmDBParamUtils
+import com.navinfo.collect.library.utils.MapParamUtils
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
@@ -291,7 +291,7 @@ class MainViewModel @Inject constructor(
             initNILocationData()
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-        RealmDBParamUtils.setTaskId(sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1))
+        MapParamUtils.setTaskId(sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1))
         socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
     }
 
@@ -324,10 +324,10 @@ class MainViewModel @Inject constructor(
     private suspend fun initQsRecordData() {
         if (currentTaskBean != null) {
             var list = mutableListOf<QsRecordBean>()
-            val realm = Realm.getDefaultInstance()
+            val realm = realmOperateHelper.getRealmDefaultInstance()
             realm.executeTransaction {
                 val objects =
-                    realm.where<QsRecordBean>().equalTo("taskId", currentTaskBean!!.id).findAll()
+                    realmOperateHelper.getRealmTools(QsRecordBean::class.java,false).findAll()
                 list = realm.copyFromRealm(objects)
             }
             mapController.markerHandle.removeAllQsMarker()
@@ -342,9 +342,9 @@ class MainViewModel @Inject constructor(
      */
     private suspend fun initNoteData() {
         var list = mutableListOf<NoteBean>()
-        val realm = Realm.getDefaultInstance()
+        val realm = realmOperateHelper.getRealmDefaultInstance()
         realm.executeTransaction {
-            val objects = realm.where<NoteBean>().findAll()
+            val objects = realmOperateHelper.getRealmTools(NoteBean::class.java,false).findAll()
             list = realm.copyFromRealm(objects)
         }
 
@@ -548,15 +548,16 @@ class MainViewModel @Inject constructor(
 
                             }
 
-                            val realm = Realm.getDefaultInstance()
-                            val entity = realm.where(RenderEntity::class.java)
-                                .equalTo("table", "OMDB_RESTRICTION").and().equalTo(
+                            val realm = realmOperateHelper.getRealmDefaultInstance()
+
+                            val entity = realmOperateHelper.getRealmTools(RenderEntity::class.java,true).and()
+                                .equalTo("table", DataCodeEnum.OMDB_RESTRICTION.tableName).and().equalTo(
                                     "properties['linkIn']", it
                                 ).findFirst()
                             if (entity != null) {
                                 val outLink = entity.properties["linkOut"]
-                                val linkOutEntity = realm.where(RenderEntity::class.java)
-                                    .equalTo("table", "OMDB_RD_LINK").and().equalTo(
+                                val linkOutEntity = realmOperateHelper.getRealmTools(RenderEntity::class.java,true).and()
+                                    .equalTo("table", DataCodeEnum.OMDB_RD_LINK.tableName).and().equalTo(
                                         "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
                                         outLink
                                     ).findFirst()
@@ -1112,14 +1113,6 @@ class MainViewModel @Inject constructor(
     }
 
     fun click2Dor3D() {
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.e(
-                "qj",
-                "${
-                    Realm.getDefaultInstance().where(RenderEntity::class.java).findAll().size
-                }==安装数量"
-            )
-        }
     }
 
     /**
