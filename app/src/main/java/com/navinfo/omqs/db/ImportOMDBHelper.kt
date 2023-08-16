@@ -191,6 +191,11 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         else -> renderEntity.properties.put(key, value.toString())
                                     }
                                 }
+
+                                // 如果properties中不包含name，那么自动将要素名称添加进properties中
+                                if (!renderEntity.properties.containsKey("name")) {
+                                    renderEntity.properties["name"] = renderEntity.name;
+                                }
                                 //遍历判断只显示与任务Link相关的任务数据
                                 if(currentConfig.checkLinkId){
 

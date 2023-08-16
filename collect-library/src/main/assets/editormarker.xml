@@ -54,6 +54,9 @@
     <style-text fill="#000000" id="max-speed-limit" k="name" size="18" stroke="#000000"
         stroke-width="0.1" />
 
+    <style-text caption="true" fill="#2d51bc" font-family="black" id="area-name"
+        k="name" size="12" stroke="#ffffff" stroke-width="0.4" />
+
     <!--###### AREA styles ######-->
 
     <!--residential-->
@@ -2272,7 +2275,8 @@
 
         <!-- 导流区 -->
         <m v="OMDB_FILL_AREA">
-            <area use="obj-area" repeat="false" src="@text:人行横道"></area>
+            <area use="obj-area" repeat="false" src="assets:omdb/tex_fill_area_with_text_3012.png"></area>
+            <text use="area-name"></text>
         </m>
     </m>
 </rendertheme>
