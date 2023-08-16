@@ -486,13 +486,13 @@ class MainViewModel @Inject constructor(
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
-                // val linkList = realmOperateHelper.queryLink(point = point,)
+                 val linkList = realmOperateHelper.queryLink(point = point)
 
-                val linkList = realmOperateHelper.queryLine(
+/*                val linkList = realmOperateHelper.queryLine(
                     point = point,
                     buffer = 2.5,
                     table = "OMDB_LANE_MARK_BOUNDARYTYPE"
-                )
+                )*/
 
                 var hisRoadName = false
 
