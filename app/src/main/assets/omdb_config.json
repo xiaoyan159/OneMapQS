@@ -12,7 +12,8 @@
 			"code": 2001,
 			"name": "道路线",
 			"zoomMin": 15,
-			"zoomMax": 17
+			"zoomMax": 17,
+			"checkLinkId": false
 		},
 		"2002": {
 			"table": "OMDB_RD_LINK_FUNCTION_CLASS",
@@ -162,15 +163,21 @@
 			"name": "环岛",
 			"zoomMin": 15,
 			"zoomMax": 17,
-			"transformer2Code": ""
+			"transformer": [
+				{
+					"k": "geometry",
+					"v": "~",
+					"klib": "geometry",
+					"vlib": "generateS2EReferencePoint()"
+				}
+			]
 		},
 		"2205":{
 			"table": "OMDB_LINK_FORM1",
 			"code": 2205,
 			"name": "道路形态1",
 			"zoomMin": 15,
-			"zoomMax": 17,
-			"transformer2Code": ""
+			"zoomMax": 17
 		},
 		"2206":{
 			"table": "OMDB_LINK_FORM2",

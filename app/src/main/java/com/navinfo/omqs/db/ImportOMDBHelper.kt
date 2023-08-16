@@ -265,28 +265,39 @@ class ImportOMDBHelper @AssistedInject constructor(
                                     Log.e("qj","${renderEntity.name}==不包括任务linkPid")
                                 }
 
-                                //道路属性code编码需要特殊处理 存在多个属性值时，渲染优先级：SA>PA,存在多个属性值时，渲染优先级：FRONTAGE>MAIN_SIDE_A CCESS
+
+                                // 对renderEntity做预处理后再保存
+                                val resultEntity = importConfig.transformProperties(renderEntity)
+
+                                //对code编码需要特殊处理 存在多个属性值时，渲染优先级：SA>PA,存在多个属性值时，渲染优先级：FRONTAGE>MAIN_SIDE_A CCESS
                                 if(renderEntity.code == DataCodeEnum.OMDB_LINK_ATTRIBUTE.code){
 
-                                    var type = renderEntity.properties["SA"]
+                                    Log.e("qj","道路属性===0")
+
+                                    var type = renderEntity.properties["sa"]
 
                                     if(type!=null&&type=="1"){
                                         renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code
+                                        Log.e("qj","道路属性===1")
                                     }else{
-                                        type = renderEntity.properties["PA"]
+                                        type = renderEntity.properties["pa"]
                                         if(type!=null&&type=="1"){
                                             renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code
+                                            Log.e("qj","道路属性===2")
                                         } else{
-                                            type = renderEntity.properties["FRONTAGE"]
+                                            type = renderEntity.properties["frontage"]
                                             if(type!=null&&type=="1"){
                                                 renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code
+                                                Log.e("qj","道路属性===3")
                                             }else{
-                                                type = renderEntity.properties["MAIN_SIDE_ACCESS"]
+                                                type = renderEntity.properties["mainSideAccess"]
                                                 if(type!=null&&type=="1"){
                                                     renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code
+                                                    Log.e("qj","道路属性===4")
                                                 }else{
                                                     renderEntity.enable=0
                                                     Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                                    Log.e("qj","道路属性===5")
                                                     continue
                                                 }
                                             }
@@ -362,8 +373,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 }
 
                                 listResult.add(renderEntity)
-                                // 对renderEntity做预处理后再保存
-                                val resultEntity = importConfig.transformProperties(renderEntity)
+
                                 if (resultEntity != null) {
                                     realm.insert(renderEntity)
                                 }

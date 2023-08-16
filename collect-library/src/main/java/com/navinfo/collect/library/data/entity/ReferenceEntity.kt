@@ -19,7 +19,7 @@ open class ReferenceEntity() : RealmObject() {
     var renderEntityId: String = "" // 参考的renderEntity的Id
     lateinit var name: String //要素名
     lateinit var table: String //要素表名
-    var code: Int = 0 // 要素编码
+    var code: String = "0" // 要素编码
     var zoomMin: Int = 18 //显示最小级别
     var zoomMax: Int = 23 //显示最大级别
     var taskId: Int = 0 //任务ID
