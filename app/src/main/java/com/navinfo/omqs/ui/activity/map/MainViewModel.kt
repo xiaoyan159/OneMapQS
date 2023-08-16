@@ -742,15 +742,16 @@ class MainViewModel @Inject constructor(
     fun refreshOMDBLayer(layerConfigList: List<ImportConfig>) {
         // 根据获取到的配置信息，筛选未勾选的图层名称
         if (layerConfigList != null && !layerConfigList.isEmpty()) {
-            val omdbVisibleList = layerConfigList.filter { importConfig ->
-                importConfig.tableGroupName == "OMDB数据"
-            }.first().tableMap.filter { entry ->
-                val tableInfo = entry.value
-                !tableInfo.checked
-            }.map { entry ->
-                val tableInfo = entry.value
-                tableInfo.table
-            }.toList()
+            val omdbVisibleList = mutableListOf<String>()
+            layerConfigList.forEach {
+                omdbVisibleList.addAll(it.tableMap.filter { entry ->
+                    val tableInfo = entry.value
+                    !tableInfo.checked
+                }.map { entry ->
+                    val tableInfo = entry.value
+                    tableInfo.table
+                }.toList())
+            }
             com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY =
                 omdbVisibleList.toTypedArray()
             // 刷新地图

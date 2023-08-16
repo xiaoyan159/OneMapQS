@@ -2277,7 +2277,7 @@
 
         <!-- 导流区 -->
         <m v="OMDB_FILL_AREA">
-            <area use="obj-area" repeat="false" src="assets:omdb/tex_fill_area_with_text_3012.png"></area>
+            <area use="obj-area" repeat="false" src="assets:omdb/tex_fill_area_3012.png"></area>
             <text use="area-name"></text>
         </m>
     </m>
