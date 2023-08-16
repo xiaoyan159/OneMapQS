@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import com.navinfo.collect.library.enum.DataCodeEnum
+import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.databinding.AdapterSignBinding

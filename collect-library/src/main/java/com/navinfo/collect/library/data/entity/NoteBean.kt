@@ -9,5 +9,6 @@ open class NoteBean @JvmOverloads constructor(
     var id: String = "",
     var guideGeometry: String = "",
     var description: String = "",
+    var taskId :Int = 0,
     var list: RealmList<SketchAttachContent> = RealmList<SketchAttachContent>(),
 ) : RealmObject()

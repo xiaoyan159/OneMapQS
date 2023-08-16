@@ -8,7 +8,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.navinfo.collect.library.data.entity.RenderEntity
-import com.navinfo.collect.library.enum.DataCodeEnum
+import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.databinding.FragmentSignInfoBinding

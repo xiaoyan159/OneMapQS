@@ -2,7 +2,7 @@ package com.navinfo.omqs.ui.widget
 
 import android.util.Log
 import com.navinfo.collect.library.data.entity.RenderEntity
-import com.navinfo.collect.library.enum.DataCodeEnum
+import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.RoadNameBean
 import com.navinfo.omqs.bean.SignBean
