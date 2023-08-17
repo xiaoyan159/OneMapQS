@@ -2064,20 +2064,15 @@
                 </m>
             </m>
             <m k="boundaryType" v="3">
-                <symbol repeat-gap="6" repeat="true" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="12" symbol-height="12"></symbol>
-                <line stroke="#ffffff" use="boundaryType" />
+                <symbol repeat="true" repeat-gap="6" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="12" symbol-height="12"></symbol>
             </m>
             <m k="boundaryType" v="4">
-                <line stroke="#ffffff" use="boundaryType" />
-                <symbol repeat="true" repeat-gap="6" repeat-start="0" src="assets:omdb/icon_2013_41.svg" symbol-width="12" symbol-height="12"></symbol>
+                <symbol repeat-gap="16" repeat="true" repeat-start="0" src="assets:omdb/icon_2013_4.svg" symbol-width="32" symbol-height="56"></symbol>
             </m>
 
             <m k="boundaryType" v="5|7">
                 <line stroke="#ffffff" use="boundaryType" />
             </m>
-<!--            <m k="boundaryType" v="0|3|4|5|6|7|8|9">
-                <line stroke="#ffffff" use="boundaryType" />
-            </m>-->
         </m>
 
         <!-- 道路属性 -->
