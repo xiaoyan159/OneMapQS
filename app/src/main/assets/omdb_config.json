@@ -404,8 +404,7 @@
 				"code": 2206,
 				"name": "道路形态2",
 				"zoomMin": 15,
-				"zoomMax": 17,
-				"transformer2Code": ""
+				"zoomMax": 17
 			}
 
 		}
