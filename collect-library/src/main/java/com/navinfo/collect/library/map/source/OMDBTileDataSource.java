@@ -5,8 +5,6 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.navinfo.collect.library.data.RealmUtils;
-import com.navinfo.collect.library.data.entity.GeometryFeatureEntity;
 import com.navinfo.collect.library.data.entity.RenderEntity;
 import com.navinfo.collect.library.system.Constant;
 import com.navinfo.collect.library.utils.MapParamUtils;

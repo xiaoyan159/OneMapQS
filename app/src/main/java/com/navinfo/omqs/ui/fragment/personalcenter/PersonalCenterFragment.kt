@@ -129,7 +129,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                     // 定位到指定位置
                     niMapController.mMapView.vtmMap.animator()
 //                        .animateTo(GeoPoint( 40.05108004733645, 116.29187746293708    ))
-                        .animateTo(GeoPoint( 39.91975038055932,116.35447089476969     ))
+                        .animateTo(GeoPoint( 40.45403725443716, 115.81488271796577))
                 }
                 R.id.personal_center_menu_open_all_layer -> {
                     MapParamUtils.setDataLayerEnum(DataLayerEnum.SHOW_ALL_LAYERS)

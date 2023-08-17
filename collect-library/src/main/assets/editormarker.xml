@@ -54,6 +54,9 @@
     <style-text fill="#000000" id="max-speed-limit" k="name" size="18" stroke="#000000"
         stroke-width="0.1" />
 
+    <style-text caption="true" fill="#2d51bc" font-family="black" id="area-name"
+        k="name" size="12" stroke="#ffffff" stroke-width="0.4" />
+
     <!--###### AREA styles ######-->
 
     <!--residential-->
@@ -113,6 +116,8 @@
 
     <style-area fill="#3742fa" id="sign-bg" />
 
+    <!-- 对象要素的默认样式 -->
+    <style-area fill="#00000000" stroke-width="2" stroke="#ffffff" id="obj-area" />
     <!--###### LINE styles ######-->
 
     <!-- base style for fixed width lines -->
@@ -2263,6 +2268,12 @@
             <m k="type" v="s_2_e">
                 <line use="s2e" />
             </m>
+        </m>
+
+        <!-- 导流区 -->
+        <m v="OMDB_FILL_AREA">
+            <area use="obj-area" repeat="false" src="assets:omdb/tex_fill_area_3012.png"></area>
+            <text use="area-name"></text>
         </m>
     </m>
 </rendertheme>

@@ -8,6 +8,7 @@ import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
+import android.provider.ContactsContract.Data
 import android.text.TextUtils
 import android.util.Log
 import android.view.Gravity
@@ -332,7 +333,7 @@ class MainViewModel @Inject constructor(
             val realm = realmOperateHelper.getRealmDefaultInstance()
             realm.executeTransaction {
                 val objects =
-                    realmOperateHelper.getRealmTools(QsRecordBean::class.java,false).findAll()
+                    realmOperateHelper.getRealmTools(QsRecordBean::class.java, false).findAll()
                 list = realm.copyFromRealm(objects)
             }
             mapController.markerHandle.removeAllQsMarker()
@@ -349,7 +350,7 @@ class MainViewModel @Inject constructor(
         var list = mutableListOf<NoteBean>()
         val realm = realmOperateHelper.getRealmDefaultInstance()
         realm.executeTransaction {
-            val objects = realmOperateHelper.getRealmTools(NoteBean::class.java,false).findAll()
+            val objects = realmOperateHelper.getRealmTools(NoteBean::class.java, false).findAll()
             list = realm.copyFromRealm(objects)
         }
 
@@ -491,10 +492,13 @@ class MainViewModel @Inject constructor(
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
-                 val linkList = realmOperateHelper.queryLink(point = point)
+                val linkList = realmOperateHelper.queryLink(point = point)
 
                 /*val linkList = realmOperateHelper.queryLine(
                     point = point,
+                )
+
+//                val linkList = realmOperateHelper.queryLine(point = point, buffer = 2.5, table = "OMDB_LANE_MARK_BOUNDARYTYPE")
                     buffer = 2.5,
                     table = "OMDB_LANE_MARK_BOUNDARYTYPE"
                 )*/
@@ -518,7 +522,7 @@ class MainViewModel @Inject constructor(
                             var elementList = realmOperateHelper.queryLinkByLinkPid(it)
                             for (element in elementList) {
 
-                                if (element.code == "2011") {
+                                if (element.code == DataCodeEnum.OMDB_LINK_NAME.code) {
                                     hisRoadName = true
                                     liveDataRoadName.postValue(element)
                                     continue
@@ -541,12 +545,56 @@ class MainViewModel @Inject constructor(
                                 )
                                 Log.e("jingo", "捕捉到的数据code ${element.code}")
                                 when (element.code) {
-                                    //车道数，种别，功能等级,线限速,道路方向
-                                    DataCodeEnum.OMDB_LANE_NUM.code, DataCodeEnum.OMDB_RD_LINK_KIND.code, DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code, DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code, DataCodeEnum.OMDB_LINK_DIRECT.code -> topSignList.add(
+                                    DataCodeEnum.OMDB_MULTI_DIGITIZED.code,//上下线分离
+                                    DataCodeEnum.OMDB_CON_ACCESS.code,//全封闭
+                                    -> {
+                                        if (signBean.iconText != "") {
+                                            topSignList.add(
+                                                signBean
+                                            )
+                                        }
+                                    }
+                                    DataCodeEnum.OMDB_LANE_NUM.code, //车道数
+                                    DataCodeEnum.OMDB_RD_LINK_KIND.code,//种别，
+                                    DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code, // 功能等级,
+                                    DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code, //线限速,
+                                    DataCodeEnum.OMDB_LINK_DIRECT.code,//道路方向,
+                                    DataCodeEnum.OMDB_RAMP.code, //匝道
+                                    DataCodeEnum.OMDB_BRIDGE.code,//桥
+                                    DataCodeEnum.OMDB_TUNNEL.code,//隧道
+                                    DataCodeEnum.OMDB_ROUNDABOUT.code,//环岛
+                                    DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code,//出入口
+                                    DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code,//辅路
+                                    DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code,//SA
+                                    DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code,//PA
+                                    DataCodeEnum.OMDB_LINK_FORM1_1.code,
+                                    DataCodeEnum.OMDB_LINK_FORM1_2.code,
+                                    DataCodeEnum.OMDB_LINK_FORM1_3.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_1.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_2.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_3.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_4.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_5.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_6.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_7.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_8.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_9.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_10.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_11.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_12.code,
+                                    DataCodeEnum.OMDB_LINK_FORM2_13.code,
+                                    DataCodeEnum.OMDB_VIADUCT.code,
+                                    -> topSignList.add(
                                         signBean
                                     )
 
-                                    DataCodeEnum.OMDB_SPEEDLIMIT.code, DataCodeEnum.OMDB_SPEEDLIMIT_COND.code, DataCodeEnum.OMDB_SPEEDLIMIT_VAR.code, DataCodeEnum.OMDB_ELECTRONICEYE.code, DataCodeEnum.OMDB_TRAFFICLIGHT.code, DataCodeEnum.OMDB_LANEINFO.code -> signList.add(
+                                    DataCodeEnum.OMDB_SPEEDLIMIT.code,//常规点限速
+                                    DataCodeEnum.OMDB_SPEEDLIMIT_COND.code,//条件点限速
+                                    DataCodeEnum.OMDB_SPEEDLIMIT_VAR.code,//可变点限速
+                                    DataCodeEnum.OMDB_ELECTRONICEYE.code,//电子眼
+                                    DataCodeEnum.OMDB_TRAFFICLIGHT.code,//交通灯
+                                    DataCodeEnum.OMDB_LANEINFO.code,//车信
+                                    -> signList.add(
                                         signBean
                                     )
                                 }
@@ -555,17 +603,23 @@ class MainViewModel @Inject constructor(
 
                             val realm = realmOperateHelper.getRealmDefaultInstance()
 
-                            val entity = realmOperateHelper.getRealmTools(RenderEntity::class.java,true).and()
-                                .equalTo("table", DataCodeEnum.OMDB_RESTRICTION.tableName).and().equalTo(
-                                    "properties['linkIn']", it
-                                ).findFirst()
+                            val entity =
+                                realmOperateHelper.getRealmTools(RenderEntity::class.java, true)
+                                    .and()
+                                    .equalTo("table", DataCodeEnum.OMDB_RESTRICTION.tableName).and()
+                                    .equalTo(
+                                        "properties['linkIn']", it
+                                    ).findFirst()
                             if (entity != null) {
                                 val outLink = entity.properties["linkOut"]
-                                val linkOutEntity = realmOperateHelper.getRealmTools(RenderEntity::class.java,true).and()
-                                    .equalTo("table", DataCodeEnum.OMDB_RD_LINK.tableName).and().equalTo(
-                                        "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
-                                        outLink
-                                    ).findFirst()
+                                val linkOutEntity =
+                                    realmOperateHelper.getRealmTools(RenderEntity::class.java, true)
+                                        .and()
+                                        .equalTo("table", DataCodeEnum.OMDB_RD_LINK.tableName).and()
+                                        .equalTo(
+                                            "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
+                                            outLink
+                                        ).findFirst()
                                 if (linkOutEntity != null) {
                                     mapController.lineHandler.linksLayer.addLine(
                                         linkOutEntity.geometry, 0x7DFF0000
@@ -747,15 +801,16 @@ class MainViewModel @Inject constructor(
     fun refreshOMDBLayer(layerConfigList: List<ImportConfig>) {
         // 根据获取到的配置信息，筛选未勾选的图层名称
         if (layerConfigList != null && !layerConfigList.isEmpty()) {
-            val omdbVisibleList = layerConfigList.filter { importConfig ->
-                importConfig.tableGroupName == "OMDB数据"
-            }.first().tableMap.filter { entry ->
-                val tableInfo = entry.value
-                !tableInfo.checked
-            }.map { entry ->
-                val tableInfo = entry.value
-                tableInfo.table
-            }.toList()
+            val omdbVisibleList = mutableListOf<String>()
+            layerConfigList.forEach {
+                omdbVisibleList.addAll(it.tableMap.filter { entry ->
+                    val tableInfo = entry.value
+                    !tableInfo.checked
+                }.map { entry ->
+                    val tableInfo = entry.value
+                    tableInfo.table
+                }.toList())
+            }
             com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY =
                 omdbVisibleList.toTypedArray()
             // 刷新地图
