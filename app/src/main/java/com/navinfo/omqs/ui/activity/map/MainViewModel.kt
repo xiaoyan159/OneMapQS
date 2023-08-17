@@ -457,7 +457,7 @@ class MainViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     if (Constant.AUTO_LOCATION) {
                         mapController.mMapView.vtmMap.animator()
-                            .animateTo(GeoPoint(location.longitude, location.latitude))
+                            .animateTo(GeoPoint(location.latitude, location.longitude))
                     }
                 }
             }
@@ -501,11 +501,8 @@ class MainViewModel @Inject constructor(
 
                 val linkList = realmOperateHelper.queryLink(point = point)
 
-                /*val linkList = realmOperateHelper.queryLine(
+/*                val linkList = realmOperateHelper.queryLine(
                     point = point,
-                )
-
-//                val linkList = realmOperateHelper.queryLine(point = point, buffer = 2.5, table = "OMDB_LANE_MARK_BOUNDARYTYPE")
                     buffer = 2.5,
                     table = "OMDB_LANE_MARK_BOUNDARYTYPE"
                 )*/

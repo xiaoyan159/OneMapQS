@@ -1030,7 +1030,7 @@ class MainActivity : BaseActivity() {
      */
     private fun showMainActivityBottomSheetGroup() {
         binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
-        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 60)
+        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 256, 60)
         mapController.mMapView.vtmMap.animator().animateTo(
             GeoPoint(
                 mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
@@ -1044,7 +1044,7 @@ class MainActivity : BaseActivity() {
      */
     private fun hideMainActivityBottomSheetGroup() {
         binding.mainActivityBottomSheetGroup.visibility = View.GONE
-        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 0)
+        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 256, 0)
         mapController.mMapView.vtmMap.animator().animateTo(
             GeoPoint(
                 mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
