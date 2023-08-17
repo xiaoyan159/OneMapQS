@@ -324,7 +324,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         }
                                     }else if(renderEntity.code == DataCodeEnum.OMDB_RAMP.code){
                                         /*匝道*/
-                                        var formWay = renderEntity.properties["FORM_OF_WAY"]
+                                        var formWay = renderEntity.properties["formOfWay"]
                                         if(formWay!=null){
                                             when (formWay) {
                                                 "93"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_1.code
@@ -338,7 +338,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         }
                                     }else if(renderEntity.code == DataCodeEnum.OMDB_LINK_FORM1.code){
                                         /*道路形态1*/
-                                        var formWay = renderEntity.properties["FORM_OF_WAY"]
+                                        var formWay = renderEntity.properties["formOfWay"]
                                         if(formWay!=null){
                                             when (formWay) {
                                                 "35"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM1_1.code
@@ -348,7 +348,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         }
                                     }else if(renderEntity.code == DataCodeEnum.OMDB_LINK_FORM2.code){
                                         /*道路形态2*/
-                                        var formWay = renderEntity.properties["FORM_OF_WAY"]
+                                        var formWay = renderEntity.properties["formOfWay"]
                                         if(formWay!=null){
                                             when (formWay) {
                                                 "10"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_1.code
