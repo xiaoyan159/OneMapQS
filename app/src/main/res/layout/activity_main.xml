@@ -224,8 +224,8 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:elevation="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/main_activity_bottom_sheet_bg"
+                app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:navGraph="@navigation/right_fragment_nav_graph" />
 
@@ -324,7 +324,7 @@
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/main_activity_bottom_sheet_bg"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/main_activity_right_fragment"
             app:layout_constraintTop_toTopOf="parent"
