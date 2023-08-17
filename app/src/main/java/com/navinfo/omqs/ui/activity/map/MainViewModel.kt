@@ -112,6 +112,11 @@ class MainViewModel @Inject constructor(
      */
     val liveDataSignMoreInfo = MutableLiveData<RenderEntity>()
 
+    /**
+     * 捕捉到的itemList
+     */
+    val liveDataItemList = MutableLiveData<List<RenderEntity>>()
+
     private var traceTag: String = "TRACE_TAG"
 
     /**
@@ -473,8 +478,10 @@ class MainViewModel @Inject constructor(
                 )
             )
 
-            if (itemList.size > 0) {
+            if (itemList.size == 1) {
                 liveDataSignMoreInfo.postValue(itemList[0])
+            } else {
+                liveDataItemList.postValue(itemList)
             }
         }
     }

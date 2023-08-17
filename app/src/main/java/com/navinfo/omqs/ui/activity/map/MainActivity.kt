@@ -38,6 +38,7 @@ import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.tools.LayerConfigUtils
 import com.navinfo.omqs.ui.activity.BaseActivity
 import com.navinfo.omqs.ui.fragment.console.ConsoleFragment
+import com.navinfo.omqs.ui.fragment.itemlist.ItemListFragment
 import com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapFragment
 import com.navinfo.omqs.ui.fragment.qsrecordlist.QsRecordListFragment
 import com.navinfo.omqs.ui.fragment.signMoreInfo.SignMoreInfoFragment
@@ -387,6 +388,25 @@ class MainActivity : BaseActivity() {
                     //切换为暂停状态
                     pausePlayTrace()
                 }
+            }
+        }
+
+        viewModel.liveDataItemList.observe(this) {
+            if (leftFragment == null || leftFragment !is ItemListFragment) {
+                leftFragment = ItemListFragment {
+                    binding.mainActivityLeftFragment.visibility = View.GONE
+                    supportFragmentManager.beginTransaction().remove(leftFragment!!).commit()
+                    leftFragment = null
+                    null
+                }
+                binding.mainActivityLeftFragment.visibility = View.VISIBLE
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.main_activity_left_fragment, leftFragment!!)
+                    .commit()
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .show(leftFragment!!)
+                    .commit()
             }
         }
 

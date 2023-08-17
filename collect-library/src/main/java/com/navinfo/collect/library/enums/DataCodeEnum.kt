@@ -61,6 +61,18 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
     OMDB_ELECTRONICEYE("电子眼", "4010"),
     OMDB_TRAFFICLIGHT("交通灯", "4022"),
     OMDB_LANEINFO("车信", "4601"),
-    OMDB_LANE_LINK_LG("车道中心线", "5001")
+    OMDB_LANE_LINK_LG("车道中心线", "5001");
+
+    companion object {
+        fun findTableNameByCode(code: String): String? {
+            for (enumInstance in DataCodeEnum.values()) {
+                if (enumInstance.code == code) {
+                    return enumInstance.tableName
+                }
+            }
+            return null // 若未找到匹配的 code，则返回 null 或其他适当的默认值
+        }
+    }
 }
+
 
