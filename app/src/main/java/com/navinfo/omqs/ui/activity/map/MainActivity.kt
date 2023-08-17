@@ -416,6 +416,9 @@ class MainActivity : BaseActivity() {
             supportFragmentManager.beginTransaction()
                 .add(R.id.console_fragment_layout, ConsoleFragment()).commit()
         }
+
+        binding.mainActivityCloseLine.isSelected = viewModel.isHighRoad()
+
         initMeasuringTool()
     }
 
@@ -676,6 +679,13 @@ class MainActivity : BaseActivity() {
     }
 
     /**
+     * 刷新地图
+     */
+    fun refrushOnclick(view: View) {
+        mapController.layerManagerHandler.updateOMDBVectorTileLayer()
+    }
+
+    /**
      * zoomin
      */
     fun zoomInOnclick(view: View) {
@@ -753,6 +763,16 @@ class MainActivity : BaseActivity() {
         viewModel.setSelectRoad(!viewModel.isSelectRoad())
         binding.mainActivitySelectLine.isSelected = viewModel.isSelectRoad()
     }
+
+    /**
+     * 点击线高亮
+     */
+    fun openOrCloseLineOnclick() {
+        viewModel.setHighRoad(!viewModel.isHighRoad())
+        binding.mainActivityCloseLine.isSelected = viewModel.isHighRoad()
+        mapController.lineHandler.taskMarkerLayerEnable(viewModel.isHighRoad())
+    }
+
 
     /**
      * 点击线选择
@@ -990,7 +1010,7 @@ class MainActivity : BaseActivity() {
      */
     private fun showMainActivityBottomSheetGroup() {
         binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
-        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 10, 60)
+        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 60)
         mapController.mMapView.vtmMap.animator().animateTo(
             GeoPoint(
                 mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
@@ -1004,7 +1024,7 @@ class MainActivity : BaseActivity() {
      */
     private fun hideMainActivityBottomSheetGroup() {
         binding.mainActivityBottomSheetGroup.visibility = View.GONE
-        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 10, 0)
+        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 128, 0)
         mapController.mMapView.vtmMap.animator().animateTo(
             GeoPoint(
                 mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,

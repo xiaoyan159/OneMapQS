@@ -60,7 +60,7 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
                 .fillColor(context.resources.getColor(R.color.draw_line_red_color))
                 .fillAlpha(0.5f)
                 .strokeColor(context.resources.getColor(R.color.draw_line_red_color))
-                .strokeWidth(2f)
+                .strokeWidth(3f)
                 .fixed(true).build()
         )
         addLayer(layer, NIMapView.LAYER_GROUPS.VECTOR)
@@ -207,6 +207,11 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
         }
         omdbTaskLinkLayer.removeLine(linkBeanId)
         omdbTaskLinkLayer.update()
+        mMapView.vtmMap.updateMap(true)
+    }
+
+    fun taskMarkerLayerEnable(boolean: Boolean){
+        omdbTaskLinkLayer.isEnabled = boolean
         mMapView.vtmMap.updateMap(true)
     }
 }
