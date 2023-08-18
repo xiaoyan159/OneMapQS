@@ -38,6 +38,7 @@ import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.tools.LayerConfigUtils
 import com.navinfo.omqs.ui.activity.BaseActivity
 import com.navinfo.omqs.ui.fragment.console.ConsoleFragment
+import com.navinfo.omqs.ui.fragment.itemlist.ItemListFragment
 import com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapFragment
 import com.navinfo.omqs.ui.fragment.qsrecordlist.QsRecordListFragment
 import com.navinfo.omqs.ui.fragment.signMoreInfo.SignMoreInfoFragment
@@ -390,6 +391,25 @@ class MainActivity : BaseActivity() {
             }
         }
 
+        viewModel.liveDataItemList.observe(this) {
+            if (leftFragment == null || leftFragment !is ItemListFragment) {
+                leftFragment = ItemListFragment {
+                    binding.mainActivityLeftFragment.visibility = View.GONE
+                    supportFragmentManager.beginTransaction().remove(leftFragment!!).commit()
+                    leftFragment = null
+                    null
+                }
+                binding.mainActivityLeftFragment.visibility = View.VISIBLE
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.main_activity_left_fragment, leftFragment!!)
+                    .commit()
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .show(leftFragment!!)
+                    .commit()
+            }
+        }
+
         lifecycleScope.launch {
             // 初始化地图图层控制接收器
             FlowEventBus.subscribe<List<ImportConfig>>(
@@ -416,6 +436,9 @@ class MainActivity : BaseActivity() {
             supportFragmentManager.beginTransaction()
                 .add(R.id.console_fragment_layout, ConsoleFragment()).commit()
         }
+
+        binding.mainActivityCloseLine.isSelected = viewModel.isHighRoad()
+
         initMeasuringTool()
     }
 
@@ -676,6 +699,13 @@ class MainActivity : BaseActivity() {
     }
 
     /**
+     * 刷新地图
+     */
+    fun refrushOnclick(view: View) {
+        mapController.layerManagerHandler.updateOMDBVectorTileLayer()
+    }
+
+    /**
      * zoomin
      */
     fun zoomInOnclick(view: View) {
@@ -753,6 +783,16 @@ class MainActivity : BaseActivity() {
         viewModel.setSelectRoad(!viewModel.isSelectRoad())
         binding.mainActivitySelectLine.isSelected = viewModel.isSelectRoad()
     }
+
+    /**
+     * 点击线高亮
+     */
+    fun openOrCloseLineOnclick() {
+        viewModel.setHighRoad(!viewModel.isHighRoad())
+        binding.mainActivityCloseLine.isSelected = viewModel.isHighRoad()
+        mapController.lineHandler.taskMarkerLayerEnable(viewModel.isHighRoad())
+    }
+
 
     /**
      * 点击线选择
@@ -990,7 +1030,7 @@ class MainActivity : BaseActivity() {
      */
     private fun showMainActivityBottomSheetGroup() {
         binding.mainActivityBottomSheetGroup.visibility = View.VISIBLE
-        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 10, 60)
+        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 256, 60)
         mapController.mMapView.vtmMap.animator().animateTo(
             GeoPoint(
                 mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,
@@ -1004,7 +1044,7 @@ class MainActivity : BaseActivity() {
      */
     private fun hideMainActivityBottomSheetGroup() {
         binding.mainActivityBottomSheetGroup.visibility = View.GONE
-        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 10, 0)
+        mapController.mMapView.setScaleBarLayer(GLViewport.Position.BOTTOM_CENTER, 256, 0)
         mapController.mMapView.vtmMap.animator().animateTo(
             GeoPoint(
                 mapController.mMapView.vtmMap.mapPosition.geoPoint.latitude,

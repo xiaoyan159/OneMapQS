@@ -112,6 +112,11 @@ class MainViewModel @Inject constructor(
      */
     val liveDataSignMoreInfo = MutableLiveData<RenderEntity>()
 
+    /**
+     * 捕捉到的itemList
+     */
+    val liveDataItemList = MutableLiveData<List<RenderEntity>>()
+
     private var traceTag: String = "TRACE_TAG"
 
     /**
@@ -155,6 +160,11 @@ class MainViewModel @Inject constructor(
      * 是不是线选择模式
      */
     private var bSelectRoad = false
+
+    /**
+     * 是不是高亮任务线
+     */
+    private var bHighRoad = true
 
     /**
      * 是不是选择轨迹点
@@ -447,7 +457,7 @@ class MainViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     if (Constant.AUTO_LOCATION) {
                         mapController.mMapView.vtmMap.animator()
-                            .animateTo(GeoPoint(location.longitude, location.latitude))
+                            .animateTo(GeoPoint(location.latitude, location.longitude))
                     }
                 }
             }
@@ -468,8 +478,10 @@ class MainViewModel @Inject constructor(
                 )
             )
 
-            if (itemList.size > 0) {
+            if (itemList.size == 1) {
                 liveDataSignMoreInfo.postValue(itemList[0])
+            } else {
+                liveDataItemList.postValue(itemList)
             }
         }
     }
@@ -491,9 +503,6 @@ class MainViewModel @Inject constructor(
 
 /*                val linkList = realmOperateHelper.queryLine(
                     point = point,
-                )
-
-//                val linkList = realmOperateHelper.queryLine(point = point, buffer = 2.5, table = "OMDB_LANE_MARK_BOUNDARYTYPE")
                     buffer = 2.5,
                     table = "OMDB_LANE_MARK_BOUNDARYTYPE"
                 )*/
@@ -830,6 +839,21 @@ class MainViewModel @Inject constructor(
      */
     fun isSelectRoad(): Boolean {
         return bSelectRoad
+    }
+
+    /**
+     * 开启线高亮
+     */
+    fun setHighRoad(select: Boolean) {
+        bHighRoad = select
+
+    }
+
+    /**
+     * 是否开启线高亮
+     */
+    fun isHighRoad(): Boolean {
+        return bHighRoad
     }
 
     /**

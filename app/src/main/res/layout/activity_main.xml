@@ -224,8 +224,8 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:elevation="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/main_activity_bottom_sheet_bg"
+                app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:navGraph="@navigation/right_fragment_nav_graph" />
 
@@ -244,6 +244,15 @@
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/main_activity_bottom_sheet"
             app:layout_constraintLeft_toLeftOf="@id/main_activity_top_sign_recyclerview" />
+
+        <ImageButton
+            android:id="@+id/main_activity_map_update"
+            style="@style/zoom_btns_style"
+            android:layout_marginBottom="12dp"
+            android:onClick="@{(view)->mainActivity.refrushOnclick(view)}"
+            android:src="@drawable/icon_map_refrush"
+            app:layout_constraintBottom_toTopOf="@id/main_activity_zoom_in"
+            app:layout_constraintRight_toRightOf="@id/main_activity_zoom_in" />
 
 
         <ImageButton
@@ -276,8 +285,8 @@
             android:layout_marginBottom="12dp"
             android:onClick="@{()->viewModel.onClickLocationButton()}"
             android:src="@drawable/icon_location"
-            app:layout_constraintBottom_toTopOf="@id/main_activity_zoom_in"
-            app:layout_constraintRight_toRightOf="@id/main_activity_zoom_in" />
+            app:layout_constraintBottom_toTopOf="@id/main_activity_map_update"
+            app:layout_constraintRight_toRightOf="@id/main_activity_map_update" />
 
         <ImageButton
             android:id="@+id/main_activity_add_new"
@@ -307,24 +316,34 @@
             app:layout_constraintBottom_toTopOf="@id/main_activity_voice"
             app:layout_constraintRight_toRightOf="@id/main_activity_voice" />
 
+        <ImageButton
+            android:id="@+id/main_activity_close_line"
+            style="@style/zoom_btns_style"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/selector_road_line_bg"
+            android:onClick="@{()->mainActivity.openOrCloseLineOnclick()}"
+            android:src="@drawable/selector_high_road_line_src"
+            app:layout_constraintBottom_toTopOf="@id/main_activity_select_line"
+            app:layout_constraintRight_toRightOf="@id/main_activity_select_line" />
+
         <androidx.constraintlayout.widget.Group
             android:id="@+id/main_activity_right_visibility_buttons_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="main_activity_select_line,main_activity_voice,main_activity_add_new" />
+            app:constraint_referenced_ids="main_activity_close_line,main_activity_select_line,main_activity_voice,main_activity_add_new" />
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/main_activity_right_visibility_buttons_group2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="main_activity_select_line,main_activity_voice,main_activity_add_new,main_activity_zoom_in,main_activity_zoom_out,main_activity_geometry,main_activity_location" />
+            app:constraint_referenced_ids="main_activity_close_line,main_activity_select_line,main_activity_voice,main_activity_add_new,main_activity_map_update,main_activity_zoom_in,main_activity_zoom_out,main_activity_geometry,main_activity_location" />
 
         <fragment
             android:id="@+id/main_activity_middle_fragment"
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/main_activity_bottom_sheet_bg"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/main_activity_right_fragment"
             app:layout_constraintTop_toTopOf="parent"

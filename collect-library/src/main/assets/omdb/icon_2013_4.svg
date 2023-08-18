@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="b" xmlns="http://www.w3.org/2000/svg" width="107.5" height="105.4"
+    xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 107.5 105.4">
+    <defs>
+        <style>.f{fill:url(#d);}.g{fill:url(#e);}.h{fill:none;}.i{fill:#fff;}</style>
+        <linearGradient id="d" x1="640.3" y1="-514.6" x2="633.9" y2="-514.6"
+            gradientTransform="translate(-610.3 579.1)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#989898" />
+            <stop offset=".1" stop-color="#c1c1c1" />
+            <stop offset=".3" stop-color="#e3e3e3" />
+            <stop offset=".4" stop-color="#f7f7f7" />
+            <stop offset=".5" stop-color="#fff" />
+            <stop offset=".6" stop-color="#fbfbfb" />
+            <stop offset=".6" stop-color="#f1f2f2" />
+            <stop offset=".7" stop-color="#e0e1e2" />
+            <stop offset=".8" stop-color="#c9c9cb" />
+            <stop offset=".8" stop-color="#aaabad" />
+            <stop offset=".9" stop-color="#848689" />
+            <stop offset="1" stop-color="#585b5e" />
+            <stop offset="1" stop-color="#3f4246" />
+        </linearGradient>
+        <linearGradient id="e" x1="77.7" y1="64.5" x2="84.1" y2="64.5"
+            gradientTransform="matrix(1, 0, 0, 1, 0, 0)" xlink:href="#d" />
+    </defs>
+    <g id="c">
+        <g>
+            <rect class="h" width="107.5" height="105.4" />
+            <g>
+                <g>
+                    <path class="i"
+                        d="M48.2,57.4h1.5c.1,0,.2,.1,.2,.2v14.6c0,0,0,.1-.1,.1h-1.8s0,0,0,0v-14.7c0-.1,.1-.2,.2-.2Z" />
+                    <path class="i"
+                        d="M38.3,57.4h1.5c.1,0,.2,.1,.2,.2v14.6c0,0,0,.1-.1,.1h-1.8s0,0,0,0v-14.7c0-.1,.1-.2,.2-.2Z" />
+                    <path class="i"
+                        d="M68.1,57.4h1.5c.1,0,.2,.1,.2,.2v14.6c0,0,0,.1-.1,.1h-1.8s0,0,0,0v-14.7c0-.1,.1-.2,.2-.2Z" />
+                    <path class="i"
+                        d="M58.2,57.4h1.5c.1,0,.2,.1,.2,.2v14.6c0,0,0,.1-.1,.1h-1.8s0,0,0,0v-14.7c0-.1,.1-.2,.2-.2Z" />
+                    <path class="i"
+                        d="M101.8,57.4h1.5c.1,0,.2,.1,.2,.2v14.6c0,0,0,.1-.1,.1h-1.8s0,0,0,0v-14.7c0-.1,.1-.2,.2-.2Z" />
+                    <path class="i"
+                        d="M91.9,57.4h1.5c.1,0,.2,.1,.2,.2v14.6c0,0,0,.1-.1,.1h-1.8s0,0,0,0v-14.7c0-.1,.1-.2,.2-.2Z" />
+                    <path class="i"
+                        d="M14.3,57.4h1.5c.1,0,.2,.1,.2,.2v14.6c0,0,0,.1-.1,.1h-1.8s0,0,0,0v-14.7c0-.1,.1-.2,.2-.2Z" />
+                    <path class="i"
+                        d="M4.4,57.4h1.5c.1,0,.2,.1,.2,.2v14.6c0,0,0,.1-.1,.1h-1.8s0,0,0,0v-14.7c0-.1,.1-.2,.2-.2Z" />
+                    <path class="i"
+                        d="M52.8,3.3h1.8c.1,0,.2,.1,.2,.2V110.7c0,0,0,.1-.1,.1h-2.1s0,0,0,0V3.5c0-.1,.1-.2,.2-.2Z"
+                        transform="translate(-3.3 110.8) rotate(-90)" />
+                    <path class="i"
+                        d="M52.8,18h1.8c.1,0,.2,.1,.2,.2V125.4c0,0,0,.1-.1,.1h-2.1s0,0,0,0V18.2c0-.1,.1-.2,.2-.2Z"
+                        transform="translate(-18 125.5) rotate(-90)" />
+                </g>
+                <path class="f"
+                    d="M24.5,52.3h4.9c.6,0,1.1,.5,1.1,1.1v22.3c0,.5-.4,1-1,1h-5.2c-.5,0-.9-.4-.9-.9v-22.3c0-.6,.5-1.1,1.1-1.1Z"
+                    transform="translate(54 129) rotate(180)" />
+                <path class="g"
+                    d="M78.3,52.3h4.9c.6,0,1.1,.5,1.1,1.1v22.3c0,.5-.4,1-1,1h-5.2c-.5,0-.9-.4-.9-.9v-22.3c0-.6,.5-1.1,1.1-1.1Z" />
+            </g>
+        </g>
+    </g>
+</svg>
