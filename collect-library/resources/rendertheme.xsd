@@ -145,6 +145,8 @@
         <xs:attribute name="blend-fill" default="#000000" type="tns:color" use="optional"/>
         <xs:attribute name="mesh" default="false" type="xs:boolean" use="optional"/>
         <xs:attribute name="repeat" default="true" type="xs:boolean" use="optional"/>
+        <!-- 长边坐标轴，默认为s -->
+        <xs:attribute name="longEdge" type="tns:text" default="s"/>
     </xs:complexType>
 
     <xs:complexType name="caption">
