@@ -2068,10 +2068,12 @@
                     </m>
                 </m>
             </m>
+            <!--护栏-->
             <m k="boundaryType" v="4">
                 <line stroke="#FFBC6E" use="boundaryType" width="0.1"/>
                 <symbol repeat-gap="12" repeat="true" repeat-start="0" src="assets:omdb/icon_2013_4.svg" symbol-width="16" symbol-height="46"></symbol>
             </m>
+            <!--路牙-->
             <m k="boundaryType" v="3">
                 <symbol repeat="true" repeat-gap="4" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="10" symbol-height="8"></symbol>
             </m>
