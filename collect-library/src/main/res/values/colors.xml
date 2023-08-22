@@ -8,6 +8,7 @@
     <color name="draw_line_blue1_color" comment="线数据样式">#028FFF</color>
     <color name="draw_line_blue2_color" comment="线数据样式">#4E55AF</color>
     <color name="draw_line_red_color" comment="线数据样式">#FFF6565D</color>
+    <color name="draw_line_pink_color" comment="线数据样式">#FFd4237a</color>
     <color name="default_red" comment="应用主要色调">#F03736</color>
     <color name="draw_area_color" comment="测量面积渲染颜色">#8DEF08EB</color>
 

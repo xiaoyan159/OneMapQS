@@ -347,6 +347,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             }
                                         }
                                     }else if(renderEntity.code == DataCodeEnum.OMDB_LINK_FORM2.code){
+                                        Log.e("qj","道路形态2${renderEntity.properties["formOfWay"]}")
                                         /*道路形态2*/
                                         var formWay = renderEntity.properties["formOfWay"]
                                         if(formWay!=null){

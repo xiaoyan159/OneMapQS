@@ -136,6 +136,13 @@
 				"zoomMin": 16,
 				"zoomMax": 20
 			},
+			"3016":{
+				"table": "OMDB_OBJECT_STOPLOCATION",
+				"code": 3016,
+				"name": "停止位置",
+				"zoomMin": 18,
+				"zoomMax": 20
+			},
 			"4001": {
 				"table": "OMDB_INTERSECTION",
 				"code": 4001,
@@ -404,8 +411,7 @@
 				"code": 2206,
 				"name": "道路形态2",
 				"zoomMin": 15,
-				"zoomMax": 17,
-				"transformer2Code": ""
+				"zoomMax": 17
 			}
 
 		}

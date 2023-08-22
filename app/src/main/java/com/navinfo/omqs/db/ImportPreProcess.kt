@@ -567,6 +567,7 @@ class ImportPreProcess {
                 val intersectionReference = ReferenceEntity()
                 intersectionReference.renderEntityId = renderEntity.id
                 intersectionReference.name = "${renderEntity.name}参考点"
+                intersectionReference.code = renderEntity.code
                 intersectionReference.table = renderEntity.table
                 intersectionReference.zoomMin = renderEntity.zoomMin
                 intersectionReference.zoomMax = renderEntity.zoomMax

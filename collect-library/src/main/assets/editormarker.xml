@@ -1968,9 +1968,9 @@
             <m k="type" v="node">
                 <symbol src="assets:symbols/dot_blue_dark.svg"></symbol>
             </m>
-            <m k="intersectionPid">
+<!--            <m k="intersectionPid">
                 <symbol src="assets:symbols/dot_magenta.svg"></symbol>
-            </m>
+            </m>-->
 <!--            <m k="geometry">
                 <symbol src="@typesrc"></symbol>
             </m>-->
@@ -2068,10 +2068,12 @@
                     </m>
                 </m>
             </m>
+            <!--护栏-->
             <m k="boundaryType" v="4">
                 <line stroke="#FFBC6E" use="boundaryType" width="0.1"/>
                 <symbol repeat-gap="12" repeat="true" repeat-start="0" src="assets:omdb/icon_2013_4.svg" symbol-width="16" symbol-height="46"></symbol>
             </m>
+            <!--路牙-->
             <m k="boundaryType" v="3">
                 <symbol repeat="true" repeat-gap="4" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="10" symbol-height="8"></symbol>
             </m>
@@ -2186,6 +2188,45 @@
             <symbol repeat="true" repeat-start="0" repeat-gap="32" src="assets:omdb/icon_2204_0.svg"></symbol>
         </m>
 
+        <!-- 停止位置 -->
+        <m v="OMDB_OBJECT_STOPLOCATION">
+
+            <m k="locationType" v="1">
+                <m k="color" v="1">
+                    <line stroke="#ffffff" use="boundaryType" width="0.1"/>
+                </m>
+                <m k="color" v="9">
+                    <line stroke="#eccc68" use="boundaryType" width="0.1"/>
+                </m>
+            </m>
+
+            <m k="locationType" v="2">
+                <m k="color" v="1">
+                    <symbol repeat="true" repeat-gap="1" repeat-start="2" src="assets:omdb/icon_3016_0.svg" symbol-width="5" symbol-height="24"></symbol>
+                </m>
+                <m k="color" v="9">
+                    <symbol repeat="true" repeat-gap="1" repeat-start="2" src="assets:omdb/icon_3016_1.svg" symbol-width="5" symbol-height="24"></symbol>
+                </m>
+            </m>
+            <!--虚线不做渲染-->
+<!--            <m k="locationType" v="3">
+                <m k="color" v="1">
+                    <symbol repeat="true" repeat-gap="4" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="10" symbol-height="4"></symbol>
+                </m>
+                <m k="color" v="9">
+                    <symbol repeat="true" repeat-gap="4" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="10" symbol-height="4"></symbol>
+                </m>
+            </m>
+            <m k="locationType" v="4">
+                <m k="color" v="1">
+                    <line dasharray="1,1,1,1" repeat-start="0" stroke="#ffffff" width="0.1"/>
+                </m>
+                <m k="color" v="9">
+                    <line dasharray="1,1,1,1" repeat-start="0" stroke="#eccc68" width="0.1"/>
+                </m>
+            </m>-->
+        </m>
+
         <!--常规点限速-->
         <m v="OMDB_SPEEDLIMIT">
             <m k="speedFlag" v="0">
@@ -2272,8 +2313,10 @@
 
         <!-- 导流区 -->
         <m v="OMDB_FILL_AREA">
-            <area use="obj-area" repeat="false" src="assets:omdb/tex_fill_area_3012.png"></area>
+            <area use="obj-area" repeat="true" src="assets:omdb/tex_fill_area_3012.png" longEdge="t"></area>
             <text use="area-name"></text>
+<!--            <area use="obj-area" repeat="false"></area>-->
+<!--            <symbol src="assets:omdb/icon_fill_area_3012.svg"></symbol>-->
         </m>
     </m>
 </rendertheme>

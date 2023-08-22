@@ -57,9 +57,9 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
             mMapView.vtmMap,
             Style.builder()
 //            .stippleColor(context.resources.getColor(R.color.draw_line_red_color, null))
-                .fillColor(context.resources.getColor(R.color.draw_line_red_color))
+                .fillColor(context.resources.getColor(R.color.draw_line_pink_color))
                 .fillAlpha(0.5f)
-                .strokeColor(context.resources.getColor(R.color.draw_line_red_color))
+                .strokeColor(context.resources.getColor(R.color.draw_line_pink_color))
                 .strokeWidth(3f)
                 .fixed(true).build()
         )
