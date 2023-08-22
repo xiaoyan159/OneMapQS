@@ -392,21 +392,23 @@ class MainActivity : BaseActivity() {
         }
 
         viewModel.liveDataItemList.observe(this) {
-            if (leftFragment == null || leftFragment !is ItemListFragment) {
-                leftFragment = ItemListFragment {
-                    binding.mainActivityLeftFragment.visibility = View.GONE
-                    supportFragmentManager.beginTransaction().remove(leftFragment!!).commit()
-                    leftFragment = null
-                    null
+            if(it.isNotEmpty()) {
+                if (leftFragment == null || leftFragment !is ItemListFragment) {
+                    leftFragment = ItemListFragment {
+                        binding.mainActivityLeftFragment.visibility = View.GONE
+                        supportFragmentManager.beginTransaction().remove(leftFragment!!).commit()
+                        leftFragment = null
+                        null
+                    }
+                    binding.mainActivityLeftFragment.visibility = View.VISIBLE
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.main_activity_left_fragment, leftFragment!!)
+                        .commit()
+                } else {
+                    supportFragmentManager.beginTransaction()
+                        .show(leftFragment!!)
+                        .commit()
                 }
-                binding.mainActivityLeftFragment.visibility = View.VISIBLE
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.main_activity_left_fragment, leftFragment!!)
-                    .commit()
-            } else {
-                supportFragmentManager.beginTransaction()
-                    .show(leftFragment!!)
-                    .commit()
             }
         }
 

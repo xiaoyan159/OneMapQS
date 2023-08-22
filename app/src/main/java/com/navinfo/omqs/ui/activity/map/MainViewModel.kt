@@ -610,7 +610,8 @@ class MainViewModel @Inject constructor(
                             val entity =
                                 realmOperateHelper.getRealmTools(RenderEntity::class.java, true)
                                     .and()
-                                    .equalTo("table", DataCodeEnum.OMDB_RESTRICTION.tableName).and()
+                                    .equalTo("table", DataCodeEnum.OMDB_RESTRICTION.name)
+                                    .and()
                                     .equalTo(
                                         "properties['linkIn']", it
                                     ).findFirst()
@@ -619,7 +620,7 @@ class MainViewModel @Inject constructor(
                                 val linkOutEntity =
                                     realmOperateHelper.getRealmTools(RenderEntity::class.java, true)
                                         .and()
-                                        .equalTo("table", DataCodeEnum.OMDB_RD_LINK.tableName).and()
+                                        .equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).and()
                                         .equalTo(
                                             "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
                                             outLink
