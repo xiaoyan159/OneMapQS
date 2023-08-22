@@ -395,6 +395,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         var formOfWay = renderEntity.properties["formOfWay"]
                                         if(formOfWay!=null&&formOfWay=="30"){
                                             renderEntity.enable=2
+                                            renderEntity.code = DataCodeEnum.OMDB_NODE_FORM.code
                                         }else{
                                             Log.e("qj","过滤不显示数据${renderEntity.table}")
                                             continue
@@ -404,6 +405,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         var attributeType = renderEntity.properties["attributeType"]
                                         if(attributeType!=null&&attributeType=="30"){
                                             renderEntity.enable=2
+                                            renderEntity.code = DataCodeEnum.OMDB_NODE_PA.code
                                         }else{
                                             Log.e("qj","过滤不显示数据${renderEntity.table}")
                                             continue
