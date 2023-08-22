@@ -12,6 +12,7 @@ import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.enums.DataCodeEnum
+import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.db.deep.LinkList
@@ -23,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import org.locationtech.jts.geom.Geometry
 import org.spatialite.database.SQLiteDatabase
 import java.io.File
 import javax.inject.Inject
@@ -173,8 +175,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         .toMutableMap()
                                     map["qi_table"] = currentConfig.table
                                     map["qi_name"] = currentConfig.name
-                                    map["qi_code"] =
-                                        if (currentConfig.code == 0) currentConfig.code else currentEntry.key
                                     map["qi_code"] = if (currentConfig.code == 0) currentConfig.code else currentEntry.key
                                     map["qi_zoomMin"] = currentConfig.zoomMin
                                     map["qi_zoomMax"] = currentConfig.zoomMax
@@ -189,8 +189,26 @@ class ImportOMDBHelper @AssistedInject constructor(
                                     renderEntity.zoomMin = map["qi_zoomMin"].toString().toInt()
                                     renderEntity.zoomMax = map["qi_zoomMax"].toString().toInt()
 
-                                    // 其他数据插入到Properties中
                                     renderEntity.geometry = map["geometry"].toString()
+                                    // 其他数据插入到Properties中
+                                    if (!currentConfig.is3D) { // 如果是非3d要素，则自动将Z轴坐标全部置为0
+                                        val coordinates = renderEntity.wkt?.coordinates?.map {
+                                                coordinate -> coordinate.z = 0.0
+                                            coordinate
+                                        }?.toTypedArray()
+                                        var newGeometry: Geometry? = null
+                                        if (renderEntity.wkt?.geometryType == Geometry.TYPENAME_POINT) {
+                                            newGeometry = GeometryTools.createPoint(coordinates!![0].x, coordinates!![0].y)
+                                        } else if (renderEntity.wkt?.geometryType == Geometry.TYPENAME_LINESTRING) {
+                                            newGeometry = GeometryTools.createLineString(coordinates)
+                                        } else if (renderEntity.wkt?.geometryType == Geometry.TYPENAME_POLYGON) {
+                                            newGeometry = GeometryTools.createLineString(coordinates)
+                                        }
+                                        if (newGeometry!=null) {
+                                            renderEntity.geometry = newGeometry.toString()
+                                        }
+                                    }
+
                                     for ((key, value) in map) {
                                         when (value) {
                                             is String -> renderEntity.properties.put(key, value)

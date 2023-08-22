@@ -125,6 +125,7 @@ class TableInfo {
     val name: String = ""
     var checked : Boolean = true
     var transformer: MutableList<Transform> = mutableListOf()
+    var is3D : Boolean = false // 是否支持3D，默认情况下都不支持3D，在数据导入阶段会自动抹去Z轴高程信息
 }
 
 class Transform {
