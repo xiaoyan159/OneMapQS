@@ -62,28 +62,14 @@ class SignMoreInfoFragment : BaseFragment() {
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getLaneBoundaryTypeInfo(it))
                 }
-                //可变点限速
-                DataCodeEnum.OMDB_LINK_SPEEDLIMIT_VAR.code -> {
-                    val adapter = TwoItemAdapter()
+                DataCodeEnum.OMDB_INTERSECTION.code->{
+                    val adapter = LaneBoundaryAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
-                    adapter.refreshData(SignUtil.getChangeLimitSpeedInfo(it))
-                }
-                //常规点限速
-                DataCodeEnum.OMDB_SPEEDLIMIT.code -> {
-                    val adapter = TwoItemAdapter()
-                    binding.signInfoRecyclerview.adapter = adapter
-                    adapter.refreshData(SignUtil.getSpeedLimitMoreInfoText(it))
-                }
-                //条件点限速
-                DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> {
-                    val adapter = TwoItemAdapter()
-                    binding.signInfoRecyclerview.adapter = adapter
-                    adapter.refreshData(SignUtil.getConditionLimitMoreInfoText(it))
+                    adapter.refreshData(SignUtil.getIntersectionInfo(it))
                 }
                 //电子眼
-                DataCodeEnum.OMDB_ELECTRONICEYE.code
-                -> {
-                    val drawable = resources.getDrawable(R.drawable.icon_electronic_eye_left, null);
+                DataCodeEnum.OMDB_ELECTRONICEYE.code -> {
+                    val drawable = resources.getDrawable(R.drawable.icon_electronic_eye_left, null)
                     drawable.setBounds(
                         0,
                         0,
@@ -98,7 +84,7 @@ class SignMoreInfoFragment : BaseFragment() {
                     adapter.refreshData(SignUtil.getElectronicEyeMoreInfo(it))
                 }
                 else -> {
-                    val adapter = TwoItemAdapter()
+                    val adapter = SignUtil.getMoreInfoAdapter(it)
                     binding.signInfoRecyclerview.adapter = adapter
                 }
             }
