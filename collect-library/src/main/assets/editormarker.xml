@@ -2166,11 +2166,11 @@
                 <line dasharray="4,4"  stroke="#4624FF" width="0.4" />
             </m>
             <m k="type" v="s_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2202_0.svg" symbol-height="24" symbol-width="24"></symbol>
             </m>
             <m k="type" v="e_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2202_1.svg" symbol-height="24" symbol-width="24"></symbol>
             </m>
         </m>
@@ -2182,27 +2182,27 @@
                 <lineSymbol  repeat-gap="24" repeat-start="0" symbol-height="24" src="assets:omdb/icon_2201_1.svg" />
             </m>
             <m k="type" v="s_2_p_1">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2201_1_1.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
             <m k="type" v="e_2_p_1">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2201_1_2.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
             <m k="type" v="s_2_p_2">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2201_2_1.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
             <m k="type" v="e_2_p_2">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2201_2_2.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
             <m k="type" v="s_2_p_3">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2201_3_1.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
             <m k="type" v="e_2_p_3">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2201_3_2.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
         </m>
@@ -2338,10 +2338,10 @@
         <m v="OMDB_LANE_CONSTRUCTION">
             <line stroke="#eccc68" width="0.1" />
             <m k="startTime" v="null">
-                <symbol repeat="true" repeat-start="0" repeat-gap="100" src="assets:omdb/icon_2017_1.svg"></symbol>
+                <symbol repeat="true" repeat-start="0" gland="true" repeat-gap="100" src="assets:omdb/icon_2017_1.svg"></symbol>
             </m>
             <m k="startTime" v="-|null">
-                <symbol repeat="true" repeat-start="0" repeat-gap="100" src="assets:omdb/icon_2017_2.svg"></symbol>
+                <symbol repeat="true" repeat-start="0" repeat-gap="100" gland="true" src="assets:omdb/icon_2017_2.svg"></symbol>
             </m>
         </m>
 
