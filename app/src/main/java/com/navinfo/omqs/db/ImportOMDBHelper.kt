@@ -413,6 +413,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         var formOfWay = renderEntity.properties["formOfWay"]
                                         if(formOfWay!=null&&formOfWay=="30"){
                                             renderEntity.enable=2
+                                            renderEntity.code = DataCodeEnum.OMDB_NODE_FORM.code
                                         }else{
                                             Log.e("qj","过滤不显示数据${renderEntity.table}")
                                             continue
@@ -422,6 +423,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         var attributeType = renderEntity.properties["attributeType"]
                                         if(attributeType!=null&&attributeType=="30"){
                                             renderEntity.enable=2
+                                            renderEntity.code = DataCodeEnum.OMDB_NODE_PA.code
                                         }else{
                                             Log.e("qj","过滤不显示数据${renderEntity.table}")
                                             continue
@@ -437,6 +439,12 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                     continue
                                                 }
                                             }
+                                        }
+                                    }else if(renderEntity.code == DataCodeEnum.OMDB_LANE_CONSTRUCTION.code){
+                                        //特殊处理空数据，渲染原则使用
+                                        var startTime = renderEntity.properties["startTime"]
+                                        if(startTime==null||startTime=="") {
+                                            renderEntity.properties["startTime"] = "null"
                                         }
                                     }
 
