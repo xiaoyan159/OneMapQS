@@ -2294,11 +2294,14 @@
 
         <!--电子眼-->
         <m v="OMDB_ELECTRONICEYE">
-            <caption dy="-30" fill="#0000FF" k="name" priority="0" size="12"
-                stroke="#ffffff" stroke-width="1.0"></caption>
+            <m k="eleceyeId">
+                <caption dy="-30" fill="#0000FF" k="name" priority="0" size="12"
+                    stroke="#ffffff" stroke-width="1.0"></caption>
+                <symbol repeat="false" src="assets:omdb/4010/icon_electroniceye_4010.svg" symbol-height="24" symbol-width="24"></symbol>
+            </m>
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
-                    src="assets:omdb/icon_4010.svg" symbol-height="24" symbol-width="18"></symbol>
+                    src="assets:omdb/4010/right.svg" symbol-height="24" symbol-width="24"></symbol>
             </m>
             <m k="type" v="s_2_e">
                 <line use="s2e" />

@@ -333,7 +333,7 @@
 						"k": "geometry",
 						"v": "~",
 						"klib": "geometry",
-						"vlib": "generateDirectReferenceLine(3)"
+						"vlib": "generateDirectReferenceLine('',3)"
 					},
 					{
 						"k": "geometry",
