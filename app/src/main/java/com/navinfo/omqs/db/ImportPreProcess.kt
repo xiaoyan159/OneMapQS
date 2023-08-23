@@ -231,7 +231,11 @@ class ImportPreProcess {
         if (renderEntity.table == table) {
             Log.e("qj","generateS2EReferencePoint===开始")
             if (renderEntity.properties.containsKey(proKey)) {
-                startReference.properties["type"] = "s_2_p_${renderEntity.properties[proKey]}"
+                if(renderEntity.properties[proKey]!=""){
+                    startReference.properties["type"] = "s_2_p_${renderEntity.properties[proKey]}"
+                }else{
+                    startReference.properties["type"] = "s_2_p_0"
+                }
                 Log.e("qj","generateS2EReferencePoint===s_2_p_${renderEntity.properties[proKey]}")
             }
         } else {
@@ -258,7 +262,11 @@ class ImportPreProcess {
         endReference.properties["qi_table"] = renderEntity.table
         if (renderEntity.table == table) {
             if (renderEntity.properties.containsKey(proKey)) {
-                endReference.properties["type"] = "e_2_p_${renderEntity.properties[proKey]}"
+                if(renderEntity.properties[proKey]!=""){
+                    endReference.properties["type"] = "e_2_p_${renderEntity.properties[proKey]}"
+                }else{
+                    endReference.properties["type"] = "e_2_p_0"
+                }
             }
         } else {
             endReference.properties["type"] = "e_2_p"

@@ -132,7 +132,7 @@
 			"2090":{
 				"table": "OMDB_LANE_CONSTRUCTION",
 				"code": 2090,
-				"name": "道路边界类型",
+				"name": "车道施工",
 				"zoomMin": 18,
 				"zoomMax": 20,
 				"checkLinkId": false

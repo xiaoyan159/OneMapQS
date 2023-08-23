@@ -422,6 +422,12 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                 }
                                             }
                                         }
+                                    }else if(renderEntity.code == DataCodeEnum.OMDB_LANE_CONSTRUCTION.code){
+                                        //特殊处理空数据，渲染原则使用
+                                        var startTime = renderEntity.properties["startTime"]
+                                        if(startTime==null||startTime=="") {
+                                            renderEntity.properties["startTime"] = "null"
+                                        }
                                     }
 
                                     listResult.add(renderEntity)
