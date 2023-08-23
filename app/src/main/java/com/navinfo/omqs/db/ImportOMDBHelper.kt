@@ -365,6 +365,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             }
                                         }
                                     }else if(renderEntity.code == DataCodeEnum.OMDB_LINK_FORM2.code){
+                                        Log.e("qj","道路形态2${renderEntity.properties["formOfWay"]}")
                                         /*道路形态2*/
                                         var formWay = renderEntity.properties["formOfWay"]
                                         if(formWay!=null){
@@ -401,6 +402,36 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         if(boundaryType!=null){
                                             when (boundaryType) {
                                                 "0","3","4","5","7","9"->{
+                                                    renderEntity.enable=0
+                                                    Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                                    continue
+                                                }
+                                            }
+                                        }
+                                    }else if(renderEntity.table == DataCodeEnum.OMDB_NODE_FORM.name){//特殊处理，因为code相同，使用表名判断
+                                        //过滤不需要渲染的要素
+                                        var formOfWay = renderEntity.properties["formOfWay"]
+                                        if(formOfWay!=null&&formOfWay=="30"){
+                                            renderEntity.enable=2
+                                        }else{
+                                            Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                            continue
+                                        }
+                                    }else if(renderEntity.table == DataCodeEnum.OMDB_NODE_PA.name){//特殊处理，因为code相同，使用表名判断
+                                        //过滤不需要渲染的要素
+                                        var attributeType = renderEntity.properties["attributeType"]
+                                        if(attributeType!=null&&attributeType=="30"){
+                                            renderEntity.enable=2
+                                        }else{
+                                            Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                            continue
+                                        }
+                                    }else if(renderEntity.code == DataCodeEnum.OMDB_OBJECT_STOPLOCATION.code){
+                                        //过滤不需要渲染的要素
+                                        var locationType = renderEntity.properties["locationType"]
+                                        if(locationType!=null){
+                                            when (locationType) {
+                                                "3","4"->{
                                                     renderEntity.enable=0
                                                     Log.e("qj","过滤不显示数据${renderEntity.table}")
                                                     continue
