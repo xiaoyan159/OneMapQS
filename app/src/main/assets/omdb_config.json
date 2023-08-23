@@ -160,6 +160,39 @@
 				"zoomMax": 20,
 				"transformer2Code": ""
 			},
+			"3005":{
+				"table": "OMDB_TRAFFIC_SIGN",
+				"code": 3005,
+				"name": "交通标牌",
+				"is3D": true,
+				"transformer": [
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "normalizationTrafficSignHeight()"
+					},{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "generateDirectReferenceLine('', 0.2)"
+					}
+				]
+			},
+			"3006":{
+				"table": "OMDB_POLE",
+				"code": 3006,
+				"name": "杆状物",
+				"is3D": true,
+				"transformer": [
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "normalizationPoleHeight()"
+					}
+				]
+			},
 			"3012":{
 				"table": "OMDB_FILL_AREA",
 				"code": 3012,

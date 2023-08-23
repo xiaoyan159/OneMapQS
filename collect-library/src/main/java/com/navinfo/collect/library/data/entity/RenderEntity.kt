@@ -25,8 +25,7 @@ open class RenderEntity() : RealmObject(), Parcelable {
     lateinit var name: String //要素名
     lateinit var table: String //要素表名
     var code: String = "0" // 要素编码
-    var geometry: String =
-        "" // 要素渲染参考的geometry，该数据可能会在导入预处理环节被修改，原始geometry会保存在properties的geometry字段下
+    var geometry: String = "" // 要素渲染参考的geometry，该数据可能会在导入预处理环节被修改，原始geometry会保存在properties的geometry字段下
         get() {
             wkt = GeometryTools.createGeometry(field)
             return field

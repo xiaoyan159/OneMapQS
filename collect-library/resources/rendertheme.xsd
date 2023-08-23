@@ -254,6 +254,8 @@
         <xs:attribute name="repeat-gap" default="200" type="xs:float" use="optional"/>
         <xs:attribute name="repeat-start" default="30" type="xs:float" use="optional"/>
         <xs:attribute name="rotate" default="true" type="xs:boolean" use="optional"/>
+        <!-- 设置是否支持图标压盖，如果为true，则同点位图标不避让，允许压盖，否则支持自动避让 -->
+        <xs:attribute name="gland" default="false" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="extrusion">
