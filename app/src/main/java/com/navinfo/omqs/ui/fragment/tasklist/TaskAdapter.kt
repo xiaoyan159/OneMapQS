@@ -13,6 +13,7 @@ import com.navinfo.omqs.ui.other.BaseViewHolder
 interface TaskAdapterCallback {
     fun itemOnClick(bean: HadLinkDvoBean)
     fun editOnClick(position: Int, bean: HadLinkDvoBean)
+    fun scrollPosition(position: Int)
 }
 
 /**
@@ -38,10 +39,12 @@ class TaskAdapter(
         val binding: AdapterTaskBinding =
             holder.viewBinding as AdapterTaskBinding
         val bean = data[position]
-        if(bean.linkStatus==1){
-            binding.taskHead.background = binding.root.context.getDrawable(R.drawable.selector_task_head)
-        }else{
-            binding.taskHead.background = binding.root.context.getDrawable(R.drawable.selector_task_head_add_link)
+        if (bean.linkStatus == 1) {
+            binding.taskHead.background =
+                binding.root.context.getDrawable(R.drawable.selector_task_head)
+        } else {
+            binding.taskHead.background =
+                binding.root.context.getDrawable(R.drawable.selector_task_head_add_link)
         }
         binding.taskLinkPid.text = "PID:${bean.linkPid}"
         binding.taskMesh.text = "mesh:${bean.mesh}"
@@ -58,6 +61,11 @@ class TaskAdapter(
                 callback.itemOnClick(bean)
             }
         }
+        if (bean.reason != "") {
+            binding.taskEdit.setImageDrawable(binding.root.context.getDrawable(R.drawable.baseline_edit_note_48_select_red))
+        } else {
+            binding.taskEdit.setImageDrawable(binding.root.context.getDrawable(R.drawable.selector_task_link_edit_icon))
+        }
         binding.taskEdit.isSelected = bean.reason != ""
         binding.taskEdit.setOnClickListener {
             callback.editOnClick(position, bean)
@@ -67,6 +75,21 @@ class TaskAdapter(
 
     fun resetSelect() {
         selectPosition = -1
+    }
+
+    fun setSelectTag(tag: String) {
+        for (i in data.indices) {
+            if (data[i].linkPid == tag) {
+                if (selectPosition > -1)
+                    notifyItemChanged(selectPosition)
+                selectPosition = i
+                notifyItemChanged(i)
+                if(callback != null){
+                    callback.scrollPosition(i)
+                }
+                break
+            }
+        }
     }
 }
 

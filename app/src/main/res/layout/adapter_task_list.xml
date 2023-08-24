@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/task_list_head"
             android:text="任务名称"
-            android:textColor="#15141F"
+            android:textColor="@color/selector_black_blue_color"
             android:textSize="14sp" />
 
 
@@ -47,7 +47,7 @@
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             android:text="版本号"
-            android:textColor="@color/gray_121"
+            android:textColor="@color/selector_gray_blue_color"
             android:textSize="13sp" />
 
         <TextView
@@ -58,7 +58,7 @@
             android:layout_below="@id/task_data_version"
             android:layout_alignLeft="@id/task_name"
             android:text="省市名称"
-            android:textColor="@color/gray_121"
+            android:textColor="@color/selector_gray_blue_color"
             android:textSize="13sp" />
 
         <com.navinfo.omqs.ui.widget.TextProgressButtonBar

@@ -55,20 +55,22 @@ class SpeakMode(private val context: Context) : TextToSpeech.OnInitListener {
     fun setData(json: String?) {}
     override fun onInit(status: Int) {
         this.status = status
-        val result = mTextToSpeech.setLanguage(Locale.CHINESE)
-        if (result == TextToSpeech.LANG_MISSING_DATA
-            || result == TextToSpeech.LANG_NOT_SUPPORTED
-        ) {
-            if (context != null) {
-                val firstDialog = FirstDialog(context)
-                firstDialog.setTitle("提示")
-                firstDialog.setMessage("设备不支持语音播报，请先下载语音助手。")
-                firstDialog.setConfirmListener { dialog, _ -> dialog.dismiss() }
-                firstDialog.setNegativeView(View.GONE)
-                firstDialog.show()
+        if(mTextToSpeech != null) {
+            val result = mTextToSpeech.setLanguage(Locale.CHINESE)
+            if (result == TextToSpeech.LANG_MISSING_DATA
+                || result == TextToSpeech.LANG_NOT_SUPPORTED
+            ) {
+                if (context != null) {
+                    val firstDialog = FirstDialog(context)
+                    firstDialog.setTitle("提示")
+                    firstDialog.setMessage("设备不支持语音播报，请先下载语音助手。")
+                    firstDialog.setConfirmListener { dialog, _ -> dialog.dismiss() }
+                    firstDialog.setNegativeView(View.GONE)
+                    firstDialog.show()
+                }
             }
+            Log.i("TextToSpeechDemo", status.toString())
         }
-        Log.i("TextToSpeechDemo", status.toString())
     }
 
     //读语音处理

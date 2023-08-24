@@ -48,6 +48,10 @@ class TaskFragment : BaseFragment() {
             override fun editOnClick(position: Int, bean: HadLinkDvoBean) {
                 showLinkEditDialog(position, bean)
             }
+
+            override fun scrollPosition(position: Int) {
+               binding.taskRecyclerview.scrollToPosition(position)
+            }
         })
     }
 
@@ -120,6 +124,9 @@ class TaskFragment : BaseFragment() {
             }
 
         })
+        viewModel.liveDataSelectLink.observe(viewLifecycleOwner){
+            adapter.setSelectTag(it)
+        }
     }
 
 

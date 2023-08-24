@@ -832,11 +832,43 @@ class SignUtil {
          */
         fun getElectronicEyeMoreInfo(renderEntity: RenderEntity): List<TwoItemAdapterItem> {
             val list = mutableListOf<TwoItemAdapterItem>()
+
+
+            val dir = when (renderEntity.properties["direct"]) {
+                "2" -> "顺方向"
+                "3" -> "逆方向"
+                else -> ""
+            }
+            if (dir != "") {
+                list.add(
+                    TwoItemAdapterItem(
+                        title = "作用方向",
+                        text = dir
+                    )
+                )
+            }
+
+            val kindUp = when (renderEntity.properties["kindUp"]) {
+                "0" -> "未调查"
+                "1" -> "限速电子眼"
+                "4" -> "区间测速电子眼"
+                "5" -> "交通信号灯电子眼"
+                "6" -> "专用车道电子眼"
+                "7" -> "违章电子眼"
+                "11" -> "路况监控电子眼"
+                "19" -> "交通标线电子眼"
+                "20" -> "专用功能电子眼"
+                else -> ""
+            }
+
+            list.add(TwoItemAdapterItem(title = "电子眼类型大分类", text = kindUp))
+
             val kindCode = renderEntity.properties["kind"]!!.toInt()
-            val kind = TwoItemAdapterItem(
-                title = "电子眼类型", text = getElectronicEyeKindType(kindCode)
+            list.add(
+                TwoItemAdapterItem(
+                    title = "电子眼类型", text = getElectronicEyeKindType(kindCode)
+                )
             )
-            list.add(kind)
             when (kindCode) {
                 1, 2, 3, 4, 5, 6, 20, 21 -> {
                     list.add(
@@ -870,6 +902,9 @@ class SignUtil {
                     )
                 )
             }
+            list.add( TwoItemAdapterItem(
+                title = "照射角度", text = "${renderEntity.properties["angle"]}"
+            ))
             return list
         }
 
@@ -1125,12 +1160,11 @@ class SignUtil {
                     )
                 }
                 DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> {
-                    val direction = data.properties["direction"]
-                    var dir = ""
-                    if (direction == "2") {
-                        dir = "顺方向"
-                    } else if (direction == "3") {
-                        dir = "逆方向"
+
+                    val dir = when (data.properties["direction"]) {
+                        "2" -> "顺方向"
+                        "3" -> "逆方向"
+                        else -> ""
                     }
                     if (dir != "") {
                         list.add(

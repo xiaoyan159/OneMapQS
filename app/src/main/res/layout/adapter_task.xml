@@ -27,7 +27,7 @@
         android:layout_marginRight="30dp"
         android:layout_toRightOf="@id/task_head"
         android:text="linkPID"
-        android:textColor="#15141F"
+        android:textColor="@color/selector_black_blue_color"
         android:textSize="14sp" />
 
     <TextView
@@ -39,7 +39,7 @@
         android:layout_alignLeft="@id/task_link_pid"
         android:layout_marginTop="5dp"
         android:text="mesh"
-        android:textColor="@color/gray_121"
+        android:textColor="@color/selector_gray_blue_color"
         android:textSize="13sp" />
 
     <ImageView

@@ -533,6 +533,7 @@ class MainActivity : BaseActivity() {
         mapController.measureLayerHandler.measureValueLiveData.observe(this) {
             valueView.text = it.valueString
             unitView.text = it.unit
+            ClipboardUtils.copyText("${it.valueString}${it.unit}")
         }
         mapController.measureLayerHandler.tempMeasureValueLiveData.observe(this)
         {
