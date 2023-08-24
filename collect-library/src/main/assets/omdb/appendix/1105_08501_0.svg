@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>3</title>
+    <desc>Created with Sketch.</desc>
+    <g id="待定" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="工具栏汇总复制" transform="translate(-360.000000, -363.000000)">
+            <g id="编组-25" transform="translate(277.000000, 363.000000)">
+                <g id="3" transform="translate(83.000000, 0.000000)">
+                    <path d="M10,0 C4.47733333,0 0,4.47733333 0,10 C0,15.5233333 4.47733333,20 10,20 C15.5226667,20 20,15.5233333 20,10 C20,4.47733333 15.5226667,0 10,0 M10,1.33333333 C14.7866667,1.33333333 18.6666667,5.21333333 18.6666667,10 C18.6666667,14.7866667 14.7866667,18.6666667 10,18.6666667 C5.21333333,18.6666667 1.33333333,14.7866667 1.33333333,10 C1.33333333,5.21333333 5.21333333,1.33333333 10,1.33333333" id="Fill-1" fill="#636363"></path>
+                    <path d="M16.5,3.5 L3,17" id="Stroke-3" stroke="#636363" stroke-width="0.5"></path>
+                    <path d="M16,3 L3,16" id="Stroke-5" stroke="#636363" stroke-width="0.5"></path>
+                    <path d="M16,3 L3,16" id="Stroke-7" stroke="#636363" stroke-width="0.5"></path>
+                    <path d="M17,4 L4,17" id="Stroke-9" stroke="#636363" stroke-width="0.5"></path>
+                    <path d="M18,4 L5,17" id="Stroke-11" stroke="#636363" stroke-width="0.5"></path>
+                    <path d="M17,4 L4,17" id="Stroke-13" stroke="#636363" stroke-width="0.5"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

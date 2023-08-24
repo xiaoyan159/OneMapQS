@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="41px" height="47px" viewBox="0 0 41 47" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>G15</title>
+    <desc>Created with Sketch.</desc>
+    <g id="-" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="C9_1_icon-汇总说明(一)" transform="translate(-207.000000, -817.000000)">
+            <g id="01302" transform="translate(207.000000, 817.000000)">
+                <g id="G15">
+                    <rect id="矩形" stroke="#004B27" x="0.5" y="0.5" width="40" height="46" rx="2"></rect>
+                    <rect id="矩形" stroke="#FFFFFF" fill="#004B27" x="1.5" y="1.5" width="38" height="44" rx="1"></rect>
+                    <g id="编组-15" transform="translate(12.000000, 3.000000)">
+                        <text id="G15" font-family="Monaco" font-size="8" font-weight="normal" letter-spacing="0.449999988" fill="#FFFFFF">
+                            <tspan x="2" y="12">G</tspan>
+                            <tspan x="7.25078124" y="12" font-family="PingFangSC-Regular, PingFang SC">1</tspan>
+                            <tspan x="10.9087812" y="12" font-family="PingFangSC-Regular, PingFang SC">5</tspan>
+                        </text>
+                        <path d="M2,0 L16,0 C17.1045695,-2.02906125e-16 18,0.8954305 18,2 L18,4 L0,4 L0,2 C-1.3527075e-16,0.8954305 0.8954305,2.02906125e-16 2,0 Z" id="矩形" fill="#BF3F2A"></path>
+                        <rect id="矩形" stroke="#FFFFFF" stroke-width="0.6" x="0.3" y="0.3" width="17.4" height="14.4" rx="2"></rect>
+                        <text id="国-家-高-速" font-family="PingFangSC-Semibold, PingFang SC" font-size="2" font-weight="500" letter-spacing="-0.0375" fill="#FFFFFF">
+                            <tspan x="4" y="3">国 家 高 速</tspan>
+                        </text>
+                    </g>
+                    <g id="编组-11" transform="translate(11.000000, 21.000000)">
+                        <polygon id="路径-99" fill="#FFFFFF" points="7.99578972 -1.0125234e-12 9.30184345 -1.0125234e-12 9.14866234 21.7029446 4.35627226 21.7029446"></polygon>
+                        <polygon id="路径-100" fill="#FFFFFF" points="10.3639023 -1.8189894e-12 11.5621688 -1.8189894e-12 15.3000604 21.7029446 10.3639023 21.7029446"></polygon>
+                        <path d="M1.64822467,8.21035117 L18.1433078,8.21035117" id="路径-101" stroke="#FFFFFF"></path>
+                        <path d="M3.78239463,8.69663356 L3.78239463,9.5" id="路径-102" stroke="#FFFFFF"></path>
+                        <path d="M15.9384866,8.70048448 L15.9384866,9.43302574" id="路径-102复制" stroke="#FFFFFF"></path>
+                        <path d="M0,23 L18.5400504,0.64381955" id="路径-103" stroke="#BF3F2A" stroke-width="1.5"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

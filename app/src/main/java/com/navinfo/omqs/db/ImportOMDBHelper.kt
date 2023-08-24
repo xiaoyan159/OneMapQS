@@ -146,6 +146,7 @@ class ImportOMDBHelper @AssistedInject constructor(
             val realm = Realm.getDefaultInstance()
             // 先获取当前配置的所有图层的个数，方便后续计算数据解析进度
             var tableNum = 0
+            var processIndex = 0
             for (importConfig in importConfigList) {
                 tableNum += importConfig.tableMap.size
             }
@@ -457,7 +458,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                             }
                         }
                         // 1个文件发送一次flow流
-                        emit("${index + 1}/${tableNum}")
+                        emit("${++processIndex}/${tableNum}")
                         // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
                         if (currentConfig.table == "OMDB_RD_LINK") {
                             importConfig.preProcess.cacheRdLink =

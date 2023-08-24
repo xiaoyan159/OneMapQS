@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="28px" viewBox="0 0 30 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>1105_03202_0复制</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="0 0.668 29.47 0.668 29.47 27.9995 0 27.9995"></polygon>
+    </defs>
+    <g id="-" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="C9_1_icon-汇总说明(一)" transform="translate(-454.000000, -510.000000)">
+            <g id="左" transform="translate(454.000000, 510.000000)">
+                <g id="1105_03202_0复制">
+                    <g id="编组">
+                        <g id="Fill-1-Clipped">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <g id="path-1"></g>
+                            <path d="M0.9088,27.9995 C0.4088,27.9995 -0.0002,27.5755 -0.0002,27.0365 C-0.0002,26.8675 0.0458,26.6995 0.1238,26.5545 L13.9478,1.1545 C14.1088,0.8565 14.4108,0.6675 14.7348,0.6675 C15.0568,0.6675 15.3588,0.8565 15.5198,1.1545 L29.3528,26.5545 C29.4278,26.6995 29.4708,26.8685 29.4708,27.0365 C29.4708,27.5665 29.0638,27.9995 28.5568,27.9995 L0.9088,27.9995 Z" id="Fill-1" fill="#100808" fill-rule="nonzero" mask="url(#mask-2)"></path>
+                        </g>
+                    </g>
+                    <polygon id="Fill-3" fill="#F7BD42" fill-rule="nonzero" points="4 25.62 25.36 25.62 14.682 6"></polygon>
+                    <polygon id="路径-124复制-2" fill="#000000" points="13.7661608 13 10 18.023715 10 19.9023647 15.8074604 20.278922 13.7661608 23.2919257 15.3631696 25 19 19.9023647 19 18.023715 13.3264305 17.4910387 15.3631696 14.3858902"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -661,4 +661,85 @@ class ImportPreProcess {
                 WKTWriter(3).write(GeometryTools.getPolygonGeometry(geometry.coordinates))
         }
     }
+
+    /**
+     * 生成动态src字段-辅助图层，一般用于显示带角度的图标
+     * @param renderEntity 要被处理的RenderEntity
+     * @param prefix 图片的前缀（一般还需要指定图片对应的文件夹）
+     * @param suffix 图片的后缀（根据codeName获取到的code后，匹配图片的后缀，还包含code码后的其他字符串内容）
+     * @param codeName 数据对应的code字段的字段名
+     * */
+    fun obtainReferenceDynamicSrc(renderEntity: RenderEntity, prefix: String, suffix: String, codeName: String) {
+        if (codeName.isNullOrBlank()) {
+            return
+        }
+
+        // 根据数据或angle计算方向对应的角度和偏移量
+        val geometry = renderEntity.wkt
+        var radian = 0.0 // geometry的角度，如果是点，获取angle，如果是线，获取最后两个点的方向
+        var pointStartArray = mutableListOf<Coordinate>()
+        if (Geometry.TYPENAME_POINT == geometry?.geometryType) {
+            val point = Coordinate(geometry?.coordinate)
+            pointStartArray.add(point)
+            var angle =
+                if (renderEntity?.properties?.get("angle") == null) 0.0 else renderEntity?.properties?.get(
+                    "angle"
+                )?.toDouble()!!
+            // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
+            angle = (450 - angle) % 360
+            radian = Math.toRadians(angle)
+        } else if (Geometry.TYPENAME_LINESTRING == geometry?.geometryType) {
+            var coordinates = geometry.coordinates
+            val p1: Coordinate = coordinates.get(coordinates.size - 2)
+            val p2: Coordinate = coordinates.get(coordinates.size - 1)
+            // 计算线段的方向
+            radian = Angle.angle(p1, p2)
+            pointStartArray.add(p1)
+        } else if (Geometry.TYPENAME_POLYGON == geometry?.geometryType) {
+            // 记录下面数据的每一个点位
+            pointStartArray.addAll(geometry.coordinates)
+            // 获取当前的面数据对应的方向信息
+            var angle = if (renderEntity?.properties?.get("angle") == null) {
+                if (renderEntity?.properties?.get("heading") == null) {
+                    0.0
+                } else {
+                    renderEntity?.properties?.get("heading")?.toDouble()!!
+                }
+            } else renderEntity?.properties?.get("angle")?.toDouble()!!
+
+            angle = (450 - angle) % 360
+            radian = Math.toRadians(angle)
+        }
+
+        // 计算偏移距离
+        var dx: Double = GeometryTools.convertDistanceToDegree(
+            defaultTranslateDistance,
+            geometry?.coordinate?.y!!
+        ) * Math.cos(radian)
+        var dy: Double = GeometryTools.convertDistanceToDegree(
+            defaultTranslateDistance,
+            geometry?.coordinate?.y!!
+        ) * Math.sin(radian)
+
+        for (pointStart in pointStartArray) {
+            val coorEnd = Coordinate(pointStart.getX() + dx, pointStart.getY() + dy, pointStart.z)
+
+            val dynamicSrcReference = ReferenceEntity()
+            dynamicSrcReference.renderEntityId = renderEntity.id
+            dynamicSrcReference.name = "${renderEntity.name}动态icon"
+            dynamicSrcReference.table = renderEntity.table
+            dynamicSrcReference.zoomMin = renderEntity.zoomMin
+            dynamicSrcReference.zoomMax = renderEntity.zoomMax
+            dynamicSrcReference.taskId = renderEntity.taskId
+            dynamicSrcReference.enable = renderEntity.enable
+            // 与原有方向指向平行的线
+            dynamicSrcReference.geometry =
+                WKTWriter(3).write(GeometryTools.createLineString(arrayOf(pointStart, coorEnd)))
+            dynamicSrcReference.properties["qi_table"] = renderEntity.table
+            dynamicSrcReference.properties["type"] = "dynamicSrc"
+            val code = renderEntity.properties[codeName]
+            dynamicSrcReference.properties["src"] = "${prefix}${code}${suffix}"
+            Realm.getDefaultInstance().insert(dynamicSrcReference)
+        }
+    }
 }

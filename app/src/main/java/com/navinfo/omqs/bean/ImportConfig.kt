@@ -57,7 +57,7 @@ class ImportConfig {
                                 for ((index, value) in params.withIndex()) {
                                     // 前2个参数确定为对象本身和RenderEntity，因此自定义参数从index+2开始设置
                                     if (methodParams.size>index+2) {
-                                        callByParams[methodParams[index+2]] = value
+                                        callByParams[methodParams[index+2]] = value.replace("'", "")
                                     }
                                 }
                                 when(val result = method.callBy(callByParams)) { // 如果方法返回的数据类型是boolean，且返回为false，则该数据不处理

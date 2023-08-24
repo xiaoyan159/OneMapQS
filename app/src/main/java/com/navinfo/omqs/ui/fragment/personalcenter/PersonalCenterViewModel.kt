@@ -171,7 +171,7 @@ class PersonalCenterViewModel @Inject constructor(
                 }
             } else {
                 val newTask = TaskBean()
-                newTask.id = 9999
+                newTask.id = -1
                 importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, newTask).collect {
                     Log.d("importOMDBData", it)
                 }

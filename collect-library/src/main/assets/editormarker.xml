@@ -2348,5 +2348,16 @@
             </m>
         </m>
 
+        <!-- 警示信息 -->
+        <m v="OMDB_WARNINGSIGN">
+            <m k="type" v="dynamicSrc">
+                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
+                    src="@src" symbol-height="24" symbol-width="24" degree="90"></symbol>
+            </m>
+            <m k="type" v="s_2_e">
+                <line use="s2e" />
+            </m>
+        </m>
+
     </m>
 </rendertheme>

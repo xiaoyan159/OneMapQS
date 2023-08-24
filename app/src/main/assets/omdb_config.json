@@ -325,6 +325,39 @@
 					}
 				]
 			},
+			"4009":{
+				"table": "OMDB_WARNINGSIGN",
+				"code": 4009,
+				"name": "警示信息",
+				"zoomMin": 15,
+				"zoomMax": 20,
+				"transformer": [
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "translateRight()"
+					},
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "generateS2EReferenceLine()"
+					},
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "generateDirectReferenceLine('',3)"
+					},
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "obtainReferenceDynamicSrc('assets:omdb/appendix/1105_','_0.svg','typeCode')"
+					}
+				]
+			},
 			"4010":{
 				"table": "OMDB_ELECTRONICEYE",
 				"code": 4010,
