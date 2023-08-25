@@ -143,7 +143,7 @@ public class OMDBReferenceDecoder extends TileDecoder {
             // 将Z坐标的米转换为屏幕像素坐标
 //            double z = longitudeToX(MercatorProjection.pixelXToLongitudeWithScale(MercatorProjection.metersToPixelsWithScale((float) coordinates[i].z, coordinates[i].y, mTileScale), mTileScale))* mTileScale/8;
             mMapElement.addPoint((float) ((longitudeToX(coordinates[i].x) - mTileX) * mTileScale),
-                    (float) ((latitudeToY(coordinates[i].y) - mTileY) * mTileScale), 0);
+                    (float) ((latitudeToY(coordinates[i].y) - mTileY) * mTileScale), /*(float) coordinates[i].z*/0);
         }
 
 //        int length = removeLast ? coordinates.length - 1 : coordinates.length;

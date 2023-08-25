@@ -2,12 +2,28 @@
 	{
 		"tableGroupName": "普通图层",
 		"tableMap" : {
+			"1007": {
+				"table": "OMDB_NODE_FORM",
+				"code": 1007,
+				"name": "点形态",
+				"zoomMin": 15,
+				"zoomMax": 20,
+				"checkLinkId": false
+			},
+			"1007_PA": {
+				"table": "OMDB_NODE_PA",
+				"code": 1007,
+				"name": "点形态PA",
+				"zoomMin": 15,
+				"zoomMax": 20,
+				"checkLinkId": false
+			},
 			"1012": {
 				"table": "OMDB_CHECKPOINT",
 				"code": 1012,
 				"name": "检查点",
 				"zoomMin": 15,
-				"zoomMax": 19
+				"zoomMax": 20
 			},
 			"2001": {
 				"table": "OMDB_RD_LINK",
@@ -72,6 +88,13 @@
 					}
 				]
 			},
+			"2017": {
+				"table": "OMDB_LINK_CONSTRUCTION",
+				"code": 2017,
+				"name": "道路施工",
+				"zoomMin": 15,
+				"zoomMax": 17
+			},
 			"2019": {
 				"table": "OMDB_LINK_SPEEDLIMIT",
 				"code": 2019,
@@ -106,6 +129,14 @@
 				"zoomMax": 20,
 				"checkLinkId": false
 			},
+			"2090":{
+				"table": "OMDB_LANE_CONSTRUCTION",
+				"code": 2090,
+				"name": "车道施工",
+				"zoomMin": 18,
+				"zoomMax": 20,
+				"checkLinkId": false
+			},
 			"2201":{
 				"table": "OMDB_BRIDGE",
 				"code": 2201,
@@ -129,6 +160,39 @@
 				"zoomMax": 20,
 				"transformer2Code": ""
 			},
+			"3005":{
+				"table": "OMDB_TRAFFIC_SIGN",
+				"code": 3005,
+				"name": "交通标牌",
+				"is3D": true,
+				"transformer": [
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "normalizationTrafficSignHeight()"
+					},{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "generateDirectReferenceLine('', 0.2)"
+					}
+				]
+			},
+			"3006":{
+				"table": "OMDB_POLE",
+				"code": 3006,
+				"name": "杆状物",
+				"is3D": true,
+				"transformer": [
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "normalizationPoleHeight()"
+					}
+				]
+			},
 			"3012":{
 				"table": "OMDB_FILL_AREA",
 				"code": 3012,
@@ -141,7 +205,8 @@
 				"code": 3016,
 				"name": "停止位置",
 				"zoomMin": 18,
-				"zoomMax": 20
+				"zoomMax": 20,
+				"checkLinkId": false
 			},
 			"4001": {
 				"table": "OMDB_INTERSECTION",
@@ -260,6 +325,39 @@
 					}
 				]
 			},
+			"4009":{
+				"table": "OMDB_WARNINGSIGN",
+				"code": 4009,
+				"name": "警示信息",
+				"zoomMin": 15,
+				"zoomMax": 20,
+				"transformer": [
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "translateRight()"
+					},
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "generateS2EReferenceLine()"
+					},
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "generateDirectReferenceLine('',3)"
+					},
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "obtainReferenceDynamicSrc('assets:omdb/appendix/1105_','_0.svg','typeCode')"
+					}
+				]
+			},
 			"4010":{
 				"table": "OMDB_ELECTRONICEYE",
 				"code": 4010,
@@ -283,7 +381,7 @@
 						"k": "geometry",
 						"v": "~",
 						"klib": "geometry",
-						"vlib": "generateDirectReferenceLine(3)"
+						"vlib": "generateDirectReferenceLine('',3)"
 					},
 					{
 						"k": "geometry",
@@ -297,6 +395,15 @@
 				"table": "OMDB_TRAFFICLIGHT",
 				"code": 4022,
 				"name": "交通灯",
+				"zoomMin": 15,
+				"zoomMax": 20,
+				"transformer": [
+				]
+			},
+			"4023": {
+				"table": "OMDB_TOLLGATE",
+				"code": 4023,
+				"name": "收费站",
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -359,7 +466,7 @@
 				"code": 2004,
 				"name": "道路属性",
 				"zoomMin": 15,
-				"zoomMax": 19,
+				"zoomMax": 20,
 				"transformer": [
 					{
 						"k": "geometry",

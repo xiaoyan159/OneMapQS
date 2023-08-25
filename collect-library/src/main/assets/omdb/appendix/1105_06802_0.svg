@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="29px" height="29px" viewBox="0 0 29 29" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>jinzhiminglaba</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="0 28.541 28.544 28.541 28.544 0 0 0"></polygon>
+    </defs>
+    <g id="待定" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="工具栏汇总复制" transform="translate(-360.000000, -1108.000000)">
+            <g id="jinzhiminglaba-2" transform="translate(360.333333, 1108.000000)">
+                <g id="jinzhiminglaba">
+                    <path d="M0.75,14.271 C0.75,21.725 6.816,27.791 14.272,27.791 C21.728,27.791 27.794,21.727 27.794,14.271 C27.794,6.815 21.731,0.75 14.272,0.75 C6.817,0.75 0.75,6.816 0.75,14.271" id="Fill-1" fill="#FEFEFE"></path>
+                    <path d="M0.75,14.271 C0.75,21.725 6.816,27.791 14.272,27.791 C21.728,27.791 27.794,21.727 27.794,14.271 C27.794,6.815 21.731,0.75 14.272,0.75 C6.817,0.75 0.75,6.816 0.75,14.271 Z" id="Stroke-3" stroke="#D91C0F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="Clip-14"></g>
+                    <path d="M4.044,19.082 L4,7 C4,7 5.986,11.527 8.986,12.314 C11.989,13.099 21.182,13.338 21.55,13.331 C23.211,13.294 24.282,14.622 24.321,17.162 C24.367,19.796 23.184,21.135 22.093,21.27 C20.419,21.471 10.283,21.273 10.283,21.273 C10.283,21.273 8.505,20.665 9.11,17.948 C9.11,17.948 9.16,16.931 11.887,16.931 C14.614,16.931 25.218,16.905 25.218,16.905 L25.224,18.146 L10.624,18.04 C10.624,18.04 9.622,19.263 10.928,19.885 L21.49,19.885 C21.49,19.885 23.213,20.096 22.716,16.271 C22.716,16.271 22.184,14.943 21.318,14.943 L10.554,14.943 C10.554,14.943 6.621,14.12 4.044,19.082" id="Fill-3复制" fill="#000000" mask="url(#mask-2)"></path>
+                    <polygon id="Fill-13" fill="#D91C0F" mask="url(#mask-2)" transform="translate(14.270000, 14.269500) rotate(-45.000000) translate(-14.270000, -14.269500) " points="13.344 27.428 15.196 27.428 15.196 1.111 13.344 1.111"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -12,6 +12,7 @@ import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.enums.DataCodeEnum
+import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.db.deep.LinkList
@@ -23,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import org.locationtech.jts.geom.Geometry
 import org.spatialite.database.SQLiteDatabase
 import java.io.File
 import javax.inject.Inject
@@ -144,6 +146,7 @@ class ImportOMDBHelper @AssistedInject constructor(
             val realm = Realm.getDefaultInstance()
             // 先获取当前配置的所有图层的个数，方便后续计算数据解析进度
             var tableNum = 0
+            var processIndex = 0
             for (importConfig in importConfigList) {
                 tableNum += importConfig.tableMap.size
             }
@@ -173,8 +176,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         .toMutableMap()
                                     map["qi_table"] = currentConfig.table
                                     map["qi_name"] = currentConfig.name
-                                    map["qi_code"] =
-                                        if (currentConfig.code == 0) currentConfig.code else currentEntry.key
                                     map["qi_code"] = if (currentConfig.code == 0) currentConfig.code else currentEntry.key
                                     map["qi_zoomMin"] = currentConfig.zoomMin
                                     map["qi_zoomMax"] = currentConfig.zoomMax
@@ -189,8 +190,26 @@ class ImportOMDBHelper @AssistedInject constructor(
                                     renderEntity.zoomMin = map["qi_zoomMin"].toString().toInt()
                                     renderEntity.zoomMax = map["qi_zoomMax"].toString().toInt()
 
-                                    // 其他数据插入到Properties中
                                     renderEntity.geometry = map["geometry"].toString()
+                                    // 其他数据插入到Properties中
+                                    if (!currentConfig.is3D) { // 如果是非3d要素，则自动将Z轴坐标全部置为0
+                                        val coordinates = renderEntity.wkt?.coordinates?.map {
+                                                coordinate -> coordinate.z = 0.0
+                                            coordinate
+                                        }?.toTypedArray()
+                                        var newGeometry: Geometry? = null
+                                        if (renderEntity.wkt?.geometryType == Geometry.TYPENAME_POINT) {
+                                            newGeometry = GeometryTools.createPoint(coordinates!![0].x, coordinates!![0].y)
+                                        } else if (renderEntity.wkt?.geometryType == Geometry.TYPENAME_LINESTRING) {
+                                            newGeometry = GeometryTools.createLineString(coordinates)
+                                        } else if (renderEntity.wkt?.geometryType == Geometry.TYPENAME_POLYGON) {
+                                            newGeometry = GeometryTools.createLineString(coordinates)
+                                        }
+                                        if (newGeometry!=null) {
+                                            renderEntity.geometry = newGeometry.toString()
+                                        }
+                                    }
+
                                     for ((key, value) in map) {
                                         when (value) {
                                             is String -> renderEntity.properties.put(key, value)
@@ -390,6 +409,44 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                 }
                                             }
                                         }
+                                    }else if(renderEntity.table == DataCodeEnum.OMDB_NODE_FORM.name){//特殊处理，因为code相同，使用表名判断
+                                        //过滤不需要渲染的要素
+                                        var formOfWay = renderEntity.properties["formOfWay"]
+                                        if(formOfWay!=null&&formOfWay=="30"){
+                                            renderEntity.enable=2
+                                            renderEntity.code = DataCodeEnum.OMDB_NODE_FORM.code
+                                        }else{
+                                            Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                            continue
+                                        }
+                                    }else if(renderEntity.table == DataCodeEnum.OMDB_NODE_PA.name){//特殊处理，因为code相同，使用表名判断
+                                        //过滤不需要渲染的要素
+                                        var attributeType = renderEntity.properties["attributeType"]
+                                        if(attributeType!=null&&attributeType=="30"){
+                                            renderEntity.enable=2
+                                            renderEntity.code = DataCodeEnum.OMDB_NODE_PA.code
+                                        }else{
+                                            Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                            continue
+                                        }
+                                    }else if(renderEntity.code == DataCodeEnum.OMDB_OBJECT_STOPLOCATION.code){
+                                        //过滤不需要渲染的要素
+                                        var locationType = renderEntity.properties["locationType"]
+                                        if(locationType!=null){
+                                            when (locationType) {
+                                                "3","4"->{
+                                                    renderEntity.enable=0
+                                                    Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                                    continue
+                                                }
+                                            }
+                                        }
+                                    }else if(renderEntity.code == DataCodeEnum.OMDB_LANE_CONSTRUCTION.code){
+                                        //特殊处理空数据，渲染原则使用
+                                        var startTime = renderEntity.properties["startTime"]
+                                        if(startTime==null||startTime=="") {
+                                            renderEntity.properties["startTime"] = "null"
+                                        }
                                     }
 
                                     listResult.add(renderEntity)
@@ -401,7 +458,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                             }
                         }
                         // 1个文件发送一次flow流
-                        emit("${index + 1}/${tableNum}")
+                        emit("${++processIndex}/${tableNum}")
                         // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
                         if (currentConfig.table == "OMDB_RD_LINK") {
                             importConfig.preProcess.cacheRdLink =

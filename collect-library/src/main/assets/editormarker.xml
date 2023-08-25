@@ -1987,12 +1987,37 @@
         </m>
 
         <!-- 检查点 -->
-        <m v="OMDB_CHECKPOINT">
+        <m v="OMDB_NODE_FORM">
             <symbol src="assets:omdb/icon_1012_0.svg" symbol-height="56"
                 symbol-width="56"></symbol>
         </m>
 
 
+        <!-- 铁路路口 -->
+        <m v="OMDB_NODE_FORM">
+            <symbol src="assets:omdb/icon_1007_0.svg" symbol-height="56"
+                symbol-width="56"></symbol>
+        </m>
+        <!-- 铁路路口 -->
+        <m v="OMDB_NODE_PA">
+            <symbol src="assets:omdb/icon_1007_0.svg" symbol-height="56"
+                symbol-width="56"></symbol>
+        </m>
+        <!-- 收费站 -->
+        <m v="OMDB_TOLLGATE">
+            <m k="angle">
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_4023_0.svg" symbol-height="56" symbol-width="56"></symbol>
+            </m>
+<!--            <m k="type" v="angle">
+                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
+                    src="assets:omdb/icon_arrow_right.svg" symbol-height="64"
+                    symbol-width="64"></symbol>
+            </m>
+            <m k="type" v="s_2_e">
+                <line use="s2e" />
+            </m>-->
+        </m>
         <!-- 道路边界类型 -->
         <m v="OMDB_RDBOUND_BOUNDARYTYPE">
             <outline-layer id="boundaryType" stroke="#8e44ad" width="0.1" />
@@ -2141,11 +2166,11 @@
                 <line dasharray="4,4"  stroke="#4624FF" width="0.4" />
             </m>
             <m k="type" v="s_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2202_0.svg" symbol-height="24" symbol-width="24"></symbol>
             </m>
             <m k="type" v="e_2_p">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2202_1.svg" symbol-height="24" symbol-width="24"></symbol>
             </m>
         </m>
@@ -2157,27 +2182,27 @@
                 <lineSymbol  repeat-gap="24" repeat-start="0" symbol-height="24" src="assets:omdb/icon_2201_1.svg" />
             </m>
             <m k="type" v="s_2_p_1">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2201_1_1.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
             <m k="type" v="e_2_p_1">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2201_1_2.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
             <m k="type" v="s_2_p_2">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2201_2_1.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
             <m k="type" v="e_2_p_2">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2201_2_2.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
             <m k="type" v="s_2_p_3">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2201_3_1.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
             <m k="type" v="e_2_p_3">
-                <symbol repeat="false" repeat-start="0" rotate="false"
+                <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
                     src="assets:omdb/icon_2201_3_2.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
         </m>
@@ -2193,10 +2218,10 @@
 
             <m k="locationType" v="1">
                 <m k="color" v="1">
-                    <line stroke="#ffffff" use="boundaryType" width="0.1"/>
+                    <line stroke="#ffffff" repeat-start="2" use="boundaryType" width="0.1"/>
                 </m>
                 <m k="color" v="9">
-                    <line stroke="#eccc68" use="boundaryType" width="0.1"/>
+                    <line stroke="#eccc68" repeat-start="2" use="boundaryType" width="0.1"/>
                 </m>
             </m>
 
@@ -2208,24 +2233,8 @@
                     <symbol repeat="true" repeat-gap="1" repeat-start="2" src="assets:omdb/icon_3016_1.svg" symbol-width="5" symbol-height="24"></symbol>
                 </m>
             </m>
-            <!--虚线不做渲染-->
-<!--            <m k="locationType" v="3">
-                <m k="color" v="1">
-                    <symbol repeat="true" repeat-gap="4" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="10" symbol-height="4"></symbol>
-                </m>
-                <m k="color" v="9">
-                    <symbol repeat="true" repeat-gap="4" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="10" symbol-height="4"></symbol>
-                </m>
-            </m>
-            <m k="locationType" v="4">
-                <m k="color" v="1">
-                    <line dasharray="1,1,1,1" repeat-start="0" stroke="#ffffff" width="0.1"/>
-                </m>
-                <m k="color" v="9">
-                    <line dasharray="1,1,1,1" repeat-start="0" stroke="#eccc68" width="0.1"/>
-                </m>
-            </m>-->
         </m>
+
 
         <!--常规点限速-->
         <m v="OMDB_SPEEDLIMIT">
@@ -2300,11 +2309,14 @@
 
         <!--电子眼-->
         <m v="OMDB_ELECTRONICEYE">
-            <caption dy="-30" fill="#0000FF" k="name" priority="0" size="12"
-                stroke="#ffffff" stroke-width="1.0"></caption>
+            <m k="eleceyeId">
+                <caption dy="-30" fill="#0000FF" k="name" priority="0" size="12"
+                    stroke="#ffffff" stroke-width="1.0"></caption>
+                <symbol repeat="false" src="assets:omdb/4010/icon_electroniceye_4010.svg" symbol-height="24" symbol-width="24"></symbol>
+            </m>
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
-                    src="assets:omdb/icon_4010.svg" symbol-height="24" symbol-width="18"></symbol>
+                    src="assets:omdb/4010/right.svg" symbol-height="24" symbol-width="24"></symbol>
             </m>
             <m k="type" v="s_2_e">
                 <line use="s2e" />
@@ -2318,5 +2330,34 @@
 <!--            <area use="obj-area" repeat="false"></area>-->
 <!--            <symbol src="assets:omdb/icon_fill_area_3012.svg"></symbol>-->
         </m>
+
+        <!-- 道路施工 -->
+        <m v="OMDB_LINK_CONSTRUCTION">
+            <line stroke="#FF0000" width="1" />
+            <symbol repeat="true" repeat-start="0"  src="assets:omdb/icon_2017_1.svg"></symbol>
+        </m>
+
+        <!-- 车道施工 -->
+        <m v="OMDB_LANE_CONSTRUCTION">
+            <line stroke="#eccc68" width="0.1" />
+            <m k="startTime" v="null">
+                <symbol repeat="true" repeat-start="0" gland="true" repeat-gap="100" src="assets:omdb/icon_2017_1.svg"></symbol>
+            </m>
+            <m k="startTime" v="-|null">
+                <symbol repeat="true" repeat-start="0" repeat-gap="100" gland="true" src="assets:omdb/icon_2017_2.svg"></symbol>
+            </m>
+        </m>
+
+        <!-- 警示信息 -->
+        <m v="OMDB_WARNINGSIGN">
+            <m k="type" v="dynamicSrc">
+                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
+                    src="@src" symbol-height="24" symbol-width="24" degree="90"></symbol>
+            </m>
+            <m k="type" v="s_2_e">
+                <line use="s2e" />
+            </m>
+        </m>
+
     </m>
 </rendertheme>

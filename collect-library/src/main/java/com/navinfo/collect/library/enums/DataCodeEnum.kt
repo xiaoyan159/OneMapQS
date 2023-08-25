@@ -4,6 +4,8 @@ package com.navinfo.collect.library.enums
 * 要素枚举定义
 * */
 enum class DataCodeEnum(var tableName: String, var code: String) {
+    OMDB_NODE_FORM("点形态", "1007-6"),
+    OMDB_NODE_PA("点形态PA", "1007-6"),
     OMDB_CHECKPOINT("检查点", "1012"),
     OMDB_RD_LINK("道路线", "2001"),
     OMDB_RD_LINK_FUNCTION_CLASS("道路功能等级", "2002"),
@@ -16,6 +18,7 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
     OMDB_LINK_DIRECT("道路方向", "2010"),
     OMDB_LINK_NAME("道路名", "2011"),
     OMDB_LANE_MARK_BOUNDARYTYPE("车道边界类型", "2013"),
+    OMDB_LINK_CONSTRUCTION("道路施工", "2017"),
     OMDB_LINK_SPEEDLIMIT("常规线限速", "2019"),
     OMDB_LINK_SPEEDLIMIT_COND("条件线限速", "2020"),
     OMDB_LINK_SPEEDLIMIT_VAR("可变线限速", "2021"),
@@ -32,6 +35,7 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
     OMDB_LANE_NUM("车道数", "2041"),
     OMDB_VIADUCT("高架", "2043"),
     OMDB_RDBOUND_BOUNDARYTYPE("道路边界类型", "2083"),
+    OMDB_LANE_CONSTRUCTION("车道施工", "2090"),
     OMDB_BRIDGE("桥", "2201"),
     OMDB_TUNNEL("隧道", "2202"),
     OMDB_ROUNDABOUT("环岛", "2204"),
@@ -53,6 +57,7 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
     OMDB_LINK_FORM2_11("风景路线", "2206-11"),
     OMDB_LINK_FORM2_12("车辆测试路段", "2206-12"),
     OMDB_LINK_FORM2_13("驾照考试路段", "2206-13"),
+    OMDB_OBJECT_STOPLOCATION("停止位置", "3016"),
     OMDB_INTERSECTION("路口", "4001"),
     OMDB_SPEEDLIMIT("常规点限速", "4002"),
     OMDB_SPEEDLIMIT_COND("条件点限速", "4003"),
@@ -60,6 +65,7 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
     OMDB_RESTRICTION("普通交限", "4006"),
     OMDB_ELECTRONICEYE("电子眼", "4010"),
     OMDB_TRAFFICLIGHT("交通灯", "4022"),
+    OMDB_TOLLGATE("收费站", "4023"),
     OMDB_LANEINFO("车信", "4601"),
     OMDB_LANE_LINK_LG("车道中心线", "5001");
 

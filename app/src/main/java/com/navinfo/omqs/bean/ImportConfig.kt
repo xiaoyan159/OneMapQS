@@ -57,7 +57,7 @@ class ImportConfig {
                                 for ((index, value) in params.withIndex()) {
                                     // 前2个参数确定为对象本身和RenderEntity，因此自定义参数从index+2开始设置
                                     if (methodParams.size>index+2) {
-                                        callByParams[methodParams[index+2]] = value
+                                        callByParams[methodParams[index+2]] = value.replace("'", "")
                                     }
                                 }
                                 when(val result = method.callBy(callByParams)) { // 如果方法返回的数据类型是boolean，且返回为false，则该数据不处理
@@ -125,6 +125,7 @@ class TableInfo {
     val name: String = ""
     var checked : Boolean = true
     var transformer: MutableList<Transform> = mutableListOf()
+    var is3D : Boolean = false // 是否支持3D，默认情况下都不支持3D，在数据导入阶段会自动抹去Z轴高程信息
 }
 
 class Transform {

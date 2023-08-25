@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="7px" height="39px" viewBox="0 0 7 39" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>2</title>
+    <desc>Created with Sketch.</desc>
+    <g id="页面" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="C9_1_icon-汇总说明" transform="translate(-914.000000, -325.000000)">
+            <g id="编组-39" transform="translate(914.000000, 325.000000)">
+                <g id="34">
+                    <g id="2">
+                        <path d="M3.5,0 L3.5,0 C5.43299662,-3.55085719e-16 7,1.56700338 7,3.5 L7,39 L0,39 L0,3.5 C-2.36723813e-16,1.56700338 1.56700338,3.55085719e-16 3.5,0 Z" id="矩形" fill="#F7BD42"></path>
+                        <rect id="矩形" fill="#251A18" x="4" y="12.5454545" width="2" height="2"></rect>
+                        <rect id="矩形复制-63" fill="#251A18" x="5" y="8" width="1" height="1"></rect>
+                        <rect id="矩形复制-66" fill="#251A18" x="5" y="15.8181818" width="1" height="1"></rect>
+                        <rect id="矩形复制-64" fill="#251A18" x="5" y="10.2727273" width="1" height="1"></rect>
+                        <rect id="矩形复制-67" fill="#251A18" x="5" y="18.0909091" width="1" height="1"></rect>
+                        <rect id="矩形复制-75" fill="#251A18" x="5" y="31.4545455" width="1" height="1"></rect>
+                        <rect id="矩形复制-68" fill="#251A18" x="5" y="25.9090909" width="1" height="1"></rect>
+                        <rect id="矩形复制-76" fill="#251A18" x="5" y="33.7272727" width="1" height="1"></rect>
+                        <rect id="矩形复制-69" fill="#251A18" x="5" y="23.6363636" width="1" height="1"></rect>
+                        <rect id="矩形复制-77" fill="#251A18" x="5" y="36" width="1" height="1"></rect>
+                        <rect id="矩形复制-62" fill="#251A18" x="4" y="28.1818182" width="2" height="2"></rect>
+                        <rect id="矩形复制-61" fill="#251A18" x="4" y="20.3636364" width="2" height="2"></rect>
+                        <text id="3" font-family="PingFangSC-Semibold, PingFang SC" font-size="4" font-weight="500" fill="#251A18">
+                            <tspan x="1" y="15">3</tspan>
+                        </text>
+                        <text font-family="PingFangSC-Semibold, PingFang SC" font-size="4" font-weight="500" fill="#251A18">
+                            <tspan x="1" y="23">2</tspan>
+                        </text>
+                        <text id="1" font-family="PingFangSC-Semibold, PingFang SC" font-size="4" font-weight="500" fill="#251A18">
+                            <tspan x="1" y="31">1</tspan>
+                        </text>
+                        <text id="米" font-family="PingFangSC-Semibold, PingFang SC" font-size="5" font-weight="500" fill="#251A18">
+                            <tspan x="1" y="6">米</tspan>
+                        </text>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
