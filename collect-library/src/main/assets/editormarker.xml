@@ -2163,7 +2163,7 @@
         <!--隧道-->
         <m v="OMDB_TUNNEL">
             <m k="formOfWay">
-                <line dasharray="4,4"  stroke="#4624FF" width="0.4" />
+                <line dasharray="4,4"  stroke="#4624FF" width="1.2" />
             </m>
             <m k="type" v="s_2_p">
                 <symbol repeat="false" repeat-start="0" rotate="false" gland="true"

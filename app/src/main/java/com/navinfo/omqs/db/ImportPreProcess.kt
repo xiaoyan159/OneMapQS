@@ -225,7 +225,6 @@ class ImportPreProcess {
 
         // 起点坐标
         startReference.geometry = GeometryTools.createGeometry(GeoPoint(pointStart.y, pointStart.x)).toString()
-        startReference.properties = renderEntity.properties
         startReference.properties["qi_table"] = renderEntity.table
         Log.e("qj","generateS2EReferencePoint===$table===$proKey")
         if (renderEntity.table == table) {
@@ -258,7 +257,6 @@ class ImportPreProcess {
 
         // 终点坐标
         endReference.geometry = GeometryTools.createGeometry(GeoPoint(pointEnd.y, pointEnd.x)).toString()
-        endReference.properties = renderEntity.properties
         endReference.properties["qi_table"] = renderEntity.table
         if (renderEntity.table == table) {
             if (renderEntity.properties.containsKey(proKey)) {
