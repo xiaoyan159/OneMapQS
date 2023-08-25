@@ -10,10 +10,12 @@
 
     <TextView
         android:id="@+id/sign_info_title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/icon_main_moreinfo_text_left"
+        android:layout_toLeftOf="@id/sign_info_cancel"
         android:drawablePadding="4dp"
+        android:gravity="center_vertical"
+        android:layout_marginRight="5dp"
         android:text="电子眼"
         android:textColor="@color/orange" />
 

@@ -44,29 +44,27 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
-        <ImageButton
-            android:id="@+id/evaluation_bar_cancel"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginRight="10dp"
-            android:background="@color/transparent"
-            android:src="@drawable/icon_fragment_close"
-            android:visibility="gone"
-            app:layout_constraintRight_toLeftOf="@id/evaluation_bar_save"
-            app:layout_constraintTop_toTopOf="@id/evaluation_bar_save" />
-
-
         <ImageButton
             android:id="@+id/evaluation_bar_delete"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_centerInParent="true"
             android:layout_marginRight="5dp"
             android:background="@color/transparent"
             android:src="@drawable/icon_delete"
-            app:layout_constraintRight_toLeftOf="@id/evaluation_bar_cancel"
-            app:layout_constraintTop_toTopOf="@id/evaluation_bar_save" />
+            app:layout_constraintRight_toLeftOf="@id/evaluation_bar_save"
+            app:layout_constraintTop_toTopOf="@id/evaluation_bar_save"
+            app:layout_constraintBottom_toBottomOf="@id/evaluation_bar_save" />
+
+
+        <ImageButton
+            android:id="@+id/evaluation_bar_measuring"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@color/transparent"
+            android:src="@drawable/measuring_tool_distance"
+            app:layout_constraintRight_toLeftOf="@id/evaluation_bar_delete"
+            app:layout_constraintTop_toTopOf="@id/evaluation_bar_save"
+            app:layout_constraintBottom_toBottomOf="@id/evaluation_bar_save"/>
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="0dp"
@@ -86,6 +84,23 @@
                 android:layout_height="match_parent"
                 android:layout_marginBottom="7dp"
                 android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="7dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/evaluation_fragment_title_text_style"
+                        android:text="ID" />
+
+                    <TextView
+                        android:id="@+id/evaluation_id"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

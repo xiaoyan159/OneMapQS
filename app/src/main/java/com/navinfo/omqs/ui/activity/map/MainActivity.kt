@@ -524,7 +524,7 @@ class MainActivity : BaseActivity() {
     /**
      * 开始测量
      */
-    private fun measuringToolOn() {
+    fun measuringToolOn() {
         val root = binding.mainActivityMeasuringTool.root
         val valueView = root.findViewById<TextView>(R.id.measuring_tool_value)
         val unitView = root.findViewById<TextView>(R.id.measuring_tool_value_unit)
@@ -673,12 +673,6 @@ class MainActivity : BaseActivity() {
         viewModel.onClickMenu()
     }
 
-    /**
-     * 点击测速
-     */
-    fun onClickCalcDistance() {
-        measuringToolOn()
-    }
 
     /**
      * 点击轨迹

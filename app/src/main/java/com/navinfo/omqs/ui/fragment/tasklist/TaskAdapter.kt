@@ -2,6 +2,7 @@ package com.navinfo.omqs.ui.fragment.tasklist
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.omqs.R
@@ -61,12 +62,11 @@ class TaskAdapter(
                 callback.itemOnClick(bean)
             }
         }
-        if (bean.reason != "") {
-            binding.taskEdit.setImageDrawable(binding.root.context.getDrawable(R.drawable.baseline_edit_note_48_select_red))
+        if (bean.reason == "") {
+            binding.taskBadge.visibility = View.GONE
         } else {
-            binding.taskEdit.setImageDrawable(binding.root.context.getDrawable(R.drawable.selector_task_link_edit_icon))
+            binding.taskBadge.visibility = View.VISIBLE
         }
-        binding.taskEdit.isSelected = bean.reason != ""
         binding.taskEdit.setOnClickListener {
             callback.editOnClick(position, bean)
         }
@@ -84,7 +84,7 @@ class TaskAdapter(
                     notifyItemChanged(selectPosition)
                 selectPosition = i
                 notifyItemChanged(i)
-                if(callback != null){
+                if (callback != null) {
                     callback.scrollPosition(i)
                 }
                 break
