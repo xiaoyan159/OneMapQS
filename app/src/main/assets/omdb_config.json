@@ -197,7 +197,7 @@
 				"table": "OMDB_FILL_AREA",
 				"code": 3012,
 				"name": "导流区",
-				"zoomMin": 16,
+				"zoomMin": 18,
 				"zoomMax": 20
 			},
 			"3016":{
@@ -498,12 +498,6 @@
 				"zoomMin": 15,
 				"zoomMax": 17,
 				"transformer": [
-					{
-						"k": "geometry",
-						"v": "~",
-						"klib": "geometry",
-						"vlib": "generateS2EReferencePoint()"
-					}
 				]
 			},
 			"2205":{
