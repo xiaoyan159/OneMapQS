@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="30px" height="18px" viewBox="0 0 18 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="18px" height="30px" viewBox="0 0 18 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
     <title>1301_0_g</title>
     <desc>Created with Sketch.</desc>
-    <g id="页面" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="rotate(90, 9, 15)">
-        <g id="C9_6_icon-汇总说明-" fill="#2271FF" fill-rule="nonzero">
-            <g id="编组-10">
-                <g id="1301_0_g">
+    <g id="页面" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="C9_6_icon-汇总说明-" transform="translate(-390.000000, -995.000000)" fill="#2271FF" fill-rule="nonzero">
+            <g id="编组-10" transform="translate(263.000000, 995.000000)">
+                <g id="1301_0_g" transform="translate(127.000000, 0.000000)">
                     <polygon id="path2214_7_" points="13.399 29.168 13.414 4.004 17.091 7.131 17.16 4.387 12.55 0.793 8.046 4.392 8.109 6.969 11.572 4.114 11.56 29.208"></polygon>
                     <path d="M11.776,17.839 C11.797,17.422 11.543,15.976 10.416,15.185 C9.29,14.393 7.37,14.529 7.37,14.529 L4.05,14.544 L7.178,18.221 L4.437,18.291 L0.84,13.68 L4.441,9.176 L7.019,9.238 L4.164,12.701 L7.17,12.689 C7.17,12.689 9.013,12.637 10.061,13.123 C11.106,13.608 12.461,14.723 12.606,15.132 C12.885,15.948 11.751,18.237 11.776,17.839 Z" id="path2249_3_"></path>
                 </g>

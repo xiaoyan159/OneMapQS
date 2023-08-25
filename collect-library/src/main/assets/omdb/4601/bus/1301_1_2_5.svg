@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="31px" height="18px" viewBox="0 0 18 31" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="18px" height="31px" viewBox="0 0 18 31" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
     <title>编组 13</title>
     <desc>Created with Sketch.</desc>
-    <g id="页面" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="rotate(90, 9, 15)">
-        <g id="C9_6_icon-汇总说明-" fill="#FFB400" fill-rule="nonzero">
-            <g id="编组-12">
-                <g id="编组-13">
+    <g id="页面" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="C9_6_icon-汇总说明-" transform="translate(-850.000000, -645.000000)" fill="#FFB400" fill-rule="nonzero">
+            <g id="编组-12" transform="translate(263.000000, 645.000000)">
+                <g id="编组-13" transform="translate(587.197000, 0.042000)">
                     <path d="M12.223,23.004 C12.245,22.587 11.99,21.141 10.863,20.35 C9.737,19.558 7.817,19.694 7.817,19.694 L4.498,19.709 L7.626,23.386 L4.884,23.456 L1.288,18.845 L4.888,14.341 L7.466,14.403 L4.611,17.866 L7.618,17.854 C7.618,17.854 9.46,17.802 10.508,18.288 C11.553,18.773 12.908,19.888 13.053,20.297 C13.332,21.112 12.199,23.401 12.223,23.004 Z" id="path2249_5_"></path>
                     <polygon id="path2214_12_" points="13.725 14.498 3.183 7.982 7.779 6.506 5.483 5 0 7.023 0.684 12.747 2.906 14.052 2.306 9.604 13.129 16.285"></polygon>
                     <polygon id="path2214_13_" points="13.845 29.333 13.86 4.169 17.538 7.296 17.606 4.552 12.997 0.958 8.493 4.556 8.556 7.133 12.019 4.278 12.007 29.372"></polygon>
