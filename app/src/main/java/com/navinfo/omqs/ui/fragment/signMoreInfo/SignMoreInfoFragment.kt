@@ -14,7 +14,7 @@ import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.databinding.FragmentSignInfoBinding
 import com.navinfo.omqs.ui.activity.map.MainViewModel
 import com.navinfo.omqs.ui.fragment.BaseFragment
-import com.navinfo.omqs.ui.widget.SignUtil
+import com.navinfo.omqs.util.SignUtil
 
 
 class SignMoreInfoFragment : BaseFragment() {

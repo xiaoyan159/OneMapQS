@@ -13,7 +13,7 @@ import com.navinfo.omqs.databinding.AdapterSignBinding
 import com.navinfo.omqs.databinding.AdapterSignLaneinfoBinding
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
-import com.navinfo.omqs.ui.widget.SignUtil
+import com.navinfo.omqs.util.SignUtil
 
 interface OnSignAdapterClickListener {
     fun onItemClick(signBean: SignBean)

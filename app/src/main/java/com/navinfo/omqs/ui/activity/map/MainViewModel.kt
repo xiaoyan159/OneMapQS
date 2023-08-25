@@ -44,7 +44,7 @@ import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import com.navinfo.omqs.ui.other.BaseToast
-import com.navinfo.omqs.ui.widget.SignUtil
+import com.navinfo.omqs.util.SignUtil
 import com.navinfo.omqs.util.DateTimeUtil
 import com.navinfo.omqs.util.ShareUtil
 import com.navinfo.omqs.util.SoundMeter
