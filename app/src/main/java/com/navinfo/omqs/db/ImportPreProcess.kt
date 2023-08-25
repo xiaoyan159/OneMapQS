@@ -49,34 +49,33 @@ class ImportPreProcess {
         val geometry = renderEntity.wkt
         var radian = 0.0 // geometry的角度，如果是点，获取angle，如果是线，获取最后两个点的方向
         var point = Coordinate(geometry?.coordinate)
-        var isReverse = false // 是否为逆向
-        if (direction.isNotEmpty()) {
-            val paramDirections = direction.split("=")
-            if (paramDirections.size >= 2 && renderEntity.properties[paramDirections[0].trim()] == paramDirections[1].trim()) {
-                isReverse = true;
-            }
-        }
-        if (Geometry.TYPENAME_POINT == geometry?.geometryType) { // angle为与正北方向的顺时针夹角
-            var angle =
-                if (renderEntity?.properties?.get("angle") == null) 0.0 else renderEntity?.properties?.get(
-                    "angle"
-                )?.toDouble()!!
-//            if (isReverse) {
-//                angle += 180
-//            }
+        // 如果数据属性中存在angle，则使用该值，否则需要根据line中的数据进行计算
+        if (renderEntity?.properties?.get(
+                "angle"
+            )!=null) {
+            var angle = renderEntity?.properties?.get("angle")?.toDouble()!!
             // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
             angle = (450 - angle) % 360
             radian = Math.toRadians(angle)
-        } else if (Geometry.TYPENAME_LINESTRING == geometry?.geometryType) {
-            var coordinates = geometry.coordinates
-            if (isReverse) {
-                coordinates = coordinates.reversedArray()
+        } else {
+            var isReverse = false // 是否为逆向
+            if (direction.isNotEmpty()) {
+                val paramDirections = direction.split("=")
+                if (paramDirections.size >= 2 && renderEntity.properties[paramDirections[0].trim()] == paramDirections[1].trim()) {
+                    isReverse = true;
+                }
             }
-            val p1: Coordinate = coordinates.get(coordinates.size - 2)
-            val p2: Coordinate = coordinates.get(coordinates.size - 1)
-            // 计算线段的方向
-            radian = Angle.angle(p1, p2)
-            point = p1
+            if (Geometry.TYPENAME_LINESTRING == geometry?.geometryType) {
+                var coordinates = geometry.coordinates
+                if (isReverse) {
+                    coordinates = coordinates.reversedArray()
+                }
+                val p1: Coordinate = coordinates.get(coordinates.size - 2)
+                val p2: Coordinate = coordinates.get(coordinates.size - 1)
+                // 计算线段的方向
+                radian = Angle.angle(p1, p2)
+                point = p1
+            }
         }
 
         // 计算偏移距离
