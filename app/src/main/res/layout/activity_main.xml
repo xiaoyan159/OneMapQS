@@ -141,7 +141,7 @@
         <ImageButton
             android:id="@+id/main_activity_calc_distance"
             style="@style/top_right_drawer_btns_style"
-            android:onClick="@{()->mainActivity.onClickCalcDistance()}"
+            android:onClick="@{()->mainActivity.measuringToolOn()}"
             android:src="@drawable/icon_calc_disance" />
 
         <ImageButton

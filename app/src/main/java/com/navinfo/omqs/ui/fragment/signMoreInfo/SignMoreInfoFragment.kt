@@ -14,7 +14,7 @@ import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.databinding.FragmentSignInfoBinding
 import com.navinfo.omqs.ui.activity.map.MainViewModel
 import com.navinfo.omqs.ui.fragment.BaseFragment
-import com.navinfo.omqs.ui.widget.SignUtil
+import com.navinfo.omqs.util.SignUtil
 
 
 class SignMoreInfoFragment : BaseFragment() {
@@ -38,15 +38,22 @@ class SignMoreInfoFragment : BaseFragment() {
         binding.signInfoRecyclerview.layoutManager = layoutManager
         viewModel.liveDataSignMoreInfo.observe(viewLifecycleOwner) {
             binding.signInfoTitle.text = it.name
-            val drawable = resources.getDrawable(R.drawable.icon_main_moreinfo_text_left, null);
-            drawable.setBounds(
+            val drawableLeft = resources.getDrawable(R.drawable.icon_main_moreinfo_text_left, null);
+            val drawableRight = resources.getDrawable(R.drawable.baseline_edit_note_48, null);
+            drawableLeft.setBounds(
                 0,
                 0,
-                drawable.minimumWidth,
-                drawable.minimumHeight
-            );//必须设置图片大小，否则不显示
+                drawableLeft.minimumWidth,
+                drawableLeft.minimumHeight
+            )//必须设置图片大小，否则不显示
+            drawableRight.setBounds(
+                0,
+                0,
+                drawableRight.minimumWidth,
+                drawableRight.minimumHeight
+            )
             binding.signInfoTitle.setCompoundDrawables(
-                drawable, null, null, null
+                drawableLeft, null, drawableRight, null
             )
 
             when (it.code) {
@@ -62,7 +69,7 @@ class SignMoreInfoFragment : BaseFragment() {
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getLaneBoundaryTypeInfo(it))
                 }
-                DataCodeEnum.OMDB_INTERSECTION.code->{
+                DataCodeEnum.OMDB_INTERSECTION.code -> {
                     val adapter = LaneBoundaryAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getIntersectionInfo(it))
@@ -77,7 +84,7 @@ class SignMoreInfoFragment : BaseFragment() {
                         drawable.minimumHeight
                     );//必须设置图片大小，否则不显示
                     binding.signInfoTitle.setCompoundDrawables(
-                        drawable, null, null, null
+                        drawable, null, drawableRight, null
                     )
                     val adapter = TwoItemAdapter()
                     binding.signInfoRecyclerview.adapter = adapter

@@ -67,7 +67,7 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         //新增marker图标样式
         val mDefaultBitmap =
             AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.mipmap.marker))
-
+        mDefaultBitmap.scaleTo(150, 150)
         val markerSymbol = MarkerSymbol(
             mDefaultBitmap,
             MarkerSymbol.HotspotPlace.CENTER

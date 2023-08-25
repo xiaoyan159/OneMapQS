@@ -2,6 +2,7 @@ package com.navinfo.omqs.ui.fragment.tasklist
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.omqs.R
@@ -13,6 +14,7 @@ import com.navinfo.omqs.ui.other.BaseViewHolder
 interface TaskAdapterCallback {
     fun itemOnClick(bean: HadLinkDvoBean)
     fun editOnClick(position: Int, bean: HadLinkDvoBean)
+    fun scrollPosition(position: Int)
 }
 
 /**
@@ -38,10 +40,12 @@ class TaskAdapter(
         val binding: AdapterTaskBinding =
             holder.viewBinding as AdapterTaskBinding
         val bean = data[position]
-        if(bean.linkStatus==1){
-            binding.taskHead.background = binding.root.context.getDrawable(R.drawable.selector_task_head)
-        }else{
-            binding.taskHead.background = binding.root.context.getDrawable(R.drawable.selector_task_head_add_link)
+        if (bean.linkStatus == 1) {
+            binding.taskHead.background =
+                binding.root.context.getDrawable(R.drawable.selector_task_head)
+        } else {
+            binding.taskHead.background =
+                binding.root.context.getDrawable(R.drawable.selector_task_head_add_link)
         }
         binding.taskLinkPid.text = "PID:${bean.linkPid}"
         binding.taskMesh.text = "mesh:${bean.mesh}"
@@ -58,7 +62,11 @@ class TaskAdapter(
                 callback.itemOnClick(bean)
             }
         }
-        binding.taskEdit.isSelected = bean.reason != ""
+        if (bean.reason == "") {
+            binding.taskBadge.visibility = View.GONE
+        } else {
+            binding.taskBadge.visibility = View.VISIBLE
+        }
         binding.taskEdit.setOnClickListener {
             callback.editOnClick(position, bean)
         }
@@ -67,6 +75,21 @@ class TaskAdapter(
 
     fun resetSelect() {
         selectPosition = -1
+    }
+
+    fun setSelectTag(tag: String) {
+        for (i in data.indices) {
+            if (data[i].linkPid == tag) {
+                if (selectPosition > -1)
+                    notifyItemChanged(selectPosition)
+                selectPosition = i
+                notifyItemChanged(i)
+                if (callback != null) {
+                    callback.scrollPosition(i)
+                }
+                break
+            }
+        }
     }
 }
 

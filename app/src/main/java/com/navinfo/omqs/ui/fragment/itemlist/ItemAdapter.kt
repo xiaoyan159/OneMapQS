@@ -10,6 +10,9 @@ import com.navinfo.omqs.ui.other.BaseViewHolder
 
 class ItemAdapter(private var itemListener: ((Int, RenderEntity) -> Unit?)? = null) :
     BaseRecyclerViewAdapter<RenderEntity>() {
+
+    var selectPosition = -1
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val viewBinding =
             AdapterItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -19,9 +22,15 @@ class ItemAdapter(private var itemListener: ((Int, RenderEntity) -> Unit?)? = nu
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         val binding = holder.viewBinding as AdapterItemBinding
         var renderEntity = data[position]
-
+        binding.root.isSelected = selectPosition == position
         binding.name.text = DataCodeEnum.findTableNameByCode(renderEntity.code)
         binding.root.setOnClickListener {
+            if (selectPosition != position) {
+                notifyItemChanged(selectPosition)
+                selectPosition = position
+                notifyItemChanged(position)
+            }
+
             if (itemListener != null) {
                 itemListener!!.invoke(position, renderEntity)
             }

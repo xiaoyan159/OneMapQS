@@ -63,9 +63,12 @@ class RealmOperateHelper() {
         // 查询realm中对应tile号的数据
         val realm = getRealmDefaultInstance()
         val realmList =
-            getRealmTools(RenderEntity::class.java,false).and().equalTo("table", "OMDB_RD_LINK")
-                .and()
-                .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd")
+            getRealmTools(RenderEntity::class.java, false)
+                .equalTo("table", "OMDB_RD_LINK")
+                .greaterThanOrEqualTo("tileX", xStart)
+                .lessThanOrEqualTo("tileX", xEnd)
+                .greaterThanOrEqualTo("tileY", yStart)
+                .lessThanOrEqualTo("tileY", yEnd)
                 .findAll()
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
         val dataList = realm.copyFromRealm(realmList)
@@ -125,10 +128,12 @@ class RealmOperateHelper() {
         val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
         // 查询realm中对应tile号的数据
         val realm = getRealmDefaultInstance()
-        val realmList = getRealmTools(RenderEntity::class.java, true).and()
+        val realmList = getRealmTools(RenderEntity::class.java, true)
             .equalTo("table", table)
-            .and()
-            .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd")
+            .greaterThanOrEqualTo("tileX", xStart)
+            .lessThanOrEqualTo("tileX", xEnd)
+            .greaterThanOrEqualTo("tileY", yStart)
+            .lessThanOrEqualTo("tileY", yEnd)
             .findAll()
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
         val dataList = realm.copyFromRealm(realmList)
@@ -187,8 +192,8 @@ class RealmOperateHelper() {
         var link: RenderEntity? = null
         val realm = getRealmDefaultInstance()
         val realmR =
-            getRealmTools(RenderEntity::class.java, true).and().equalTo("table", "OMDB_RD_LINK")
-                .and().equalTo("properties['${LinkTable.linkPid}']", linkPid).findFirst()
+            getRealmTools(RenderEntity::class.java, true).equalTo("table", "OMDB_RD_LINK")
+                .equalTo("properties['${LinkTable.linkPid}']", linkPid).findFirst()
         if (realmR != null) {
             link = realm.copyFromRealm(realmR)
         }
@@ -202,8 +207,8 @@ class RealmOperateHelper() {
     suspend fun queryQcRecordBean(markId: String): QsRecordBean? {
         var qsRecordBean: QsRecordBean? = null
         val realm = getRealmDefaultInstance()
-        val realmR = getRealmTools(QsRecordBean::class.java, false).and()
-            .equalTo("table", "QsRecordBean").and().equalTo("id", markId).findFirst()
+        val realmR = getRealmTools(QsRecordBean::class.java, false)
+            .equalTo("table", "QsRecordBean").equalTo("id", markId).findFirst()
         if (realmR != null) {
             qsRecordBean = realm.copyFromRealm(realmR)
         }
@@ -215,7 +220,7 @@ class RealmOperateHelper() {
 
         val realm = getRealmDefaultInstance()
 
-        val realmR = getRealmTools(RenderEntity::class.java, true).and()
+        val realmR = getRealmTools(RenderEntity::class.java, true)
             .equalTo("properties['${LinkTable.linkPid}']", linkPid).findAll()
 
         val dataList = realm.copyFromRealm(realmR)
@@ -257,10 +262,12 @@ class RealmOperateHelper() {
         val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
         val realm = getRealmDefaultInstance()
         // 查询realm中对应tile号的数据
-        val realmList = getRealmTools(RenderEntity::class.java, false).and()
+        val realmList = getRealmTools(RenderEntity::class.java, false)
             .notEqualTo("table", DataCodeEnum.OMDB_RD_LINK.name)
-            .and()
-            .rawPredicate("tileX>=$xStart and tileX<=$xEnd and tileY>=$yStart and tileY<=$yEnd")
+            .greaterThanOrEqualTo("tileX", xStart)
+            .lessThanOrEqualTo("tileX", xEnd)
+            .greaterThanOrEqualTo("tileY", yStart)
+            .lessThanOrEqualTo("tileY", yEnd)
             .findAll()
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
         val queryResult = realmList?.stream()?.filter {
@@ -287,10 +294,9 @@ class RealmOperateHelper() {
     suspend fun queryLinkByLinkPid(linkPid: String): MutableList<RenderEntity> {
         val result = mutableListOf<RenderEntity>()
         val realm = getRealmDefaultInstance()
-        val realmList = getRealmTools(RenderEntity::class.java, false).and()
+        val realmList = getRealmTools(RenderEntity::class.java, false)
             .notEqualTo("table", DataCodeEnum.OMDB_RD_LINK.name)
-            .and()
-            .equalTo("properties['${LinkTable.linkPid}']", linkPid).and()
+            .equalTo("properties['${LinkTable.linkPid}']", linkPid)
             .findAll()
         result.addAll(realm.copyFromRealm(realmList))
         return result
@@ -383,14 +389,15 @@ class RealmOperateHelper() {
     }
 
     fun getRealmDefaultInstance(): Realm {
-        if(isUpdate){
+        if (isUpdate) {
+            Log.e("jingo", "数据库更新")
             Realm.getDefaultInstance().refresh()
             isUpdate = false;
         }
         return Realm.getDefaultInstance()
     }
 
-    fun updateRealmDefaultInstance(){
+    fun updateRealmDefaultInstance() {
         isUpdate = true
     }
 }
