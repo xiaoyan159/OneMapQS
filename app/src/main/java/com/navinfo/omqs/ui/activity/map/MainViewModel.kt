@@ -8,7 +8,6 @@ import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
-import android.provider.ContactsContract.Data
 import android.text.TextUtils
 import android.util.Log
 import android.view.Gravity
@@ -45,7 +44,7 @@ import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import com.navinfo.omqs.ui.other.BaseToast
-import com.navinfo.omqs.ui.widget.SignUtil
+import com.navinfo.omqs.util.SignUtil
 import com.navinfo.omqs.util.DateTimeUtil
 import com.navinfo.omqs.util.ShareUtil
 import com.navinfo.omqs.util.SoundMeter
@@ -53,11 +52,11 @@ import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import io.realm.RealmSet
-import io.realm.kotlin.where
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.locationtech.jts.geom.Geometry
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
 import org.oscim.map.Map
@@ -905,6 +904,19 @@ class MainViewModel @Inject constructor(
 
     fun showSignMoreInfo(data: RenderEntity) {
         liveDataSignMoreInfo.value = data
+        if (data.wkt != null) {
+            mapController.markerHandle.removeMarker("moreInfo")
+            mapController.lineHandler.removeLine()
+            when (data.wkt!!.geometryType) {
+                Geometry.TYPENAME_POINT -> {
+                    val geoPoint = GeometryTools.createGeoPoint(data.wkt!!.toText())
+                    mapController.markerHandle.addMarker(geoPoint, "moreInfo")
+                }
+                Geometry.TYPENAME_LINESTRING -> {
+                    mapController.lineHandler.showLine(data.wkt!!.toText())
+                }
+            }
+        }
     }
 
     fun sendServerCommand(

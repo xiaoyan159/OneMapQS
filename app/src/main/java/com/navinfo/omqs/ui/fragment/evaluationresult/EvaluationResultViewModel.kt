@@ -398,6 +398,9 @@ class EvaluationResultViewModel @Inject constructor(
             } else if (taskBean.cause.isEmpty()) {
                 liveDataToastMessage.postValue("请选择初步分析原因！")
                 return@launch
+            } else if (taskBean.linkId.isEmpty()) {
+                liveDataToastMessage.postValue("没有绑定到任何link，请选择")
+                return@launch
             }
 
             val realm = Realm.getDefaultInstance()

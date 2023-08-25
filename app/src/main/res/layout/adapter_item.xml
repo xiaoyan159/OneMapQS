@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
+    android:background="@drawable/selector_adapter_item_select_bg"
     android:padding="5dp">
 
     <TextView
@@ -10,6 +11,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="name"
-        android:textColor="@color/black"
+        android:textColor="@color/selector_black_blue_color"
         android:textSize="16sp" />
 </FrameLayout>

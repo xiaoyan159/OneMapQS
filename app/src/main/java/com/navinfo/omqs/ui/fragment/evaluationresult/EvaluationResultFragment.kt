@@ -22,6 +22,7 @@ import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.databinding.FragmentEvaluationResultBinding
+import com.navinfo.omqs.ui.activity.map.MainActivity
 import com.navinfo.omqs.ui.dialog.FirstDialog
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
@@ -101,6 +102,10 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             mDialog.show()
         }
 
+        //测距按钮
+        binding.evaluationBarMeasuring.setOnClickListener {
+            (activity as MainActivity).measuringToolOn()
+        }
         //保存事件
         binding.evaluationBarSave.setOnClickListener {
             viewModel.saveData()
@@ -194,12 +199,16 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         viewModel.liveDataToastMessage.observe(viewLifecycleOwner) {
             Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
         }
+        viewModel.liveDataQsRecordBean.observe(viewLifecycleOwner){
+            binding.evaluationId.text = it.id
+        }
 
     }
 
     override fun onDestroyView() {
         activity?.run {
             findNavController(R.id.main_activity_middle_fragment).navigateUp()
+            (this as MainActivity).measuringToolOff()
         }
         super.onDestroyView()
     }
@@ -303,6 +312,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         findNavController().navigateUp()
         return true
     }
+
 
     private fun takePhoto() {
         try {
