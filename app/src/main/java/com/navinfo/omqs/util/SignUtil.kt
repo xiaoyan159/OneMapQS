@@ -113,7 +113,7 @@ class SignUtil {
                 DataCodeEnum.OMDB_VIADUCT.code -> "高架"
                 DataCodeEnum.OMDB_LINK_CONSTRUCTION.code -> "道路施工"
                 DataCodeEnum.OMDB_LANE_CONSTRUCTION.code -> "车道施工"
-                else -> ""
+                else -> DataCodeEnum.valueOf(data.code).tableName
             }
         }
 
@@ -349,18 +349,53 @@ class SignUtil {
                             title = "linkPid", text = "${data.properties["linkPid"]}"
                         )
                     )
-                    val validPeriod = data.properties["validPeriod"]
-                    if(validPeriod != null){
 
+                    val limitType = when (data.properties["limitType"]) {
+                        "4" -> "施工(全封闭)"
+                        "13" -> "施工(非全封闭)"
+                        else -> ""
+                    }
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "限制类型",
+                            text = limitType
+                        )
+                    )
+                    val validPeriod = data.properties["validPeriod"]
+                    if (validPeriod != null) {
+                        list.add(
+                            TwoItemAdapterItem(
+                                title = "施工时间",
+                                text = "${TimePeriodUtil.getTimePeriod(validPeriod)}"
+                            )
+                        )
                     }
                 }
                 //车道施工
                 DataCodeEnum.OMDB_LANE_CONSTRUCTION.code -> {
                     list.add(
                         TwoItemAdapterItem(
-                            title = "linkPid", text = "${data.properties["linkPid"]}"
+                            title = "车道号码", text = "${data.properties["laneLinkPid"]}"
                         )
                     )
+                    val startTime = data.properties["startTime"]
+                    if (startTime != null) {
+                        list.add(
+                            TwoItemAdapterItem(
+                                title = "施工开始时间",
+                                text = "${TimePeriodUtil.getTimePeriod(startTime)}"
+                            )
+                        )
+                    }
+                    val endTime = data.properties["endTime"]
+                    if (endTime != null) {
+                        list.add(
+                            TwoItemAdapterItem(
+                                title = "施工结束时间",
+                                text = "${TimePeriodUtil.getTimePeriod(endTime)}"
+                            )
+                        )
+                    }
                 }
             }
             adapter.data = list

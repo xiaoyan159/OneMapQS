@@ -134,7 +134,7 @@ class TaskUploadScope(
                         evaluationTaskId = taskBean.id.toString(),
                         linkPid = hadLinkDvoBean.linkPid,//"84207223282277331"
                         linkStatus = linkStatus,
-                        markId = hadLinkDvoBean.mesh,//"20065597"
+                        markId = UUID.randomUUID().toString(),//"20065597"
                         trackPhotoNumber = "",
                         markGeometry = "",
                         featureName = "",
@@ -195,7 +195,7 @@ class TaskUploadScope(
                                 evaluationTaskId = taskBean.id.toString(),
                                 linkPid = hadLinkDvoBean.linkPid,//"84207223282277331"
                                 linkStatus = linkStatus,
-                                markId = hadLinkDvoBean.mesh,//"20065597"
+                                markId = it.id,
                                 trackPhotoNumber = "",
                                 markGeometry = it.geometry,
                                 featureName = it.classCode,

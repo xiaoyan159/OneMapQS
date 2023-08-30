@@ -345,6 +345,16 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         }
     }
 
+    fun removeMarker() {
+        for (e in mDefaultMarkerLayer.itemList) {
+            if (e is MarkerItem) {
+                mDefaultMarkerLayer.removeItem(e)
+                break
+            }
+        }
+        mMapView.vtmMap.updateMap(true)
+    }
+
 
     /**
      * 增加或更新marker
