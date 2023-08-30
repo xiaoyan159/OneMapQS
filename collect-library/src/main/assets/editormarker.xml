@@ -2330,6 +2330,50 @@
 <!--            <area use="obj-area" repeat="false"></area>-->
 <!--            <symbol src="assets:omdb/icon_fill_area_3012.svg"></symbol>-->
         </m>
+        <!-- 文字 -->
+        <m v="OMDB_OBJECT_TEXT">
+            <area use="obj-area" repeat="false" src="@text-src:textString" longEdge="t"></area>
+<!--            <m k="compliant" v="1">-->
+<!--                <area use="obj-area" repeat="false" fill="#eccc68" longEdge="t"></area>-->
+<!--            </m>-->
+<!--            <m k="compliant" v="2">-->
+<!--                <area use="obj-area" repeat="false" fill="#ff7f50" longEdge="t"></area>-->
+<!--            </m>-->
+<!--            <m k="compliant" v="3">-->
+<!--                <area use="obj-area" repeat="false" fill="#ff6b81" longEdge="t"></area>-->
+<!--            </m>-->
+<!--            <m k="compliant" v="4">-->
+<!--                <area use="obj-area" repeat="false" fill="#a4b0be" longEdge="t"></area>-->
+<!--            </m>-->
+<!--            <m k="compliant" v="5">-->
+<!--                <area use="obj-area" repeat="false" fill="#57606f" longEdge="t"></area>-->
+<!--            </m>-->
+<!--            <m k="compliant" v="6">-->
+<!--                <area use="obj-area" repeat="false" fill="#7bed9f" longEdge="t"></area>-->
+<!--            </m>-->
+<!--            <m k="compliant" v="7">-->
+<!--                <area use="obj-area" repeat="false" fill="#70a1ff" longEdge="t"></area>-->
+<!--            </m>-->
+<!--            <m k="compliant" v="8">-->
+<!--                <area use="obj-area" repeat="false" fill="#5352ed" longEdge="t"></area>-->
+<!--            </m>-->
+<!--            <m k="compliant" v="9">-->
+<!--                <area use="obj-area" repeat="false" fill="#30336b" longEdge="t"></area>-->
+<!--            </m>-->
+<!--            <m k="compliant" v="10">-->
+<!--                <area use="obj-area" repeat="false" fill="#2c2c54" longEdge="t"></area>-->
+<!--            </m>-->
+<!--            <m k="compliant" v="11">-->
+<!--                <area use="obj-area" repeat="false" fill="#ff0000" longEdge="t"></area>-->
+<!--            </m>-->
+<!--            <m k="compliant" v="12">-->
+<!--                <area use="obj-area" repeat="false" fill="#ff0000" longEdge="t"></area>-->
+<!--            </m>-->
+        </m>
+        <!-- 符号 -->
+        <m v="OMDB_OBJECT_SYMBOL">
+            <area use="obj-area" repeat="false" src="assets:omdb/tex_fill_area_3012.png" longEdge="t"></area>
+        </m>
 
         <!-- 道路施工 -->
         <m v="OMDB_LINK_CONSTRUCTION">

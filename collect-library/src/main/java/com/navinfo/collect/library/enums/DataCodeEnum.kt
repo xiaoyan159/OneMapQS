@@ -63,6 +63,7 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
     OMDB_SPEEDLIMIT_COND("条件点限速", "4003"),
     OMDB_SPEEDLIMIT_VAR("可变点限速", "4004"),
     OMDB_RESTRICTION("普通交限", "4006"),
+    OMDB_WARNINGSIGN("警示信息", "4009"),
     OMDB_ELECTRONICEYE("电子眼", "4010"),
     OMDB_TRAFFICLIGHT("交通灯", "4022"),
     OMDB_TOLLGATE("收费站", "4023"),
