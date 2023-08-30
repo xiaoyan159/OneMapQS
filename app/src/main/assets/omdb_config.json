@@ -207,6 +207,13 @@
 				"zoomMin": 18,
 				"zoomMax": 20
 			},
+			"3014":{
+				"table": "OMDB_CROSS_WALK",
+				"code": 3014,
+				"name": "人行横道",
+				"zoomMin": 18,
+				"zoomMax": 20
+			},
 			"3016":{
 				"table": "OMDB_OBJECT_STOPLOCATION",
 				"code": 3016,

@@ -2316,7 +2316,7 @@
             </m>
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
-                    src="assets:omdb/4010/right.svg" symbol-height="44" symbol-width="44"></symbol>
+                    src="assets:omdb/4010/right.svg" symbol-height="40" symbol-width="40"></symbol>
             </m>
             <m k="type" v="s_2_e">
                 <line use="s2e" />
@@ -2329,6 +2329,11 @@
 <!--            <text use="area-name"></text>-->
 <!--            <area use="obj-area" repeat="false"></area>-->
 <!--            <symbol src="assets:omdb/icon_fill_area_3012.svg"></symbol>-->
+        </m>
+
+        <!-- 人行横道 -->
+        <m v="OMDB_CROSS_WALK">
+            <area use="obj-area" fill="#00000000" stroke="#00000000" repeat="true" src="assets:omdb/tex_fill_area_3014_4.svg" longEdge="s"></area>
         </m>
 
         <!-- 道路施工 -->
@@ -2352,7 +2357,7 @@
         <m v="OMDB_WARNINGSIGN">
             <m k="type" v="dynamicSrc">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
-                    src="@src" symbol-height="36" symbol-width="36" degree="90"></symbol>
+                    src="@src" symbol-height="24" symbol-width="24" degree="90"></symbol>
             </m>
             <m k="type" v="s_2_e">
                 <line use="s2e" />
