@@ -14,6 +14,7 @@ import com.navinfo.omqs.bean.SysUserBean
 import com.navinfo.omqs.http.DefaultResponse
 import com.navinfo.omqs.tools.FileManager.Companion.FileUploadStatus
 import com.navinfo.omqs.util.DateTimeUtil
+import com.navinfo.omqs.util.FileUtils
 import io.realm.Realm
 import kotlinx.coroutines.*
 import java.util.*

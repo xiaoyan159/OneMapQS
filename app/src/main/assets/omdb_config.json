@@ -158,7 +158,14 @@
 				"name": "隧道",
 				"zoomMin": 15,
 				"zoomMax": 20,
-				"transformer2Code": ""
+				"transformer": [
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "generateS2EReferencePoint()"
+					}
+				]
 			},
 			"3005":{
 				"table": "OMDB_TRAFFIC_SIGN",
@@ -197,6 +204,13 @@
 				"table": "OMDB_FILL_AREA",
 				"code": 3012,
 				"name": "导流区",
+				"zoomMin": 18,
+				"zoomMax": 20
+			},
+			"3014":{
+				"table": "OMDB_CROSS_WALK",
+				"code": 3014,
+				"name": "人行横道",
 				"zoomMin": 18,
 				"zoomMax": 20
 			},

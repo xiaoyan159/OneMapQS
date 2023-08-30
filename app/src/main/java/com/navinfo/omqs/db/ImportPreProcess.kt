@@ -443,6 +443,8 @@ class ImportPreProcess {
                     referenceEntity.table = renderEntity.table
                     referenceEntity.enable = renderEntity.enable
                     referenceEntity.taskId = renderEntity.taskId
+                    referenceEntity.zoomMin = renderEntity.zoomMin
+                    referenceEntity.zoomMax = renderEntity.zoomMax
                     // 与原数据使用相同的geometry
                     referenceEntity.geometry = renderEntity.geometry.toString()
                     referenceEntity.properties["qi_table"] = renderEntity.table

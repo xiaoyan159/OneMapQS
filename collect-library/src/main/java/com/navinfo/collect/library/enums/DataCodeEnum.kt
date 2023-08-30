@@ -57,6 +57,7 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
     OMDB_LINK_FORM2_11("风景路线", "2206-11"),
     OMDB_LINK_FORM2_12("车辆测试路段", "2206-12"),
     OMDB_LINK_FORM2_13("驾照考试路段", "2206-13"),
+    OMDB_CROSS_WALK("人行横道", "3014"),
     OMDB_OBJECT_STOPLOCATION("停止位置", "3016"),
     OMDB_INTERSECTION("路口", "4001"),
     OMDB_SPEEDLIMIT("常规点限速", "4002"),
