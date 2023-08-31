@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Build
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,8 +21,10 @@ import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.MapParamUtils
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.db.RealmOperateHelper
+import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager
+import com.navinfo.omqs.ui.activity.login.LoginStatus
 import com.navinfo.omqs.ui.dialog.FirstDialog
 import com.navinfo.omqs.util.DateTimeUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -175,6 +178,72 @@ class TaskViewModel @Inject constructor(
             getLocalTaskList()
         }
     }
+
+
+    /**
+     * 获取任务列表
+     */
+    fun loadNetTaskList(context: Context){
+        viewModelScope.launch(Dispatchers.IO) {
+            when (val result = networkService.getTaskList(Constant.USER_ID)) {
+                is NetResult.Success -> {
+                    if (result.data != null) {
+                        val realm = Realm.getDefaultInstance()
+                        realm.executeTransaction {
+                            result.data.obj?.let { list ->
+                                for (index in list.indices) {
+                                    val task = list[index]
+                                    val item = realm.where(TaskBean::class.java).equalTo(
+                                        "id", task.id
+                                    ).findFirst()
+                                    if (item != null) {
+                                        task.fileSize = item.fileSize
+                                        task.status = item.status
+                                        task.currentSize = item.currentSize
+                                        task.hadLinkDvoList = item.hadLinkDvoList
+                                        //已上传后不在更新操作时间
+                                        if (task.syncStatus != FileManager.Companion.FileUploadStatus.DONE) {
+                                            //赋值时间，用于查询过滤
+                                            task.operationTime = DateTimeUtil.getNowDate().time
+                                        }
+                                    } else {
+                                        for (hadLink in task.hadLinkDvoList) {
+                                            hadLink.taskId = task.id
+                                        }
+                                        //赋值时间，用于查询过滤
+                                        task.operationTime = DateTimeUtil.getNowDate().time
+                                    }
+                                    realm.copyToRealmOrUpdate(task)
+                                }
+                            }
+
+                        }
+                    }
+                    getLocalTaskList()
+                }
+
+                is NetResult.Error<*> -> {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    getLocalTaskList()
+                }
+
+                is NetResult.Failure<*> -> {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    getLocalTaskList()
+                }
+
+                is NetResult.Loading -> {}
+            }
+        }
+    }
+
+
 
     /**
      * 获取任务列表

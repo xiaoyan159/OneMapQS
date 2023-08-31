@@ -251,7 +251,7 @@ class TimePeriodUtil {
             }
             if (list.size > 0)
                 return list[0].toText()
-            return ""
+            return time
         }
 
         private fun getPeriodObject(

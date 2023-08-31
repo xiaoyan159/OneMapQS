@@ -134,6 +134,7 @@ class SignMoreInfoFragment : BaseFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewModel.clearMarker()
         _binding = null
     }
 }

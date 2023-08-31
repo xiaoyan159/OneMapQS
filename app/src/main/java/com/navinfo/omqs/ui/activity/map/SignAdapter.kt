@@ -2,6 +2,8 @@ package com.navinfo.omqs.ui.activity.map
 
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
+import android.graphics.drawable.BitmapDrawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +16,7 @@ import com.navinfo.omqs.databinding.AdapterSignLaneinfoBinding
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 import com.navinfo.omqs.util.SignUtil
+import org.oscim.android.canvas.AndroidSvgBitmap
 
 interface OnSignAdapterClickListener {
     fun onItemClick(signBean: SignBean)
@@ -60,7 +63,34 @@ class SignAdapter(private var listener: OnSignAdapterClickListener?) :
         if (holder.viewBinding is AdapterSignBinding) {
             val bd = holder.viewBinding
 
-            if (item.iconId != 0) bd.signMainIconBg.setImageResource(item.iconId)
+            if (item.iconId != 0) {
+                if (item.renderEntity.code == DataCodeEnum.OMDB_WARNINGSIGN.code) {
+                    try {
+                        var typeCode = "${item.iconId}"
+                        while (typeCode.length < 5) {
+                            typeCode = "0${typeCode}"
+                        }
+                        val input =
+                            holder.viewBinding.root.context.assets.open("omdb/appendix/1105_${typeCode}_0.svg")
+                        if (input != null) {
+                            val bitmap =
+                                AndroidSvgBitmap.getResourceBitmap(input, 1.0f, 60.0f, 60, 60, 100)
+                            input.close()
+                            val drawable = BitmapDrawable(
+                                holder.viewBinding.root.context.resources,
+                                bitmap
+                            )
+                            bd.signMainIconBg.setImageDrawable(drawable)
+                        }
+                    } catch (e: Exception) {
+                        Log.e("jingo", "警示信息没有${item.iconId} 这个SVG")
+                    }
+                } else {
+                    bd.signMainIconBg.setImageResource(item.iconId)
+                }
+            }
+
+
             bd.signMainIcon.text = item.iconText
             bd.signBottomText.text = item.name
             //点击错误按钮

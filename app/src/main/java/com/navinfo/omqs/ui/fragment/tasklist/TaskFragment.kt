@@ -95,7 +95,6 @@ class TaskFragment : BaseFragment() {
         //增加侧滑按钮
         binding.taskRecyclerview.setSwipeMenuCreator(mSwipeMenuCreator)
 
-
         //单项点击
         binding.taskRecyclerview.setOnItemMenuClickListener { menuBridge, position ->
             menuBridge.closeMenu()

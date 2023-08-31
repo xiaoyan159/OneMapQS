@@ -37,16 +37,9 @@ import com.navinfo.omqs.ui.widget.LeftDeleteView
 class TaskListAdapter(
     private val downloadManager: TaskDownloadManager,
     private val uploadManager: TaskUploadManager,
-    private val recyclerView: RecyclerView,
     private var itemListener: ((Int, Int, TaskBean) -> Unit?)? = null,
 ) : BaseRecyclerViewAdapter<TaskBean>() {
     private var selectPosition = -1
-
-    private var leftDeleteView: LeftDeleteView? = null
-
-    private val mRecyclerView = recyclerView
-
-    private var isShowDeleteView = false
 
     private val downloadBtnClick = View.OnClickListener() {
         if (it.tag != null) {
@@ -110,10 +103,6 @@ class TaskListAdapter(
         val viewBinding =
             AdapterTaskListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        val deleteView = viewBinding.root
-
-        deleteView.setRecyclerView(mRecyclerView)
-
         return BaseViewHolder(viewBinding)
     }
 
@@ -132,18 +121,6 @@ class TaskListAdapter(
         val binding: AdapterTaskListBinding =
             holder.viewBinding as AdapterTaskListBinding
         val taskBean = data[position]
-        binding.root.mStatusChangeLister = {
-            isShowDeleteView = it
-            if (it) {
-                //重置以后滑动布局
-                restoreItemView()
-                // 如果编辑菜单在显示
-                leftDeleteView = binding.root
-                selectPosition = position
-            } else {
-                selectPosition = -1
-            }
-        }
         //tag 方便onclick里拿到数据
         holder.tag = taskBean.id.toString()
         changeViews(binding, taskBean)
@@ -196,45 +173,21 @@ class TaskListAdapter(
         binding.root.isSelected = selectPosition == position
 
         binding.taskItemLayout.setOnClickListener {
-            if (isShowDeleteView) {
-                leftDeleteView?.resetDeleteStatus()
-            } else {
-                val pos = holder.adapterPosition
-                if (selectPosition != pos) {
-                    val lastPos = selectPosition
-                    selectPosition = pos
-                    if (lastPos > -1) {
-                        notifyItemChanged(lastPos)
-                    }
-                    binding.root.isSelected = true
-                    itemListener?.invoke(position, ItemClickStatus.ITEM_LAYOUT_CLICK, taskBean)
+            val pos = holder.adapterPosition
+            if (selectPosition != pos) {
+                val lastPos = selectPosition
+                selectPosition = pos
+                if (lastPos > -1) {
+                    notifyItemChanged(lastPos)
                 }
+                binding.root.isSelected = true
+                itemListener?.invoke(position, ItemClickStatus.ITEM_LAYOUT_CLICK, taskBean)
             }
         }
 
-        binding.taskDeleteLayout.setOnClickListener {
-            //重置状态
-            leftDeleteView?.resetDeleteStatus()
-            if (taskBean.syncStatus != FileUploadStatus.DONE) {
-                Toast.makeText(binding.taskUploadBtn.context, "数据未上传，不允许关闭！", Toast.LENGTH_SHORT)
-                    .show()
-            } else {
-                itemListener?.invoke(position, ItemClickStatus.DELETE_LAYOUT_CLICK, taskBean)
-            }
-        }
+
     }
 
-
-    /**
-     * 重置item状态
-     * @param point
-     */
-    private fun restoreItemView() {
-        leftDeleteView?.let {
-            if (isShowDeleteView)
-                it.resetDeleteStatus()
-        }
-    }
 
     inner class DownloadObserver(val id: Int, val holder: BaseViewHolder) :
         Observer<TaskBean> {

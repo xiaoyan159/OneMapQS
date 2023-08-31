@@ -471,10 +471,11 @@ class MainViewModel @Inject constructor(
     private suspend fun captureItem(point: GeoPoint) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val itemList = realmOperateHelper.queryElement(
-                GeometryTools.createPoint(
+                point = GeometryTools.createPoint(
                     point.longitude,
                     point.latitude
-                )
+                ),
+                buffer = 2.0
             )
 
             if (itemList.size == 1) {
@@ -597,6 +598,7 @@ class MainViewModel @Inject constructor(
                                     DataCodeEnum.OMDB_ELECTRONICEYE.code,//电子眼
                                     DataCodeEnum.OMDB_TRAFFICLIGHT.code,//交通灯
                                     DataCodeEnum.OMDB_LANEINFO.code,//车信
+                                    DataCodeEnum.OMDB_WARNINGSIGN.code,//危险信息
                                     -> signList.add(
                                         signBean
                                     )
@@ -1278,6 +1280,10 @@ class MainViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun clearMarker() {
+        mapController.markerHandle.removeMarker()
     }
 }
 
