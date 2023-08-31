@@ -227,7 +227,7 @@
 				"table": "OMDB_CROSS_WALK",
 				"code": 3014,
 				"name": "人行横道",
-				"zoomMin": 18,
+				"zoomMin": 15,
 				"zoomMax": 20
 			},
 			"3016":{
