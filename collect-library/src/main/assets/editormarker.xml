@@ -1968,12 +1968,9 @@
             <m k="type" v="node">
                 <symbol src="assets:symbols/dot_blue_dark.svg"></symbol>
             </m>
-<!--            <m k="intersectionPid">
+            <m k="intersectionPid">
                 <symbol src="assets:symbols/dot_magenta.svg"></symbol>
-            </m>-->
-<!--            <m k="geometry">
-                <symbol src="@typesrc"></symbol>
-            </m>-->
+            </m>
         </m>
 
         <!--车道中心线-->
