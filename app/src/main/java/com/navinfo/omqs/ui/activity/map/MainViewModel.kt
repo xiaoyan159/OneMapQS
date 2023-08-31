@@ -474,7 +474,8 @@ class MainViewModel @Inject constructor(
                 GeometryTools.createPoint(
                     point.longitude,
                     point.latitude
-                )
+                ),
+                buffer = 1.0
             )
 
             if (itemList.size == 1) {
