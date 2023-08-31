@@ -1491,10 +1491,10 @@
     </m>
 
     <m k="qi_table">
-<!--        &lt;!&ndash; 道路线 &ndash;&gt;-->
-<!--        <m v="OMDB_RD_LINK">-->
-<!--            <line stroke="#9c9c9c" width="1" />-->
-<!--        </m>-->
+        <!-- 道路线 -->
+        <m v="OMDB_RD_LINK">
+            <line stroke="#9c9c9c" width="1" />
+        </m>
 
         <!--道路种别-->
         <m v="OMDB_RD_LINK_KIND">
@@ -2330,10 +2330,18 @@
 <!--            <area use="obj-area" repeat="false"></area>-->
 <!--            <symbol src="assets:omdb/icon_fill_area_3012.svg"></symbol>-->
         </m>
+        <!-- 文字 -->
+        <m v="OMDB_OBJECT_TEXT">
+            <area use="obj-area" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+        </m>
+        <!-- 符号 -->
+        <m v="OMDB_OBJECT_SYMBOL">
+            <area use="obj-area" repeat="false" src="assets:omdb/tex_fill_area_3012.png" longEdge="t" hasDirect="true"></area>
+        </m>
 
         <!-- 人行横道 -->
         <m v="OMDB_CROSS_WALK">
-            <area use="obj-area" fill="#00000000" stroke="#00000000" repeat="true" src="assets:omdb/tex_fill_area_3014_4.svg" longEdge="s"></area>
+            <area use="obj-area" stroke="#00000000" repeat="true" src="assets:omdb/tex_fill_area_3014_3.png" longEdge="s"></area>
         </m>
 
         <!-- 道路施工 -->

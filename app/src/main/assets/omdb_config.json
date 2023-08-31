@@ -167,6 +167,22 @@
 					}
 				]
 			},
+			"3002":{
+				"table": "OMDB_OBJECT_TEXT",
+				"code": 3002,
+				"name": "文字",
+				"zoomMin": 15,
+				"zoomMax": 20,
+				"transformer2Code": ""
+			},
+			"3003":{
+				"table": "OMDB_OBJECT_SYMBOL",
+				"code": 3003,
+				"name": "符号",
+				"zoomMin": 15,
+				"zoomMax": 20,
+				"transformer2Code": ""
+			},
 			"3005":{
 				"table": "OMDB_TRAFFIC_SIGN",
 				"code": 3005,
@@ -211,7 +227,7 @@
 				"table": "OMDB_CROSS_WALK",
 				"code": 3014,
 				"name": "人行横道",
-				"zoomMin": 18,
+				"zoomMin": 15,
 				"zoomMax": 20
 			},
 			"3016":{
