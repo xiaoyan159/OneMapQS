@@ -6,6 +6,7 @@ import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.map.NIMapView
 import com.navinfo.collect.library.map.source.MapLifeNiLocationTileSource
 import com.navinfo.collect.library.map.source.NavinfoMultiMapFileTileSource
+import com.navinfo.collect.library.map.source.NavinfoTileThemeHook
 import com.navinfo.collect.library.map.source.OMDBReferenceTileSource
 import com.navinfo.collect.library.map.source.OMDBTileSource
 import com.navinfo.collect.library.system.Constant
@@ -57,6 +58,8 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
 
     private val omdbTileSource by lazy { OMDBTileSource() }
     private val omdbReferenceTileSource by lazy { OMDBReferenceTileSource() }
+    private val labelTileLoaderHook = LabelTileLoaderHook()
+    private val navinfoTileThemeHook = NavinfoTileThemeHook()
 
     init {
         initMap()
@@ -76,7 +79,7 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
         vectorNiLocationTileLayer = VectorTileLayer(mMapView.vtmMap, mapLifeNiLocationTileSource)
 
         labelNiLocationLayer =
-            LabelLayer(mMapView.vtmMap, vectorNiLocationTileLayer, LabelTileLoaderHook())
+            LabelLayer(mMapView.vtmMap, vectorNiLocationTileLayer, labelTileLoaderHook)
 
         if (vectorNiLocationTileLayer != null) {
             addLayer(vectorNiLocationTileLayer, NIMapView.LAYER_GROUPS.BASE)
@@ -114,7 +117,7 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
         omdbReferenceLabelLayer = LabelLayer(
             mMapView.vtmMap,
             omdbReferenceTileLayer,
-            LabelTileLoaderHook()
+            labelTileLoaderHook
         )
         if (omdbReferenceTileLayer != null) {
             addLayer(omdbReferenceTileLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
@@ -127,7 +130,7 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
         omdbLabelLayer = LabelLayer(
             mMapView.vtmMap,
             omdbVectorTileLayer,
-            LabelTileLoaderHook()
+            labelTileLoaderHook
         )
         if (omdbVectorTileLayer != null) {
             addLayer(omdbVectorTileLayer, NIMapView.LAYER_GROUPS.VECTOR_TILE)
@@ -135,6 +138,9 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
         if (omdbLabelLayer != null) {
             addLayer(omdbLabelLayer, NIMapView.LAYER_GROUPS.LABEL)
         }
+        // 向两个Vector图层增加hook钩子，加载数据前对style或数据进行二次处理
+        omdbVectorTileLayer.addHook(navinfoTileThemeHook)
+        omdbReferenceTileLayer.addHook(navinfoTileThemeHook)
     }
 
     private fun resetOMDBVectorTileLayer() {
