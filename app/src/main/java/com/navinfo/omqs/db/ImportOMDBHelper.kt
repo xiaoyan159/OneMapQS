@@ -229,6 +229,13 @@ class ImportOMDBHelper @AssistedInject constructor(
                                     if (!renderEntity.properties.containsKey("name")) {
                                         renderEntity.properties["name"] = renderEntity.name;
                                     }
+
+                                    if(currentConfig.catch){
+                                        renderEntity.catch=0
+                                    }else{
+                                        renderEntity.catch=1
+                                    }
+
                                     //遍历判断只显示与任务Link相关的任务数据
                                     if(currentConfig.checkLinkId){
 

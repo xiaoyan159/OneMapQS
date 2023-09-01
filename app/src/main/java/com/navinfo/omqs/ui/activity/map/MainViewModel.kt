@@ -475,7 +475,7 @@ class MainViewModel @Inject constructor(
                     point.longitude,
                     point.latitude
                 ),
-                buffer = 1.0
+                buffer = 1.0, catchAll = false
             )
 
             if (itemList.size == 1) {
