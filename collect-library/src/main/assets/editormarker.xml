@@ -1948,16 +1948,19 @@
             </m>
         </m>
 
+        <!-- 杆状物 -->
         <m v="OMDB_POLE">
-            <line stroke="#000000" width="2" cap="butt"></line>
+<!--            <line stroke="#000000" width="2" cap="butt"></line>-->
+            <symbol src="assets:omdb/icon_pole_3006.svg" symbol-height="56" symbol-width="56"></symbol>
         </m>
 
-        <m v="OMDB_TRAFFIC_SIGN">
-            <area use="sign-bg" repeat="false" stroke="#ff0000" stroke-width="2"></area>
-            <m k="type" v="angle">
-                <line stroke="#00ff00" width="0.1"></line>
-            </m>
-        </m>
+        <!-- 交通标牌 -->
+<!--        <m v="OMDB_TRAFFIC_SIGN">-->
+<!--            <area use="sign-bg" repeat="false" stroke="#ff0000" stroke-width="2"></area>-->
+<!--            <m k="type" v="angle">-->
+<!--                <line stroke="#00ff00" width="0.1"></line>-->
+<!--            </m>-->
+<!--        </m>-->
 
         <m v="OMDB_AREA">
 <!--            <area use="sign-bg" repeat="false" src="assets:omdb/veer_side_walk.jpg" stroke="#ff0000" stroke-width="2"></area>
@@ -2353,6 +2356,11 @@
         <!-- 人行横道 -->
         <m v="OMDB_CROSS_WALK">
             <area use="obj-area" stroke="#00000000" repeat="true" src="assets:omdb/object_crosswalk_3014.svg" longEdge="s"></area>
+        </m>
+
+        <!-- 箭头 -->
+        <m v="OMDB_OBJECT_ARROW">
+            <area use="obj-area" stroke="#00000000" repeat="false" src="@src" longEdge="s" hasDirect="true"></area>
         </m>
 
         <!-- 道路施工 -->
