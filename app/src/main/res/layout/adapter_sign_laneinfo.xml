@@ -23,7 +23,7 @@
         android:layout_marginLeft="15dp"
         android:layout_marginBottom="5dp"
         android:gravity="center"
-        android:text="道路名"
+        android:text="车信"
         android:textColor="@color/white"
         android:textSize="14sp" />
 
