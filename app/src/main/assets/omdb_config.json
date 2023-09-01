@@ -31,6 +31,7 @@
 				"name": "道路线",
 				"zoomMin": 15,
 				"zoomMax": 17,
+				"catch":false,
 				"checkLinkId": false
 			},
 			"2002": {

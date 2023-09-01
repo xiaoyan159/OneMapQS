@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.tabs.TabLayout
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentTaskBinding
@@ -143,6 +144,7 @@ class TaskFragment : BaseFragment() {
             requireContext()
         ).setTitle("标记原因").setView(view)
         var editText = view.findViewById<EditText>(R.id.dialog_edittext)
+        view.findViewById<TabLayout>(R.id.search_tab_layout).visibility=View.GONE
         editText.setText(bean.reason)
         inputDialog.setNegativeButton("取消") { dialog, _ ->
             dialog.dismiss()
