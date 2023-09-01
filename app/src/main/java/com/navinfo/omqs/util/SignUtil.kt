@@ -1,5 +1,6 @@
 package com.navinfo.omqs.util
 
+import android.provider.ContactsContract.Data
 import android.util.Log
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.enums.DataCodeEnum
@@ -82,10 +83,6 @@ class SignUtil {
                         else -> ""
                     }
                 }
-                //隧道
-                DataCodeEnum.OMDB_TUNNEL.code -> "隧道"
-                //环岛
-                DataCodeEnum.OMDB_ROUNDABOUT.code -> "环岛"
                 //主辅路出入口
                 DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code -> "出入口"
                 //辅路
@@ -110,10 +107,8 @@ class SignUtil {
                 DataCodeEnum.OMDB_LINK_FORM2_11.code -> "风景路"
                 DataCodeEnum.OMDB_LINK_FORM2_12.code -> "测试路"
                 DataCodeEnum.OMDB_LINK_FORM2_13.code -> "驾考路"
-                DataCodeEnum.OMDB_VIADUCT.code -> "高架"
-                DataCodeEnum.OMDB_LINK_CONSTRUCTION.code -> "道路施工"
-                DataCodeEnum.OMDB_LANE_CONSTRUCTION.code -> "车道施工"
                 else -> ""
+
             }
         }
 
@@ -128,38 +123,8 @@ class SignUtil {
                 DataCodeEnum.OMDB_RD_LINK_KIND.code -> "种别"
                 //道路方向
                 DataCodeEnum.OMDB_LINK_DIRECT.code -> "方向"
-                //车道边界类型
-                DataCodeEnum.OMDB_LANE_MARK_BOUNDARYTYPE.code -> "车道边界类型"
                 //常规线限速
                 DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> "线限速"
-                //全封闭
-                DataCodeEnum.OMDB_CON_ACCESS.code -> "全封闭" //暂时不要标题
-                //匝道
-                DataCodeEnum.OMDB_RAMP.code -> "匝道"
-                //车道数
-                DataCodeEnum.OMDB_LANE_NUM.code -> "车道数"
-                //常规点限速
-                DataCodeEnum.OMDB_SPEEDLIMIT.code -> "常规点限速"
-                //常点限速
-                DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> "条件点限速"
-                //可变点限速
-                DataCodeEnum.OMDB_SPEEDLIMIT_VAR.code -> "可变点限速"
-                //普通交限
-                DataCodeEnum.OMDB_RESTRICTION.code -> "普通交限"
-                //电子眼
-                DataCodeEnum.OMDB_ELECTRONICEYE.code -> "电子眼"
-                //交通灯
-                DataCodeEnum.OMDB_TRAFFICLIGHT.code -> "交通灯"
-                //车信
-                DataCodeEnum.OMDB_LANEINFO.code -> "车信"
-                //上下线分离
-                DataCodeEnum.OMDB_MULTI_DIGITIZED.code -> "上下线分离"
-                //桥
-                DataCodeEnum.OMDB_BRIDGE.code -> "桥"
-                //隧道
-                DataCodeEnum.OMDB_TUNNEL.code -> "隧道"
-                //环岛
-                DataCodeEnum.OMDB_ROUNDABOUT.code -> "环岛"
 
                 DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code,
                 DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code,
@@ -183,11 +148,7 @@ class SignUtil {
                 DataCodeEnum.OMDB_LINK_FORM2_12.code,
                 DataCodeEnum.OMDB_LINK_FORM2_13.code -> "道路形态"
 
-                DataCodeEnum.OMDB_VIADUCT.code -> "高架"
-                DataCodeEnum.OMDB_LINK_CONSTRUCTION.code -> "道路施工"
-                DataCodeEnum.OMDB_LANE_CONSTRUCTION.code -> "车道施工"
-
-                else -> ""
+                else -> DataCodeEnum.findTableNameByCode(data.code)
             }
         }
 
@@ -349,16 +310,111 @@ class SignUtil {
                             title = "linkPid", text = "${data.properties["linkPid"]}"
                         )
                     )
-                    val validPeriod = data.properties["validPeriod"]
-                    if(validPeriod != null){
 
+                    val limitType = when (data.properties["limitType"]) {
+                        "4" -> "施工(全封闭)"
+                        "13" -> "施工(非全封闭)"
+                        else -> ""
+                    }
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "限制类型",
+                            text = limitType
+                        )
+                    )
+                    val validPeriod = data.properties["validPeriod"]
+                    if (validPeriod != null) {
+                        list.add(
+                            TwoItemAdapterItem(
+                                title = "施工时间",
+                                text = "${TimePeriodUtil.getTimePeriod(validPeriod)}"
+                            )
+                        )
                     }
                 }
                 //车道施工
                 DataCodeEnum.OMDB_LANE_CONSTRUCTION.code -> {
                     list.add(
                         TwoItemAdapterItem(
+                            title = "车道号码", text = "${data.properties["laneLinkPid"]}"
+                        )
+                    )
+                    val startTime = data.properties["startTime"]
+                    if (startTime != null) {
+                        list.add(
+                            TwoItemAdapterItem(
+                                title = "施工开始时间",
+                                text = "${TimePeriodUtil.getTimePeriod(startTime)}"
+                            )
+                        )
+                    }
+                    val endTime = data.properties["endTime"]
+                    if (endTime != null) {
+                        list.add(
+                            TwoItemAdapterItem(
+                                title = "施工结束时间",
+                                text = "${TimePeriodUtil.getTimePeriod(endTime)}"
+                            )
+                        )
+                    }
+                }
+                //警示信息
+                DataCodeEnum.OMDB_WARNINGSIGN.code -> {
+                    list.add(
+                        TwoItemAdapterItem(
                             title = "linkPid", text = "${data.properties["linkPid"]}"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "警示信息号码", text = "${data.properties["warningsignId"]}"
+                        )
+                    )
+                    val direct = when (data.properties["direct"]) {
+                        "2" -> "顺方向"
+                        "3" -> "逆方向"
+                        else -> ""
+                    }
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "作用方向", text = direct
+                        )
+                    )
+
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "标牌类型",
+                            text = "${data.properties["typeCode"]}",
+                            code = data.code
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "有效距离", text = "${data.properties["validDis"]}米"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "预告距离", text = "${data.properties["warnDis"]}米"
+                        )
+                    )
+                    val vehicleType = data.properties["warnDis"]
+                    if (vehicleType != null) {
+                        list.add(
+                            TwoItemAdapterItem(
+                                title = "车辆类型",
+                                text = getElectronicEyeVehicleType(vehicleType.toInt())
+                            )
+                        )
+                    }
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "时间段", text = "${data.properties["validPeriod"]}"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "文字说明", text = "${data.properties["descript"]}"
                         )
                     )
                 }
@@ -728,6 +784,13 @@ class SignUtil {
                 DataCodeEnum.OMDB_ELECTRONICEYE.code -> R.drawable.icon_electronic_eye
                 //交通灯
                 DataCodeEnum.OMDB_TRAFFICLIGHT.code -> R.drawable.icon_traffic_light
+                //警示信息
+                DataCodeEnum.OMDB_WARNINGSIGN.code -> {
+                    val typeCode = data.properties["typeCode"]
+                    if (typeCode != null)
+                        return typeCode.toInt()
+                    return 0
+                }
                 else -> 0
             }
 
@@ -891,9 +954,11 @@ class SignUtil {
                 //常规点限速
                 DataCodeEnum.OMDB_SPEEDLIMIT.code -> getSpeedLimitMinText(element) != "0"
                 //条件点限速
-                DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> true
-                //电子眼
-                DataCodeEnum.OMDB_ELECTRONICEYE.code -> true
+                DataCodeEnum.OMDB_SPEEDLIMIT_COND.code,
+                    //电子眼
+                DataCodeEnum.OMDB_ELECTRONICEYE.code,
+                    //警示信息
+                DataCodeEnum.OMDB_WARNINGSIGN.code -> true
                 else -> false
             }
             return isMore
@@ -949,20 +1014,20 @@ class SignUtil {
                 )
             }
 
-            val kindUp = when (renderEntity.properties["kindUp"]) {
-                "0" -> "未调查"
-                "1" -> "限速电子眼"
-                "4" -> "区间测速电子眼"
-                "5" -> "交通信号灯电子眼"
-                "6" -> "专用车道电子眼"
-                "7" -> "违章电子眼"
-                "11" -> "路况监控电子眼"
-                "19" -> "交通标线电子眼"
-                "20" -> "专用功能电子眼"
-                else -> ""
-            }
+//            val kindUp = when (renderEntity.properties["kindUp"]) {
+//                "0" -> "未调查"
+//                "1" -> "限速电子眼"
+//                "4" -> "区间测速电子眼"
+//                "5" -> "交通信号灯电子眼"
+//                "6" -> "专用车道电子眼"
+//                "7" -> "违章电子眼"
+//                "11" -> "路况监控电子眼"
+//                "19" -> "交通标线电子眼"
+//                "20" -> "专用功能电子眼"
+//                else -> ""
+//            }
 
-            list.add(TwoItemAdapterItem(title = "电子眼类型大分类", text = kindUp))
+//            list.add(TwoItemAdapterItem(title = "电子眼类型大分类", text = kindUp))
 
             val kindCode = renderEntity.properties["kind"]!!.toInt()
             list.add(

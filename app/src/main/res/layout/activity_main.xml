@@ -93,6 +93,7 @@
             android:layout_height="300dp"
             android:layout_marginTop="80dp"
             android:minHeight="140dp"
+            android:layout_marginBottom="40dp"
             app:layout_constraintLeft_toLeftOf="@id/main_activity_top_sign_recyclerview"
             app:layout_constraintTop_toTopOf="parent" />
 

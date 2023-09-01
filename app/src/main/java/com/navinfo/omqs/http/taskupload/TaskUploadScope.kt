@@ -196,7 +196,7 @@ class TaskUploadScope(
                                 evaluationTaskId = taskBean.id.toString(),
                                 linkPid = hadLinkDvoBean.linkPid,//"84207223282277331"
                                 linkStatus = linkStatus,
-                                markId = it.id,//"20065597"
+                                markId = it.id,
                                 trackPhotoNumber = "",
                                 markGeometry = it.geometry,
                                 featureName = it.classCode,

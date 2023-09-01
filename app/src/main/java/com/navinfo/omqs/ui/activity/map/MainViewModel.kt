@@ -474,7 +474,8 @@ class MainViewModel @Inject constructor(
                 GeometryTools.createPoint(
                     point.longitude,
                     point.latitude
-                )
+                ),
+                buffer = 1.0, catchAll = false
             )
 
             if (itemList.size == 1) {
@@ -597,6 +598,7 @@ class MainViewModel @Inject constructor(
                                     DataCodeEnum.OMDB_ELECTRONICEYE.code,//电子眼
                                     DataCodeEnum.OMDB_TRAFFICLIGHT.code,//交通灯
                                     DataCodeEnum.OMDB_LANEINFO.code,//车信
+                                    DataCodeEnum.OMDB_WARNINGSIGN.code,//危险信息
                                     -> signList.add(
                                         signBean
                                     )
@@ -1278,6 +1280,10 @@ class MainViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun clearMarker() {
+        mapController.markerHandle.removeMarker()
     }
 }
 

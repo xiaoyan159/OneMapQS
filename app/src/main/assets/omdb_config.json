@@ -46,6 +46,7 @@
 				"name": "道路种别",
 				"zoomMin": 15,
 				"zoomMax": 20,
+				"catch":false,
 				"checkLinkId": false
 			},
 			"2010": {
@@ -487,6 +488,7 @@
 				"name": "车道中心线",
 				"zoomMin": 18,
 				"zoomMax": 20,
+				"catch":false,
 				"transformer": [
 					{
 						"k": "geometry",

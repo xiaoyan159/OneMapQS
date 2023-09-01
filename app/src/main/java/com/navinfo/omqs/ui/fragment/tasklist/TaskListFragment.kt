@@ -1,6 +1,5 @@
 package com.navinfo.omqs.ui.fragment.tasklist
 
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,12 +8,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentTaskListBinding
 import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
 import com.navinfo.omqs.http.taskupload.TaskUploadManager
+import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
+import com.yanzhenjie.recyclerview.SwipeMenuCreator
+import com.yanzhenjie.recyclerview.SwipeMenuItem
 import dagger.hilt.android.AndroidEntryPoint
+import org.videolan.vlc.Util
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -35,7 +40,7 @@ class TaskListFragment : BaseFragment() {
 
     private val adapter: TaskListAdapter by lazy {
         TaskListAdapter(
-            downloadManager, uploadManager, binding.taskListRecyclerview
+            downloadManager, uploadManager,
         ) { _, status, taskBean ->
             if (taskBean.hadLinkDvoList.isEmpty()) {
                 Toast.makeText(context, "数据错误，无Link数据！", Toast.LENGTH_SHORT).show()
@@ -46,8 +51,7 @@ class TaskListFragment : BaseFragment() {
                     viewModel.setSelectTaskBean(taskBean)
                 }
                 TaskListAdapter.Companion.ItemClickStatus.DELETE_LAYOUT_CLICK -> {
-                    showLoadingDialog("正在关闭")
-                    context?.let { viewModel.removeTask(it, taskBean) }
+
                 }
                 TaskListAdapter.Companion.ItemClickStatus.UPLOAD_LAYOUT_CLICK -> {
                     showLoadingDialog("正在校验")
@@ -74,12 +78,53 @@ class TaskListFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //注意：使用滑动菜单不能开启滑动删除，否则只有滑动删除没有滑动菜单
+        val mSwipeMenuCreator = SwipeMenuCreator { _, rightMenu, _ ->
+            //添加菜单自动添加至尾部
+            val deleteItem = SwipeMenuItem(context)
+            deleteItem.height = Util.convertDpToPx(requireContext(), 60)
+            deleteItem.width = Util.convertDpToPx(requireContext(), 80)
+            deleteItem.text = "关闭"
+            deleteItem.background = requireContext().getDrawable(R.color.red)
+            deleteItem.setTextColor(requireContext().resources.getColor(R.color.white))
+            rightMenu.addMenuItem(deleteItem)
+        }
+
+
         val layoutManager = LinearLayoutManager(context)
         //// 设置 RecyclerView 的固定大小，避免在滚动时重新计算视图大小和布局，提高性能
         binding.taskListRecyclerview.setHasFixedSize(true)
         binding.taskListRecyclerview.layoutManager = layoutManager
+
+        //增加侧滑按钮
+        binding.taskListRecyclerview.setSwipeMenuCreator(mSwipeMenuCreator)
+
+        //单项点击
+        binding.taskListRecyclerview.setOnItemMenuClickListener { menuBridge, position ->
+            menuBridge.closeMenu()
+            val taskBean = adapter.data[position]
+            if (taskBean.syncStatus != FileManager.Companion.FileUploadStatus.DONE) {
+                Toast.makeText(context, "数据未上传，不允许关闭！", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                viewModel.removeTask(requireContext(), taskBean)
+            }
+        }
+
+
+        /**
+         * 刷新
+         */
+        binding.refreshLayout.setOnRefreshListener {
+            viewModel.loadNetTaskList(requireContext())
+        }
+
+        loadFinish()
         binding.taskListRecyclerview.adapter = adapter
+
         viewModel.liveDataTaskList.observe(viewLifecycleOwner) {
+            loadFinish()
             adapter.initSelectTask(it, viewModel.currentSelectTaskBean?.id)
         }
 
@@ -94,7 +139,12 @@ class TaskListFragment : BaseFragment() {
         }
 
         binding.taskListSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -106,7 +156,19 @@ class TaskListFragment : BaseFragment() {
         })
     }
 
+    private fun loadFinish() {
+        binding.refreshLayout.isRefreshing = false
 
+
+        // 第一次加载数据：一定要调用这个方法，否则不会触发加载更多。
+        // 第一个参数：表示此次数据是否为空，假如你请求到的list为空(== null || list.size == 0)，那么这里就要true。
+        // 第二个参数：表示是否还有更多数据，根据服务器返回给你的page等信息判断是否还有更多，这样可以提供性能，如果不能判断则传true。
+
+        // 第一次加载数据：一定要调用这个方法，否则不会触发加载更多。
+        // 第一个参数：表示此次数据是否为空，假如你请求到的list为空(== null || list.size == 0)，那么这里就要true。
+        // 第二个参数：表示是否还有更多数据，根据服务器返回给你的page等信息判断是否还有更多，这样可以提供性能，如果不能判断则传true。
+        binding.taskListRecyclerview.loadMoreFinish(true, false)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -142,7 +142,7 @@ class EvaluationResultViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         mapController.mMapView.removeOnNIMapClickListener(TAG)
-        mapController.markerHandle.removeMarker(TAG)
+        mapController.markerHandle.removeMarker()
         mapController.lineHandler.removeLine()
     }
 

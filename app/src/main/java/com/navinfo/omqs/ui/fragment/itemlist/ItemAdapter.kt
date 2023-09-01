@@ -23,6 +23,7 @@ class ItemAdapter(private var itemListener: ((Int, RenderEntity) -> Unit?)? = nu
         val binding = holder.viewBinding as AdapterItemBinding
         var renderEntity = data[position]
         binding.root.isSelected = selectPosition == position
+        binding.itemIndex.text = (position+1).toString()
         binding.name.text = DataCodeEnum.findTableNameByCode(renderEntity.code)
         binding.root.setOnClickListener {
             if (selectPosition != position) {
