@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="26px" height="29px" viewBox="0 0 26 29" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>13</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="0.450062354 0.241 12.478 0.241 12.478 9.36 0.450062354 9.36"></polygon>
+        <polygon id="path-3" points="0.383 0.5643 10.603 0.5643 10.603 29 0.383 29"></polygon>
+    </defs>
+    <g id="待定" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="工具栏汇总复制" transform="translate(-1748.000000, -701.000000)">
+            <g id="编组-25" transform="translate(1382.000000, 615.000000)">
+                <g id="13" transform="translate(366.000000, 85.000000)">
+                    <g id="编组复制-35" transform="translate(13.000000, 10.000000)">
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <g id="Clip-6"></g>
+                        <path d="M0.5871,5.957 C0.7311,5.547 1.8451,4.675 2.8921,4.189 C3.9381,3.703 6.1451,3.756 6.1451,3.756 L9.1541,3.768 L6.2961,0.303 L8.8761,0.241 L12.4781,4.747 L8.8811,9.36 L6.1361,9.291 L9.2651,5.612 L5.9441,5.596 C5.9441,5.596 4.0821,5.346 2.9531,6.138 C1.8261,6.93 0.5691,8.279 0.5631,8.665 C0.5511,9.437 0.3001,6.775 0.5871,5.957" id="Fill-5" fill="#CBCBCB" mask="url(#mask-2)"></path>
+                    </g>
+                    <g id="编组复制-34">
+                        <path d="M13.4651,17.3904 C13.1941,12.0004 3.4731,11.9914 3.5741,17.5064 L3.5981,23.0574 L0.0651,19.9424 L0.0001,22.0184 L4.6671,25.9444 L9.1241,22.0434 L9.1301,19.7664 L5.6091,22.9614 L5.6281,17.9114 C5.7111,14.2944 11.3991,14.4274 11.5901,17.8164 L13.4651,17.3904 Z" id="Fill-1" fill="#CBCBCB"></path>
+                        <g id="编组" transform="translate(7.000000, 0.436000)">
+                            <mask id="mask-4" fill="white">
+                                <use xlink:href="#path-3"></use>
+                            </mask>
+                            <g id="Clip-4"></g>
+                            <polygon id="Fill-3" fill="#CBCBCB" mask="url(#mask-4)" points="6.677 29.0003 6.651 4.3433 10.536 7.4933 10.603 4.6013 5.553 0.5643 0.383 4.5953 0.461 7.6733 4.585 4.1653 4.599 28.9983"></polygon>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
