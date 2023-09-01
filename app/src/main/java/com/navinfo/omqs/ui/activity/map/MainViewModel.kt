@@ -471,11 +471,11 @@ class MainViewModel @Inject constructor(
     private suspend fun captureItem(point: GeoPoint) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val itemList = realmOperateHelper.queryElement(
-                point = GeometryTools.createPoint(
+                GeometryTools.createPoint(
                     point.longitude,
                     point.latitude
                 ),
-                buffer = 2.0
+                buffer = 1.0, catchAll = false
             )
 
             if (itemList.size == 1) {

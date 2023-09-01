@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="19px" height="28px" viewBox="0 0 19 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>6</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="0 0.0004 18.2075 0.0004 18.2075 27.9743 0 27.9743"></polygon>
+    </defs>
+    <g id="待定" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="工具栏汇总复制" transform="translate(-1747.000000, -619.000000)">
+            <g id="编组-25" transform="translate(1382.000000, 615.000000)">
+                <g id="6" transform="translate(365.000000, 4.000000)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="Clip-2"></g>
+                    <path d="M18.2075,5.3453 C18.2035,-1.9057 4.8145,-1.7047 4.7325,5.4913 L4.7655,23.3033 L0.0825,19.4443 L-0.0005,22.9273 L6.0875,27.7913 L12.3215,22.9343 L12.2265,19.2263 L7.2545,23.1863 L7.2755,5.9933 C7.4185,0.9203 15.4365,1.4613 15.5765,5.8763 L15.5315,27.9613 L18.1865,27.9743 L18.2075,5.3453 Z" id="Fill-1" fill="#FFFFFF" mask="url(#mask-2)"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

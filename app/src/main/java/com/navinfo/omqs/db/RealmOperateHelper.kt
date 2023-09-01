@@ -244,6 +244,7 @@ class RealmOperateHelper() {
         point: Point,
         buffer: Double = DEFAULT_BUFFER,
         bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE,
+        catchAll: Boolean = true,
         sort: Boolean = true
     ): MutableList<RenderEntity> {
         val result = mutableListOf<RenderEntity>()
@@ -261,14 +262,25 @@ class RealmOperateHelper() {
         val yStart = tileYSet.stream().min(Comparator.naturalOrder()).orElse(null)
         val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
         val realm = getRealmDefaultInstance()
-        // 查询realm中对应tile号的数据
-        val realmList = getRealmTools(RenderEntity::class.java, false)
-            .notEqualTo("table", DataCodeEnum.OMDB_RD_LINK.name)
-            .greaterThanOrEqualTo("tileX", xStart)
-            .lessThanOrEqualTo("tileX", xEnd)
-            .greaterThanOrEqualTo("tileY", yStart)
-            .lessThanOrEqualTo("tileY", yEnd)
-            .findAll()
+        var realmList = mutableListOf<RenderEntity>()
+        if(catchAll){
+            // 查询realm中对应tile号的数据
+            realmList = getRealmTools(RenderEntity::class.java, false)
+                .greaterThanOrEqualTo("tileX", xStart)
+                .lessThanOrEqualTo("tileX", xEnd)
+                .greaterThanOrEqualTo("tileY", yStart)
+                .lessThanOrEqualTo("tileY", yEnd)
+                .findAll()
+        }else{
+            // 查询realm中对应tile号的数据
+            realmList = getRealmTools(RenderEntity::class.java, false)
+                .lessThan("catchEnable", 1)
+                .greaterThanOrEqualTo("tileX", xStart)
+                .lessThanOrEqualTo("tileX", xEnd)
+                .greaterThanOrEqualTo("tileY", yStart)
+                .lessThanOrEqualTo("tileY", yEnd)
+                .findAll()
+        }
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
         val queryResult = realmList?.stream()?.filter {
             polygon.intersects(it.wkt)

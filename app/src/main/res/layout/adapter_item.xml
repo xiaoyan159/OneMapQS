@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:background="@drawable/selector_adapter_item_select_bg"
-    android:padding="5dp">
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/item_index"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@mipmap/marker2"
+        android:maxLength="3"
+        android:text=""
+        android:layout_marginRight="@dimen/default_widget_padding"
+        style="@style/content_font_default_size_13sp" />
 
     <TextView
         android:id="@+id/name"
+        android:layout_toRightOf="@id/item_index"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="name"
         android:textColor="@color/selector_black_blue_color"
         android:textSize="16sp" />
-</FrameLayout>
+</RelativeLayout>
+

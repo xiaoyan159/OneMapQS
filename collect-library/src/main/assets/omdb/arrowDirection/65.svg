@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="30px" viewBox="0 0 18 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>提示前方可自行或右后方掉头复制 2</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M5.81049598,17.9079384 C5.85034368,16.2473596 7.13426,15.6994045 8.5,15.6994045 C9.07539294,15.6994045 9.80562871,15.7847047 10.2613819,16 C10.7525194,16.2320107 10.8901241,16.4966721 10.934,16.7558093 C11.0055545,17.1784204 11.0055545,19.7678173 10.934,24.524 L7.437,21.441 L7.37,23.496 L11.991,27.383 L16.404,23.523 L16.409,21.268 L12.924,24.432 L12.943,17.005 C11.991,12.0824629 3.929,13.555 4.117,16.911 L5.81049598,17.9079384 Z" id="path-1"></path>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="12.2952362" height="13.5506571" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+    </defs>
+    <g id="--" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="C9_1_icon-汇总说明(一)" transform="translate(-2487.000000, -1539.000000)" fill="#CBCBCB" fill-rule="nonzero" stroke="#CBCBCB">
+            <g id="编组-5" transform="translate(2487.000000, 1465.000000)">
+                <g id="提示前方可自行或右后方掉头复制-2" transform="translate(1.000000, 74.000000)">
+                    <polygon id="path2214_3_" stroke-width="0.8" points="5.909 29.208 5.895 4.113 9.36 6.968 9.422 4.391 4.918 0.792 0.308 4.386 0.377 7.13 4.054 4.003 4.071 29.167"></polygon>
+                    <use id="path22940_9_" mask="url(#mask-2)" stroke-width="1.6" stroke-dasharray="6" xlink:href="#path-1"></use>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
