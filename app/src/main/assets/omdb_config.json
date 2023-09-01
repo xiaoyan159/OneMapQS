@@ -175,7 +175,7 @@
 				"name": "文字",
 				"zoomMin": 15,
 				"zoomMax": 20,
-				"transformer2Code": ""
+				"transformer": []
 			},
 			"3003":{
 				"table": "OMDB_OBJECT_SYMBOL",
@@ -183,7 +183,22 @@
 				"name": "符号",
 				"zoomMin": 15,
 				"zoomMax": 20,
-				"transformer2Code": ""
+				"transformer": []
+			},
+			"3004":{
+				"table": "OMDB_OBJECT_ARROW",
+				"code": 3004,
+				"name": "箭头",
+				"zoomMin": 15,
+				"zoomMax": 20,
+				"transformer": [
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "obtainDynamicSrc('assets:omdb/arrowDirection/','.svg','arrowClass')"
+					}
+				]
 			},
 			"3005":{
 				"table": "OMDB_TRAFFIC_SIGN",

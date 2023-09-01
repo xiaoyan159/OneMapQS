@@ -610,26 +610,28 @@ class ImportPreProcess {
         // 获取杆状物的高程数据
         val geometry = renderEntity.wkt
         if (geometry != null) {
-            var minHeight = Double.MAX_VALUE
-            var maxHeight = Double.MIN_VALUE
-            for (coordinate in geometry.coordinates) {
-                if (coordinate.z < minHeight) {
-                    minHeight = coordinate.z
-                }
-                if (coordinate.z > maxHeight) {
-                    maxHeight = coordinate.z
-                }
-            }
-            for (coordinate in geometry.coordinates) {
-                if (coordinate.z == minHeight) {
-                    coordinate.z = 0.0
-                }
-                if (coordinate.z == maxHeight) {
-                    coordinate.z = 40.0
-                }
-            }
-            renderEntity.geometry =
-                WKTWriter(3).write(GeometryTools.createLineString(geometry.coordinates))
+//            var minHeight = Double.MAX_VALUE
+//            var maxHeight = Double.MIN_VALUE
+//            for (coordinate in geometry.coordinates) {
+//                if (coordinate.z < minHeight) {
+//                    minHeight = coordinate.z
+//                }
+//                if (coordinate.z > maxHeight) {
+//                    maxHeight = coordinate.z
+//                }
+//            }
+//            for (coordinate in geometry.coordinates) {
+//                if (coordinate.z == minHeight) {
+//                    coordinate.z = 0.0
+//                }
+//                if (coordinate.z == maxHeight) {
+//                    coordinate.z = 40.0
+//                }
+//            }
+//            renderEntity.geometry =
+//                WKTWriter(3).write(GeometryTools.createLineString(geometry.coordinates))
+
+            renderEntity.geometry = GeometryTools.createGeometry(GeoPoint(geometry.coordinates[0].y, geometry.coordinates[0].x)).toString()
         }
     }
 
@@ -740,5 +742,13 @@ class ImportPreProcess {
             dynamicSrcReference.properties["src"] = "${prefix}${code}${suffix}"
             Realm.getDefaultInstance().insert(dynamicSrcReference)
         }
+    }
+
+    /**
+     * 向当前renderEntity中添加动态属性
+     * */
+    fun obtainDynamicSrc(renderEntity: RenderEntity, prefix: String, suffix: String, codeName: String) {
+        val code = renderEntity.properties[codeName]
+        renderEntity.properties["src"] = "${prefix}${code}${suffix}"
     }
 }
