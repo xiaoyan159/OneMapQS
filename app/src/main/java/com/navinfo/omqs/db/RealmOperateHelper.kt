@@ -274,7 +274,7 @@ class RealmOperateHelper() {
         }else{
             // 查询realm中对应tile号的数据
             realmList = getRealmTools(RenderEntity::class.java, false)
-                .equalTo("catch", "0")
+                .lessThan("catchEnable", 1)
                 .greaterThanOrEqualTo("tileX", xStart)
                 .lessThanOrEqualTo("tileX", xEnd)
                 .greaterThanOrEqualTo("tileY", yStart)

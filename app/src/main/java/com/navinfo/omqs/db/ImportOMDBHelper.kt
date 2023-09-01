@@ -230,12 +230,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         renderEntity.properties["name"] = renderEntity.name;
                                     }
 
-                                    if(currentConfig.catch){
-                                        renderEntity.catch=0
-                                    }else{
-                                        renderEntity.catch=1
-                                    }
-
                                     //遍历判断只显示与任务Link相关的任务数据
                                     if(currentConfig.checkLinkId){
 
@@ -313,6 +307,12 @@ class ImportOMDBHelper @AssistedInject constructor(
 
                                     // 对renderEntity做预处理后再保存
                                     val resultEntity = importConfig.transformProperties(renderEntity)
+
+                                    if(currentConfig.catch){
+                                        renderEntity.catchEnable=0
+                                    }else{
+                                        renderEntity.catchEnable=1
+                                    }
 
                                     //对code编码需要特殊处理 存在多个属性值时，渲染优先级：SA>PA,存在多个属性值时，渲染优先级：FRONTAGE>MAIN_SIDE_A CCESS
                                     if(renderEntity.code == DataCodeEnum.OMDB_LINK_ATTRIBUTE.code){
