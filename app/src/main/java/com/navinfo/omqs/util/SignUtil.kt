@@ -126,27 +126,9 @@ class SignUtil {
                 //常规线限速
                 DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> "线限速"
 
-                DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code,
-                DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code,
-                DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code,
-                DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code -> "道路属性"
+                DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code -> "道路属性"
 
-                DataCodeEnum.OMDB_LINK_FORM1_1.code,
-                DataCodeEnum.OMDB_LINK_FORM1_2.code,
-                DataCodeEnum.OMDB_LINK_FORM1_3.code,
-                DataCodeEnum.OMDB_LINK_FORM2_1.code,
-                DataCodeEnum.OMDB_LINK_FORM2_2.code,
-                DataCodeEnum.OMDB_LINK_FORM2_3.code,
-                DataCodeEnum.OMDB_LINK_FORM2_4.code,
-                DataCodeEnum.OMDB_LINK_FORM2_5.code,
-                DataCodeEnum.OMDB_LINK_FORM2_6.code,
-                DataCodeEnum.OMDB_LINK_FORM2_7.code,
-                DataCodeEnum.OMDB_LINK_FORM2_8.code,
-                DataCodeEnum.OMDB_LINK_FORM2_9.code,
-                DataCodeEnum.OMDB_LINK_FORM2_10.code,
-                DataCodeEnum.OMDB_LINK_FORM2_11.code,
-                DataCodeEnum.OMDB_LINK_FORM2_12.code,
-                DataCodeEnum.OMDB_LINK_FORM2_13.code -> "道路形态"
+                DataCodeEnum.OMDB_LINK_FORM1_1.code, DataCodeEnum.OMDB_LINK_FORM1_2.code, DataCodeEnum.OMDB_LINK_FORM1_3.code, DataCodeEnum.OMDB_LINK_FORM2_1.code, DataCodeEnum.OMDB_LINK_FORM2_2.code, DataCodeEnum.OMDB_LINK_FORM2_3.code, DataCodeEnum.OMDB_LINK_FORM2_4.code, DataCodeEnum.OMDB_LINK_FORM2_5.code, DataCodeEnum.OMDB_LINK_FORM2_6.code, DataCodeEnum.OMDB_LINK_FORM2_7.code, DataCodeEnum.OMDB_LINK_FORM2_8.code, DataCodeEnum.OMDB_LINK_FORM2_9.code, DataCodeEnum.OMDB_LINK_FORM2_10.code, DataCodeEnum.OMDB_LINK_FORM2_11.code, DataCodeEnum.OMDB_LINK_FORM2_12.code, DataCodeEnum.OMDB_LINK_FORM2_13.code -> "道路形态"
 
                 else -> DataCodeEnum.findTableNameByCode(data.code)
             }
@@ -161,15 +143,20 @@ class SignUtil {
             val list = mutableListOf<TwoItemAdapterItem>()
             when (data.code) {
                 //可变线限速
-                DataCodeEnum.OMDB_LINK_SPEEDLIMIT_VAR.code ->
-                    list.addAll(getChangeLimitSpeedInfo(data))
+                DataCodeEnum.OMDB_LINK_SPEEDLIMIT_VAR.code -> list.addAll(
+                    getChangeLimitSpeedInfo(
+                        data
+                    )
+                )
                 //常规点限速
-                DataCodeEnum.OMDB_SPEEDLIMIT.code ->
-                    list.addAll(getSpeedLimitMoreInfoText(data))
+                DataCodeEnum.OMDB_SPEEDLIMIT.code -> list.addAll(getSpeedLimitMoreInfoText(data))
 
                 //条件点限速
-                DataCodeEnum.OMDB_SPEEDLIMIT_COND.code ->
-                    list.addAll(getConditionLimitMoreInfoText(data))
+                DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> list.addAll(
+                    getConditionLimitMoreInfoText(
+                        data
+                    )
+                )
                 //到路线
                 DataCodeEnum.OMDB_RD_LINK.code -> {
                     list.add(
@@ -229,14 +216,12 @@ class SignUtil {
                 DataCodeEnum.OMDB_RESTRICTION.code -> {
                     list.add(
                         TwoItemAdapterItem(
-                            title = "linkIn",
-                            text = "${data.properties["linkIn"]}"
+                            title = "linkIn", text = "${data.properties["linkIn"]}"
                         )
                     )
                     list.add(
                         TwoItemAdapterItem(
-                            title = "linkOut",
-                            text = "${data.properties["linkOut"]}"
+                            title = "linkOut", text = "${data.properties["linkOut"]}"
                         )
                     )
                 }
@@ -244,8 +229,7 @@ class SignUtil {
                 DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code -> {
                     list.add(
                         TwoItemAdapterItem(
-                            title = "功能等级",
-                            text = "等级${data.properties["functionClass"]}"
+                            title = "功能等级", text = "等级${data.properties["functionClass"]}"
                         )
                     )
                 }
@@ -257,20 +241,17 @@ class SignUtil {
                 DataCodeEnum.OMDB_LANE_NUM.code -> {
                     list.add(
                         TwoItemAdapterItem(
-                            title = "车道总数",
-                            text = "${data.properties["laneNum"]}"
+                            title = "车道总数", text = "${data.properties["laneNum"]}"
                         )
                     )
                     list.add(
                         TwoItemAdapterItem(
-                            title = "顺方向车道数",
-                            text = "${data.properties["laneS2e"]}"
+                            title = "顺方向车道数", text = "${data.properties["laneS2e"]}"
                         )
                     )
                     list.add(
                         TwoItemAdapterItem(
-                            title = "逆方向车道数",
-                            text = "${data.properties["laneE2s"]}"
+                            title = "逆方向车道数", text = "${data.properties["laneE2s"]}"
                         )
                     )
                     var str = when (data.properties["laneClass"]) {
@@ -284,8 +265,7 @@ class SignUtil {
 
                     list.add(
                         TwoItemAdapterItem(
-                            title = "车道数等级",
-                            text = str
+                            title = "车道数等级", text = str
                         )
                     )
                 }
@@ -298,8 +278,7 @@ class SignUtil {
                     }
                     list.add(
                         TwoItemAdapterItem(
-                            title = "路口类型",
-                            text = type
+                            title = "路口类型", text = type
                         )
                     )
                 }
@@ -318,8 +297,7 @@ class SignUtil {
                     }
                     list.add(
                         TwoItemAdapterItem(
-                            title = "限制类型",
-                            text = limitType
+                            title = "限制类型", text = limitType
                         )
                     )
                     val validPeriod = data.properties["validPeriod"]
@@ -352,8 +330,7 @@ class SignUtil {
                     if (endTime != null) {
                         list.add(
                             TwoItemAdapterItem(
-                                title = "施工结束时间",
-                                text = "${TimePeriodUtil.getTimePeriod(endTime)}"
+                                title = "施工结束时间", text = "${TimePeriodUtil.getTimePeriod(endTime)}"
                             )
                         )
                     }
@@ -370,14 +347,13 @@ class SignUtil {
                             title = "警示信息号码", text = "${data.properties["warningsignId"]}"
                         )
                     )
-                    val direct = when (data.properties["direct"]) {
-                        "2" -> "顺方向"
-                        "3" -> "逆方向"
-                        else -> ""
-                    }
                     list.add(
                         TwoItemAdapterItem(
-                            title = "作用方向", text = direct
+                            title = "作用方向", text = when (data.properties["direct"]) {
+                                "2" -> "顺方向"
+                                "3" -> "逆方向"
+                                else -> ""
+                            }
                         )
                     )
 
@@ -418,9 +394,232 @@ class SignUtil {
                         )
                     )
                 }
+                DataCodeEnum.OMDB_OBJECT_STOPLOCATION.code -> {
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "对象号码", text = "${data.properties["objectPid"]}"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "宽度", text = "${data.properties["width"]}mm"
+                        )
+                    )
+
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "颜色", text = when (data.properties["color"]) {
+                                "1" -> "白色"
+                                "9" -> "其他"
+                                else -> ""
+                            }
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "类型", text = when (data.properties["locationType"]) {
+                                "1" -> "停止线"
+                                "2" -> "停车让行线"
+                                "3" -> "减速让行线"
+                                "4" -> "虚拟停止线"
+                                else -> ""
+                            }
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "符合高精", text = when (data.properties["compliant"]) {
+                                "0" -> "否"
+                                "1" -> "是"
+                                else -> ""
+                            }
+                        )
+                    )
+                }
+                //人行横道
+                DataCodeEnum.OMDB_CROSS_WALK.code -> {
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "对象号码", text = "${data.properties["objectPid"]}"
+                        )
+                    )
+
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "颜色", text = when (data.properties["color"]) {
+                                "1" -> "白色"
+                                "9" -> "其他"
+                                else -> ""
+                            }
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "符合高精", text = when (data.properties["compliant"]) {
+                                "0" -> "否"
+                                "1" -> "是"
+                                else -> ""
+                            }
+                        )
+                    )
+                }
+                DataCodeEnum.OMDB_OBJECT_TEXT.code -> {
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "对象号码", text = "${data.properties["objectPid"]}"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "长度", text = "${data.properties["length"]}mm"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "宽度", text = "${data.properties["width"]}mm"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "颜色", text = when (data.properties["color"]) {
+                                "0" -> "未验证"
+                                "1" -> "白色"
+                                "2" -> "黄色"
+                                "3" -> "红色"
+                                "4" -> "彩色"
+                                "9" -> "其他"
+                                else -> ""
+                            }
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "文字内容", text = "${data.properties["textString"]}"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "符合高精", text = when (data.properties["compliant"]) {
+                                "0" -> "否"
+                                "1" -> "是"
+                                else -> ""
+                            }
+                        )
+                    )
+                }
+
             }
             adapter.data = list
             return adapter
+        }
+
+        /**
+         * 获取路口详细信息
+         */
+        fun getTollgateInfo(renderEntity: RenderEntity): List<LaneBoundaryItem> {
+            val list = mutableListOf<LaneBoundaryItem>()
+            list.add(
+                LaneBoundaryItem("linkPid", "${renderEntity.properties["linkPid"]}", null)
+            )
+            list.add(
+                LaneBoundaryItem("收费站号码", "${renderEntity.properties["tollgatePid"]}", null)
+            )
+            list.add(
+                LaneBoundaryItem(
+                    "作用方向", when (renderEntity.properties["direct"]) {
+                        "2" -> "顺方向"
+                        "3" -> "逆方向"
+                        else -> ""
+                    }, null
+                )
+            )
+
+            list.add(
+                LaneBoundaryItem(
+                    "类型", when (renderEntity.properties["tollType"]) {
+                        "0" -> "未调查"
+                        "1" -> "领卡"
+                        "2" -> "交卡付费"
+                        "3" -> "固定收费(次费)"
+                        "4" -> "交卡付费后再领卡"
+                        "5" -> "交卡付费并代收固定费用"
+                        "6" -> "验票(无票收费)值先保留"
+                        "7" -> "领卡并代收固定费用"
+                        "8" -> "持卡打标识不收费"
+                        "9" -> "验票领卡"
+                        "10" -> "交卡不收费"
+                        "11" -> "无收费站建筑物结构但收费"
+                        "12" -> "废弃或非收费通道"
+                        else -> ""
+                    }, null
+                )
+            )
+            list.add(
+                LaneBoundaryItem("地图代码", "${renderEntity.properties["backimageCode"]}", null)
+            )
+            list.add(
+                LaneBoundaryItem("箭头代码", "${renderEntity.properties["arrowCode"]}", null)
+            )
+            try {
+                val linkList = renderEntity.properties["tollinfoList"]
+                if (linkList != null && linkList != "" && linkList != "null") {
+                    val itemList = mutableListOf<TwoItemAdapterItem>()
+                    val jsonArray = JSONArray(linkList)
+                    for (i in 0 until jsonArray.length()) {
+                        val arrayObject: JSONObject = jsonArray[i] as JSONObject
+
+                        // itemList.add(TwoItemAdapterItem("方向", direct))
+
+                        try {
+                            val stringBuffer = StringBuffer()
+                            val cardType = arrayObject.getInt("cardType")
+                            for (i in 2 downTo 0) {
+                                val bit = (cardType shr i) and 1
+                                if (bit == 1) {
+                                    when (i) {
+                                        0 -> stringBuffer.append("ETC ")
+                                        1 -> stringBuffer.append("人工 ")
+                                        2 -> stringBuffer.append("自助 ")
+                                    }
+                                }
+                            }
+                            itemList.add(
+                                TwoItemAdapterItem("领卡方式", stringBuffer.toString())
+                            )
+                        } catch (e: Exception) {
+                            Log.e("jingo", "领卡方式 报错 ${e.message}")
+                        }
+                        try {
+                            val stringBuffer = StringBuffer()
+                            val passageType = arrayObject.getInt("passageType")
+                            for (i in 2 downTo 0) {
+                                val bit = (passageType shr i) and 1
+                                if (bit == 1) {
+                                    when (i) {
+                                        0 -> stringBuffer.append("ETC ")
+                                        1 -> stringBuffer.append("人工 ")
+                                        2 -> stringBuffer.append("自助 ")
+                                    }
+                                }
+                            }
+                            itemList.add(
+                                TwoItemAdapterItem("领卡方式", stringBuffer.toString())
+                            )
+                        } catch (e: Exception) {
+                            Log.e("jingo", "领卡方式 报错 ${e.message}")
+                        }
+                    }
+                    list.add(
+                        LaneBoundaryItem(
+                            "车道信息", null, itemList
+                        )
+                    )
+                }
+
+            } catch (e: Exception) {
+
+            }
+            return list
         }
 
 
@@ -431,9 +630,7 @@ class SignUtil {
             val list = mutableListOf<LaneBoundaryItem>()
             list.add(
                 LaneBoundaryItem(
-                    "路口号码",
-                    "${renderEntity.properties["intersectionPid"]}",
-                    null
+                    "路口号码", "${renderEntity.properties["intersectionPid"]}", null
                 )
             )
             val type = when (renderEntity.properties["type"]) {
@@ -464,9 +661,7 @@ class SignUtil {
 
                         list.add(
                             LaneBoundaryItem(
-                                "车道标线序号${arrayObject.getInt("markSeqNum")}",
-                                null,
-                                itemList
+                                "车道标线序号${arrayObject.getInt("markSeqNum")}", null, itemList
                             )
                         )
                     }
@@ -533,8 +728,7 @@ class SignUtil {
                         itemList.add(TwoItemAdapterItem("车道标线颜色", markColor))
                         itemList.add(
                             TwoItemAdapterItem(
-                                "车道标线宽度(mm)",
-                                "${arrayObject.getInt("markWidth")}"
+                                "车道标线宽度(mm)", "${arrayObject.getInt("markWidth")}"
                             )
                         )
 
@@ -548,15 +742,12 @@ class SignUtil {
                         itemList.add(TwoItemAdapterItem("车道标线材质", markMaterial))
                         itemList.add(
                             TwoItemAdapterItem(
-                                "横向偏移(mm)",
-                                "${arrayObject.getInt("lateralOffset")}"
+                                "横向偏移(mm)", "${arrayObject.getInt("lateralOffset")}"
                             )
                         )
                         list.add(
                             LaneBoundaryItem(
-                                "车道标线序号${arrayObject.getInt("markSeqNum")}",
-                                null,
-                                itemList
+                                "车道标线序号${arrayObject.getInt("markSeqNum")}", null, itemList
                             )
                         )
                     }
@@ -577,6 +768,16 @@ class SignUtil {
                 DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> getConditionLimitText(data)
                 //电子眼
                 DataCodeEnum.OMDB_ELECTRONICEYE.code -> data.properties["name"].toString()
+                //收费站
+                DataCodeEnum.OMDB_TOLLGATE.code -> {
+                    val tollinfoList = data.properties["tollinfoList"]
+                    try {
+                        val jsonArray = JSONArray(tollinfoList)
+                        return "${jsonArray.length()}"
+                    } catch (e: Exception) {
+                        return ""
+                    }
+                }
                 else -> ""
             }
         }
@@ -673,8 +874,7 @@ class SignUtil {
 
             val multiDigitized = data.properties["multiDigitized"]
             try {
-                if (multiDigitized?.toInt() == 1)
-                    return "上下线"
+                if (multiDigitized?.toInt() == 1) return "上下线"
             } catch (e: Throwable) {
 
             }
@@ -787,8 +987,16 @@ class SignUtil {
                 //警示信息
                 DataCodeEnum.OMDB_WARNINGSIGN.code -> {
                     val typeCode = data.properties["typeCode"]
-                    if (typeCode != null)
-                        return typeCode.toInt()
+                    if (typeCode != null) return typeCode.toInt()
+                    return 0
+                }
+                //收费站
+                DataCodeEnum.OMDB_TOLLGATE.code -> {
+                    var backimageCode = data.properties["backimageCode"]
+                    if (backimageCode != null) {
+                        backimageCode = backimageCode.lowercase()
+                        return getResId(backimageCode, R.drawable::class.java)
+                    }
                     return 0
                 }
                 else -> 0
@@ -957,6 +1165,8 @@ class SignUtil {
                 DataCodeEnum.OMDB_SPEEDLIMIT_COND.code,
                     //电子眼
                 DataCodeEnum.OMDB_ELECTRONICEYE.code,
+                    //收费站
+                DataCodeEnum.OMDB_TOLLGATE.code,
                     //警示信息
                 DataCodeEnum.OMDB_WARNINGSIGN.code -> true
                 else -> false
@@ -1008,8 +1218,7 @@ class SignUtil {
             if (dir != "") {
                 list.add(
                     TwoItemAdapterItem(
-                        title = "作用方向",
-                        text = dir
+                        title = "作用方向", text = dir
                     )
                 )
             }
@@ -1245,15 +1454,13 @@ class SignUtil {
             if (dir != "") {
                 list.add(
                     TwoItemAdapterItem(
-                        title = "限速方向",
-                        text = dir
+                        title = "限速方向", text = dir
                     )
                 )
             }
             list.add(
                 TwoItemAdapterItem(
-                    title = "最高限速值(km/h)",
-                    text = "${data.properties["maxSpeed"]}"
+                    title = "最高限速值(km/h)", text = "${data.properties["maxSpeed"]}"
                 )
             )
             var maxStr = when (data.properties["maxSpeedSource"]) {
@@ -1271,15 +1478,13 @@ class SignUtil {
             if (maxStr != "") {
                 list.add(
                     TwoItemAdapterItem(
-                        title = "最高限速来源",
-                        text = maxStr
+                        title = "最高限速来源", text = maxStr
                     )
                 )
             }
             list.add(
                 TwoItemAdapterItem(
-                    title = "最低限速值(km/h)",
-                    text = "${data.properties["minSpeed"]}"
+                    title = "最低限速值(km/h)", text = "${data.properties["minSpeed"]}"
                 )
             )
             var minStr = when (data.properties["minSpeedSource"]) {
@@ -1297,8 +1502,7 @@ class SignUtil {
             if (minStr != "") {
                 list.add(
                     TwoItemAdapterItem(
-                        title = "最低限速来源",
-                        text = minStr
+                        title = "最低限速来源", text = minStr
                     )
                 )
             }
@@ -1314,8 +1518,7 @@ class SignUtil {
             if (isLaneDependent != "") {
                 list.add(
                     TwoItemAdapterItem(
-                        title = "是否车道依赖",
-                        text = isLaneDependent
+                        title = "是否车道依赖", text = isLaneDependent
                     )
                 )
             }

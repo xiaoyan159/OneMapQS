@@ -9,36 +9,17 @@
         android:id="@+id/sign_main_bg"
         android:layout_width="193dp"
         android:layout_height="78dp"
-        android:background="@drawable/bg_sign" />
+        android:background="@drawable/bg_sign_laneinfo" />
 
     <ImageView
         android:id="@+id/sign_main_icon_bg"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginLeft="19dp"
-        android:layout_marginTop="4dp" />
+        android:layout_width="130dp"
+        android:layout_height="48dp"
+        android:scaleType="fitXY"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="1dp" />
 
-    <TextView
-        android:id="@+id/sign_main_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginLeft="19dp"
-        android:layout_marginTop="4dp"
-        android:gravity="center"
-        android:text="80"
-        android:textColor="#2F2F2F"
-        android:textSize="16sp" />
 
-    <TextView
-        android:id="@+id/sign_second_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:gravity="center"
-        android:layout_marginTop="10dp"
-        android:layout_toRightOf="@id/sign_main_icon"
-        android:text=""
-        android:textColor="@color/white"
-        android:textSize="16sp" />
     <TextView
         android:id="@+id/sign_bottom_text"
         android:layout_width="wrap_content"
