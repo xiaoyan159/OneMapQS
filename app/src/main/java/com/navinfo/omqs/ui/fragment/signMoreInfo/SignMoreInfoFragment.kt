@@ -74,6 +74,12 @@ class SignMoreInfoFragment : BaseFragment() {
                     binding.signInfoRecyclerview.adapter = adapter
                     adapter.refreshData(SignUtil.getIntersectionInfo(it))
                 }
+                //收费站
+                DataCodeEnum.OMDB_TOLLGATE.code -> {
+                    val adapter = LaneBoundaryAdapter()
+                    binding.signInfoRecyclerview.adapter = adapter
+                    adapter.refreshData(SignUtil.getTollgateInfo(it))
+                }
                 //电子眼
                 DataCodeEnum.OMDB_ELECTRONICEYE.code -> {
                     val drawable = resources.getDrawable(R.drawable.icon_electronic_eye_left, null)
