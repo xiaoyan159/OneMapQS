@@ -454,6 +454,12 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         if(startTime==null||startTime=="") {
                                             renderEntity.properties["startTime"] = "null"
                                         }
+                                    } else if(renderEntity.code == DataCodeEnum.OMDB_POLE.code){ // 杆状物
+                                        //过滤树类型的杆状物，无需导入到数据库中
+                                        val poleType = renderEntity.properties["poleType"]
+                                        if(poleType!=null&&poleType.toInt()==2){
+                                            continue
+                                        }
                                     }
 
                                     listResult.add(renderEntity)
