@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
@@ -609,29 +610,30 @@ class MainViewModel @Inject constructor(
 
                             val realm = realmOperateHelper.getRealmDefaultInstance()
 
-                            val entity =
+                            val entityList =
                                 realmOperateHelper.getRealmTools(RenderEntity::class.java, true)
                                     .and()
                                     .equalTo("table", DataCodeEnum.OMDB_RESTRICTION.name)
                                     .and()
                                     .equalTo(
                                         "properties['linkIn']", it
-                                    ).findFirst()
-                            if (entity != null) {
-                                val outLink = entity.properties["linkOut"]
-                                val linkOutEntity =
-                                    realmOperateHelper.getRealmTools(RenderEntity::class.java, true)
-                                        .and()
-                                        .equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).and()
-                                        .equalTo(
-                                            "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
-                                            outLink
-                                        ).findFirst()
-                                if (linkOutEntity != null) {
-                                    mapController.lineHandler.linksLayer.addLine(
-                                        linkOutEntity.geometry, 0x7DFF0000
-                                    )
+                                    ).findAll()
+                            if (entityList.isNotEmpty()) {
+                                val  outList =   entityList.distinct()
+                                for(i in outList.indices){
+                                    val outLink = outList[i].properties["linkOut"]
+                                    val linkOutEntity =
+                                        realmOperateHelper.getRealmTools(RenderEntity::class.java, true)
+                                            .equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).and()
+                                            .equalTo("properties['${RenderEntity.Companion.LinkTable.linkPid}']",outLink
+                                            ).findFirst()
+                                    if (linkOutEntity != null) {
+                                        mapController.lineHandler.linksLayer.addLine(
+                                            linkOutEntity.geometry, 0x7DFF0000
+                                        )
+                                    }
                                 }
+                                mapController.lineHandler.linksLayer.addLine(link.geometry, Color.BLUE)
                             }
                         }
 
