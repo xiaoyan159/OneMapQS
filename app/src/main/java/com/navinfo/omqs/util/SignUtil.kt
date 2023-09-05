@@ -563,15 +563,57 @@ class SignUtil {
             try {
                 val linkList = renderEntity.properties["tollinfoList"]
                 if (linkList != null && linkList != "" && linkList != "null") {
-                    val itemList = mutableListOf<TwoItemAdapterItem>()
+
                     val jsonArray = JSONArray(linkList)
                     for (i in 0 until jsonArray.length()) {
                         val arrayObject: JSONObject = jsonArray[i] as JSONObject
-
-                        // itemList.add(TwoItemAdapterItem("方向", direct))
-
+                        val itemList = mutableListOf<TwoItemAdapterItem>()
                         try {
+                            itemList.add(
+                                TwoItemAdapterItem("通道号码", "${arrayObject.optString("pid")}")
+                            )
                             val stringBuffer = StringBuffer()
+
+                            stringBuffer.setLength(0)
+                            val passageType = arrayObject.getInt("passageType")
+                            for (i in 1 downTo 0) {
+                                val bit = (passageType shr i) and 1
+                                if (bit == 1) {
+                                    when (i) {
+                                        0 -> stringBuffer.append("称重车道 ")
+                                        1 -> stringBuffer.append("绿色通道 ")
+                                    }
+                                }
+                            }
+                            itemList.add(
+                                TwoItemAdapterItem("通道类型", stringBuffer.toString())
+                            )
+
+
+                            stringBuffer.setLength(0)
+                            val payMethod = arrayObject.getInt("payMethod")
+                            for (i in 8 downTo 0) {
+                                val bit = (payMethod shr i) and 1
+                                if (bit == 1) {
+                                    when (i) {
+                                        0 -> stringBuffer.append("ETC ")
+                                        1 -> stringBuffer.append("现金 ")
+                                        2 -> stringBuffer.append("银行卡(借记卡) ")
+                                        3 -> stringBuffer.append("信用卡 ")
+                                        4 -> stringBuffer.append("IC卡 ")
+                                        5 -> stringBuffer.append("预付卡 ")
+                                        6 -> stringBuffer.append("微信 ")
+                                        7 -> stringBuffer.append("支付宝 ")
+                                        8 -> stringBuffer.append("其他APP ")
+
+                                    }
+                                }
+                            }
+                            itemList.add(
+                                TwoItemAdapterItem("收费方式", stringBuffer.toString())
+                            )
+
+                            stringBuffer.setLength(0)
                             val cardType = arrayObject.getInt("cardType")
                             for (i in 2 downTo 0) {
                                 val bit = (cardType shr i) and 1
@@ -586,34 +628,18 @@ class SignUtil {
                             itemList.add(
                                 TwoItemAdapterItem("领卡方式", stringBuffer.toString())
                             )
-                        } catch (e: Exception) {
-                            Log.e("jingo", "领卡方式 报错 ${e.message}")
-                        }
-                        try {
-                            val stringBuffer = StringBuffer()
-                            val passageType = arrayObject.getInt("passageType")
-                            for (i in 2 downTo 0) {
-                                val bit = (passageType shr i) and 1
-                                if (bit == 1) {
-                                    when (i) {
-                                        0 -> stringBuffer.append("ETC ")
-                                        1 -> stringBuffer.append("人工 ")
-                                        2 -> stringBuffer.append("自助 ")
-                                    }
-                                }
-                            }
-                            itemList.add(
-                                TwoItemAdapterItem("领卡方式", stringBuffer.toString())
+
+                            val seqNum = arrayObject.getInt("seqNum")
+                            list.add(
+                                LaneBoundaryItem(
+                                    "车道$seqNum", null, itemList
+                                )
                             )
                         } catch (e: Exception) {
                             Log.e("jingo", "领卡方式 报错 ${e.message}")
                         }
                     }
-                    list.add(
-                        LaneBoundaryItem(
-                            "车道信息", null, itemList
-                        )
-                    )
+
                 }
 
             } catch (e: Exception) {
@@ -642,9 +668,9 @@ class SignUtil {
             try {
                 val linkList = renderEntity.properties["linkList"]
                 if (linkList != null && linkList != "" && linkList != "null") {
-                    val itemList = mutableListOf<TwoItemAdapterItem>()
                     val jsonArray = JSONArray(linkList)
                     for (i in 0 until jsonArray.length()) {
+                        val itemList = mutableListOf<TwoItemAdapterItem>()
                         val arrayObject: JSONObject = jsonArray[i] as JSONObject
                         val direct = when (arrayObject.getInt("direct")) {
                             2 -> "顺方向"
@@ -652,6 +678,7 @@ class SignUtil {
                             else -> ""
                         }
                         itemList.add(TwoItemAdapterItem("方向", direct))
+
                         val featureType = when (arrayObject.getInt("featureType")) {
                             1 -> "LINK"
                             2 -> "LINK PA"
