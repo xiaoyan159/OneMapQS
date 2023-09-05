@@ -185,7 +185,7 @@
         width="0.1" />
 
     <!--道路形态-->
-    <style-line dasharray="8,2,2,2,2,2" id="road_morphology" repeat-gap="3" repeat-start="0" stroke="#1afa29" width="0.5" />
+    <style-line dasharray="8,2,2,2,2,2" id="road_morphology" repeat-gap="3" repeat-start="0" stroke="#1afa29" width="0.3" />
 
     <!--###### ASSIGNMENT ######-->
 
