@@ -225,10 +225,70 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         }
                                     }
 
+                                    //测试代码
+/*                                    if(renderEntity.code == DataCodeEnum.OMDB_RD_LINK_KIND.code) {
+
+                                        var currentLinkPid = renderEntity.properties["linkPid"]
+
+                                        if(currentLinkPid!="84209046927907835"){
+                                            continue
+                                        }
+                                    }else if(renderEntity.code == DataCodeEnum.OMDB_RD_LINK.code){
+                                        continue
+                                    }else{
+                                        continue
+                                    }*/
+
                                     // 如果properties中不包含name，那么自动将要素名称添加进properties中
                                     if (!renderEntity.properties.containsKey("name")) {
                                         renderEntity.properties["name"] = renderEntity.name;
                                     }
+
+                                    //优先过滤掉不需要的数据
+                                    if(renderEntity.code == DataCodeEnum.OMDB_POLE.code){ // 杆状物
+                                        //过滤树类型的杆状物，无需导入到数据库中
+                                        val poleType = renderEntity.properties["poleType"]
+                                        if(poleType!=null&&poleType.toInt()==2){
+                                            continue
+                                        }
+                                    }else if(renderEntity.code == DataCodeEnum.OMDB_LANE_MARK_BOUNDARYTYPE.code){
+                                        var boundaryType = renderEntity.properties["boundaryType"]
+                                        if(boundaryType!=null){
+                                            when (boundaryType) {
+                                                "0","1","6","8","9"->{
+                                                    renderEntity.enable=0
+                                                    Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                                    continue
+                                                }
+                                            }
+                                        }
+                                    }else if(renderEntity.code == DataCodeEnum.OMDB_RDBOUND_BOUNDARYTYPE.code){
+
+                                        //过滤不需要渲染的要素
+                                        var boundaryType = renderEntity.properties["boundaryType"]
+                                        if(boundaryType!=null){
+                                            when (boundaryType) {
+                                                "0","3","4","5","7","9"->{
+                                                    renderEntity.enable=0
+                                                    Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                                    continue
+                                                }
+                                            }
+                                        }
+                                    }else if(renderEntity.code == DataCodeEnum.OMDB_OBJECT_STOPLOCATION.code){
+                                        //过滤不需要渲染的要素
+                                        var locationType = renderEntity.properties["locationType"]
+                                        if(locationType!=null){
+                                            when (locationType) {
+                                                "3","4"->{
+                                                    renderEntity.enable=0
+                                                    Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                                    continue
+                                                }
+                                            }
+                                        }
+                                    }
+
 
                                     //遍历判断只显示与任务Link相关的任务数据
                                     if(currentConfig.checkLinkId){
@@ -393,29 +453,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                 "85"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_13.code
                                             }
                                         }
-                                    }else if(renderEntity.code == DataCodeEnum.OMDB_LANE_MARK_BOUNDARYTYPE.code){
-                                        var boundaryType = renderEntity.properties["boundaryType"]
-                                        if(boundaryType!=null){
-                                            when (boundaryType) {
-                                                "0","1","6","8","9"->{
-                                                    renderEntity.enable=0
-                                                    Log.e("qj","过滤不显示数据${renderEntity.table}")
-                                                    continue
-                                                }
-                                            }
-                                        }
-                                    }else if(renderEntity.code == DataCodeEnum.OMDB_RDBOUND_BOUNDARYTYPE.code){
-                                        //过滤不需要渲染的要素
-                                        var boundaryType = renderEntity.properties["boundaryType"]
-                                        if(boundaryType!=null){
-                                            when (boundaryType) {
-                                                "0","3","4","5","7","9"->{
-                                                    renderEntity.enable=0
-                                                    Log.e("qj","过滤不显示数据${renderEntity.table}")
-                                                    continue
-                                                }
-                                            }
-                                        }
                                     }else if(renderEntity.table == DataCodeEnum.OMDB_NODE_FORM.name){//特殊处理，因为code相同，使用表名判断
                                         //过滤不需要渲染的要素
                                         var formOfWay = renderEntity.properties["formOfWay"]
@@ -436,29 +473,11 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             Log.e("qj","过滤不显示数据${renderEntity.table}")
                                             continue
                                         }
-                                    }else if(renderEntity.code == DataCodeEnum.OMDB_OBJECT_STOPLOCATION.code){
-                                        //过滤不需要渲染的要素
-                                        var locationType = renderEntity.properties["locationType"]
-                                        if(locationType!=null){
-                                            when (locationType) {
-                                                "3","4"->{
-                                                    renderEntity.enable=0
-                                                    Log.e("qj","过滤不显示数据${renderEntity.table}")
-                                                    continue
-                                                }
-                                            }
-                                        }
                                     }else if(renderEntity.code == DataCodeEnum.OMDB_LANE_CONSTRUCTION.code){
                                         //特殊处理空数据，渲染原则使用
                                         var startTime = renderEntity.properties["startTime"]
                                         if(startTime==null||startTime=="") {
                                             renderEntity.properties["startTime"] = "null"
-                                        }
-                                    } else if(renderEntity.code == DataCodeEnum.OMDB_POLE.code){ // 杆状物
-                                        //过滤树类型的杆状物，无需导入到数据库中
-                                        val poleType = renderEntity.properties["poleType"]
-                                        if(poleType!=null&&poleType.toInt()==2){
-                                            continue
                                         }
                                     }
 
