@@ -18,7 +18,7 @@ class ImportPreProcess {
     val code2NameMap = Code2NameMap()
     lateinit var cacheRdLink: Map<String?, RenderEntity>
     val defaultTranslateDistance = 3.0
-
+    val testFlag:Boolean = true
     fun checkCircleRoad(renderEntity: RenderEntity): Boolean {
         val linkInId = renderEntity.properties["linkIn"]
         val linkOutId = renderEntity.properties["linkOut"]
@@ -45,6 +45,9 @@ class ImportPreProcess {
      * @param direction 判断当前数据是否为逆向，给定的应该是一个a=b的表达式，a为对应的properties的key，b为对应的值
      * */
     fun translateRight(renderEntity: RenderEntity, direction: String = "") {
+        if(testFlag){
+            return
+        }
         // 获取当前renderEntity的geometry
         val geometry = renderEntity.wkt
         var radian = 0.0 // geometry的角度，如果是点，获取angle，如果是线，获取最后两个点的方向
@@ -109,6 +112,9 @@ class ImportPreProcess {
      * 向方向对应的反方向偏移
      * */
     fun translateBack(renderEntity: RenderEntity, direction: String = "") {
+        if(testFlag){
+            return
+        }
         // 获取当前renderEntity的geometry
         val geometry = renderEntity.wkt
         var isReverse = false // 是否为逆向
@@ -167,6 +173,9 @@ class ImportPreProcess {
      * 生成偏移后数据的起终点参考线
      * */
     fun generateS2EReferenceLine(renderEntity: RenderEntity) {
+        if(testFlag){
+            return
+        }
         // 获取当前renderEntity的geometry，该坐标为偏移后坐标，即为终点
         val translateGeometry = renderEntity.wkt
         val startGeometry = GeometryTools.createGeometry(renderEntity.properties["geometry"])
