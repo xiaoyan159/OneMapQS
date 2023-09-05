@@ -1491,10 +1491,6 @@
     </m>
 
     <m k="qi_table">
-        <!-- 道路线 -->
-        <m v="OMDB_RD_LINK">
-            <line stroke="#9c9c9c" width="1" />
-        </m>
 
         <!--道路种别-->
         <m v="OMDB_RD_LINK_KIND">
@@ -1527,6 +1523,11 @@
             <m k="kind" v="15">
                 <line outline="kind0" use="highway:cycleway" />
             </m>
+        </m>
+
+        <!-- 道路线 -->
+        <m v="OMDB_RD_LINK">
+            <line stroke="#9c9c9c" width="0.5" />
         </m>
 
         <!--道路方向-->

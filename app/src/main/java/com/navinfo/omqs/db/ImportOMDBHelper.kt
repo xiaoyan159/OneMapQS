@@ -437,7 +437,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             Log.e("qj", "${renderEntity.name}==不包括任务linkPid")
                                         }
 
-
                                         // 对renderEntity做预处理后再保存
                                         val resultEntity =
                                             importConfig.transformProperties(renderEntity)
@@ -471,6 +470,8 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                         if (type != null && type == "1") {
                                                             renderEntity.code =
                                                                 DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code
+                                                            renderEntity.zoomMin = 15
+                                                            renderEntity.zoomMax = 17
                                                             Log.e("qj", "道路属性===3")
                                                         } else {
                                                             type =
@@ -478,9 +479,13 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                             if (type != null && type == "1") {
                                                                 renderEntity.code =
                                                                     DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code
+                                                                renderEntity.zoomMin = 15
+                                                                renderEntity.zoomMax = 17
                                                                 Log.e("qj", "道路属性===4")
                                                             } else {
                                                                 renderEntity.enable = 0
+                                                                renderEntity.zoomMin = 15
+                                                                renderEntity.zoomMax = 17
                                                                 Log.e(
                                                                     "qj",
                                                                     "过滤不显示数据${renderEntity.table}"

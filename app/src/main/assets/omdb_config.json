@@ -527,17 +527,23 @@
 			"2022": {
 				"table": "OMDB_CON_ACCESS",
 				"code": 2022,
-				"name": "全封闭"
+				"name": "全封闭",
+				"zoomMin": 15,
+				"zoomMax": 17
 			},
 			"2037": {
 				"table": "OMDB_RAMP",
 				"code": 2037,
-				"name": "匝道"
+				"name": "匝道",
+				"zoomMin": 15,
+				"zoomMax": 17
 			},
 			"2040": {
 				"table": "OMDB_MULTI_DIGITIZED",
 				"code": 2040,
-				"name": "上下线分离"
+				"name": "上下线分离",
+				"zoomMin": 15,
+				"zoomMax": 17
 			},
 			"2204":{
 				"table": "OMDB_ROUNDABOUT",
