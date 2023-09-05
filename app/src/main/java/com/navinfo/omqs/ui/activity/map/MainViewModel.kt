@@ -475,7 +475,7 @@ class MainViewModel @Inject constructor(
                     point.longitude,
                     point.latitude
                 ),
-                buffer = 1.0, catchAll = false
+                buffer = 2.5, catchAll = false
             )
 
             if (itemList.size == 1) {
@@ -499,13 +499,13 @@ class MainViewModel @Inject constructor(
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
-                //val linkList = realmOperateHelper.queryLink(point = point)
+                val linkList = realmOperateHelper.queryLink(point = point)
 
-                val linkList = realmOperateHelper.queryLine(
+/*                val linkList = realmOperateHelper.queryLine(
                     point = point,
                     buffer = 1.0,
                     table = "OMDB_RD_LINK_KIND"
-                )
+                )*/
 
                 var hisRoadName = false
 

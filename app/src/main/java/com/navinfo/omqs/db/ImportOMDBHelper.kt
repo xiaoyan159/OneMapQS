@@ -9,6 +9,7 @@ import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.ZipUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.enums.DataCodeEnum
@@ -153,6 +154,14 @@ class ImportOMDBHelper @AssistedInject constructor(
 
             realm.beginTransaction()
             try {
+                //缓存任务link信息，便于下面与数据进行任务link匹配
+                val hashMap:HashMap<String,HadLinkDvoBean> = HashMap<String,HadLinkDvoBean>() //define empty hashmap
+                task.hadLinkDvoList.forEach{
+                    hashMap.put(it.linkPid,it);
+                }
+
+                val resHashMap:HashMap<String,RenderEntity> = HashMap<String,RenderEntity>() //define empty hashmap
+
                 // 遍历解压后的文件，读取该数据返回
                 for (importConfig in importConfigList) {
                     for ((index, currentEntry) in importConfig.tableMap.entries.withIndex()) {
@@ -160,7 +169,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                         val txtFile = unZipFiles.find {
                             it.name == currentConfig.table
                         }
-
                         val listResult = mutableListOf<RenderEntity>()
                         currentConfig?.let {
                             val list = FileIOUtils.readFile2List(txtFile, "UTF-8")
@@ -289,6 +297,22 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         }
                                     }
 
+                                    //交限增加相同LinkIn与LinkOut过滤原则
+                                    if(renderEntity.code==DataCodeEnum.OMDB_RESTRICTION.code){
+                                        if(renderEntity.properties.containsKey("linkIn")&&renderEntity.properties.containsKey("linkOut")){
+                                            var linkIn = renderEntity.properties["linkIn"]
+                                            var linkOut = renderEntity.properties["linkOut"]
+                                            if(linkIn!=null&&linkOut!=null){
+                                                var checkMsg = "$linkIn$linkOut"
+                                                if(resHashMap.containsKey(checkMsg)){
+                                                    Log.e("qj","${renderEntity.name}==过滤交限linkin与linkout相同且存在多条数据")
+                                                    continue
+                                                }else{
+                                                    resHashMap.put(checkMsg,renderEntity)
+                                                }
+                                            }
+                                        }
+                                    }
 
                                     //遍历判断只显示与任务Link相关的任务数据
                                     if(currentConfig.checkLinkId){
@@ -299,32 +323,19 @@ class ImportOMDBHelper @AssistedInject constructor(
 
                                             if(!currentLinkPid.isNullOrEmpty()&&currentLinkPid!="null"){
 
-                                                task.hadLinkDvoList.forEach{
-                                                    if(it.linkPid==renderEntity.properties["linkPid"]){
-                                                        renderEntity.enable = 1
-                                                        Log.e("qj","${renderEntity.name}==包括任务link")
-                                                        return@forEach
-                                                    }
-                                                }
-                                            }
+                                                var list = currentLinkPid.split(",")
 
-                                        }else if(renderEntity.code == DataCodeEnum.OMDB_RESTRICTION.code && renderEntity.properties.containsKey("linkIn")){
-
-                                            if (renderEntity.properties["linkIn"] != null) {
-
-                                                var currentLinkPid = renderEntity.properties["linkIn"]
-
-                                                if(!currentLinkPid.isNullOrEmpty()&&currentLinkPid!="null"){
-
-                                                    task.hadLinkDvoList.forEach{
-                                                        if(it.linkPid==currentLinkPid){
+                                                if(list!=null&&list.size>0){
+                                                    m@for (linkPid in list){
+                                                        if(hashMap.containsKey(linkPid)){
                                                             renderEntity.enable = 1
                                                             Log.e("qj","${renderEntity.name}==包括任务link")
-                                                            return@forEach
+                                                            break@m
                                                         }
                                                     }
                                                 }
                                             }
+
                                         }else if(renderEntity.code == DataCodeEnum.OMDB_INTERSECTION.code && renderEntity.properties.containsKey("linkList")){
 
                                             if (renderEntity.properties["linkList"] != null) {
@@ -341,12 +352,10 @@ class ImportOMDBHelper @AssistedInject constructor(
 
                                                     if (list != null) {
                                                         m@for (link in list){
-                                                            for(hadLink in task.hadLinkDvoList){
-                                                                if (hadLink.linkPid == link.linkPid) {
-                                                                    renderEntity.enable = 1
-                                                                    Log.e("qj", "${renderEntity.name}==包括任务link==${renderEntity.geometry}")
-                                                                    break@m
-                                                                }
+                                                            if(hashMap.containsKey(link.linkPid)){
+                                                                renderEntity.enable = 1
+                                                                break@m
+                                                                Log.e("qj","${renderEntity.name}==包括任务link")
                                                             }
                                                         }
                                                     }
@@ -368,124 +377,127 @@ class ImportOMDBHelper @AssistedInject constructor(
                                     // 对renderEntity做预处理后再保存
                                     val resultEntity = importConfig.transformProperties(renderEntity)
 
-                                    if(currentConfig.catch){
-                                        renderEntity.catchEnable=0
-                                    }else{
-                                        renderEntity.catchEnable=1
-                                    }
-
-                                    //对code编码需要特殊处理 存在多个属性值时，渲染优先级：SA>PA,存在多个属性值时，渲染优先级：FRONTAGE>MAIN_SIDE_A CCESS
-                                    if(renderEntity.code == DataCodeEnum.OMDB_LINK_ATTRIBUTE.code){
-
-                                        Log.e("qj","道路属性===0")
-
-                                        var type = renderEntity.properties["sa"]
-
-                                        if(type!=null&&type=="1"){
-                                            renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code
-                                            Log.e("qj","道路属性===1")
+                                    if(renderEntity!=null){
+                                        if(currentConfig.catch){
+                                            renderEntity.catchEnable=0
                                         }else{
-                                            type = renderEntity.properties["pa"]
+                                            renderEntity.catchEnable=1
+                                        }
+
+                                        //对code编码需要特殊处理 存在多个属性值时，渲染优先级：SA>PA,存在多个属性值时，渲染优先级：FRONTAGE>MAIN_SIDE_A CCESS
+                                        if(renderEntity.code == DataCodeEnum.OMDB_LINK_ATTRIBUTE.code){
+
+                                            Log.e("qj","道路属性===0")
+
+                                            var type = renderEntity.properties["sa"]
+
                                             if(type!=null&&type=="1"){
-                                                renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code
-                                                Log.e("qj","道路属性===2")
-                                            } else{
-                                                type = renderEntity.properties["frontage"]
+                                                renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code
+                                                Log.e("qj","道路属性===1")
+                                            }else{
+                                                type = renderEntity.properties["pa"]
                                                 if(type!=null&&type=="1"){
-                                                    renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code
-                                                    Log.e("qj","道路属性===3")
-                                                }else{
-                                                    type = renderEntity.properties["mainSideAccess"]
+                                                    renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code
+                                                    Log.e("qj","道路属性===2")
+                                                } else{
+                                                    type = renderEntity.properties["frontage"]
                                                     if(type!=null&&type=="1"){
-                                                        renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code
-                                                        Log.e("qj","道路属性===4")
+                                                        renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code
+                                                        Log.e("qj","道路属性===3")
                                                     }else{
-                                                        renderEntity.enable=0
-                                                        Log.e("qj","过滤不显示数据${renderEntity.table}")
-                                                        Log.e("qj","道路属性===5")
-                                                        continue
+                                                        type = renderEntity.properties["mainSideAccess"]
+                                                        if(type!=null&&type=="1"){
+                                                            renderEntity.code = DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code
+                                                            Log.e("qj","道路属性===4")
+                                                        }else{
+                                                            renderEntity.enable=0
+                                                            Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                                            Log.e("qj","道路属性===5")
+                                                            continue
+                                                        }
                                                     }
                                                 }
                                             }
-                                        }
-                                    }else if(renderEntity.code == DataCodeEnum.OMDB_RAMP.code){
-                                        /*匝道*/
-                                        var formWay = renderEntity.properties["formOfWay"]
-                                        if(formWay!=null){
-                                            when (formWay) {
-                                                "93"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_1.code
-                                                "98"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_2.code
-                                                "99"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_3.code
-                                                "100"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_4.code
-                                                "102"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_5.code
-                                                "103"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_6.code
-                                                "104"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_7.code
+                                        }else if(renderEntity.code == DataCodeEnum.OMDB_RAMP.code){
+                                            /*匝道*/
+                                            var formWay = renderEntity.properties["formOfWay"]
+                                            if(formWay!=null){
+                                                when (formWay) {
+                                                    "93"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_1.code
+                                                    "98"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_2.code
+                                                    "99"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_3.code
+                                                    "100"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_4.code
+                                                    "102"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_5.code
+                                                    "103"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_6.code
+                                                    "104"-> renderEntity.code = DataCodeEnum.OMDB_RAMP_7.code
+                                                }
+                                            }
+                                        }else if(renderEntity.code == DataCodeEnum.OMDB_LINK_FORM1.code){
+                                            /*道路形态1*/
+                                            var formWay = renderEntity.properties["formOfWay"]
+                                            if(formWay!=null){
+                                                when (formWay) {
+                                                    "35"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM1_1.code
+                                                    "37"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM1_2.code
+                                                    "38"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM1_3.code
+                                                }
+                                            }
+                                        }else if(renderEntity.code == DataCodeEnum.OMDB_LINK_FORM2.code){
+                                            Log.e("qj","道路形态2${renderEntity.properties["formOfWay"]}")
+                                            /*道路形态2*/
+                                            var formWay = renderEntity.properties["formOfWay"]
+                                            if(formWay!=null){
+                                                when (formWay) {
+                                                    "10"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_1.code
+                                                    "11"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_2.code
+                                                    "17"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_3.code
+                                                    "18"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_4.code
+                                                    "20"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_5.code
+                                                    "22"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_6.code
+                                                    "36"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_7.code
+                                                    "52"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_8.code
+                                                    "53"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_9.code
+                                                    "54"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_10.code
+                                                    "60"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_11.code
+                                                    "84"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_12.code
+                                                    "85"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_13.code
+                                                }
+                                            }
+                                        }else if(renderEntity.table == DataCodeEnum.OMDB_NODE_FORM.name){//特殊处理，因为code相同，使用表名判断
+                                            //过滤不需要渲染的要素
+                                            var formOfWay = renderEntity.properties["formOfWay"]
+                                            if(formOfWay!=null&&formOfWay=="30"){
+                                                renderEntity.enable=2
+                                                renderEntity.code = DataCodeEnum.OMDB_NODE_FORM.code
+                                            }else{
+                                                Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                                continue
+                                            }
+                                        }else if(renderEntity.table == DataCodeEnum.OMDB_NODE_PA.name){//特殊处理，因为code相同，使用表名判断
+                                            //过滤不需要渲染的要素
+                                            var attributeType = renderEntity.properties["attributeType"]
+                                            if(attributeType!=null&&attributeType=="30"){
+                                                renderEntity.enable=2
+                                                renderEntity.code = DataCodeEnum.OMDB_NODE_PA.code
+                                            }else{
+                                                Log.e("qj","过滤不显示数据${renderEntity.table}")
+                                                continue
+                                            }
+                                        }else if(renderEntity.code == DataCodeEnum.OMDB_LANE_CONSTRUCTION.code){
+                                            //特殊处理空数据，渲染原则使用
+                                            var startTime = renderEntity.properties["startTime"]
+                                            if(startTime==null||startTime=="") {
+                                                renderEntity.properties["startTime"] = "null"
                                             }
                                         }
-                                    }else if(renderEntity.code == DataCodeEnum.OMDB_LINK_FORM1.code){
-                                        /*道路形态1*/
-                                        var formWay = renderEntity.properties["formOfWay"]
-                                        if(formWay!=null){
-                                            when (formWay) {
-                                                "35"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM1_1.code
-                                                "37"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM1_2.code
-                                                "38"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM1_3.code
-                                            }
-                                        }
-                                    }else if(renderEntity.code == DataCodeEnum.OMDB_LINK_FORM2.code){
-                                        Log.e("qj","道路形态2${renderEntity.properties["formOfWay"]}")
-                                        /*道路形态2*/
-                                        var formWay = renderEntity.properties["formOfWay"]
-                                        if(formWay!=null){
-                                            when (formWay) {
-                                                "10"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_1.code
-                                                "11"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_2.code
-                                                "17"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_3.code
-                                                "18"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_4.code
-                                                "20"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_5.code
-                                                "22"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_6.code
-                                                "36"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_7.code
-                                                "52"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_8.code
-                                                "53"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_9.code
-                                                "54"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_10.code
-                                                "60"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_11.code
-                                                "84"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_12.code
-                                                "85"-> renderEntity.code = DataCodeEnum.OMDB_LINK_FORM2_13.code
-                                            }
-                                        }
-                                    }else if(renderEntity.table == DataCodeEnum.OMDB_NODE_FORM.name){//特殊处理，因为code相同，使用表名判断
-                                        //过滤不需要渲染的要素
-                                        var formOfWay = renderEntity.properties["formOfWay"]
-                                        if(formOfWay!=null&&formOfWay=="30"){
-                                            renderEntity.enable=2
-                                            renderEntity.code = DataCodeEnum.OMDB_NODE_FORM.code
-                                        }else{
-                                            Log.e("qj","过滤不显示数据${renderEntity.table}")
-                                            continue
-                                        }
-                                    }else if(renderEntity.table == DataCodeEnum.OMDB_NODE_PA.name){//特殊处理，因为code相同，使用表名判断
-                                        //过滤不需要渲染的要素
-                                        var attributeType = renderEntity.properties["attributeType"]
-                                        if(attributeType!=null&&attributeType=="30"){
-                                            renderEntity.enable=2
-                                            renderEntity.code = DataCodeEnum.OMDB_NODE_PA.code
-                                        }else{
-                                            Log.e("qj","过滤不显示数据${renderEntity.table}")
-                                            continue
-                                        }
-                                    }else if(renderEntity.code == DataCodeEnum.OMDB_LANE_CONSTRUCTION.code){
-                                        //特殊处理空数据，渲染原则使用
-                                        var startTime = renderEntity.properties["startTime"]
-                                        if(startTime==null||startTime=="") {
-                                            renderEntity.properties["startTime"] = "null"
-                                        }
+
+                                        realm.insert(renderEntity)
                                     }
+
 
                                     listResult.add(renderEntity)
 
-                                    if (resultEntity != null) {
-                                        realm.insert(renderEntity)
-                                    }
+
                                 }
                             }
                         }
