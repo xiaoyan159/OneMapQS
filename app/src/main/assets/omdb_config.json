@@ -497,11 +497,6 @@
 						"vlib": "generateAddWidthLine()"
 					}
 				]
-			},
-			"5002":{
-				"table": "OMDB_AREA",
-				"code": 5002,
-				"name": "面测试"
 			}
 		}
 	},

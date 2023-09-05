@@ -55,7 +55,7 @@ class ImportPreProcess {
             )!=null) {
             var angle = renderEntity?.properties?.get("angle")?.toDouble()!!
             // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
-            angle = (450 - angle) % 360
+            angle = -((450 - angle) % 360)
             radian = Math.toRadians(angle)
         } else {
             var isReverse = false // 是否为逆向
@@ -129,7 +129,7 @@ class ImportPreProcess {
 //                angle += 180
 //            }
             // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
-            angle = (450 - angle) % 360
+            angle = -((450 - angle) % 360)
             radian = Math.toRadians(angle)
         } else if (Geometry.TYPENAME_LINESTRING == geometry?.geometryType) {
             var coordinates = geometry.coordinates
@@ -300,7 +300,7 @@ class ImportPreProcess {
                     "angle"
                 )?.toDouble()!!
             // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
-            angle = (450 - angle) % 360
+            angle = -((450 - angle) % 360)
             radian = Math.toRadians(angle)
         } else if (Geometry.TYPENAME_LINESTRING == geometry?.geometryType) {
             var coordinates = geometry.coordinates
@@ -324,7 +324,7 @@ class ImportPreProcess {
                 }
             } else renderEntity?.properties?.get("angle")?.toDouble()!!
 
-            angle = (450 - angle) % 360
+            angle = -((450 - angle) % 360)
             radian = Math.toRadians(angle)
         }
 
@@ -451,9 +451,10 @@ class ImportPreProcess {
                     referenceEntity.properties["currentDirect"] =
                         laneInfoDirectArray[i].toString().split(",").distinct().joinToString("_")
                     referenceEntity.properties["currentType"] =
-                        laneInfoTypeArray[i].toString().split(",").distinct().joinToString("_")
+                        laneInfoTypeArray[i].toString()
+                    val type = if (referenceEntity.properties["currentType"]=="0") "normal" else if (referenceEntity.properties["currentType"]=="1") "extend" else "bus"
                     referenceEntity.properties["symbol"] =
-                        "assets:omdb/4601/bus/1301_" + referenceEntity.properties["currentDirect"] + ".svg"
+                        "assets:omdb/4601/${type}/1301_${referenceEntity.properties["currentDirect"]}.svg"
                     Log.d("unpackingLaneInfo", referenceEntity.properties["symbol"].toString())
                     Realm.getDefaultInstance().insert(referenceEntity)
                 }
@@ -687,7 +688,7 @@ class ImportPreProcess {
                     "angle"
                 )?.toDouble()!!
             // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
-            angle = (450 - angle) % 360
+            angle = -((450 - angle) % 360)
             radian = Math.toRadians(angle)
         } else if (Geometry.TYPENAME_LINESTRING == geometry?.geometryType) {
             var coordinates = geometry.coordinates
@@ -708,7 +709,7 @@ class ImportPreProcess {
                 }
             } else renderEntity?.properties?.get("angle")?.toDouble()!!
 
-            angle = (450 - angle) % 360
+            angle = -((450 - angle) % 360)
             radian = Math.toRadians(angle)
         }
 
