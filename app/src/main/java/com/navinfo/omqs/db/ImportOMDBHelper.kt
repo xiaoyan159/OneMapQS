@@ -255,20 +255,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             }
                                         }
 
-                                        //测试代码
-                                        /*                                    if(renderEntity.code == DataCodeEnum.OMDB_RD_LINK_KIND.code) {
-
-                                                                                var currentLinkPid = renderEntity.properties["linkPid"]
-
-                                                                                if(currentLinkPid!="84209046927907835"){
-                                                                                    continue
-                                                                                }
-                                                                            }else if(renderEntity.code == DataCodeEnum.OMDB_RD_LINK.code){
-                                                                                continue
-                                                                            }else{
-                                                                                continue
-                                                                            }*/
-
                                         // 如果properties中不包含name，那么自动将要素名称添加进properties中
                                         if (!renderEntity.properties.containsKey("name")) {
                                             renderEntity.properties["name"] = renderEntity.name;
