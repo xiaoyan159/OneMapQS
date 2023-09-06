@@ -20,23 +20,23 @@ class ImportPreProcess {
     val defaultTranslateDistance = 3.0
     val testFlag:Boolean = true
     fun checkCircleRoad(renderEntity: RenderEntity): Boolean {
-        val linkInId = renderEntity.properties["linkIn"]
-        val linkOutId = renderEntity.properties["linkOut"]
-        // 根据linkIn和linkOut获取对应的link数据
-        val linkInEntity = cacheRdLink[linkInId]
-        val linkOutEntity = cacheRdLink[linkOutId]
-        Log.d(
-            "checkCircleRoad",
-            "LinkInEntity: ${linkInId}- ${linkInEntity?.properties?.get("snodePid")}，LinkOutEntity: ${linkOutId}- ${
-                linkOutEntity?.properties?.get("enodePid")
-            }"
-        )
-        // 查询linkIn的sNode和linkOut的eNode是否相同，如果相同，认为数据是环形路口，返回false
-        if (linkInEntity != null && linkOutEntity != null) {
-            if (linkInEntity.properties["snodePid"] == linkOutEntity.properties["enodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["snodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["enodePid"]) {
-                return false
-            }
-        }
+//        val linkInId = renderEntity.properties["linkIn"]
+//        val linkOutId = renderEntity.properties["linkOut"]
+//        // 根据linkIn和linkOut获取对应的link数据
+//        val linkInEntity = cacheRdLink[linkInId]
+//        val linkOutEntity = cacheRdLink[linkOutId]
+//        Log.d(
+//            "checkCircleRoad",
+//            "LinkInEntity: ${linkInId}- ${linkInEntity?.properties?.get("snodePid")}，LinkOutEntity: ${linkOutId}- ${
+//                linkOutEntity?.properties?.get("enodePid")
+//            }"
+//        )
+//        // 查询linkIn的sNode和linkOut的eNode是否相同，如果相同，认为数据是环形路口，返回false
+//        if (linkInEntity != null && linkOutEntity != null) {
+//            if (linkInEntity.properties["snodePid"] == linkOutEntity.properties["enodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["snodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["enodePid"]) {
+//                return false
+//            }
+//        }
         return true
     }
 
