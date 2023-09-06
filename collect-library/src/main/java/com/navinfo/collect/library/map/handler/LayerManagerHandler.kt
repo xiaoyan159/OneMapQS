@@ -15,6 +15,7 @@ import okhttp3.Cache
 import okhttp3.OkHttpClient
 import org.oscim.android.theme.AssetsRenderTheme
 import org.oscim.layers.GroupLayer
+import org.oscim.layers.TileGridLayer
 import org.oscim.layers.tile.buildings.BuildingLayer
 import org.oscim.layers.tile.vector.VectorTileLayer
 import org.oscim.layers.tile.vector.labeling.LabelLayer
@@ -55,6 +56,7 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
     private lateinit var omdbReferenceTileLayer: VectorTileLayer
     private lateinit var omdbLabelLayer: LabelLayer
     private lateinit var omdbReferenceLabelLayer: LabelLayer
+    private lateinit var tileGridLayer: TileGridLayer // 用来显示tile号的layer
 
     private val omdbTileSource by lazy { OMDBTileSource() }
     private val omdbReferenceTileSource by lazy { OMDBReferenceTileSource() }
@@ -141,6 +143,9 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
         // 向两个Vector图层增加hook钩子，加载数据前对style或数据进行二次处理
         omdbVectorTileLayer.addHook(navinfoTileThemeHook)
         omdbReferenceTileLayer.addHook(navinfoTileThemeHook)
+        // 添加显示grid的tile号的图层
+        tileGridLayer = TileGridLayer(mMapView.vtmMap)
+        addLayer(tileGridLayer, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
     }
 
     private fun resetOMDBVectorTileLayer() {
