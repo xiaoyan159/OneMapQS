@@ -1613,14 +1613,6 @@
                 <symbol repeat="false" repeat-start="0" rotate="false"
                     src="assets:omdb/icon_4023_0.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
-<!--            <m k="type" v="angle">
-                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
-                    src="assets:omdb/icon_arrow_right.svg" symbol-height="64"
-                    symbol-width="64"></symbol>
-            </m>
-            <m k="type" v="s_2_e">
-                <line use="s2e" />
-            </m>-->
         </m>
         <!-- 道路边界类型 -->
         <m v="OMDB_RDBOUND_BOUNDARYTYPE">
@@ -1897,10 +1889,10 @@
 
         <!--普通交限-->
         <m v="OMDB_RESTRICTION">
-            <m k="angle">
-                <symbol repeat="false" repeat-start="0" rotate="false"
-                    src="assets:omdb/icon_4006_0.svg" symbol-height="56" symbol-width="56"></symbol>
-            </m>
+<!--            <m k="angle">-->
+<!--                <symbol repeat="false" repeat-start="0" rotate="false"-->
+<!--                    src="assets:omdb/icon_4006_0.svg" symbol-height="56" symbol-width="56"></symbol>-->
+<!--            </m>-->
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
                     src="assets:omdb/icon_arrow_right.svg" symbol-height="56"
@@ -1913,14 +1905,14 @@
 
         <!--电子眼-->
         <m v="OMDB_ELECTRONICEYE">
-            <m k="eleceyeId">
-                <caption dy="-30" fill="#0000FF" k="name" priority="0" size="12"
-                    stroke="#ffffff" stroke-width="1.0"></caption>
-                <symbol repeat="false" src="assets:omdb/4010/icon_electroniceye_4010.svg" symbol-height="44" symbol-width="44"></symbol>
-            </m>
+<!--            <m k="eleceyeId">-->
+<!--                <caption dy="-12" fill="#ffffff" k="name" priority="0" size="11"-->
+<!--                    stroke="#000000" stroke-width="1.0" bg-fill="#F98F03"></caption>-->
+<!--                <symbol repeat="false" src="assets:omdb/4010/icon_electroniceye_4010.svg" symbol-height="44" symbol-width="44"></symbol>-->
+<!--            </m>-->
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
-                    src="assets:omdb/4010/right.svg" symbol-height="40" symbol-width="40"></symbol>
+                    src="assets:omdb/icon_arrow_right.svg" symbol-height="44" symbol-width="44"></symbol>
             </m>
             <m k="type" v="s_2_e">
                 <line use="s2e" />
