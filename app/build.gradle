@@ -77,7 +77,6 @@ android {
 }
 
 
-
 dependencies {
     api project(':collect-library')
     implementation project(path: ':vtm-android')
