@@ -490,6 +490,7 @@
 				"zoomMin": 18,
 				"zoomMax": 20,
 				"catch":false,
+				"checkLinkId": false,
 				"transformer": [
 					{
 						"k": "geometry",

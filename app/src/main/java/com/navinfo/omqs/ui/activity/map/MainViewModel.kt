@@ -51,6 +51,7 @@ import com.navinfo.omqs.util.SoundMeter
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.realm.RealmSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -302,6 +303,9 @@ class MainViewModel @Inject constructor(
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         MapParamUtils.setTaskId(sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1))
+        Constant.currentSelectTaskFolder =  File(Constant.USER_DATA_PATH +"/${MapParamUtils.getTaskId()}")
+        Constant.currentSelectTaskConfig = RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder).name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true).schemaVersion(2).build()
+        MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
         socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
     }
 
@@ -316,6 +320,7 @@ class MainViewModel @Inject constructor(
         if (res != null) {
             currentTaskBean = realm.copyFromRealm(res)
         }
+        realm.close()
     }
 
 
@@ -337,9 +342,10 @@ class MainViewModel @Inject constructor(
             val realm = realmOperateHelper.getRealmDefaultInstance()
             realm.executeTransaction {
                 val objects =
-                    realmOperateHelper.getRealmTools(QsRecordBean::class.java, false).findAll()
+                    realmOperateHelper.getRealmTools(QsRecordBean::class.java).findAll()
                 list = realm.copyFromRealm(objects)
             }
+            realm.close()
             mapController.markerHandle.removeAllQsMarker()
             for (item in list) {
                 mapController.markerHandle.addOrUpdateQsRecordMark(item)
@@ -354,11 +360,11 @@ class MainViewModel @Inject constructor(
         var list = mutableListOf<NoteBean>()
         val realm = realmOperateHelper.getRealmDefaultInstance()
         realm.executeTransaction {
-            val objects = realmOperateHelper.getRealmTools(NoteBean::class.java, false).findAll()
+            val objects = realmOperateHelper.getRealmTools(NoteBean::class.java).findAll()
             list = realm.copyFromRealm(objects)
         }
 
-
+        realm.close()
 
         for (item in list) {
             mapController.markerHandle.addOrUpdateNoteMark(item)
@@ -607,10 +613,10 @@ class MainViewModel @Inject constructor(
 
                             }
 
-                            val realm = realmOperateHelper.getRealmDefaultInstance()
+                            val realm = realmOperateHelper.getSelectTaskRealmInstance()
 
                             val entity =
-                                realmOperateHelper.getRealmTools(RenderEntity::class.java, true)
+                                realmOperateHelper.getSelectTaskRealmTools(RenderEntity::class.java, true)
                                     .and()
                                     .equalTo("table", DataCodeEnum.OMDB_RESTRICTION.name)
                                     .and()
@@ -620,7 +626,7 @@ class MainViewModel @Inject constructor(
                             if (entity != null) {
                                 val outLink = entity.properties["linkOut"]
                                 val linkOutEntity =
-                                    realmOperateHelper.getRealmTools(RenderEntity::class.java, true)
+                                    realmOperateHelper.getSelectTaskRealmTools(RenderEntity::class.java, true)
                                         .and()
                                         .equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).and()
                                         .equalTo(
@@ -633,6 +639,7 @@ class MainViewModel @Inject constructor(
                                     )
                                 }
                             }
+                            realm.close()
                         }
 
                         liveDataTopSignList.postValue(topSignList.distinctBy { it.name }

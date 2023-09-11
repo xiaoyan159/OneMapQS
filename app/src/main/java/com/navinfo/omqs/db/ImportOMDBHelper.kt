@@ -15,12 +15,16 @@ import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
+import com.navinfo.omqs.Constant.Companion.currentInstallTaskConfig
+import com.navinfo.omqs.Constant.Companion.currentInstallTaskFolder
+import com.navinfo.omqs.Constant.Companion.installTaskid
 import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.db.deep.LinkList
 import com.navinfo.omqs.hilt.OMDBDataBaseHiltFactory
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -139,7 +143,18 @@ class ImportOMDBHelper @AssistedInject constructor(
      * */
     suspend fun importOmdbZipFile(omdbZipFile: File, task: TaskBean): Flow<String> =
         withContext(Dispatchers.IO) {
+            installTaskid = task.id.toString()
+            currentInstallTaskFolder = File(Constant.USER_DATA_PATH + "/$installTaskid")
+            if (!currentInstallTaskFolder.exists()) currentInstallTaskFolder.mkdirs()
+            currentInstallTaskConfig = RealmConfiguration.Builder()
+                .directory(currentInstallTaskFolder)
+                .name("OMQS.realm")
+                .encryptionKey(Constant.PASSWORD)
+                .allowQueriesOnUiThread(true)
+                .schemaVersion(2)
+                .build()
             val unZipFolder = File(omdbZipFile.parentFile, "result")
+
             flow {
                 if (unZipFolder.exists()) {
                     unZipFolder.deleteRecursively()
@@ -151,11 +166,13 @@ class ImportOMDBHelper @AssistedInject constructor(
                 // 先获取当前配置的所有图层的个数，方便后续计算数据解析进度
                 var tableNum = 0
                 var processIndex = 0
+                var dataIndex = 0
+
+                Realm.getInstance(currentInstallTaskConfig).beginTransaction()
+
                 for (importConfig in importConfigList) {
                     tableNum += importConfig.tableMap.size
                 }
-
-
                 //缓存任务link信息，便于下面与数据进行任务link匹配
                 val hashMap: HashMap<String, HadLinkDvoBean> =
                     HashMap<String, HadLinkDvoBean>() //define empty hashmap
@@ -165,19 +182,17 @@ class ImportOMDBHelper @AssistedInject constructor(
 
                 val resHashMap: HashMap<String, RenderEntity> =
                     HashMap<String, RenderEntity>() //define empty hashmap
+                try {
+                    // 遍历解压后的文件，读取该数据返回
+                    for (importConfig in importConfigList) {
 
-                // 遍历解压后的文件，读取该数据返回
-                for (importConfig in importConfigList) {
-                    val realm = Realm.getDefaultInstance()
-                    try {
                         for ((index, currentEntry) in importConfig.tableMap.entries.withIndex()) {
-                            realm.beginTransaction()
+                            val listResult = mutableListOf<RenderEntity>()
                             val currentConfig = currentEntry.value
                             val txtFile = unZipFiles.find {
                                 it.name == currentConfig.table
                             }
                             // 将listResult数据插入到Realm数据库中
-//                            val listResult = mutableListOf<RenderEntity>()
                             currentConfig?.let {
                                 val list = FileIOUtils.readFile2List(txtFile, "UTF-8")
                                 Log.d("ImportOMDBHelper", "开始解析：${txtFile?.name}")
@@ -201,7 +216,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         map["qi_zoomMax"] = currentConfig.zoomMax
 
                                         // 先查询这个mesh下有没有数据，如果有则跳过即可
-                                        // val meshEntity = Realm.getDefaultInstance().where(RenderEntity::class.java).equalTo("properties['mesh']", map["mesh"].toString()).findFirst()
                                         val renderEntity = RenderEntity()
                                         renderEntity.code = map["qi_code"].toString()
                                         renderEntity.name = map["qi_name"].toString()
@@ -318,28 +332,28 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             }
                                         }
 
-//                                        //交限增加相同LinkIn与LinkOut过滤原则
-//                                        if (renderEntity.code == DataCodeEnum.OMDB_RESTRICTION.code) {
-//                                            if (renderEntity.properties.containsKey("linkIn") && renderEntity.properties.containsKey(
-//                                                    "linkOut"
-//                                                )
-//                                            ) {
-//                                                var linkIn = renderEntity.properties["linkIn"]
-//                                                var linkOut = renderEntity.properties["linkOut"]
-//                                                if (linkIn != null && linkOut != null) {
-//                                                    var checkMsg = "$linkIn$linkOut"
-//                                                    if (resHashMap.containsKey(checkMsg)) {
-//                                                        Log.e(
-//                                                            "qj",
-//                                                            "${renderEntity.name}==过滤交限linkin与linkout相同且存在多条数据"
-//                                                        )
-//                                                        continue
-//                                                    } else {
-//                                                        resHashMap.put(checkMsg, renderEntity)
-//                                                    }
-//                                                }
-//                                            }
-//                                        }
+                                        //交限增加相同LinkIn与LinkOut过滤原则
+                                        if (renderEntity.code == DataCodeEnum.OMDB_RESTRICTION.code) {
+                                            if (renderEntity.properties.containsKey("linkIn") && renderEntity.properties.containsKey(
+                                                    "linkOut"
+                                                )
+                                            ) {
+                                                var linkIn = renderEntity.properties["linkIn"]
+                                                var linkOut = renderEntity.properties["linkOut"]
+                                                if (linkIn != null && linkOut != null) {
+                                                    var checkMsg = "$linkIn$linkOut"
+                                                    if (resHashMap.containsKey(checkMsg)) {
+                                                        Log.e(
+                                                            "qj",
+                                                            "${renderEntity.name}==过滤交限linkin与linkout相同且存在多条数据"
+                                                        )
+                                                        continue
+                                                    } else {
+                                                        resHashMap.put(checkMsg, renderEntity)
+                                                    }
+                                                }
+                                            }
+                                        }
 
                                         //遍历判断只显示与任务Link相关的任务数据
                                         if (currentConfig.checkLinkId) {
@@ -367,68 +381,52 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                     }
                                                 }
 
-                                            } else if (renderEntity.code == DataCodeEnum.OMDB_INTERSECTION.code && renderEntity.properties.containsKey(
-                                                    "linkList"
-                                                )
-                                            ) {
+                                            }else if(renderEntity.code == DataCodeEnum.OMDB_INTERSECTION.code && renderEntity.properties.containsKey("linkList")){
 
                                                 if (renderEntity.properties["linkList"] != null) {
 
-                                                    Log.e(
-                                                        "qj",
-                                                        "linkList==开始${renderEntity.name}==${renderEntity.properties["linkList"]}}"
-                                                    )
+                                                    Log.e("qj", "linkList==开始${renderEntity.name}==${renderEntity.properties["linkList"]}}")
 
-                                                    val linkList =
-                                                        renderEntity.properties["linkList"]
+                                                    val linkList = renderEntity.properties["linkList"]
 
-                                                    if (!linkList.isNullOrEmpty() && linkList != "null") {
+                                                    if (!linkList.isNullOrEmpty()&&linkList!="null") {
 
-                                                        Log.e(
-                                                            "qj",
-                                                            "linkList==${renderEntity.name}==${renderEntity.properties["linkList"]}}"
-                                                        )
+                                                        Log.e("qj", "linkList==${renderEntity.name}==${renderEntity.properties["linkList"]}}")
 
-                                                        val list: List<LinkList> = gson.fromJson(
-                                                            linkList,
-                                                            object :
-                                                                TypeToken<List<LinkList>>() {}.type
-                                                        )
+                                                        val list: List<LinkList> = gson.fromJson(linkList, object : TypeToken<List<LinkList>>() {}.type)
 
                                                         if (list != null) {
-                                                            m@ for (link in list) {
+                                                            m@for (link in list){
                                                                 if (hashMap.containsKey(link.linkPid)) {
                                                                     renderEntity.enable = 1
+                                                                    Log.e("qj", "${renderEntity.name}==包括任务link")
                                                                     break@m
-                                                                    Log.e(
-                                                                        "qj",
-                                                                        "${renderEntity.name}==包括任务link"
-                                                                    )
                                                                 }
                                                             }
                                                         }
-                                                    } else {
-                                                        renderEntity.enable = 2
-                                                        Log.e("qj", "简单路口")
                                                     }
                                                 }
-                                            } else {
-                                                renderEntity.enable = 2
+                                            }
+
+                                            //过滤掉非任务路线上的数据
+                                            if (renderEntity.enable != 1) {
                                                 Log.e(
                                                     "qj",
-                                                    "${renderEntity.name}==不包括任务linkPid"
+                                                    "${renderEntity.name}==过滤不包括任务路线上的数据"
                                                 )
+                                                continue
                                             }
+
                                         } else {
                                             renderEntity.enable = 2
                                             Log.e("qj", "${renderEntity.name}==不包括任务linkPid")
                                         }
 
                                         // 对renderEntity做预处理后再保存
-                                        val resultEntity =
-                                            importConfig.transformProperties(renderEntity)
+                                        val resultEntity = importConfig.transformProperties(renderEntity)
 
                                         if (resultEntity != null) {
+
                                             if (currentConfig.catch) {
                                                 renderEntity.catchEnable = 0
                                             } else {
@@ -610,25 +608,41 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                     renderEntity.properties["startTime"] = "null"
                                                 }
                                             }
-//                                            listResult.add(renderEntity)
-                                            realm.insert(renderEntity)
+                                            ++dataIndex
+                                            Log.e("qj", "统计==${dataIndex}")
+
+                                            //移除该字段，减少数据量
+                                            if(renderEntity.properties.containsKey("geometry")){
+                                                renderEntity.properties.remove("geometry")
+                                            }
+
+                                            Realm.getInstance(currentInstallTaskConfig).insert(renderEntity)
                                         }
+
+                                        listResult.add(renderEntity)
+
                                     }
                                 }
                             }
-//                            // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
-//                            if (currentConfig.table == "OMDB_RD_LINK") {
-//                                importConfig.preProcess.cacheRdLink =
-//                                    listResult.associateBy { it.properties["linkPid"] }
-//                            }
-                            realm.commitTransaction()
+
+                            // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
+                            if (currentConfig.table == "OMDB_RD_LINK") {
+                                importConfig.preProcess.cacheRdLink =
+                                    listResult.associateBy { it.properties["linkPid"] }
+                            }
                             // 1个文件发送一次flow流
                             emit("${++processIndex}/${tableNum}")
                         }
-                    } catch (e: Exception) {
-                        realm.cancelTransaction()
-                        throw e
+
                     }
+                    Realm.getInstance (currentInstallTaskConfig).commitTransaction()
+                    Realm.getInstance(currentInstallTaskConfig).close()
+                    Log.e("qj", "安装结束")
+                } catch (e: Exception) {
+                    if (Realm.getInstance(currentInstallTaskConfig).isInTransaction) {
+                        Realm.getInstance(currentInstallTaskConfig).cancelTransaction()
+                    }
+                    throw e
                 }
                 emit("finish")
             }

@@ -106,9 +106,10 @@ class TaskDownloadScope(
             downloadData.postValue(taskBean)
             if (status != FileDownloadStatus.LOADING && status != FileDownloadStatus.IMPORTING) {
                 val realm = Realm.getDefaultInstance()
-                realm.executeTransaction {
-                    it.insertOrUpdate(taskBean)
-                }
+                realm.beginTransaction()
+                realm.insertOrUpdate(taskBean)
+                realm.commitTransaction()
+                realm.close()
             }
         }
     }
@@ -142,6 +143,7 @@ class TaskDownloadScope(
                     Log.e("jingo", "数据安装 $it")
                     if (it == "finish") {
                         change(FileDownloadStatus.DONE)
+                        Log.e("jingo", "数据安装结束")
                         withContext(Dispatchers.Main) {
                             downloadManager.mapController.layerManagerHandler.updateOMDBVectorTileLayer()
                         }

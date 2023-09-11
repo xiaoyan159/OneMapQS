@@ -162,7 +162,6 @@ class EvaluationResultViewModel @Inject constructor(
             if (objects != null) {
                 liveDataTaskBean.postValue(realm.copyFromRealm(objects))
             }
-
             //获取当前定位点
             val geoPoint = mapController.locationLayerHandler.getCurrentGeoPoint()
             //如果不是从面板进来的
@@ -204,6 +203,7 @@ class EvaluationResultViewModel @Inject constructor(
 
             getClassTypeList(bean)
             getProblemLinkList()
+            realm.close()
         }
         addChatMsgEntity(filePath)
     }
@@ -412,6 +412,7 @@ class EvaluationResultViewModel @Inject constructor(
             }
             mapController.markerHandle.addOrUpdateQsRecordMark(liveDataQsRecordBean.value!!)
             liveDataFinish.postValue(true)
+            realm.close()
         }
     }
 
@@ -435,6 +436,7 @@ class EvaluationResultViewModel @Inject constructor(
                     mapController.markerHandle.removeQsRecordMark(liveDataQsRecordBean.value!!)
                     mapController.mMapView.vtmMap.updateMap(true)
                     liveDataFinish.postValue(true)
+                    realm.close()
                 }
             }
         })
@@ -495,6 +497,7 @@ class EvaluationResultViewModel @Inject constructor(
             } else {
                 liveDataToastMessage.postValue("数据读取失败")
             }
+            realm.close()
         }
     }
 
@@ -665,6 +668,7 @@ class EvaluationResultViewModel @Inject constructor(
                     if (objects != null) {
                         liveDataTaskBean.postValue(realm.copyFromRealm(objects))
                     }
+                    realm.close()
                 }
             } else {
                 liveDataFinish.postValue(true)

@@ -123,6 +123,7 @@ class TaskLinkViewModel @Inject constructor(
             val realm = Realm.getDefaultInstance()
             val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
             liveDataTaskBean.postValue(res?.let { realm.copyFromRealm(it) })
+            realm.close()
         }
     }
 
@@ -234,6 +235,7 @@ class TaskLinkViewModel @Inject constructor(
                 .putString(Constant.SHARED_SYNC_TASK_LINK_ID, hadLinkDvoBean!!.linkPid)
                 .apply()
             liveDataFinish.postValue(true)
+            realm.close()
         }
     }
 
@@ -302,6 +304,7 @@ class TaskLinkViewModel @Inject constructor(
                     mapController.measureLayerHandler.initPathLine(hadLinkDvoBean?.geometry!!)
                 }
             }
+            realm.close()
         }
     }
 
@@ -354,6 +357,7 @@ class TaskLinkViewModel @Inject constructor(
                 mapController.lineHandler.removeTaskLink(hadLinkDvoBean!!.linkPid)
                 mapController.mMapView.vtmMap.updateMap(true)
                 liveDataFinish.postValue(true)
+                realm.close()
             }
         }
         mDialog.setNegativeButton("取消", null)

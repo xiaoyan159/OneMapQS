@@ -1,5 +1,7 @@
 package com.navinfo.omqs.ui.activity.login
 
+import android.app.Activity
+import android.app.ActivityManager
 import android.content.Intent
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -9,12 +11,15 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityLoginBinding
 import com.navinfo.omqs.ui.activity.CheckPermissionsActivity
 import com.navinfo.omqs.ui.activity.map.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * 登陆页面
@@ -72,36 +77,46 @@ class LoginActivity : CheckPermissionsActivity() {
             LoginStatus.LOGIN_STATUS_NET_LOADING -> {
                 loginDialog("验证用户信息...")
             }
+
             LoginStatus.LOGIN_STATUS_FOLDER_INIT -> {
                 loginDialog("检查本地数据...")
             }
+
             LoginStatus.LOGIN_STATUS_FOLDER_FAILURE -> {
                 Toast.makeText(this, "文件夹初始化失败", Toast.LENGTH_SHORT).show()
                 loginDialog?.dismiss()
                 loginDialog = null
             }
+
             LoginStatus.LOGIN_STATUS_NET_FAILURE -> {
                 Toast.makeText(this, "网络访问失败", Toast.LENGTH_SHORT).show()
                 loginDialog?.dismiss()
                 loginDialog = null
             }
+
             LoginStatus.LOGIN_STATUS_SUCCESS -> {
                 loginDialog?.dismiss()
                 loginDialog = null
+                //Toast.makeText(this, "插入成功", Toast.LENGTH_SHORT).show()
+
                 val intent = Intent(this@LoginActivity, MainActivity::class.java)
                 startActivity(intent)
                 finish()
             }
+
             LoginStatus.LOGIN_STATUS_CANCEL -> {
                 loginDialog?.dismiss()
                 loginDialog = null
             }
+
             LoginStatus.LOGIN_STATUS_NET_OFFLINE_MAP -> {
                 loginDialog("检查离线地图...")
             }
+
             LoginStatus.LOGIN_STATUS_NET_GET_TASK_LIST -> {
                 loginDialog("获取任务列表...")
             }
+
             else -> {}
         }
     }
@@ -109,7 +124,6 @@ class LoginActivity : CheckPermissionsActivity() {
     private fun initView() {
         //登录校验，初始化成功
         viewModel.loginStatus.observe(this, loginObserve)
-
     }
 
     /**

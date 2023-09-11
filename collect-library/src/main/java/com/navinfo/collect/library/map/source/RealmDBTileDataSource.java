@@ -54,6 +54,7 @@ public class RealmDBTileDataSource implements ITileDataSource {
             List<GeometryFeatureEntity> listResult = realmQuery.distinct("id").findAll();
             mThreadLocalDecoders.get().decode(tile, mapDataSink, listResult);
             mapDataSink.completed(QueryResult.SUCCESS);
+            Realm.getDefaultInstance().close();
 //            Log.d("RealmDBTileDataSource", "tile:"+tile.getBoundingBox().toString());
         } else {
             mapDataSink.completed(QueryResult.SUCCESS);

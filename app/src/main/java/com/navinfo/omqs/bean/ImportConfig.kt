@@ -1,5 +1,6 @@
 package com.navinfo.omqs.bean
 
+import android.util.Log
 import com.google.gson.annotations.Expose
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.omqs.db.ImportPreProcess
@@ -20,8 +21,10 @@ class ImportConfig {
     fun transformProperties(renderEntity: RenderEntity): RenderEntity? {
         val transformList = tableMap[renderEntity.code.toString()]?.transformer
         if (transformList.isNullOrEmpty()) {
+            Log.e("qj", "子表转换为空===${renderEntity.code}")
             return renderEntity
         }
+        Log.e("qj", "子表转换不为空===${renderEntity.code}")
         for (transform in transformList) {
             // 开始执行转换
             val key:String = transform.k
