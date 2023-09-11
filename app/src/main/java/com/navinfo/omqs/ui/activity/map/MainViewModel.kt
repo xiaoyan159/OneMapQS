@@ -382,7 +382,7 @@ class MainViewModel @Inject constructor(
                 naviMutex.lock()
                 naviEngine = NaviEngine()
                 val pathList = mutableListOf<Route>()
-                val realm = Realm.getDefaultInstance()
+                val realm = realmOperateHelper.getSelectTaskRealmInstance()
                 for (link in taskBean.hadLinkDvoList) {
                     //测线不参与导航
                     if (link.linkStatus == 3) {
@@ -426,6 +426,7 @@ class MainViewModel @Inject constructor(
                     }
                     pathList.add(route)
                 }
+                realm.close()
                 //用来存储最终的导航路径
                 val newRouteList = mutableListOf<Route>()
                 //比对路径排序用的
@@ -510,7 +511,6 @@ class MainViewModel @Inject constructor(
         } else {
 //            Toast.makeText(context, "数据未安装，无法计算导航路径", Toast.LENGTH_SHORT).show()
         }
-        realm.close()
     }
 
 
@@ -812,7 +812,7 @@ class MainViewModel @Inject constructor(
                                     .and()
                                     .equalTo(
                                         "properties['linkIn']", it
-                                    ).findFirst()
+                                    ).findAll()
                             if (entityList.isNotEmpty()) {
                                 val outList = entityList.distinct()
                                 for (i in outList.indices) {
