@@ -317,34 +317,34 @@ class MainViewModel @Inject constructor(
         MapParamUtils.setTaskId(sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1))
         socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
 
-        viewModelScope.launch(Dispatchers.Default) {
-            naviTestFlow().collect {
-                naviMutex.lock()
-                if (naviEngine.geometry != null) {
-                    //定义垂线
-                    val pointPairDistance = PointPairDistance()
-                    val coordinate = Coordinate(it.longitude, it.latitude)
-                    DistanceToPoint.computeDistance(
-                        naviEngine.geometry,
-                        coordinate,
-                        pointPairDistance
-                    )
-                    if (pointPairDistance.getCoordinate(0) !== null) {
-                        val line = GeometryTools.createLineString(
-                            mutableListOf(
-                                it,
-                                GeoPoint(
-                                    pointPairDistance.getCoordinate(0).y,
-                                    pointPairDistance.getCoordinate(0).x
-                                )
-                            )
-                        )
-                        mapController.lineHandler.showLine(line.toText())
-                    }
-                }
-                naviMutex.unlock()
-            }
-        }
+//        viewModelScope.launch(Dispatchers.Default) {
+//            naviTestFlow().collect {
+//                naviMutex.lock()
+//                if (naviEngine.geometry != null) {
+//                    //定义垂线
+//                    val pointPairDistance = PointPairDistance()
+//                    val coordinate = Coordinate(it.longitude, it.latitude)
+//                    DistanceToPoint.computeDistance(
+//                        naviEngine.geometry,
+//                        coordinate,
+//                        pointPairDistance
+//                    )
+//                    if (pointPairDistance.getCoordinate(0) !== null) {
+//                        val line = GeometryTools.createLineString(
+//                            mutableListOf(
+//                                it,
+//                                GeoPoint(
+//                                    pointPairDistance.getCoordinate(0).y,
+//                                    pointPairDistance.getCoordinate(0).x
+//                                )
+//                            )
+//                        )
+//                        mapController.lineHandler.showLine(line.toText())
+//                    }
+//                }
+//                naviMutex.unlock()
+//            }
+//        }
     }
 
 
@@ -499,8 +499,7 @@ class MainViewModel @Inject constructor(
                         }
                     }
                 }
-                naviEngine.routeList = pathList
-                mapController.lineHandler.showLine(naviEngine.geometry!!.toText())
+                naviEngine.routeList = newRouteList
                 naviMutex.unlock()
             }
         } else {
