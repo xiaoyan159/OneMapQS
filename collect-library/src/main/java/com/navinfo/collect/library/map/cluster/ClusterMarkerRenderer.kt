@@ -317,7 +317,7 @@ open class ClusterMarkerRenderer : MarkerRenderer {
                 // this item will act as a cluster, just use a proper bitmap
                 // depending on cluster size, instead of its marker
                 val bitmap = getClusterBitmap(it.clusterSize + 1)
-                s.set(it.x, it.y, bitmap, true, false, 0f)
+                s.set(it.x, it.y, bitmap, true, false, 0f, 0f)
                 s.offset = PointF(0.5f, 0.5f)
                 s.billboard = true // could be a parameter
             } else {
@@ -325,7 +325,7 @@ open class ClusterMarkerRenderer : MarkerRenderer {
                 var symbol: MarkerSymbol? = it.item.marker
                 if (symbol == null) symbol = mDefaultMarker
                 symbol?.let { symbol ->
-                    s.set(it.x, it.y, symbol.bitmap, true, false, 0f)
+                    s.set(it.x, it.y, symbol.bitmap, true, false, 0f, 0f)
                     s.offset = symbol.hotspot
                     s.billboard = symbol.isBillboard
                 }

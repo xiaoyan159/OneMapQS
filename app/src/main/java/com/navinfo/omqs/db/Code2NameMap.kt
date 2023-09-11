@@ -33,7 +33,7 @@ class Code2NameMap {
         29 to "鸣笛",
         30 to "年检",
         31 to "尾气",
-        32 to "交通灯",
+        32 to "ETC",
         33 to "专用",
         34 to "标线",
         35 to "违章",
