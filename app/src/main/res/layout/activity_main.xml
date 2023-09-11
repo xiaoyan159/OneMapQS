@@ -102,7 +102,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/top_right_drawer_btns_mr"
-            app:constraint_referenced_ids="main_activity_note,main_activity_task_line,main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_calc_distance,main_activity_menu"
+            app:constraint_referenced_ids="main_activity_add_new,main_activity_task_line,main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_calc_distance,main_activity_menu"
             app:flow_horizontalGap="6dp"
             app:flow_wrapMode="aligned"
             app:layout_constraintRight_toLeftOf="@id/main_activity_right_fragment"
@@ -113,7 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="invisible"
-            app:constraint_referenced_ids="main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_note,main_activity_task_line,main_activity_calc_distance" />
+            app:constraint_referenced_ids="main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_add_new,main_activity_task_line,main_activity_calc_distance" />
 
         <ImageButton
             android:id="@+id/main_activity_serach"
@@ -146,10 +146,10 @@
             android:src="@drawable/icon_calc_disance" />
 
         <ImageButton
-            android:id="@+id/main_activity_note"
+            android:id="@+id/main_activity_add_new"
             style="@style/top_right_drawer_btns_style"
-            android:onClick="@{()->mainActivity.onClickNewNote()}"
-            android:src="@drawable/icon_menu_note" />
+            android:onClick="@{()->mainActivity.voiceOnclick()}"
+            android:src="@drawable/icon_add_data" />
 
         <ImageButton
             android:id="@+id/main_activity_task_line"
@@ -243,7 +243,6 @@
             android:paddingBottom="4dp"
             android:textColor="@color/white"
             android:textSize="16sp"
-            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/main_activity_bottom_sheet"
             app:layout_constraintLeft_toLeftOf="@id/main_activity_top_sign_recyclerview" />
 
@@ -291,11 +290,11 @@
             app:layout_constraintRight_toRightOf="@id/main_activity_map_update" />
 
         <ImageButton
-            android:id="@+id/main_activity_add_new"
+            android:id="@+id/main_activity_note"
             style="@style/zoom_btns_style"
             android:layout_marginBottom="12dp"
-            android:onClick="@{()->mainActivity.voiceOnclick()}"
-            android:src="@drawable/icon_add_data"
+            android:onClick="@{()->mainActivity.onClickNewNote()}"
+            android:src="@drawable/icon_menu_note"
             app:layout_constraintBottom_toTopOf="@id/main_activity_location"
             app:layout_constraintRight_toRightOf="@id/main_activity_location" />
 
@@ -305,8 +304,8 @@
             android:layout_marginBottom="12dp"
             android:onClick="@{()->mainActivity.voiceOnclick()}"
             android:src="@drawable/icon_add_voice"
-            app:layout_constraintBottom_toTopOf="@id/main_activity_add_new"
-            app:layout_constraintRight_toRightOf="@id/main_activity_add_new" />
+            app:layout_constraintBottom_toTopOf="@id/main_activity_note"
+            app:layout_constraintRight_toRightOf="@id/main_activity_note" />
 
         <ImageButton
             android:id="@+id/main_activity_select_line"
@@ -332,13 +331,13 @@
             android:id="@+id/main_activity_right_visibility_buttons_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="main_activity_close_line,main_activity_select_line,main_activity_voice,main_activity_add_new" />
+            app:constraint_referenced_ids="main_activity_close_line,main_activity_select_line,main_activity_voice,main_activity_note" />
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/main_activity_right_visibility_buttons_group2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="main_activity_close_line,main_activity_select_line,main_activity_voice,main_activity_add_new,main_activity_map_update,main_activity_zoom_in,main_activity_zoom_out,main_activity_geometry,main_activity_location" />
+            app:constraint_referenced_ids="main_activity_close_line,main_activity_select_line,main_activity_voice,main_activity_note,main_activity_map_update,main_activity_zoom_in,main_activity_zoom_out,main_activity_geometry,main_activity_location" />
 
         <fragment
             android:id="@+id/main_activity_middle_fragment"

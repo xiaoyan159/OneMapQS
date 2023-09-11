@@ -18,7 +18,7 @@ class ImportPreProcess {
     val code2NameMap = Code2NameMap()
     lateinit var cacheRdLink: Map<String?, RenderEntity>
     val defaultTranslateDistance = 3.0
-    val testFlag:Boolean = true
+    val testFlag:Boolean = false
     fun checkCircleRoad(renderEntity: RenderEntity): Boolean {
         val linkInId = renderEntity.properties["linkIn"]
         val linkOutId = renderEntity.properties["linkOut"]

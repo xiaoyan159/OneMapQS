@@ -11,15 +11,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
-import com.navinfo.collect.library.data.entity.HadLinkDvoBean
-import com.navinfo.collect.library.data.entity.NiLocation
-import com.navinfo.collect.library.data.entity.QsRecordBean
-import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.collect.library.data.entity.*
+import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.OnGeoPointClickListener
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.MapParamUtils
 import com.navinfo.omqs.Constant
+import com.navinfo.omqs.bean.Route
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
@@ -146,7 +145,7 @@ class TaskViewModel @Inject constructor(
                                 }
                             }
                         }
-                    }else {
+                    } else {
                         viewModelScope.launch(Dispatchers.IO) {
                             val links = realmOperateHelper.queryLink(
                                 point = point,
@@ -183,7 +182,7 @@ class TaskViewModel @Inject constructor(
     /**
      * 获取任务列表
      */
-    fun loadNetTaskList(context: Context){
+    fun loadNetTaskList(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             when (val result = networkService.getTaskList(Constant.USER_ID)) {
                 is NetResult.Success -> {
@@ -239,10 +238,10 @@ class TaskViewModel @Inject constructor(
                 }
 
                 is NetResult.Loading -> {}
+                else -> {}
             }
         }
     }
-
 
 
     /**
@@ -281,7 +280,7 @@ class TaskViewModel @Inject constructor(
      * 设置当前选择的任务，并高亮当前任务的所有link
      */
 
-    fun setSelectTaskBean(taskBean: TaskBean) {
+    fun setSelectTaskBean( taskBean: TaskBean) {
 
         sharedPreferences.edit().putInt(Constant.SELECT_TASK_ID, taskBean.id).apply()
 
@@ -292,8 +291,9 @@ class TaskViewModel @Inject constructor(
         MapParamUtils.setTaskId(taskBean.id)
         mapController.layerManagerHandler.updateOMDBVectorTileLayer()
         mapController.mMapView.updateMap(true)
-
     }
+
+
 
     private fun showTaskLinks(taskBean: TaskBean) {
 

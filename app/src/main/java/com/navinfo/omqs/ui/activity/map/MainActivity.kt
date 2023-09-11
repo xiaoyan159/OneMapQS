@@ -279,11 +279,8 @@ class MainActivity : BaseActivity() {
         viewModel.liveDataRoadName.observe(this) {
             if (it != null) {
                 binding.mainActivityRoadName.text = it.properties["name"]
-                if (binding.mainActivityRoadName.visibility != View.VISIBLE) binding.mainActivityRoadName.visibility =
-                    View.VISIBLE
             } else {
-                if (binding.mainActivityRoadName.visibility != View.GONE) binding.mainActivityRoadName.visibility =
-                    View.GONE
+                binding.mainActivityRoadName.text = "   "
             }
         }
 
