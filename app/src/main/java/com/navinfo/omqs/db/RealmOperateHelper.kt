@@ -172,7 +172,7 @@ class RealmOperateHelper() {
             bufferType
         )
         val realm = getRealmDefaultInstance()
-        try{
+        try {
             val realmList = getRealmTools(HadLinkDvoBean::class.java).findAll()
             var linkBean: HadLinkDvoBean? = null
             var nearLast: Double = 99999.99
@@ -187,9 +187,9 @@ class RealmOperateHelper() {
             }
             if (linkBean != null)
                 return realm.copyFromRealm(linkBean)
-        }catch (e:Exception){
+        } catch (e: Exception) {
 
-        }finally {
+        } finally {
             realm.close()
         }
 
@@ -274,18 +274,20 @@ class RealmOperateHelper() {
         val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
         val realm = getSelectTaskRealmInstance()
         var realmList = mutableListOf<RenderEntity>()
-        if(catchAll){
+        if (catchAll) {
             // 查询realm中对应tile号的数据
-            realmList = getSelectTaskRealmTools(RenderEntity::class.java,false)
+            realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
                 .greaterThanOrEqualTo("tileX", xStart)
                 .lessThanOrEqualTo("tileX", xEnd)
                 .greaterThanOrEqualTo("tileY", yStart)
                 .lessThanOrEqualTo("tileY", yEnd)
                 .findAll()
-        }else{
+        } else {
             // 查询realm中对应tile号的数据
             realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
                 .lessThan("catchEnable", 1)
+                .greaterThanOrEqualTo("zoomMin", niMapController.mMapView.mapLevel).
+                lessThanOrEqualTo("zoomMax", niMapController.mMapView.mapLevel)
                 .greaterThanOrEqualTo("tileX", xStart)
                 .lessThanOrEqualTo("tileX", xEnd)
                 .greaterThanOrEqualTo("tileY", yStart)
@@ -405,7 +407,7 @@ class RealmOperateHelper() {
     fun getRealmDefaultInstance(): Realm {
         if (isUpdate) {
             Log.e("jingo", "数据库更新")
-            if(Realm.getDefaultInstance().isInTransaction){
+            if (Realm.getDefaultInstance().isInTransaction) {
                 Realm.getDefaultInstance().cancelTransaction()
                 Log.e("jingo", "数据库正在事物，需要退出当前事物")
             }
@@ -416,14 +418,17 @@ class RealmOperateHelper() {
     }
 
 
-    fun <E : RealmModel> getSelectTaskRealmTools(clazz: Class<E>, enableSql: Boolean): RealmQuery<E> {
+    fun <E : RealmModel> getSelectTaskRealmTools(
+        clazz: Class<E>,
+        enableSql: Boolean
+    ): RealmQuery<E> {
         return if (MapParamUtils.getDataLayerEnum() != null) {
 
             if (enableSql) {
                 var sql =
                     " enable${MapParamUtils.getDataLayerEnum().sql} }"
                 getSelectTaskRealmInstance().where(clazz).rawPredicate(sql)
-            }else{
+            } else {
                 getSelectTaskRealmInstance().where(clazz)
             }
 
@@ -435,7 +440,7 @@ class RealmOperateHelper() {
     fun getSelectTaskRealmInstance(): Realm {
         if (isUpdate) {
             Log.e("jingo", "数据库更新")
-            if(Realm.getInstance(Constant.currentSelectTaskConfig).isInTransaction){
+            if (Realm.getInstance(Constant.currentSelectTaskConfig).isInTransaction) {
                 Realm.getInstance(Constant.currentSelectTaskConfig).cancelTransaction()
                 Log.e("jingo", "数据库正在事物，需要退出当前事物")
             }
