@@ -428,9 +428,9 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         if (resultEntity != null) {
 
                                             if (currentConfig.catch) {
-                                                renderEntity.catchEnable = 0
-                                            } else {
                                                 renderEntity.catchEnable = 1
+                                            } else {
+                                                renderEntity.catchEnable = 0
                                             }
 
                                             //对code编码需要特殊处理 存在多个属性值时，渲染优先级：SA>PA,存在多个属性值时，渲染优先级：FRONTAGE>MAIN_SIDE_A CCESS

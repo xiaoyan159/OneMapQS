@@ -62,7 +62,7 @@ open class RenderEntity() : RealmObject(), Parcelable {
     var zoomMin: Int = 18 //显示最小级别
     var zoomMax: Int = 23 //显示最大级别
     var enable:Int = 0 // 默认0不是显示 1为渲染显示 2为常显
-    var catchEnable:Int = 0 // 0捕捉 1不捕捉
+    var catchEnable:Int = 0 // 0不捕捉 1捕捉
 
     constructor(name: String) : this() {
         this.name = name

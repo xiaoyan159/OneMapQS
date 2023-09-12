@@ -260,6 +260,9 @@ class RealmOperateHelper() {
     ): MutableList<RenderEntity> {
         val result = mutableListOf<RenderEntity>()
         val polygon = getPolygonFromPoint(point, buffer, bufferType)
+
+        niMapController.lineHandler.showLine(polygon.toText())
+
         // 根据polygon查询相交的tile号
         val tileXSet = mutableSetOf<Int>()
         tileXSet.toString()
@@ -285,13 +288,11 @@ class RealmOperateHelper() {
         } else {
             // 查询realm中对应tile号的数据
             realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
-                .lessThan("catchEnable", 1)
-                .greaterThanOrEqualTo("zoomMin", niMapController.mMapView.mapLevel).
-                lessThanOrEqualTo("zoomMax", niMapController.mMapView.mapLevel)
                 .greaterThanOrEqualTo("tileX", xStart)
                 .lessThanOrEqualTo("tileX", xEnd)
                 .greaterThanOrEqualTo("tileY", yStart)
                 .lessThanOrEqualTo("tileY", yEnd)
+                .greaterThan("catchEnable", 0)
                 .findAll()
         }
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
@@ -426,7 +427,7 @@ class RealmOperateHelper() {
 
             if (enableSql) {
                 var sql =
-                    " enable${MapParamUtils.getDataLayerEnum().sql} }"
+                    " enable${MapParamUtils.getDataLayerEnum().sql}"
                 getSelectTaskRealmInstance().where(clazz).rawPredicate(sql)
             } else {
                 getSelectTaskRealmInstance().where(clazz)

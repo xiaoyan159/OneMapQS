@@ -735,7 +735,7 @@ public final class NIMapView extends RelativeLayout {
         if (mapView != null && mapView.map() != null)
             return mapView.map().getMapPosition().getZoomLevel();
 
-        return 0;
+        return 16;
     }
 
     /**

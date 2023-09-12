@@ -30,7 +30,6 @@ import com.navinfo.collect.library.garminvirbxe.HostBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.OnGeoPointClickListener
 import com.navinfo.collect.library.map.handler.*
-import com.navinfo.collect.library.utils.DistanceUtil
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.collect.library.utils.MapParamUtils
@@ -58,9 +57,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
-import org.locationtech.jts.algorithm.distance.DistanceToPoint
-import org.locationtech.jts.algorithm.distance.PointPairDistance
-import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.Geometry
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
@@ -240,6 +236,9 @@ class MainViewModel @Inject constructor(
 
         shareUtil = ShareUtil(mapController.mMapView.context, 1)
 
+        //初始化
+        realmOperateHelper.niMapController = mapController
+
         initLocation()
         /**
          * 处理点击道路捕捉回调功能
@@ -316,8 +315,12 @@ class MainViewModel @Inject constructor(
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         MapParamUtils.setTaskId(sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1))
-        Constant.currentSelectTaskFolder =  File(Constant.USER_DATA_PATH +"/${MapParamUtils.getTaskId()}")
-        Constant.currentSelectTaskConfig = RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder).name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true).schemaVersion(2).build()
+        Constant.currentSelectTaskFolder =
+            File(Constant.USER_DATA_PATH + "/${MapParamUtils.getTaskId()}")
+        Constant.currentSelectTaskConfig =
+            RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder)
+                .name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true)
+                .schemaVersion(2).build()
         MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
         socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
 
@@ -671,13 +674,21 @@ class MainViewModel @Inject constructor(
                     point.longitude,
                     point.latitude
                 ),
-                buffer = 2.5, catchAll = false
+                buffer = 2.0, catchAll = false,
             )
-
-            if (itemList.size == 1) {
-                liveDataSignMoreInfo.postValue(itemList[0])
+            //增加道路线过滤原则
+            val filterResult = itemList.filter {
+                if(isHighRoad()){
+                    mapController.mMapView.mapLevel>=it.zoomMin&&mapController.mMapView.mapLevel<=it.zoomMax
+                }else{
+                    //关闭时过滤道路线捕捉s
+                    mapController.mMapView.mapLevel>=it.zoomMin&&mapController.mMapView.mapLevel<=it.zoomMax&&it.code!=DataCodeEnum.OMDB_RD_LINK.code
+                }
+            }.toList()
+            if (filterResult.size == 1) {
+                liveDataSignMoreInfo.postValue(filterResult[0])
             } else {
-                liveDataItemList.postValue(itemList)
+                liveDataItemList.postValue(filterResult)
             }
         }
     }
@@ -697,11 +708,11 @@ class MainViewModel @Inject constructor(
 
                 val linkList = realmOperateHelper.queryLink(point = point)
 
-/*                val linkList = realmOperateHelper.queryLine(
-                    point = point,
-                    buffer = 1.0,
-                    table = "OMDB_RD_LINK_KIND"
-                )*/
+                /*                val linkList = realmOperateHelper.queryLine(
+                                    point = point,
+                                    buffer = 1.0,
+                                    table = "OMDB_RD_LINK_KIND"
+                                )*/
 
                 var hisRoadName = false
 
@@ -754,6 +765,7 @@ class MainViewModel @Inject constructor(
                                             )
                                         }
                                     }
+
                                     DataCodeEnum.OMDB_LANE_NUM.code, //车道数
                                     DataCodeEnum.OMDB_RD_LINK_KIND.code,//种别，
                                     DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code, // 功能等级,
@@ -805,8 +817,11 @@ class MainViewModel @Inject constructor(
 
                             val realm = realmOperateHelper.getSelectTaskRealmInstance()
 
-                           val entityList =
-                                realmOperateHelper.getSelectTaskRealmTools(RenderEntity::class.java, true)
+                            val entityList =
+                                realmOperateHelper.getSelectTaskRealmTools(
+                                    RenderEntity::class.java,
+                                    true
+                                )
                                     .and()
                                     .equalTo("table", DataCodeEnum.OMDB_RESTRICTION.name)
                                     .and()
@@ -1121,6 +1136,7 @@ class MainViewModel @Inject constructor(
                     val geoPoint = GeometryTools.createGeoPoint(data.wkt!!.toText())
                     mapController.markerHandle.addMarker(geoPoint, "moreInfo")
                 }
+
                 Geometry.TYPENAME_LINESTRING -> {
                     mapController.lineHandler.showLine(data.wkt!!.toText())
                 }
