@@ -325,12 +325,18 @@ class MainActivity : BaseActivity() {
                             7, RoundingMode.HALF_UP
                         )
                     },${BigDecimal(it.latitude).setScale(7, RoundingMode.HALF_UP)}"
+                    viewModel.startAutoLocationTimer()
+                    binding.mainActivityLocation.setImageResource(R.drawable.icon_location)
                 }
             } catch (e: Exception) {
                 Log.e("qj", "异常 $e")
             }
         }
-
+        viewModel.liveDataAutoLocation.observe(this){
+            if(it==true){
+                onClickLocation()
+            }
+        }
         viewModel.liveDataSignMoreInfo.observe(this) {
             val fragment =
                 supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
@@ -1127,6 +1133,14 @@ class MainActivity : BaseActivity() {
      */
     fun onClickNewNote() {
         rightController.navigate(R.id.NoteFragment)
+    }
+
+    /**
+     * 点击定位按钮
+     */
+    fun onClickLocation() {
+        binding.mainActivityLocation.setImageResource(R.drawable.icon_location_north)
+        viewModel.onClickLocationButton()
     }
 
     /**

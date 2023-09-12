@@ -284,8 +284,8 @@
             android:id="@+id/main_activity_location"
             style="@style/zoom_btns_style"
             android:layout_marginBottom="12dp"
-            android:onClick="@{()->viewModel.onClickLocationButton()}"
-            android:src="@drawable/icon_location"
+            android:onClick="@{()->mainActivity.onClickLocation()}"
+            android:src="@drawable/icon_location_north"
             app:layout_constraintBottom_toTopOf="@id/main_activity_map_update"
             app:layout_constraintRight_toRightOf="@id/main_activity_map_update" />
 

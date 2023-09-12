@@ -103,6 +103,11 @@ class Constant {
          */
         var AUTO_LOCATION = false
 
+        /**
+         * 地图视角是否锁定
+         */
+        var MapRotateEnable = false
+
         var IS_VIDEO_SPEED by kotlin.properties.Delegates.notNull<Boolean>()
 
         const val message_status_late = "预约，待发送"

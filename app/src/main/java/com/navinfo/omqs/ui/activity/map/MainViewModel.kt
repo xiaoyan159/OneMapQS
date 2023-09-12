@@ -51,7 +51,6 @@ import io.realm.RealmSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -132,6 +131,11 @@ class MainViewModel @Inject constructor(
      */
     val liveDataCenterPoint = MutableLiveData<MapPosition>()
 
+    /**
+     * 是否自动定位
+     */
+    val liveDataAutoLocation = MutableLiveData<Boolean>()
+
 //    var testPoint = GeoPoint(0, 0)
 
     //uuid标识，用于记录轨迹组
@@ -209,6 +213,11 @@ class MainViewModel @Inject constructor(
 
     private var timer: Timer? = null
 
+    //自动定位
+    private var autoLocationTimer: Timer? = null
+
+    private var disAutoLocationTime: Long = 10000
+
     private var disTime: Long = 1000
 
     private var currentMapZoomLevel: Int = 0
@@ -227,6 +236,7 @@ class MainViewModel @Inject constructor(
             when (e) {
                 Map.SCALE_EVENT, Map.MOVE_EVENT, Map.ROTATE_EVENT -> liveDataCenterPoint.value =
                     mapPosition
+                //Map.CLEAR_EVENT->startAutoLocationTimer()
             }
 
             currentMapZoomLevel = mapController.mMapView.vtmMap.mapPosition.zoomLevel
@@ -652,12 +662,6 @@ class MainViewModel @Inject constructor(
                         )
                     )
                 }
-                withContext(Dispatchers.Main) {
-                    if (Constant.AUTO_LOCATION) {
-                        mapController.mMapView.vtmMap.animator()
-                            .animateTo(GeoPoint(location.latitude, location.longitude))
-                    }
-                }
             }
         }
         //显示轨迹图层
@@ -674,7 +678,7 @@ class MainViewModel @Inject constructor(
                     point.longitude,
                     point.latitude
                 ),
-                buffer = 2.0, catchAll = false,
+                buffer = 2.4, catchAll = false,
             )
             //增加道路线过滤原则
             val filterResult = itemList.filter {
@@ -887,6 +891,9 @@ class MainViewModel @Inject constructor(
      * 点击我的位置，回到我的位置
      */
     fun onClickLocationButton() {
+        val mapPosition: MapPosition = mapController.mMapView.vtmMap.getMapPosition()
+        mapPosition.setBearing(0f) // 锁定角度，自动将地图旋转到正北方向
+        mapController.mMapView.vtmMap.setMapPosition(mapPosition)
         mapController.locationLayerHandler.animateToCurrentPosition()
     }
 
@@ -1389,6 +1396,27 @@ class MainViewModel @Inject constructor(
         timer?.cancel()
     }
 
+
+    /**
+     * 开启自动定位
+     */
+    fun startAutoLocationTimer(){
+        if (autoLocationTimer != null) {
+            cancelAutoLocation()
+        }
+        autoLocationTimer = fixedRateTimer("", false, disAutoLocationTime, disAutoLocationTime) {
+            liveDataAutoLocation.postValue(true)
+            Log.e("qj","自动定位开始执行")
+            startAutoLocationTimer()
+        }
+    }
+
+    /**
+     * 结束自动定位
+     */
+    fun cancelAutoLocation() {
+        autoLocationTimer?.cancel()
+    }
 
     /**
      *  开启测量工具
