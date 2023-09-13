@@ -225,6 +225,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         renderEntity.zoomMax = map["qi_zoomMax"].toString().toInt()
 
                                         renderEntity.geometry = map["geometry"].toString()
+                                        Log.d("ImportOMDBHelper", "解析===1处理3D")
                                         // 其他数据插入到Properties中
                                         if (!currentConfig.is3D) { // 如果是非3d要素，则自动将Z轴坐标全部置为0
                                             val coordinates =
@@ -249,7 +250,8 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                 renderEntity.geometry = newGeometry.toString()
                                             }
                                         }
-
+                                        Log.d("ImportOMDBHelper", "解析===2处理3D")
+                                        Log.d("ImportOMDBHelper", "解析===1处理属性")
                                         for ((key, value) in map) {
                                             when (value) {
                                                 is String -> renderEntity.properties.put(key, value)
@@ -269,12 +271,14 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                 )
                                             }
                                         }
-
+                                        Log.d("ImportOMDBHelper", "解析===2处理属性")
+                                        Log.d("ImportOMDBHelper", "解析===1处理name")
                                         // 如果properties中不包含name，那么自动将要素名称添加进properties中
                                         if (!renderEntity.properties.containsKey("name")) {
                                             renderEntity.properties["name"] = renderEntity.name;
                                         }
-
+                                        Log.d("ImportOMDBHelper", "解析===2处理name")
+                                        Log.d("ImportOMDBHelper", "解析===1处理杆状物")
                                         //优先过滤掉不需要的数据
                                         if (renderEntity.code == DataCodeEnum.OMDB_POLE.code) { // 杆状物
                                             //过滤树类型的杆状物，无需导入到数据库中
@@ -330,10 +334,8 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                     }
                                                 }
                                             }
-                                        }
-
-                                        //交限增加相同LinkIn与LinkOut过滤原则
-                                        if (renderEntity.code == DataCodeEnum.OMDB_RESTRICTION.code) {
+                                            //交限增加相同LinkIn与LinkOut过滤原则
+                                        }else if (renderEntity.code == DataCodeEnum.OMDB_RESTRICTION.code) {
                                             if (renderEntity.properties.containsKey("linkIn") && renderEntity.properties.containsKey(
                                                     "linkOut"
                                                 )
@@ -354,7 +356,8 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                 }
                                             }
                                         }
-
+                                        Log.d("ImportOMDBHelper", "解析===2处理杆状物")
+                                        Log.d("ImportOMDBHelper", "解析===1任务路线匹配")
                                         //遍历判断只显示与任务Link相关的任务数据
                                         if (currentConfig.checkLinkId) {
 
@@ -406,8 +409,10 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                         }
                                                     }
                                                 }
+                                            }else{
+                                                //不包括linkPid直接过滤
+                                                continue
                                             }
-
                                             //过滤掉非任务路线上的数据
                                             if (renderEntity.enable != 1) {
                                                 Log.e(
@@ -421,18 +426,21 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             renderEntity.enable = 2
                                             Log.e("qj", "${renderEntity.name}==不包括任务linkPid")
                                         }
+                                        Log.d("ImportOMDBHelper", "解析===2任务路线匹配")
+                                        Log.d("ImportOMDBHelper", "解析===1预处理")
+
+                                        if (currentConfig.catch) {
+                                            renderEntity.catchEnable = 1
+                                        } else {
+                                            renderEntity.catchEnable = 0
+                                        }
 
                                         // 对renderEntity做预处理后再保存
                                         val resultEntity = importConfig.transformProperties(renderEntity)
-
+                                        Log.d("ImportOMDBHelper", "解析===2预处理")
                                         if (resultEntity != null) {
 
-                                            if (currentConfig.catch) {
-                                                renderEntity.catchEnable = 1
-                                            } else {
-                                                renderEntity.catchEnable = 0
-                                            }
-
+                                            Log.d("ImportOMDBHelper", "解析===1子code处理")
                                             //对code编码需要特殊处理 存在多个属性值时，渲染优先级：SA>PA,存在多个属性值时，渲染优先级：FRONTAGE>MAIN_SIDE_A CCESS
                                             if (renderEntity.code == DataCodeEnum.OMDB_LINK_ATTRIBUTE.code) {
 
@@ -608,6 +616,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                     renderEntity.properties["startTime"] = "null"
                                                 }
                                             }
+                                            Log.d("ImportOMDBHelper", "解析===2子code处理")
                                             ++dataIndex
                                             Log.e("qj", "统计==${dataIndex}")
 
@@ -633,7 +642,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                             // 1个文件发送一次flow流
                             emit("${++processIndex}/${tableNum}")
                         }
-
                     }
                     Realm.getInstance (currentInstallTaskConfig).commitTransaction()
                     Realm.getInstance(currentInstallTaskConfig).close()

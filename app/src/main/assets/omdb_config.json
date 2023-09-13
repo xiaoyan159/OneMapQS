@@ -8,7 +8,6 @@
 				"name": "点形态",
 				"zoomMin": 15,
 				"zoomMax": 20,
-				"checkLinkId": false
 			},
 			"1007_PA": {
 				"table": "OMDB_NODE_PA",
@@ -16,7 +15,6 @@
 				"name": "点形态PA",
 				"zoomMin": 15,
 				"zoomMax": 20,
-				"checkLinkId": false
 			},
 			"1012": {
 				"table": "OMDB_CHECKPOINT",
@@ -33,7 +31,6 @@
 				"zoomMin": 15,
 				"zoomMax": 17,
 				"catch":true,
-				"checkLinkId": false
 			},
 			"2002": {
 				"table": "OMDB_RD_LINK_FUNCTION_CLASS",
@@ -82,7 +79,6 @@
 				"zoomMin": 18,
 				"zoomMax": 20,
 				"catch":true,
-				"checkLinkId": false,
 				"transformer": [
 					{
 						"k": "geometry",
@@ -133,7 +129,6 @@
 				"zoomMin": 18,
 				"zoomMax": 20,
 				"catch":true,
-				"checkLinkId": false
 			},
 			"2090":{
 				"table": "OMDB_LANE_CONSTRUCTION",
@@ -141,8 +136,7 @@
 				"name": "车道施工",
 				"catch":true,
 				"zoomMin": 18,
-				"zoomMax": 20,
-				"checkLinkId": false
+				"zoomMax": 20
 			},
 			"2201":{
 				"table": "OMDB_BRIDGE",
@@ -178,7 +172,7 @@
 				"table": "OMDB_OBJECT_TEXT",
 				"code": 3002,
 				"name": "文字",
-				"zoomMin": 15,
+				"zoomMin": 18,
 				"zoomMax": 20,
 				"catch":true,
 				"transformer": []
@@ -187,7 +181,7 @@
 				"table": "OMDB_OBJECT_SYMBOL",
 				"code": 3003,
 				"name": "符号",
-				"zoomMin": 15,
+				"zoomMin": 18,
 				"zoomMax": 20,
 				"catch":true,
 				"transformer": []
@@ -196,7 +190,7 @@
 				"table": "OMDB_OBJECT_ARROW",
 				"code": 3004,
 				"name": "箭头",
-				"zoomMin": 15,
+				"zoomMin": 18,
 				"zoomMax": 20,
 				"transformer": [
 					{
@@ -211,6 +205,8 @@
 				"table": "OMDB_TRAFFIC_SIGN",
 				"code": 3005,
 				"name": "交通标牌",
+				"zoomMin": 18,
+				"zoomMax": 20,
 				"is3D": true,
 				"transformer": [
 					{
@@ -232,6 +228,8 @@
 				"name": "杆状物",
 				"is3D": true,
 				"catch":true,
+				"zoomMin": 18,
+				"zoomMax": 20,
 				"transformer": [
 					{
 						"k": "geometry",
@@ -254,7 +252,7 @@
 				"code": 3014,
 				"name": "人行横道",
 				"catch":true,
-				"zoomMin": 15,
+				"zoomMin": 18,
 				"zoomMax": 20
 			},
 			"3016":{
@@ -263,8 +261,7 @@
 				"name": "停止位置",
 				"zoomMin": 18,
 				"catch":true,
-				"zoomMax": 20,
-				"checkLinkId": false
+				"zoomMax": 20
 			},
 			"4001": {
 				"table": "OMDB_INTERSECTION",
@@ -502,7 +499,6 @@
 				"name": "车道中心线",
 				"zoomMin": 18,
 				"zoomMax": 20,
-				"checkLinkId": false,
 				"transformer": [
 					{
 						"k": "geometry",

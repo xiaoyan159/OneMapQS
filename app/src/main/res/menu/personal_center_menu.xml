@@ -49,7 +49,7 @@
         <item
             android:id="@+id/personal_center_menu_version"
             android:icon="@drawable/ic_baseline_layers_24"
-            android:title="版本：23QE4_V1.5.0_20230904_A" />
+            android:title="版本：23QE4_V1.5.0_20230912_A" />
     </group>
     <group android:checkableBehavior="single">
         <item android:title="小标题">

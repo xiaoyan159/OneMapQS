@@ -325,7 +325,9 @@ class MainActivity : BaseActivity() {
                             7, RoundingMode.HALF_UP
                         )
                     },${BigDecimal(it.latitude).setScale(7, RoundingMode.HALF_UP)}"
-                    viewModel.startAutoLocationTimer()
+                    if(Constant.AUTO_LOCATION){
+                        viewModel.startAutoLocationTimer()
+                    }
                     binding.mainActivityLocation.setImageResource(R.drawable.icon_location)
                 }
             } catch (e: Exception) {
