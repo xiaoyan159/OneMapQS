@@ -624,23 +624,25 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             if(renderEntity.properties.containsKey("geometry")){
                                                 renderEntity.properties.remove("geometry")
                                             }
-
+                                            Log.d("ImportOMDBHelper", "解析===1insert")
                                             Realm.getInstance(currentInstallTaskConfig).insert(renderEntity)
+                                            Log.d("ImportOMDBHelper", "解析===2insert")
                                         }
-
-                                        listResult.add(renderEntity)
-
+                                        if (currentConfig.table == "OMDB_RD_LINK") {
+                                            listResult.add(renderEntity)
+                                        }
                                     }
                                 }
                             }
 
                             // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
-                            if (currentConfig.table == "OMDB_RD_LINK") {
+                            if (currentConfig.code == DataCodeEnum.OMDB_RD_LINK.code.toInt()) {
                                 importConfig.preProcess.cacheRdLink =
                                     listResult.associateBy { it.properties["linkPid"] }
                             }
                             // 1个文件发送一次flow流
                             emit("${++processIndex}/${tableNum}")
+                            Log.d("ImportOMDBHelper", "表解析===2${currentConfig.table }")
                         }
                     }
                     Realm.getInstance (currentInstallTaskConfig).commitTransaction()
