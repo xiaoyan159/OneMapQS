@@ -294,7 +294,7 @@ class TaskViewModel @Inject constructor(
         liveDataTaskLinks.value = taskBean.hadLinkDvoList
         showTaskLinks(taskBean)
         MapParamUtils.setTaskId(taskBean.id)
-        Constant.currentSelectTaskFolder =  File(Constant.USER_DATA_PATH +"/${MapParamUtils.getTaskId()}")
+        Constant.currentSelectTaskFolder =  File(Constant.USER_DATA_PATH +"/${taskBean.id}")
         Constant.currentSelectTaskConfig = RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder).name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true).schemaVersion(2).build()
         MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
         mapController.layerManagerHandler.updateOMDBVectorTileLayer()

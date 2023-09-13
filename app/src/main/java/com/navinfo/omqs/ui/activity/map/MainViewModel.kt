@@ -382,7 +382,7 @@ class MainViewModel @Inject constructor(
         val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
         if (res != null) {
             currentTaskBean = realm.copyFromRealm(res)
-            planningPath(currentTaskBean!!)
+            //planningPath(currentTaskBean!!)
         }
         realm.close()
     }

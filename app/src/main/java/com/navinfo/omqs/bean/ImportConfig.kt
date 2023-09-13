@@ -125,6 +125,9 @@ class TableInfo {
     val zoomMin: Int = 16
     val zoomMax: Int = 21
     val checkLinkId: Boolean = true//是否需要校验linkid
+    val filterData : Boolean = false//是否需要过滤数据
+    val existSubCode : Boolean = false//是否存在子编码
+
     val catch: Boolean = false//是否需要捕捉 // 需要根据丹丹提供的捕捉原则进行设置，参考文档W行设置条件，https://navinfo.feishu.cn/sheets/shtcnfsxKZhekU26ezBcHgl7aWh?sheet=BZd6yM
     val name: String = ""
     var checked : Boolean = true

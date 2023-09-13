@@ -54,7 +54,7 @@ public class OMDBReferenceDataSource implements ITileDataSource {
             if(MapParamUtils.getDataLayerEnum()!=null){
                 sql += " and enable" + MapParamUtils.getDataLayerEnum().getSql();
             }else{
-                sql += " and 1=1";
+                sql += " and enable>=0";
             }
 
             RealmQuery<ReferenceEntity> realmQuery = Realm.getInstance(MapParamUtils.getTaskConfig()).where(ReferenceEntity.class)
