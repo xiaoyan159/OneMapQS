@@ -18,6 +18,8 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.oscim.core.GeoPoint;
+import org.oscim.core.MercatorProjection;
+import org.oscim.core.Tile;
 import org.oscim.map.Map;
 
 import java.math.BigDecimal;
@@ -255,6 +257,22 @@ public class GeometryTools {
         if (gon == null)
             return null;
         return gon.toString();
+    }
+
+    /**
+     * 创建多边形几何
+     *
+     * @param coords []
+     * @return Geometry
+     */
+    public static Polygon createPolygonFromCoords(Coordinate[] coords) {
+        GeometryFactory factory = new GeometryFactory();
+
+        Polygon gon = factory.createPolygon(coords);
+
+        if (gon == null)
+            return null;
+        return gon;
     }
 
     /**
@@ -1607,7 +1625,19 @@ public class GeometryTools {
         double radianDegree = 2 * Math.asin(Math.sin(radianDistance / 2) / Math.cos(radianLatitude));
         return Math.toDegrees(radianDegree);
     }
-
+    /**
+     * 获取指定tile对应的polygon面
+     * @param tile vtm中的瓦片
+     * */
+    public static Polygon getTilePolygon(Tile tile) {
+        // 获取当前tile的起点坐标
+        double startLongitude = MercatorProjection.tileXToLongitude(tile.tileX, tile.zoomLevel);
+        double startLatitude = MercatorProjection.tileYToLatitude(tile.tileY, tile.zoomLevel);
+        double endLongitude = MercatorProjection.tileXToLongitude(tile.tileX + 1, tile.zoomLevel);
+        double endLatitude = MercatorProjection.tileYToLatitude(tile.tileY + 1, tile.zoomLevel);
+        return GeometryTools.createPolygonFromCoords(new Coordinate[]{new Coordinate(startLongitude, startLongitude), new Coordinate(endLongitude, startLatitude),
+                new Coordinate(endLongitude, endLatitude), new Coordinate(startLongitude, endLatitude), new Coordinate(startLongitude, startLongitude)});
+    }
     /**
      * 经纬度转墨卡托
      */

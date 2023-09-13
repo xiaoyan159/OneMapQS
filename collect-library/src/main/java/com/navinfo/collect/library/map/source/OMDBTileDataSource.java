@@ -7,14 +7,17 @@ import androidx.annotation.RequiresApi;
 
 import com.navinfo.collect.library.data.entity.RenderEntity;
 import com.navinfo.collect.library.system.Constant;
+import com.navinfo.collect.library.utils.GeometryTools;
 import com.navinfo.collect.library.utils.MapParamUtils;
 
+import org.locationtech.jts.geom.Polygon;
 import org.oscim.layers.tile.MapTile;
 import org.oscim.tiling.ITileDataSink;
 import org.oscim.tiling.ITileDataSource;
 import org.oscim.tiling.QueryResult;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
@@ -32,7 +35,7 @@ public class OMDBTileDataSource implements ITileDataSource {
     @Override
     public void query(MapTile tile, ITileDataSink mapDataSink) {
         // 获取tile对应的坐标范围
-        if (tile.zoomLevel >= Constant.OMDB_MIN_ZOOM && tile.zoomLevel <= Constant.OVER_ZOOM) {
+        if (tile.zoomLevel >= Constant.OMDB_MIN_ZOOM && tile.zoomLevel < Constant.OVER_ZOOM) {
             int m = Constant.OVER_ZOOM - tile.zoomLevel;
             int xStart = (int) tile.tileX << m;
             int xEnd = (int) ((tile.tileX + 1) << m);
@@ -62,13 +65,18 @@ public class OMDBTileDataSource implements ITileDataSource {
                 realmQuery.endGroup();
             }
             List<RenderEntity> listResult = realmQuery/*.distinct("id")*/.findAll();
+            // 数据记录的tile号是以正外接tile号列表，此处过滤并未与当前tile相交的数据
             if (!listResult.isEmpty()) {
+                Polygon tilePolygon = GeometryTools.getTilePolygon(tile);
+                listResult = listResult.stream().filter((RenderEntity renderEntity) -> renderEntity.getWkt().intersects(tilePolygon)).collect(Collectors.toList());
                 mThreadLocalDecoders.get().decode(tile.zoomLevel, tile, mapDataSink, listResult);
+                mapDataSink.completed(QueryResult.SUCCESS);
+            } else {
+                mapDataSink.completed(QueryResult.TILE_NOT_FOUND);
             }
-            mapDataSink.completed(QueryResult.SUCCESS);
             Realm.getInstance(MapParamUtils.getTaskConfig()).close();
         } else {
-            mapDataSink.completed(QueryResult.SUCCESS);
+            mapDataSink.completed(QueryResult.TILE_NOT_FOUND);
         }
     }
 
