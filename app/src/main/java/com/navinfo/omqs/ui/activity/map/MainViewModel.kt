@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
@@ -34,27 +35,26 @@ import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.collect.library.utils.MapParamUtils
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
-import com.navinfo.omqs.bean.ImportConfig
-import com.navinfo.omqs.bean.QRCodeBean
-import com.navinfo.omqs.bean.SignBean
-import com.navinfo.omqs.bean.TraceVideoBean
+import com.navinfo.omqs.bean.*
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
+import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.ui.dialog.CommonDialog
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import com.navinfo.omqs.ui.other.BaseToast
-import com.navinfo.omqs.util.SignUtil
-import com.navinfo.omqs.util.DateTimeUtil
-import com.navinfo.omqs.util.ShareUtil
-import com.navinfo.omqs.util.SoundMeter
-import com.navinfo.omqs.util.SpeakMode
+import com.navinfo.omqs.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.realm.RealmSet
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import org.locationtech.jts.geom.Geometry
 import org.oscim.core.GeoPoint
@@ -84,6 +84,9 @@ class MainViewModel @Inject constructor(
     private val TAG = "MainViewModel"
 
     private var mCameraDialog: CommonDialog? = null
+
+    //路径计算
+    val liveDataPlanningPathStatus = MutableLiveData<Int>()
 
     //地图点击捕捉到的质检数据ID列表
     val liveDataQsRecordIdList = MutableLiveData<List<String>>()
@@ -127,6 +130,11 @@ class MainViewModel @Inject constructor(
      * 地图中心坐标
      */
     val liveDataCenterPoint = MutableLiveData<MapPosition>()
+
+    /**
+     * 是否自动定位
+     */
+    val liveDataAutoLocation = MutableLiveData<Boolean>()
 
 //    var testPoint = GeoPoint(0, 0)
 
@@ -205,26 +213,41 @@ class MainViewModel @Inject constructor(
 
     private var timer: Timer? = null
 
+    //自动定位
+    private var autoLocationTimer: Timer? = null
+
+    private var disAutoLocationTime: Long = 10000
+
     private var disTime: Long = 1000
 
     private var currentMapZoomLevel: Int = 0
 
+    //导航信息
+    private var naviEngine: NaviEngine = NaviEngine()
+
+    // 定义一个互斥锁
+    private val naviMutex = Mutex()
+
+
     init {
+
 
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
             when (e) {
                 Map.SCALE_EVENT, Map.MOVE_EVENT, Map.ROTATE_EVENT -> liveDataCenterPoint.value =
                     mapPosition
+                //Map.CLEAR_EVENT->startAutoLocationTimer()
             }
-            if (mapController.mMapView.vtmMap.mapPosition.zoomLevel >= 16) {
 
-            }
             currentMapZoomLevel = mapController.mMapView.vtmMap.mapPosition.zoomLevel
         })
 
         currentMapZoomLevel = mapController.mMapView.vtmMap.mapPosition.zoomLevel
 
         shareUtil = ShareUtil(mapController.mMapView.context, 1)
+
+        //初始化
+        realmOperateHelper.niMapController = mapController
 
         initLocation()
         /**
@@ -302,9 +325,53 @@ class MainViewModel @Inject constructor(
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         MapParamUtils.setTaskId(sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1))
+        Constant.currentSelectTaskFolder =
+            File(Constant.USER_DATA_PATH + "/${MapParamUtils.getTaskId()}")
+        Constant.currentSelectTaskConfig =
+            RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder)
+                .name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true)
+                .schemaVersion(2).build()
+        MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
         socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
+
+//        viewModelScope.launch(Dispatchers.Default) {
+//            naviTestFlow().collect {
+//                naviMutex.lock()
+//                if (naviEngine.geometry != null) {
+//                    //定义垂线
+//                    val pointPairDistance = PointPairDistance()
+//                    val coordinate = Coordinate(it.longitude, it.latitude)
+//                    DistanceToPoint.computeDistance(
+//                        naviEngine.geometry,
+//                        coordinate,
+//                        pointPairDistance
+//                    )
+//                    if (pointPairDistance.getCoordinate(0) !== null) {
+//                        val line = GeometryTools.createLineString(
+//                            mutableListOf(
+//                                it,
+//                                GeoPoint(
+//                                    pointPairDistance.getCoordinate(0).y,
+//                                    pointPairDistance.getCoordinate(0).x
+//                                )
+//                            )
+//                        )
+//                        mapController.lineHandler.showLine(line.toText())
+//                    }
+//                }
+//                naviMutex.unlock()
+//            }
+//        }
     }
 
+
+    fun naviTestFlow(): Flow<GeoPoint> = flow {
+
+        while (true) {
+            emit(mapController.mMapView.vtmMap.mapPosition.geoPoint)
+            delay(1000)
+        }
+    }
 
     /**
      * 获取当前任务
@@ -315,6 +382,147 @@ class MainViewModel @Inject constructor(
         val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
         if (res != null) {
             currentTaskBean = realm.copyFromRealm(res)
+            planningPath(currentTaskBean!!)
+        }
+        realm.close()
+    }
+
+
+    private fun planningPath(taskBean: TaskBean) {
+        if (taskBean.status == FileManager.Companion.FileDownloadStatus.DONE) {
+//            Toast.makeText(context, "正在计算导航路径", Toast.LENGTH_SHORT).show()
+            viewModelScope.launch(Dispatchers.Default) {
+                naviMutex.lock()
+                naviEngine = NaviEngine()
+                val pathList = mutableListOf<Route>()
+                val realm = realmOperateHelper.getSelectTaskRealmInstance()
+                for (link in taskBean.hadLinkDvoList) {
+                    //测线不参与导航
+                    if (link.linkStatus == 3) {
+                        continue
+                    }
+                    val route = Route(
+                        linkId = link.linkPid,
+                    )
+                    route.pointList = GeometryTools.getGeoPoints(link.geometry)
+                    //查询每条link的snode，enode
+                    val res1 = realm.where(RenderEntity::class.java)
+                        .equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).and()
+                        .equalTo("properties['linkPid']", link.linkPid).findFirst()
+                    res1?.let {
+
+                        val snodePid = it.properties["snodePid"]
+                        if (snodePid != null) {
+                            route.sNode = snodePid
+                        }
+                        val enodePid = it.properties["enodePid"]
+                        if (enodePid != null) {
+                            route.eNode = enodePid
+                        }
+                    }
+                    //查询每条link的方向
+                    val res2 = realm.where(RenderEntity::class.java)
+                        .equalTo("table", DataCodeEnum.OMDB_LINK_DIRECT.name).and()
+                        .equalTo("properties['linkPid']", link.linkPid).findFirst()
+                    res2?.let {
+                        val direct = it.properties["direct"]
+                        if (direct != null) {
+                            route.direct = direct.toInt()
+                        }
+                    }
+                    //查询每条link的名称
+                    val res3 = realm.where(RenderEntity::class.java)
+                        .equalTo("table", DataCodeEnum.OMDB_LINK_NAME.name).and()
+                        .equalTo("properties['linkPid']", link.linkPid).findFirst()
+                    res3?.let {
+                        route.name = "${it.properties["name"]}"
+                    }
+                    pathList.add(route)
+                }
+                realm.close()
+                //用来存储最终的导航路径
+                val newRouteList = mutableListOf<Route>()
+                //比对路径排序用的
+                val tempRouteList = pathList.toMutableList()
+                //先找到一根有方向的link，确定起终点
+                var routeStart: Route? = null
+                for (i in tempRouteList.indices) {
+                    val route = pathList[i]
+                    //只要时单方向的就行
+                    if (route.direct == 2 || route.direct == 3) {
+                        routeStart = route
+                        tempRouteList.removeAt(i)
+                        break
+                    }
+                }
+                if (routeStart != null) {
+                    var sNode = ""
+                    var eNode = ""
+                    //如果snode，enode是顺方向，geometry 不动，否则反转
+                    if (routeStart.direct == 3) {
+                        routeStart.pointList.reverse()
+                        sNode = routeStart.eNode
+                        eNode = routeStart.sNode
+                    } else {
+                        sNode = routeStart.sNode
+                        eNode = routeStart.eNode
+                    }
+                    newRouteList.add(routeStart)
+                    var bBreak = true
+                    while (bBreak) {
+                        //先找其实link的后续link
+                        var bHasNext = false
+                        for (route in tempRouteList) {
+                            //如果是link 的e 对下个link的s，方向不用动，否则下个link的geometry反转
+                            if (route.sNode != "" && eNode == route.sNode) {
+                                newRouteList.add(route)
+                                tempRouteList.remove(route)
+                                eNode = route.eNode
+                                bHasNext = true
+                                break
+                            } else if (route.eNode != "" && eNode == route.eNode) {
+                                route.pointList.reverse()
+                                newRouteList.add(route)
+                                tempRouteList.remove(route)
+                                eNode = route.sNode
+                                bHasNext = true
+                                break
+                            }
+                        }
+                        //先找其实link的起始link
+                        var bHasLast = false
+                        for (route in tempRouteList) {
+                            //如果是link 的s 对上个link的e，方向不用动，否则下个link的geometry反转
+                            if (route.eNode != "" && sNode == route.eNode) {
+                                newRouteList.add(0, route)
+                                tempRouteList.remove(route)
+                                sNode = route.sNode
+                                bHasLast = true
+                                break
+                            } else if (route.sNode != "" && sNode == route.sNode) {
+                                route.pointList.reverse()
+                                newRouteList.add(0, route)
+                                tempRouteList.remove(route)
+                                sNode = route.eNode
+                                bHasLast = true
+                                break
+                            }
+                        }
+                        if (tempRouteList.size == 0) {
+                            bBreak = false
+                        } else {
+                            if (!bHasLast && !bHasNext) {
+                                bBreak = false
+                                //TODO 处理错误，路径不完整
+                            }
+                        }
+                    }
+                }
+                naviEngine.routeList = newRouteList
+                naviMutex.unlock()
+            }
+        } else {
+//            Toast.makeText(context, "数据未安装，无法计算导航路径", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -337,9 +545,10 @@ class MainViewModel @Inject constructor(
             val realm = realmOperateHelper.getRealmDefaultInstance()
             realm.executeTransaction {
                 val objects =
-                    realmOperateHelper.getRealmTools(QsRecordBean::class.java, false).findAll()
+                    realmOperateHelper.getRealmTools(QsRecordBean::class.java).findAll()
                 list = realm.copyFromRealm(objects)
             }
+            realm.close()
             mapController.markerHandle.removeAllQsMarker()
             for (item in list) {
                 mapController.markerHandle.addOrUpdateQsRecordMark(item)
@@ -354,11 +563,11 @@ class MainViewModel @Inject constructor(
         var list = mutableListOf<NoteBean>()
         val realm = realmOperateHelper.getRealmDefaultInstance()
         realm.executeTransaction {
-            val objects = realmOperateHelper.getRealmTools(NoteBean::class.java, false).findAll()
+            val objects = realmOperateHelper.getRealmTools(NoteBean::class.java).findAll()
             list = realm.copyFromRealm(objects)
         }
 
-
+        realm.close()
 
         for (item in list) {
             mapController.markerHandle.addOrUpdateNoteMark(item)
@@ -453,12 +662,6 @@ class MainViewModel @Inject constructor(
                         )
                     )
                 }
-                withContext(Dispatchers.Main) {
-                    if (Constant.AUTO_LOCATION) {
-                        mapController.mMapView.vtmMap.animator()
-                            .animateTo(GeoPoint(location.latitude, location.longitude))
-                    }
-                }
             }
         }
         //显示轨迹图层
@@ -475,13 +678,21 @@ class MainViewModel @Inject constructor(
                     point.longitude,
                     point.latitude
                 ),
-                buffer = 2.5, catchAll = false
+                buffer = 2.4, catchAll = false,
             )
-
-            if (itemList.size == 1) {
-                liveDataSignMoreInfo.postValue(itemList[0])
+            //增加道路线过滤原则
+            val filterResult = itemList.filter {
+                if(isHighRoad()){
+                    mapController.mMapView.mapLevel>=it.zoomMin&&mapController.mMapView.mapLevel<=it.zoomMax
+                }else{
+                    //关闭时过滤道路线捕捉s
+                    mapController.mMapView.mapLevel>=it.zoomMin&&mapController.mMapView.mapLevel<=it.zoomMax&&it.code!=DataCodeEnum.OMDB_RD_LINK.code
+                }
+            }.toList()
+            if (filterResult.size == 1) {
+                liveDataSignMoreInfo.postValue(filterResult[0])
             } else {
-                liveDataItemList.postValue(itemList)
+                liveDataItemList.postValue(filterResult)
             }
         }
     }
@@ -501,11 +712,11 @@ class MainViewModel @Inject constructor(
 
                 val linkList = realmOperateHelper.queryLink(point = point)
 
-/*                val linkList = realmOperateHelper.queryLine(
-                    point = point,
-                    buffer = 1.0,
-                    table = "OMDB_RD_LINK_KIND"
-                )*/
+                /*                val linkList = realmOperateHelper.queryLine(
+                                    point = point,
+                                    buffer = 1.0,
+                                    table = "OMDB_RD_LINK_KIND"
+                                )*/
 
                 var hisRoadName = false
 
@@ -558,6 +769,7 @@ class MainViewModel @Inject constructor(
                                             )
                                         }
                                     }
+
                                     DataCodeEnum.OMDB_LANE_NUM.code, //车道数
                                     DataCodeEnum.OMDB_RD_LINK_KIND.code,//种别，
                                     DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code, // 功能等级,
@@ -607,31 +819,44 @@ class MainViewModel @Inject constructor(
 
                             }
 
-                            val realm = realmOperateHelper.getRealmDefaultInstance()
+                            val realm = realmOperateHelper.getSelectTaskRealmInstance()
 
-                            val entity =
-                                realmOperateHelper.getRealmTools(RenderEntity::class.java, true)
+                            val entityList =
+                                realmOperateHelper.getSelectTaskRealmTools(
+                                    RenderEntity::class.java,
+                                    true
+                                )
                                     .and()
                                     .equalTo("table", DataCodeEnum.OMDB_RESTRICTION.name)
                                     .and()
                                     .equalTo(
                                         "properties['linkIn']", it
-                                    ).findFirst()
-                            if (entity != null) {
-                                val outLink = entity.properties["linkOut"]
-                                val linkOutEntity =
-                                    realmOperateHelper.getRealmTools(RenderEntity::class.java, true)
-                                        .and()
-                                        .equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).and()
-                                        .equalTo(
-                                            "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
-                                            outLink
-                                        ).findFirst()
-                                if (linkOutEntity != null) {
-                                    mapController.lineHandler.linksLayer.addLine(
-                                        linkOutEntity.geometry, 0x7DFF0000
-                                    )
+                                    ).findAll()
+                            if (entityList.isNotEmpty()) {
+                                val outList = entityList.distinct()
+                                for (i in outList.indices) {
+                                    val outLink = outList[i].properties["linkOut"]
+                                    val linkOutEntity =
+                                        realmOperateHelper.getSelectTaskRealmTools(
+                                            RenderEntity::class.java,
+                                            true
+                                        )
+                                            .equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).and()
+                                            .equalTo(
+                                                "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
+                                                outLink
+                                            ).findFirst()
+                                    if (linkOutEntity != null) {
+                                        mapController.lineHandler.linksLayer.addLine(
+                                            linkOutEntity.geometry, 0x7DFF0000
+                                        )
+                                    }
                                 }
+                                mapController.lineHandler.linksLayer.addLine(
+                                    link.geometry,
+                                    Color.BLUE
+                                )
+                                realm.close()
                             }
                         }
 
@@ -666,6 +891,9 @@ class MainViewModel @Inject constructor(
      * 点击我的位置，回到我的位置
      */
     fun onClickLocationButton() {
+        val mapPosition: MapPosition = mapController.mMapView.vtmMap.getMapPosition()
+        mapPosition.setBearing(0f) // 锁定角度，自动将地图旋转到正北方向
+        mapController.mMapView.vtmMap.setMapPosition(mapPosition)
         mapController.locationLayerHandler.animateToCurrentPosition()
     }
 
@@ -915,6 +1143,7 @@ class MainViewModel @Inject constructor(
                     val geoPoint = GeometryTools.createGeoPoint(data.wkt!!.toText())
                     mapController.markerHandle.addMarker(geoPoint, "moreInfo")
                 }
+
                 Geometry.TYPENAME_LINESTRING -> {
                     mapController.lineHandler.showLine(data.wkt!!.toText())
                 }
@@ -1167,6 +1396,27 @@ class MainViewModel @Inject constructor(
         timer?.cancel()
     }
 
+
+    /**
+     * 开启自动定位
+     */
+    fun startAutoLocationTimer(){
+        if (autoLocationTimer != null) {
+            cancelAutoLocation()
+        }
+        autoLocationTimer = fixedRateTimer("", false, disAutoLocationTime, disAutoLocationTime) {
+            liveDataAutoLocation.postValue(true)
+            Log.e("qj","自动定位开始执行")
+            startAutoLocationTimer()
+        }
+    }
+
+    /**
+     * 结束自动定位
+     */
+    fun cancelAutoLocation() {
+        autoLocationTimer?.cancel()
+    }
 
     /**
      *  开启测量工具

@@ -185,7 +185,7 @@
         width="0.1" />
 
     <!--道路形态-->
-    <style-line dasharray="8,2,2,2,2,2" id="road_morphology" repeat-gap="3" repeat-start="0" stroke="#1afa29" width="0.3" />
+    <style-line dasharray="8,2,2,2,2,2" id="road_morphology" repeat-gap="3" repeat-start="0" stroke="#1afa29" width="0.4" />
 
     <!--###### ASSIGNMENT ######-->
 
@@ -1491,41 +1491,48 @@
     </m>
 
     <m k="qi_table">
+
         <!-- 道路线 -->
         <m v="OMDB_RD_LINK">
-            <line stroke="#9c9c9c" width="1" />
+            <line stroke="#9c9c9c" width="0.5" />
         </m>
 
         <!--道路种别-->
         <m v="OMDB_RD_LINK_KIND">
-            <outline-layer id="kind0" stroke="#44000000" width="0.1" />
-            <outline-layer id="kind1" stroke="#aa807040" width="0.1" />
+            <outline-layer id="kind0" stroke="#44000000" width="0.8" fix="true"/>
+            <outline-layer id="kind1" stroke="#aa807040" width="0.8" fix="true"/>
+
             <m k="kind" v="1">
-                <line blur="0.3" outline="kind0" use="highway:z11" />
+                <line blur="0.3" outline="kind0" use="highway:z11" width="3.5" fix="true"/>
             </m>
+
             <m k="kind" v="2|3">
-                <line outline="kind0" use="trunk" />
+                <line outline="kind0" use="trunk" fix="true" width="2.6"/>
             </m>
-            <m k="kind" v="4">
-                <line outline="kind0" use="primary:z11" />
+
+            <m k="kind" v="4">width="0.4"
+                <line outline="kind0" use="primary:z11" fix="true" width="2.2"/>
             </m>
+
             <m k="kind" v="5|6">
-                <line outline="kind0" use="secondary:z11" />
+                <line outline="kind0" use="secondary:z11" fix="true" width="1.5"/>
             </m>
+
             <m k="kind" v="7">
-                <line outline="kind0" use="tertiary" />
+                <line outline="kind0" use="tertiary" fix="true" width="2.2"/>
             </m>
+
             <m k="kind" v="8">
-                <line outline="kind0" use="residential" />
+                <line outline="kind0" use="residential" fix="true" width="0.5"/>
             </m>
             <m k="kind" v="9|10">
-                <line outline="kind0" use="footway:z17" />
+                <line outline="kind0" use="footway:z17" fix="true" width="0.7"/>
             </m>
             <m k="kind" v="11|13">
-                <line outline="kind0" use="ferry" />
+                <line outline="kind0" use="ferry" fix="true" width="5"/>
             </m>
             <m k="kind" v="15">
-                <line outline="kind0" use="highway:cycleway" />
+                <line outline="kind0" use="highway:cycleway" width="1"/>
             </m>
         </m>
 

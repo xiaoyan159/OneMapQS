@@ -22,6 +22,7 @@
 				"table": "OMDB_CHECKPOINT",
 				"code": 1012,
 				"name": "检查点",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 20
 			},
@@ -31,7 +32,7 @@
 				"name": "道路线",
 				"zoomMin": 15,
 				"zoomMax": 17,
-				"catch":false,
+				"catch":true,
 				"checkLinkId": false
 			},
 			"2002": {
@@ -80,6 +81,7 @@
 				"name": "车道边界类型",
 				"zoomMin": 18,
 				"zoomMax": 20,
+				"catch":true,
 				"checkLinkId": false,
 				"transformer": [
 					{
@@ -94,6 +96,7 @@
 				"table": "OMDB_LINK_CONSTRUCTION",
 				"code": 2017,
 				"name": "道路施工",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 17
 			},
@@ -129,12 +132,14 @@
 				"name": "道路边界类型",
 				"zoomMin": 18,
 				"zoomMax": 20,
+				"catch":true,
 				"checkLinkId": false
 			},
 			"2090":{
 				"table": "OMDB_LANE_CONSTRUCTION",
 				"code": 2090,
 				"name": "车道施工",
+				"catch":true,
 				"zoomMin": 18,
 				"zoomMax": 20,
 				"checkLinkId": false
@@ -175,6 +180,7 @@
 				"name": "文字",
 				"zoomMin": 15,
 				"zoomMax": 20,
+				"catch":true,
 				"transformer": []
 			},
 			"3003":{
@@ -183,6 +189,7 @@
 				"name": "符号",
 				"zoomMin": 15,
 				"zoomMax": 20,
+				"catch":true,
 				"transformer": []
 			},
 			"3004":{
@@ -224,6 +231,7 @@
 				"code": 3006,
 				"name": "杆状物",
 				"is3D": true,
+				"catch":true,
 				"transformer": [
 					{
 						"k": "geometry",
@@ -237,6 +245,7 @@
 				"table": "OMDB_FILL_AREA",
 				"code": 3012,
 				"name": "导流区",
+				"catch":true,
 				"zoomMin": 18,
 				"zoomMax": 20
 			},
@@ -244,6 +253,7 @@
 				"table": "OMDB_CROSS_WALK",
 				"code": 3014,
 				"name": "人行横道",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 20
 			},
@@ -252,6 +262,7 @@
 				"code": 3016,
 				"name": "停止位置",
 				"zoomMin": 18,
+				"catch":true,
 				"zoomMax": 20,
 				"checkLinkId": false
 			},
@@ -261,6 +272,7 @@
 				"name": "路口",
 				"zoomMin": 15,
 				"zoomMax": 17,
+				"catch":true,
 				"transformer": [
 					{
 						"k": "geometry",
@@ -338,7 +350,8 @@
 				"code": 4006,
 				"name": "普通交限",
 				"zoomMin": 15,
-				"zoomMax": 20,
+				"zoomMax": 17,
+				"catch":true,
 				"transformer": [
 					{
 						"k": "geometry",
@@ -489,7 +502,7 @@
 				"name": "车道中心线",
 				"zoomMin": 18,
 				"zoomMax": 20,
-				"catch":false,
+				"checkLinkId": false,
 				"transformer": [
 					{
 						"k": "geometry",
@@ -522,17 +535,23 @@
 			"2022": {
 				"table": "OMDB_CON_ACCESS",
 				"code": 2022,
-				"name": "全封闭"
+				"name": "全封闭",
+				"zoomMin": 15,
+				"zoomMax": 17
 			},
 			"2037": {
 				"table": "OMDB_RAMP",
 				"code": 2037,
-				"name": "匝道"
+				"name": "匝道",
+				"zoomMin": 15,
+				"zoomMax": 17
 			},
 			"2040": {
 				"table": "OMDB_MULTI_DIGITIZED",
 				"code": 2040,
-				"name": "上下线分离"
+				"name": "上下线分离",
+				"zoomMin": 15,
+				"zoomMax": 17
 			},
 			"2204":{
 				"table": "OMDB_ROUNDABOUT",

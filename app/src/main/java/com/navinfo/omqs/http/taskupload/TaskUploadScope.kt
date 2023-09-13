@@ -84,6 +84,7 @@ class TaskUploadScope(
                     realm.executeTransaction {
                         it.copyToRealmOrUpdate(taskBean)
                     }
+                    realm.close()
                 }
             }
         }
@@ -220,7 +221,7 @@ class TaskUploadScope(
                         }
                     }
                 }
-
+                realm.close()
             }
 
             if (bodyList.size > 0) {

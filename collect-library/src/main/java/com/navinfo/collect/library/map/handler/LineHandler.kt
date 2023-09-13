@@ -28,7 +28,7 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
         //高亮线绘制线 样式
         val defaultLineStyle = Style.builder()
             .stippleColor(context.resources.getColor(R.color.draw_line_blue2_color))
-            .strokeWidth(10f)
+            .strokeWidth(5f)
             .fillColor(context.resources.getColor(R.color.teal_200))
             .fillAlpha(0.5f)
             .strokeColor(context.resources.getColor(R.color.teal_200))

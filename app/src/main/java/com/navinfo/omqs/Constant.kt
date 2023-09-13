@@ -1,6 +1,9 @@
 package com.navinfo.omqs
 
+import com.navinfo.collect.library.utils.MapParamUtils
 import com.navinfo.omqs.bean.ImportConfig
+import io.realm.RealmConfiguration
+import java.io.File
 
 class Constant {
     companion object {
@@ -38,6 +41,30 @@ class Constant {
         lateinit var USER_DATA_PATH: String
 
         /**
+         * 当前安装任务
+         */
+        lateinit var installTaskid: String
+
+        /**
+         * 密码
+         */
+        val PASSWORD = "encryp".encodeToByteArray().copyInto(ByteArray(64))
+
+        /**
+         * 当前安装的任务文件
+         */
+        lateinit var currentInstallTaskFolder:File
+
+        lateinit var currentInstallTaskConfig:RealmConfiguration
+
+        /**
+         * 当前选择的任务
+         */
+        lateinit var currentSelectTaskFolder:File
+
+        lateinit var currentSelectTaskConfig:RealmConfiguration
+
+        /**
          * 用户附件数据目录
          */
         lateinit var USER_DATA_ATTACHEMNT_PATH: String
@@ -62,6 +89,8 @@ class Constant {
          */
         var INDOOR_IP: String = ""
 
+
+
         const val DEBUG = true
 
         /**
@@ -73,6 +102,11 @@ class Constant {
          * 是否自动定位
          */
         var AUTO_LOCATION = false
+
+        /**
+         * 地图视角是否锁定
+         */
+        var MapRotateEnable = false
 
         var IS_VIDEO_SPEED by kotlin.properties.Delegates.notNull<Boolean>()
 

@@ -11,15 +11,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
-import com.navinfo.collect.library.data.entity.HadLinkDvoBean
-import com.navinfo.collect.library.data.entity.NiLocation
-import com.navinfo.collect.library.data.entity.QsRecordBean
-import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.collect.library.data.entity.*
+import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.OnGeoPointClickListener
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.MapParamUtils
 import com.navinfo.omqs.Constant
+import com.navinfo.omqs.bean.Route
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
@@ -29,8 +28,10 @@ import com.navinfo.omqs.ui.dialog.FirstDialog
 import com.navinfo.omqs.util.DateTimeUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import kotlinx.coroutines.*
 import org.oscim.core.GeoPoint
+import java.io.File
 import javax.inject.Inject
 
 
@@ -143,10 +144,11 @@ class TaskViewModel @Inject constructor(
                                     mapController.lineHandler.addTaskLink(hadLinkDvoBean)
                                     mapController.layerManagerHandler.updateOMDBVectorTileLayer()
                                     mapController.mMapView.vtmMap.updateMap(true)
+                                    realm.close()
                                 }
                             }
                         }
-                    }else {
+                    } else {
                         viewModelScope.launch(Dispatchers.IO) {
                             val links = realmOperateHelper.queryLink(
                                 point = point,
@@ -183,7 +185,7 @@ class TaskViewModel @Inject constructor(
     /**
      * 获取任务列表
      */
-    fun loadNetTaskList(context: Context){
+    fun loadNetTaskList(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             when (val result = networkService.getTaskList(Constant.USER_ID)) {
                 is NetResult.Success -> {
@@ -218,6 +220,7 @@ class TaskViewModel @Inject constructor(
                             }
 
                         }
+                        realm.close()
                     }
                     getLocalTaskList()
                 }
@@ -239,10 +242,10 @@ class TaskViewModel @Inject constructor(
                 }
 
                 is NetResult.Loading -> {}
+                else -> {}
             }
         }
     }
-
 
 
     /**
@@ -262,6 +265,7 @@ class TaskViewModel @Inject constructor(
             FileManager.checkOMDBFileInfo(item)
         }
         liveDataTaskList.postValue(taskList)
+        realm.close()
         val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
         if (id > -1) {
             for (item in taskList) {
@@ -281,7 +285,7 @@ class TaskViewModel @Inject constructor(
      * 设置当前选择的任务，并高亮当前任务的所有link
      */
 
-    fun setSelectTaskBean(taskBean: TaskBean) {
+    fun setSelectTaskBean( taskBean: TaskBean) {
 
         sharedPreferences.edit().putInt(Constant.SELECT_TASK_ID, taskBean.id).apply()
 
@@ -290,10 +294,14 @@ class TaskViewModel @Inject constructor(
         liveDataTaskLinks.value = taskBean.hadLinkDvoList
         showTaskLinks(taskBean)
         MapParamUtils.setTaskId(taskBean.id)
+        Constant.currentSelectTaskFolder =  File(Constant.USER_DATA_PATH +"/${MapParamUtils.getTaskId()}")
+        Constant.currentSelectTaskConfig = RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder).name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true).schemaVersion(2).build()
+        MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
         mapController.layerManagerHandler.updateOMDBVectorTileLayer()
         mapController.mMapView.updateMap(true)
-
     }
+
+
 
     private fun showTaskLinks(taskBean: TaskBean) {
 
@@ -383,6 +391,7 @@ class TaskViewModel @Inject constructor(
                 realm.executeTransaction { r ->
                     r.copyToRealmOrUpdate(it)
                 }
+                realm.close()
             }
 
         }
@@ -399,6 +408,7 @@ class TaskViewModel @Inject constructor(
             val list = realm.where(TaskBean::class.java).contains("evaluationTaskName", key).or()
                 .contains("dataVersion", key).or().contains("cityName", key).findAll()
             liveDataTaskList.postValue(realm.copyFromRealm(list))
+            realm.close()
         }
     }
 
@@ -465,6 +475,7 @@ class TaskViewModel @Inject constructor(
                 }
                 liveDataTaskList.postValue(taskList)
                 liveDataCloseTask.postValue(true)
+                realm.close()
             }
         }
         mDialog.setNegativeButton(
@@ -507,6 +518,7 @@ class TaskViewModel @Inject constructor(
                 map[taskBean] = true
                 liveDataTaskUpload.postValue(map)
             }
+            realm.close()
         }
     }
 
@@ -655,6 +667,7 @@ class TaskViewModel @Inject constructor(
                         mapController.lineHandler.removeTaskLink(hadLinkDvoBean.linkPid)
                         liveDataTaskLinks.postValue(currentSelectTaskBean!!.hadLinkDvoList)
                     }
+                    realm.close()
                 }
             }
             mDialog.setNegativeButton(

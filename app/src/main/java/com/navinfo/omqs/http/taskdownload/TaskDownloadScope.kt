@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.blankj.utilcode.util.MapUtils
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.collect.library.utils.MapParamUtils
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.db.ImportOMDBHelper
 import com.navinfo.omqs.tools.FileManager
@@ -106,9 +108,10 @@ class TaskDownloadScope(
             downloadData.postValue(taskBean)
             if (status != FileDownloadStatus.LOADING && status != FileDownloadStatus.IMPORTING) {
                 val realm = Realm.getDefaultInstance()
-                realm.executeTransaction {
-                    it.insertOrUpdate(taskBean)
-                }
+                realm.beginTransaction()
+                realm.insertOrUpdate(taskBean)
+                realm.commitTransaction()
+                realm.close()
             }
         }
     }
@@ -142,8 +145,12 @@ class TaskDownloadScope(
                     Log.e("jingo", "数据安装 $it")
                     if (it == "finish") {
                         change(FileDownloadStatus.DONE)
+                        Log.e("jingo", "数据安装结束")
                         withContext(Dispatchers.Main) {
-                            downloadManager.mapController.layerManagerHandler.updateOMDBVectorTileLayer()
+                            //任务与当前一致，需要更新渲染图层
+                            if(MapParamUtils.getTaskId()==taskBean.id){
+                                downloadManager.mapController.layerManagerHandler.updateOMDBVectorTileLayer()
+                            }
                         }
                     } else {
                         change(FileDownloadStatus.IMPORTING, it)

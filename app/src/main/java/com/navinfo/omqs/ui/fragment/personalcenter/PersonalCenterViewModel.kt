@@ -43,7 +43,6 @@ class PersonalCenterViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.N)
     suspend fun obtainOMDBZipData(importOMDBHelper: ImportOMDBHelper) {
         Log.d("OMQSApplication", "开始生成数据")
-//        Realm.getDefaultInstance().beginTransaction()
         val gson = Gson()
         val hadLinkFile = File(importOMDBHelper.omdbFile.parentFile, "HAD_LINK.txt")
         val hadLinkKindFile = File(importOMDBHelper.omdbFile.parentFile, "HAD_LINK_KIND.txt")
@@ -135,14 +134,7 @@ class PersonalCenterViewModel @Inject constructor(
                             hadSpeedLimitVarFile, gson.toJson(hadSpeedlimitVar) + "\r", true
                         )
                     }
-//                    val properties = RealmDictionary<String?>()
-//                    for (entry in map.entries) {
-//                        properties.putIfAbsent(entry.key, entry.value.toString())
-//                    }
-
-//                    // 将读取到的sqlite数据插入到Realm中
-//                    Realm.getDefaultInstance().insert(OMDBEntity(tableName, properties))
-                }
+               }
             }
         }
         ZipUtils.zipFiles(

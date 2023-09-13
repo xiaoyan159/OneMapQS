@@ -1,8 +1,12 @@
 package com.navinfo.collect.library.utils;
 
 import android.graphics.Point;
+import android.os.Build;
 import android.util.Log;
 
+import org.jetbrains.annotations.NotNull;
+import org.locationtech.jts.algorithm.distance.DistanceToPoint;
+import org.locationtech.jts.algorithm.distance.PointPairDistance;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -436,7 +440,7 @@ public class GeometryTools {
             Geometry startGeo = createGeometry(startGeoPoint);
             Geometry endGeo = createGeometry(endGeoPoint);
             double d = startGeo.distance(endGeo);
-            return convertDistanceToDegree(d,startGeoPoint.getLatitude());
+            return convertDistanceToDegree(d, startGeoPoint.getLatitude());
         }
         return 0;
 
@@ -608,6 +612,21 @@ public class GeometryTools {
         }
         return list;
     }
+
+    public static List<GeoPoint> getGeoPoints(Geometry geometry) {
+        List<GeoPoint> list = null;
+        if (geometry != null) {
+            Coordinate[] coordinates = geometry.getCoordinates();
+            if (coordinates != null && coordinates.length > 0) {
+                list = new ArrayList<GeoPoint>();
+                for (Coordinate coor : coordinates) {
+                    list.add(new GeoPoint(coor.y, coor.x));
+                }
+            }
+        }
+        return list;
+    }
+
 
     public static Coordinate[] getCoordinates(String str) {
         Coordinate[] coordinates = null;
@@ -1314,6 +1333,8 @@ public class GeometryTools {
     }
 
 
+
+
     public enum SNAP_TYPE {
         /**
          * 像素
@@ -1347,7 +1368,7 @@ public class GeometryTools {
     }
 
     public static boolean isCheckError(double lon, double lat) {
-        if(lon==0||lat==0){
+        if (lon == 0 || lat == 0) {
             return true;
         }
 
@@ -1397,8 +1418,10 @@ public class GeometryTools {
 
     static class Check {
         public static boolean isEmpty(String str) {
-            if (str == null || str.isEmpty()) {
-                return true;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                if (str == null || str.isEmpty()) {
+                    return true;
+                }
             }
             return false;
         }
@@ -1466,7 +1489,7 @@ public class GeometryTools {
         switch (unit) {
             case SNAP_PIXEL:
                 org.oscim.core.Point p = new org.oscim.core.Point();
-                fMap.viewport().toScreenPoint(gp,false, p);
+                fMap.viewport().toScreenPoint(gp, false, p);
                 GeoPoint gPLq = fMap.viewport().fromScreenPoint((float) p.x, (float) p.y);
                 org.oscim.core.Point pL = new org.oscim.core.Point((p.x - distance), (p.y - distance));
 
@@ -1541,6 +1564,7 @@ public class GeometryTools {
 
     /**
      * 计算距离
+     *
      * @param list
      * @return
      */
@@ -1593,20 +1617,80 @@ public class GeometryTools {
      * @return 对应的地理坐标系中的距离（单位：度）
      */
     private static final double EARTH_RADIUS = 6371000.0;
+
     public static double convertDistanceToDegree(double distance, double latitude) {
         double radianDistance = distance / EARTH_RADIUS;
         double radianLatitude = Math.toRadians(latitude);
+
         double radianDegree = 2 * Math.asin(Math.sin(radianDistance / 2) / Math.cos(radianLatitude));
         return Math.toDegrees(radianDegree);
     }
-
+    /**
+     * 获取指定tile对应的polygon面
+     * @param tile vtm中的瓦片
+     * */
     public static Polygon getTilePolygon(Tile tile) {
         // 获取当前tile的起点坐标
         double startLongitude = MercatorProjection.tileXToLongitude(tile.tileX, tile.zoomLevel);
         double startLatitude = MercatorProjection.tileYToLatitude(tile.tileY, tile.zoomLevel);
-        double endLongitude = MercatorProjection.tileXToLongitude(tile.tileX+1, tile.zoomLevel);
-        double endLatitude = MercatorProjection.tileYToLatitude(tile.tileY+1, tile.zoomLevel);
+        double endLongitude = MercatorProjection.tileXToLongitude(tile.tileX + 1, tile.zoomLevel);
+        double endLatitude = MercatorProjection.tileYToLatitude(tile.tileY + 1, tile.zoomLevel);
         return GeometryTools.createPolygonFromCoords(new Coordinate[]{new Coordinate(startLongitude, startLongitude), new Coordinate(endLongitude, startLatitude),
                 new Coordinate(endLongitude, endLatitude), new Coordinate(startLongitude, endLatitude), new Coordinate(startLongitude, startLongitude)});
+    }
+    /**
+     * 经纬度转墨卡托
+     */
+    public static Coordinate geoPointToMercator(GeoPoint point) {
+        Coordinate coordinate = new Coordinate();
+
+        double x = point.getLongitude() * 20037508.34 / 180;
+        double y = Math.log(Math.tan((90 + point.getLatitude()) * Math.PI / 360)) / (Math.PI / 180);
+
+        y = y * 20037508.34 / 180;
+
+        coordinate.x = x;
+        coordinate.y = y;
+
+        return coordinate;
+    }
+
+    /**
+     * 墨卡托转经纬度
+     */
+    public static GeoPoint mercatorToGeoPoint(Coordinate coordinate) {
+        GeoPoint point = null;
+        double x = coordinate.x / 20037508.34 * 180;
+        double y = coordinate.y / 20037508.34 * 180;
+
+        y = 180 / Math.PI * (2 * Math.atan(Math.exp(y * Math.PI / 180)) - Math.PI / 2);
+
+        point = new GeoPoint(y, x);
+        return point;
+    }
+
+    public static List<GeoPoint> pointToLineDistance(GeoPoint point, List<GeoPoint> pointList) {
+
+        Coordinate coordinate = geoPointToMercator(point);
+        Coordinate[] cs = new Coordinate[pointList.size()];
+
+        for (int i = 0; i < pointList.size(); i++) {
+            Coordinate c = geoPointToMercator(pointList.get(i));
+            cs[i] = c;
+        }
+        GeometryFactory factory = new GeometryFactory();
+        LineString lineString = factory.createLineString(cs);
+        PointPairDistance pointPairDistance = new PointPairDistance();
+        DistanceToPoint.computeDistance(
+                lineString,
+                coordinate,
+                pointPairDistance
+        );
+
+        List newPoints = new ArrayList<GeoPoint>();
+        for (int i = 0; i < pointPairDistance.getCoordinates().length; i++) {
+            newPoints.add(mercatorToGeoPoint(pointPairDistance.getCoordinate(i)));
+        }
+        return newPoints;
     }
 }

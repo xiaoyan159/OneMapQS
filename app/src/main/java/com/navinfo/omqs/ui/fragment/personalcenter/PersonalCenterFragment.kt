@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.view.forEach
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.blankj.utilcode.util.ToastUtils
@@ -26,24 +28,28 @@ import com.navinfo.omqs.databinding.FragmentPersonalCenterBinding
 import com.navinfo.omqs.db.ImportOMDBHelper
 import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
 import com.navinfo.omqs.tools.CoroutineUtils
-import com.navinfo.omqs.ui.fragment.BaseFragment
+import com.navinfo.omqs.ui.activity.map.MainViewModel
 import com.navinfo.omqs.ui.activity.scan.QrCodeActivity
+import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 import org.oscim.core.GeoPoint
+import org.oscim.core.MapPosition
 import javax.inject.Inject
 
 /**
  * 个人中心
  */
 @AndroidEntryPoint
-class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?)? = null) : BaseFragment(),
+class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?)? = null) :
+    BaseFragment(),
     FSAFActivityCallbacks {
 
     private var _binding: FragmentPersonalCenterBinding? = null
     private val binding get() = _binding!!
     private val fileChooser by lazy { FileChooser(requireContext()) }
     private val viewModel by lazy { viewModels<PersonalCenterViewModel>().value }
+    private val viewMainModel by activityViewModels<MainViewModel>()
 
     @Inject
     lateinit var importOMDBHiltFactory: ImportOMDBHiltFactory
@@ -66,6 +72,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
             when (it.itemId) {
                 R.id.personal_center_menu_offline_map ->
                     findNavController().navigate(R.id.OfflineMapFragment)
+
                 R.id.personal_center_menu_obtain_data -> { // 生成数据，根据sqlite文件生成对应的zip文件
                     fileChooser.openChooseFileDialog(object : FileChooserCallback() {
                         override fun onCancel(reason: String) {
@@ -90,6 +97,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         }
                     })
                 }
+
                 R.id.personal_center_menu_import_data -> { // 导入zip数据
                     fileChooser.openChooseFileDialog(object : FileChooserCallback() {
                         override fun onCancel(reason: String) {
@@ -106,6 +114,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         }
                     })
                 }
+
                 R.id.personal_center_menu_import_yuan_data -> {
                     // 用户选中导入数据，打开文件选择器，用户选择导入的数据文件目录
                     fileChooser.openChooseFileDialog(object : FileChooserCallback() {
@@ -117,49 +126,59 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         }
                     })
                 }
+
                 R.id.personal_center_menu_open_auto_location -> {
-                    Constant.AUTO_LOCATION = true
+                    Constant.AUTO_LOCATION = !Constant.AUTO_LOCATION
+                    if (Constant.AUTO_LOCATION) {
+                        it.title = "关闭自动定位"
+                        viewMainModel.startAutoLocationTimer()
+                    } else {
+                        it.title = "开启10S自动定位"
+                        viewMainModel.cancelAutoLocation()
+                    }
                 }
-                R.id.personal_center_menu_close_auto_location -> {
-                    Constant.AUTO_LOCATION = false
+
+                R.id.personal_center_menu_rotate_over_look -> {
+                    niMapController.mMapView.vtmMap.eventLayer.enableTilt(Constant.MapRotateEnable)
+                    niMapController.mMapView.vtmMap.eventLayer.enableRotation(Constant.MapRotateEnable)
+                    Constant.MapRotateEnable = !Constant.MapRotateEnable
+                     if (Constant.MapRotateEnable) {
+                        val mapPosition: MapPosition =
+                            niMapController.mMapView.vtmMap.getMapPosition()
+                        mapPosition.setBearing(0f) // 锁定角度，自动将地图旋转到正北方向
+                        niMapController.mMapView.vtmMap.setMapPosition(mapPosition)
+                        it.title = "开启地图旋转及视角"
+                    } else {
+                        it.title = "锁定地图旋转及视角"
+                    }
                 }
+
                 R.id.personal_center_menu_test -> {
                     viewModel.readRealmData()
                     //116.25017070328308 40.061730653134696
                     // 定位到指定位置
                     niMapController.mMapView.vtmMap.animator()
 //                        .animateTo(GeoPoint( 40.05108004733645, 116.29187746293708    ))
-                        .animateTo(GeoPoint(40.08785792571823, 116.27562659540283))
+                        .animateTo(GeoPoint(40.51850916836801, 115.78801387178642))
                 }
+
                 R.id.personal_center_menu_open_all_layer -> {
                     MapParamUtils.setDataLayerEnum(DataLayerEnum.SHOW_ALL_LAYERS)
                     niMapController.layerManagerHandler.updateOMDBVectorTileLayer()
                     viewModel.realmOperateHelper.updateRealmDefaultInstance()
                 }
+
                 R.id.personal_center_menu_close_hide_layer -> {
                     MapParamUtils.setDataLayerEnum(DataLayerEnum.ONLY_ENABLE_LAYERS)
                     niMapController.layerManagerHandler.updateOMDBVectorTileLayer()
                     viewModel.realmOperateHelper.updateRealmDefaultInstance()
                 }
-//                R.id.personal_center_menu_task_list -> {
-//                    findNavController().navigate(R.id.TaskManagerFragment)
-//                }
-//                R.id.personal_center_menu_qs_record_list -> {
-//                    findNavController().navigate(R.id.QsRecordListFragment)
-//                }
-//                R.id.personal_center_menu_layer_manager -> { // 图层管理
-//                    findNavController().navigate(R.id.QsLayerManagerFragment)
-//                }
-/*                R.id.personal_center_menu_qs_record_list -> {
-                    findNavController().navigate(R.id.QsRecordListFragment)
-                }
-                R.id.personal_center_menu_layer_manager -> { // 图层管理
-                    findNavController().navigate(R.id.QsLayerManagerFragment)
-                }*/
+
                 R.id.personal_center_menu_scan_qr_code -> {
                     //跳转二维码扫描界面
                     checkPermission()
                 }
+
                 R.id.personal_center_menu_scan_indoor_data -> {
                     indoorDataListener?.invoke(true)
                 }
@@ -171,6 +190,24 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
             ToastUtils.showShort(it)
         }
         fileChooser.setCallbacks(this@PersonalCenterFragment)
+        binding.root.menu.forEach {
+            when (it.itemId) {
+                R.id.personal_center_menu_open_auto_location -> {
+                    if (Constant.AUTO_LOCATION) {
+                        it.title = "关闭自动定位"
+                    } else {
+                        it.title = "开启10S自动定位"
+                    }
+                }
+                R.id.personal_center_menu_rotate_over_look -> {
+                    if (Constant.MapRotateEnable) {
+                        it.title = "开启地图旋转及视角"
+                    } else {
+                        it.title = "锁定地图旋转及视角"
+                    }
+                }
+            }
+        }
     }
 
     private fun intentTOQRCode() {
@@ -198,7 +235,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
             .request { allGranted, grantedList, deniedList ->
                 if (allGranted) {
                     //所有权限已经授权
-                    Toast.makeText(context,"授权成功",Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "授权成功", Toast.LENGTH_LONG).show()
                     intentTOQRCode()
                 } else {
                     Toast.makeText(context, "拒绝权限: $deniedList", Toast.LENGTH_LONG).show()

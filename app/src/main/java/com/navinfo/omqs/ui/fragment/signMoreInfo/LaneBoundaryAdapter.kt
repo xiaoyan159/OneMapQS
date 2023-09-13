@@ -37,6 +37,7 @@ class LaneBoundaryAdapter : RecyclerView.Adapter<ViewHolder>() {
         fun bind(pos: Int, laneBoundaryItem: LaneBoundaryItem) {
             viewBinding.contactName.text = laneBoundaryItem.title
             if (laneBoundaryItem.itemList != null) {
+                viewBinding.infos.removeAllViews()
                 for (item in laneBoundaryItem.itemList) {
                     var view = LayoutInflater.from(viewBinding.root.context)
                         .inflate(R.layout.adapter_two_item, null, false)

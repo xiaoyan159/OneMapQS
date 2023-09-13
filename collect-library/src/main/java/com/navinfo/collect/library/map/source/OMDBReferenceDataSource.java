@@ -42,12 +42,14 @@ public class OMDBReferenceDataSource implements ITileDataSource {
             int xEnd = (int) ((tile.tileX + 1) << m);
             int yStart = (int) tile.tileY << m;
             int yEnd = (int) ((tile.tileY + 1) << m);
+
+
             if(isUpdate){
-                Realm.getDefaultInstance().refresh();
+                Realm.getInstance(MapParamUtils.getTaskConfig()).refresh();
                 isUpdate = false;
             }
 
-            String sql = "taskId="+ MapParamUtils.getTaskId() +" and tileX>=" + xStart + " and tileX<=" + xEnd + " and tileY>=" + yStart + " and tileY<=" + yEnd + "";
+            String sql = " tileX>=" + xStart + " and tileX<=" + xEnd + " and tileY>=" + yStart + " and tileY<=" + yEnd + "";
 
             if(MapParamUtils.getDataLayerEnum()!=null){
                 sql += " and enable" + MapParamUtils.getDataLayerEnum().getSql();
@@ -55,7 +57,7 @@ public class OMDBReferenceDataSource implements ITileDataSource {
                 sql += " and 1=1";
             }
 
-            RealmQuery<ReferenceEntity> realmQuery = Realm.getDefaultInstance().where(ReferenceEntity.class)
+            RealmQuery<ReferenceEntity> realmQuery = Realm.getInstance(MapParamUtils.getTaskConfig()).where(ReferenceEntity.class)
                     .rawPredicate(sql);
             // 筛选不显示的数据
             if (Constant.HAD_LAYER_INVISIABLE_ARRAY != null && Constant.HAD_LAYER_INVISIABLE_ARRAY.length > 0) {
@@ -74,7 +76,7 @@ public class OMDBReferenceDataSource implements ITileDataSource {
             } else {
                 mapDataSink.completed(QueryResult.TILE_NOT_FOUND);
             }
-//            Log.d("RealmDBTileDataSource", "tile:"+tile.getBoundingBox().toString());
+            Realm.getInstance(MapParamUtils.getTaskConfig()).close();
         } else {
             mapDataSink.completed(QueryResult.TILE_NOT_FOUND);
         }

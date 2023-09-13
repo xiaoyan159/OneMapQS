@@ -67,7 +67,10 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
                 val errorCode = it.locType
                 mCurrentLocation = it
                 mLocationLayer.setPosition(it.latitude, it.longitude, it.radius)
-                Log.e("qj", "location==${it.longitude}==errorCode===$errorCode===${it.locTypeDescription}")
+                Log.e(
+                    "qj",
+                    "location==${it.longitude}==errorCode===$errorCode===${it.locTypeDescription}"
+                )
 
                 getCurrentNiLocation()?.let { it1 ->
                     mContext.lifecycleScope.launch {
@@ -212,6 +215,7 @@ private class MyLocationListener(callback: (BDLocation) -> Unit) : BDAbstractLoc
     val call = callback;
     override fun onReceiveLocation(location: BDLocation) {
         call(location)
+        Log.e("jingo", "定位结果：速度=" + location.speed +" 方向=" + location.direction)
     }
 }
 

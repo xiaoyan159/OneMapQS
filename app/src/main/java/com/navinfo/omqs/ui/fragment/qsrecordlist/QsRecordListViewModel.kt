@@ -32,6 +32,7 @@ class QsRecordListViewModel @Inject constructor(
             val realm = Realm.getDefaultInstance()
             val objects = realm.where(QsRecordBean::class.java).equalTo("taskId",taskId).findAll()
             liveDataQSList.postValue(realm.copyFromRealm(objects))
+            realm.close()
         }
     }
 

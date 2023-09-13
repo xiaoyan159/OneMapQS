@@ -4,7 +4,9 @@ import android.util.Log
 import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.utils.GeometryTools
+import com.navinfo.omqs.Constant
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import org.json.JSONArray
 import org.json.JSONObject
 import org.locationtech.jts.algorithm.Angle
@@ -18,25 +20,25 @@ class ImportPreProcess {
     val code2NameMap = Code2NameMap()
     lateinit var cacheRdLink: Map<String?, RenderEntity>
     val defaultTranslateDistance = 3.0
-    val testFlag:Boolean = false
+    val testFlag: Boolean = false
     fun checkCircleRoad(renderEntity: RenderEntity): Boolean {
-//        val linkInId = renderEntity.properties["linkIn"]
-//        val linkOutId = renderEntity.properties["linkOut"]
-//        // 根据linkIn和linkOut获取对应的link数据
-//        val linkInEntity = cacheRdLink[linkInId]
-//        val linkOutEntity = cacheRdLink[linkOutId]
-//        Log.d(
-//            "checkCircleRoad",
-//            "LinkInEntity: ${linkInId}- ${linkInEntity?.properties?.get("snodePid")}，LinkOutEntity: ${linkOutId}- ${
-//                linkOutEntity?.properties?.get("enodePid")
-//            }"
-//        )
-//        // 查询linkIn的sNode和linkOut的eNode是否相同，如果相同，认为数据是环形路口，返回false
-//        if (linkInEntity != null && linkOutEntity != null) {
-//            if (linkInEntity.properties["snodePid"] == linkOutEntity.properties["enodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["snodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["enodePid"]) {
-//                return false
-//            }
-//        }
+        val linkInId = renderEntity.properties["linkIn"]
+        val linkOutId = renderEntity.properties["linkOut"]
+        // 根据linkIn和linkOut获取对应的link数据
+        val linkInEntity = cacheRdLink[linkInId]
+        val linkOutEntity = cacheRdLink[linkOutId]
+        Log.d(
+            "checkCircleRoad",
+            "LinkInEntity: ${linkInId}- ${linkInEntity?.properties?.get("snodePid")}，LinkOutEntity: ${linkOutId}- ${
+                linkOutEntity?.properties?.get("enodePid")
+            }"
+        )
+        // 查询linkIn的sNode和linkOut的eNode是否相同，如果相同，认为数据是环形路口，返回false
+        if (linkInEntity != null && linkOutEntity != null) {
+            if (linkInEntity.properties["snodePid"] == linkOutEntity.properties["enodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["snodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["enodePid"]) {
+                return false
+            }
+        }
         return true
     }
 
@@ -45,7 +47,7 @@ class ImportPreProcess {
      * @param direction 判断当前数据是否为逆向，给定的应该是一个a=b的表达式，a为对应的properties的key，b为对应的值
      * */
     fun translateRight(renderEntity: RenderEntity, direction: String = "") {
-        if(testFlag){
+        if (testFlag) {
             return
         }
         // 获取当前renderEntity的geometry
@@ -55,7 +57,8 @@ class ImportPreProcess {
         // 如果数据属性中存在angle，则使用该值，否则需要根据line中的数据进行计算
         if (renderEntity?.properties?.get(
                 "angle"
-            )!=null) {
+            ) != null
+        ) {
             var angle = renderEntity?.properties?.get("angle")?.toDouble()!!
             // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
             angle = ((450 - angle) % 360)
@@ -112,7 +115,7 @@ class ImportPreProcess {
      * 向方向对应的反方向偏移
      * */
     fun translateBack(renderEntity: RenderEntity, direction: String = "") {
-        if(testFlag){
+        if (testFlag) {
             return
         }
         // 获取当前renderEntity的geometry
@@ -173,7 +176,7 @@ class ImportPreProcess {
      * 生成偏移后数据的起终点参考线
      * */
     fun generateS2EReferenceLine(renderEntity: RenderEntity) {
-        if(testFlag){
+        if (testFlag) {
             return
         }
         // 获取当前renderEntity的geometry，该坐标为偏移后坐标，即为终点
@@ -207,7 +210,9 @@ class ImportPreProcess {
             GeometryTools.createLineString(arrayOf<Coordinate>(pointStart, pointEnd)).toString()
         startEndReference.properties["qi_table"] = renderEntity.table
         startEndReference.properties["type"] = "s_2_e"
-        Realm.getDefaultInstance().insert(startEndReference)
+        val listResult = mutableListOf<ReferenceEntity>()
+        listResult.add(startEndReference)
+        insertData(listResult)
     }
 
     fun generateS2EReferencePoint(
@@ -219,6 +224,7 @@ class ImportPreProcess {
 
         val pointEnd = geometry!!.coordinates[geometry.numPoints - 1] // 获取这个geometry对应的结束点坐标
         val pointStart = geometry!!.coordinates[0] // 获取这个geometry对应的起点
+        val listResult = mutableListOf<ReferenceEntity>()
 
         // 将这个起终点的线记录在数据中
         val startReference = ReferenceEntity()
@@ -232,26 +238,31 @@ class ImportPreProcess {
         startReference.enable = renderEntity.enable
 
         // 起点坐标
-        startReference.geometry = GeometryTools.createGeometry(GeoPoint(pointStart.y, pointStart.x)).toString()
+        startReference.geometry =
+            GeometryTools.createGeometry(GeoPoint(pointStart.y, pointStart.x)).toString()
         startReference.properties["qi_table"] = renderEntity.table
-        Log.e("qj","generateS2EReferencePoint===$table===$proKey")
+        Log.e("qj", "generateS2EReferencePoint===$table===$proKey")
         if (renderEntity.table == table) {
-            Log.e("qj","generateS2EReferencePoint===开始")
+            Log.e("qj", "generateS2EReferencePoint===开始")
             if (renderEntity.properties.containsKey(proKey)) {
-                if(renderEntity.properties[proKey]!=""){
+                if (renderEntity.properties[proKey] != "") {
                     startReference.properties["type"] = "s_2_p_${renderEntity.properties[proKey]}"
-                }else{
+                } else {
                     startReference.properties["type"] = "s_2_p_0"
                 }
-                Log.e("qj","generateS2EReferencePoint===s_2_p_${renderEntity.properties[proKey]}")
+                Log.e("qj", "generateS2EReferencePoint===s_2_p_${renderEntity.properties[proKey]}")
             }
         } else {
             startReference.properties["type"] = "s_2_p"
-            Log.e("qj","generateS2EReferencePoint===s_2_p${renderEntity.name}")
+            Log.e("qj", "generateS2EReferencePoint===s_2_p${renderEntity.name}")
         }
-        startReference.properties["geometry"] = startReference.geometry
 
-        Realm.getDefaultInstance().insert(startReference)
+        Log.e("qj", "generateS2EReferencePoint===${startReference.geometry}")
+
+        startReference.properties["geometry"] = startReference.geometry
+        listResult.add(startReference)
+
+        Log.e("qj", "generateS2EReferencePoint===1")
 
         val endReference = ReferenceEntity()
         endReference.renderEntityId = renderEntity.id
@@ -263,23 +274,30 @@ class ImportPreProcess {
         endReference.taskId = renderEntity.taskId
         endReference.enable = renderEntity.enable
 
+        Log.e("qj", "generateS2EReferencePoint===2")
+
         // 终点坐标
-        endReference.geometry = GeometryTools.createGeometry(GeoPoint(pointEnd.y, pointEnd.x)).toString()
+        endReference.geometry =
+            GeometryTools.createGeometry(GeoPoint(pointEnd.y, pointEnd.x)).toString()
+        Log.e("qj", "generateS2EReferencePoint===3")
         endReference.properties["qi_table"] = renderEntity.table
         if (renderEntity.table == table) {
             if (renderEntity.properties.containsKey(proKey)) {
-                if(renderEntity.properties[proKey]!=""){
+                if (renderEntity.properties[proKey] != "") {
                     endReference.properties["type"] = "e_2_p_${renderEntity.properties[proKey]}"
-                }else{
+                } else {
                     endReference.properties["type"] = "e_2_p_0"
                 }
             }
         } else {
             endReference.properties["type"] = "e_2_p"
-            Log.e("qj","generateS2EReferencePoint===e_2_p${renderEntity.name}")
+            Log.e("qj", "generateS2EReferencePoint===e_2_p${renderEntity.name}")
         }
         endReference.properties["geometry"] = endReference.geometry
-        Realm.getDefaultInstance().insert(endReference)
+
+        listResult.add(endReference)
+        Log.e("qj", "generateS2EReferencePoint===4")
+        insertData(listResult)
     }
 
     /**
@@ -356,6 +374,7 @@ class ImportPreProcess {
                 geometry?.coordinate?.y!!
             ) * Math.sin(radian)
         }
+        val listResult = mutableListOf<ReferenceEntity>()
 
         for (pointStart in pointStartArray) {
             val coorEnd = Coordinate(pointStart.getX() + dx, pointStart.getY() + dy, pointStart.z)
@@ -373,9 +392,9 @@ class ImportPreProcess {
                 WKTWriter(3).write(GeometryTools.createLineString(arrayOf(pointStart, coorEnd)))
             angleReference.properties["qi_table"] = renderEntity.table
             angleReference.properties["type"] = "angle"
-            Realm.getDefaultInstance().insert(angleReference)
+            listResult.add(angleReference)
         }
-
+        insertData(listResult)
     }
 
     fun addAngleFromGeometry(renderEntity: RenderEntity): String {
@@ -443,6 +462,7 @@ class ImportPreProcess {
                 // 分别获取两个数组中的数据，取第一个作为主数据，另外两个作为辅助渲染数据
                 val laneInfoDirectArray = JSONArray(laneinfoGroup[0].toString())
                 val laneInfoTypeArray = JSONArray(laneinfoGroup[1].toString())
+                val listResult = mutableListOf<ReferenceEntity>()
 
                 for (i in 0 until laneInfoDirectArray.length()) {
                     // 根据后续的数据生成辅助表数据
@@ -461,12 +481,14 @@ class ImportPreProcess {
                         laneInfoDirectArray[i].toString().split(",").distinct().joinToString("_")
                     referenceEntity.properties["currentType"] =
                         laneInfoTypeArray[i].toString()
-                    val type = if (referenceEntity.properties["currentType"]=="0") "normal" else if (referenceEntity.properties["currentType"]=="1") "extend" else "bus"
+                    val type =
+                        if (referenceEntity.properties["currentType"] == "0") "normal" else if (referenceEntity.properties["currentType"] == "1") "extend" else "bus"
                     referenceEntity.properties["symbol"] =
                         "assets:omdb/4601/${type}/1301_${referenceEntity.properties["currentDirect"]}.svg"
                     Log.d("unpackingLaneInfo", referenceEntity.properties["symbol"].toString())
-                    Realm.getDefaultInstance().insert(referenceEntity)
+                    listResult.add(referenceEntity)
                 }
+                insertData(listResult)
             }
         }
     }
@@ -480,22 +502,22 @@ class ImportPreProcess {
 
             var type = renderEntity.properties["sa"]
 
-            if(type!=null&&type=="1"){
+            if (type != null && type == "1") {
                 renderEntity.properties["name"] = "SA"
                 renderEntity.properties["type"] = "1"
-            }else{
+            } else {
                 type = renderEntity.properties["pa"]
-                if(type!=null&&type=="1"){
+                if (type != null && type == "1") {
                     renderEntity.properties["type"] = "2"
-                    Log.e("qj","generateRoadText===2")
-                } else{
+                    Log.e("qj", "generateRoadText===2")
+                } else {
                     type = renderEntity.properties["frontage"]
-                    if(type!=null&&type=="1"){
+                    if (type != null && type == "1") {
                         renderEntity.properties["name"] = "FRONTAGE"
                         renderEntity.properties["type"] = "3"
-                    }else{
+                    } else {
                         type = renderEntity.properties["mainSideAccess"]
-                        if(type!=null&&type=="1"){
+                        if (type != null && type == "1") {
                             renderEntity.properties["name"] = "MAIN"
                             renderEntity.properties["type"] = "4"
                         }
@@ -568,7 +590,9 @@ class ImportPreProcess {
         angleReference.zoomMax = renderEntity.zoomMax
         angleReference.taskId = renderEntity.taskId
         angleReference.enable = renderEntity.enable
-        Realm.getDefaultInstance().insert(angleReference)
+        val listResult = mutableListOf<ReferenceEntity>()
+        listResult.add(angleReference)
+        insertData(listResult)
     }
 
 
@@ -579,6 +603,8 @@ class ImportPreProcess {
         // 路口数据的其他点位，是保存在nodeList对应的数组下
         if (renderEntity.properties.containsKey("nodeList")) {
             val nodeListJsonArray: JSONArray = JSONArray(renderEntity.properties["nodeList"])
+            val listResult = mutableListOf<ReferenceEntity>()
+
             for (i in 0 until nodeListJsonArray.length()) {
                 val nodeJSONObject = nodeListJsonArray.getJSONObject(i)
                 val intersectionReference = ReferenceEntity()
@@ -595,10 +621,12 @@ class ImportPreProcess {
                     GeometryTools.createGeometry(nodeJSONObject["geometry"].toString()).toString()
                 intersectionReference.properties["qi_table"] = renderEntity.table
                 intersectionReference.properties["type"] = "node"
-                Realm.getDefaultInstance().insert(intersectionReference)
+                listResult.add(intersectionReference)
             }
+            insertData(listResult)
         }
     }
+
     /**
      * 生成默认路口数据的参考数据
      * */
@@ -641,7 +669,12 @@ class ImportPreProcess {
 //            renderEntity.geometry =
 //                WKTWriter(3).write(GeometryTools.createLineString(geometry.coordinates))
 
-            renderEntity.geometry = GeometryTools.createGeometry(GeoPoint(geometry.coordinates[0].y, geometry.coordinates[0].x)).toString()
+            renderEntity.geometry = GeometryTools.createGeometry(
+                GeoPoint(
+                    geometry.coordinates[0].y,
+                    geometry.coordinates[0].x
+                )
+            ).toString()
         }
     }
 
@@ -680,7 +713,12 @@ class ImportPreProcess {
      * @param suffix 图片的后缀（根据codeName获取到的code后，匹配图片的后缀，还包含code码后的其他字符串内容）
      * @param codeName 数据对应的code字段的字段名
      * */
-    fun obtainReferenceDynamicSrc(renderEntity: RenderEntity, prefix: String, suffix: String, codeName: String) {
+    fun obtainReferenceDynamicSrc(
+        renderEntity: RenderEntity,
+        prefix: String,
+        suffix: String,
+        codeName: String
+    ) {
         if (codeName.isNullOrBlank()) {
             return
         }
@@ -731,6 +769,7 @@ class ImportPreProcess {
             defaultTranslateDistance,
             geometry?.coordinate?.y!!
         ) * Math.sin(radian)
+        val listResult = mutableListOf<ReferenceEntity>()
 
         for (pointStart in pointStartArray) {
             val coorEnd = Coordinate(pointStart.getX() + dx, pointStart.getY() + dy, pointStart.z)
@@ -750,14 +789,29 @@ class ImportPreProcess {
             dynamicSrcReference.properties["type"] = "dynamicSrc"
             val code = renderEntity.properties[codeName]
             dynamicSrcReference.properties["src"] = "${prefix}${code}${suffix}"
-            Realm.getDefaultInstance().insert(dynamicSrcReference)
+            listResult.add(dynamicSrcReference)
+        }
+        insertData(listResult)
+    }
+
+    private fun insertData(list:List<ReferenceEntity>){
+        Log.e("qj", "子表插入==")
+        if(list!=null&& list.isNotEmpty()){
+            Log.e("qj", "子表插入开始==")
+            Realm.getInstance(Constant.currentInstallTaskConfig).insert(list)
+            Log.e("qj", "子表插入结束==")
         }
     }
 
     /**
      * 向当前renderEntity中添加动态属性
      * */
-    fun obtainDynamicSrc(renderEntity: RenderEntity, prefix: String, suffix: String, codeName: String) {
+    fun obtainDynamicSrc(
+        renderEntity: RenderEntity,
+        prefix: String,
+        suffix: String,
+        codeName: String
+    ) {
         val code = renderEntity.properties[codeName]
         renderEntity.properties["src"] = "${prefix}${code}${suffix}"
     }
