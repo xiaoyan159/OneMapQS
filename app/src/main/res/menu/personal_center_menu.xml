@@ -47,6 +47,11 @@
             android:visible="true"
             android:title="锁定地图旋转及视角" />
         <item
+            android:id="@+id/personal_center_menu_catch_all"
+            android:icon="@drawable/baseline_person_24"
+            android:visible="true"
+            android:title="全要素捕捉" />
+        <item
             android:id="@+id/personal_center_menu_version"
             android:icon="@drawable/ic_baseline_layers_24"
             android:title="版本：23QE4_V1.5.0_20230912_A" />

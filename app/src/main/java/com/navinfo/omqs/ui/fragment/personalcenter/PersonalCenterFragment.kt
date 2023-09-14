@@ -152,7 +152,14 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         it.title = "锁定地图旋转及视角"
                     }
                 }
-
+                R.id.personal_center_menu_catch_all -> {
+                    Constant.CATCH_ALL = !Constant.CATCH_ALL
+                    if (Constant.CATCH_ALL) {
+                        it.title = "关闭全要素捕捉"
+                    } else {
+                        it.title = "开启全要素捕捉"
+                    }
+                }
                 R.id.personal_center_menu_test -> {
                     viewModel.readRealmData()
                     //116.25017070328308 40.061730653134696
@@ -204,6 +211,13 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         it.title = "开启地图旋转及视角"
                     } else {
                         it.title = "锁定地图旋转及视角"
+                    }
+                }
+                R.id.personal_center_menu_catch_all->{
+                    if (Constant.CATCH_ALL) {
+                        it.title = "关闭全要素捕捉"
+                    } else {
+                        it.title = "开启全要素捕捉"
                     }
                 }
             }

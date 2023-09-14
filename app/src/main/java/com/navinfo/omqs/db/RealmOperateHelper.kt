@@ -287,13 +287,22 @@ class RealmOperateHelper() {
                 .findAll()
         } else {
             // 查询realm中对应tile号的数据
-            realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
-                .greaterThanOrEqualTo("tileX", xStart)
-                .lessThanOrEqualTo("tileX", xEnd)
-                .greaterThanOrEqualTo("tileY", yStart)
-                .lessThanOrEqualTo("tileY", yEnd)
-                .greaterThan("catchEnable", 0)
-                .findAll()
+            if(Constant.CATCH_ALL){
+                realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
+                    .greaterThanOrEqualTo("tileX", xStart)
+                    .lessThanOrEqualTo("tileX", xEnd)
+                    .greaterThanOrEqualTo("tileY", yStart)
+                    .lessThanOrEqualTo("tileY", yEnd)
+                    .findAll()
+            }else{
+                realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
+                    .greaterThanOrEqualTo("tileX", xStart)
+                    .lessThanOrEqualTo("tileX", xEnd)
+                    .greaterThanOrEqualTo("tileY", yStart)
+                    .lessThanOrEqualTo("tileY", yEnd)
+                    .greaterThan("catchEnable", 0)
+                    .findAll()
+            }
         }
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
         val queryResult = realmList?.stream()?.filter {

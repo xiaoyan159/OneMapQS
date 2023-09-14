@@ -108,6 +108,11 @@ class Constant {
          */
         var MapRotateEnable = false
 
+        /**
+         * 全要素捕捉
+         */
+        var CATCH_ALL = false
+
         var IS_VIDEO_SPEED by kotlin.properties.Delegates.notNull<Boolean>()
 
         const val message_status_late = "预约，待发送"
