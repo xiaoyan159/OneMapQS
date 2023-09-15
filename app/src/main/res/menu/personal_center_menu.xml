@@ -37,25 +37,28 @@
             android:icon="@drawable/ic_baseline_sim_card_download_24"
             android:title="备份数据" />
         <item
+            android:id="@+id/personal_center_menu_open_auto_location"
+            android:icon="@drawable/baseline_person_24"
+            android:visible="true"
+            android:title="开启10S自动定位" />
+        <item
+            android:id="@+id/personal_center_menu_rotate_over_look"
+            android:icon="@drawable/baseline_person_24"
+            android:visible="true"
+            android:title="锁定地图旋转及视角" />
+        <item
+            android:id="@+id/personal_center_menu_catch_all"
+            android:icon="@drawable/baseline_person_24"
+            android:visible="true"
+            android:title="全要素捕捉" />
+        <item
             android:id="@+id/personal_center_menu_version"
             android:icon="@drawable/ic_baseline_layers_24"
-            android:title="版本：ONE_23QE4_V1.5.0_20230904_A" />
+            android:title="版本：23QE4_V1.5.0_20230912_A" />
     </group>
     <group android:checkableBehavior="single">
         <item android:title="小标题">
             <menu>
-                <item
-                    android:id="@+id/personal_center_menu_open_auto_location"
-                    android:icon="@drawable/baseline_person_24"
-                    android:visible="true"
-                    android:title="开启自动定位" />
-
-                <item
-                    android:id="@+id/personal_center_menu_close_auto_location"
-                    android:icon="@drawable/baseline_person_24"
-                    android:visible="true"
-                    android:title="关闭自动定位" />
-
                 <item
                     android:id="@+id/personal_center_menu_open_all_layer"
                     android:icon="@drawable/baseline_person_24"

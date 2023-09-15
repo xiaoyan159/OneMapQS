@@ -30,7 +30,6 @@ import com.navinfo.collect.library.garminvirbxe.HostBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.OnGeoPointClickListener
 import com.navinfo.collect.library.map.handler.*
-import com.navinfo.collect.library.utils.DistanceUtil
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.collect.library.utils.MapParamUtils
@@ -47,19 +46,16 @@ import com.navinfo.omqs.ui.other.BaseToast
 import com.navinfo.omqs.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.realm.RealmSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
-import org.locationtech.jts.algorithm.distance.DistanceToPoint
-import org.locationtech.jts.algorithm.distance.PointPairDistance
-import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.Geometry
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
@@ -140,6 +136,11 @@ class MainViewModel @Inject constructor(
      */
     val liveDataCenterPoint = MutableLiveData<MapPosition>()
 
+    /**
+     * 是否自动定位
+     */
+    val liveDataAutoLocation = MutableLiveData<Boolean>()
+
 //    var testPoint = GeoPoint(0, 0)
 
     //uuid标识，用于记录轨迹组
@@ -217,6 +218,11 @@ class MainViewModel @Inject constructor(
 
     private var timer: Timer? = null
 
+    //自动定位
+    private var autoLocationTimer: Timer? = null
+
+    private var disAutoLocationTime: Long = 10000
+
     private var disTime: Long = 1000
 
     private var currentMapZoomLevel: Int = 0
@@ -243,6 +249,9 @@ class MainViewModel @Inject constructor(
         currentMapZoomLevel = mapController.mMapView.vtmMap.mapPosition.zoomLevel
 
         shareUtil = ShareUtil(mapController.mMapView.context, 1)
+
+        //初始化
+        realmOperateHelper.niMapController = mapController
 
         initLocation()
         /**
@@ -320,6 +329,13 @@ class MainViewModel @Inject constructor(
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         MapParamUtils.setTaskId(sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1))
+        Constant.currentSelectTaskFolder =
+            File(Constant.USER_DATA_PATH + "/${MapParamUtils.getTaskId()}")
+        Constant.currentSelectTaskConfig =
+            RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder)
+                .name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true)
+                .schemaVersion(2).build()
+        MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
         socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
 
         viewModelScope.launch(Dispatchers.Default) {
@@ -355,6 +371,7 @@ class MainViewModel @Inject constructor(
             currentTaskBean = realm.copyFromRealm(res)
 //            planningPath(currentTaskBean!!)
         }
+        realm.close()
     }
 
 
@@ -423,9 +440,10 @@ class MainViewModel @Inject constructor(
             val realm = realmOperateHelper.getRealmDefaultInstance()
             realm.executeTransaction {
                 val objects =
-                    realmOperateHelper.getRealmTools(QsRecordBean::class.java, false).findAll()
+                    realmOperateHelper.getRealmTools(QsRecordBean::class.java).findAll()
                 list = realm.copyFromRealm(objects)
             }
+            realm.close()
             mapController.markerHandle.removeAllQsMarker()
             for (item in list) {
                 mapController.markerHandle.addOrUpdateQsRecordMark(item)
@@ -440,10 +458,11 @@ class MainViewModel @Inject constructor(
         var list = mutableListOf<NoteBean>()
         val realm = realmOperateHelper.getRealmDefaultInstance()
         realm.executeTransaction {
-            val objects = realmOperateHelper.getRealmTools(NoteBean::class.java, false).findAll()
+            val objects = realmOperateHelper.getRealmTools(NoteBean::class.java).findAll()
             list = realm.copyFromRealm(objects)
         }
 
+        realm.close()
 
         for (item in list) {
             mapController.markerHandle.addOrUpdateNoteMark(item)
@@ -538,12 +557,6 @@ class MainViewModel @Inject constructor(
                         )
                     )
                 }
-                withContext(Dispatchers.Main) {
-                    if (Constant.AUTO_LOCATION) {
-                        mapController.mMapView.vtmMap.animator()
-                            .animateTo(GeoPoint(location.latitude, location.longitude))
-                    }
-                }
             }
         }
         //显示轨迹图层
@@ -560,13 +573,21 @@ class MainViewModel @Inject constructor(
                     point.longitude,
                     point.latitude
                 ),
-                buffer = 2.5, catchAll = false
+                buffer = 2.4, catchAll = false,
             )
-
-            if (itemList.size == 1) {
-                liveDataSignMoreInfo.postValue(itemList[0])
+            //增加道路线过滤原则
+            val filterResult = itemList.filter {
+                if(isHighRoad()){
+                    mapController.mMapView.mapLevel>=it.zoomMin&&mapController.mMapView.mapLevel<=it.zoomMax
+                }else{
+                    //关闭时过滤道路线捕捉s
+                    mapController.mMapView.mapLevel>=it.zoomMin&&mapController.mMapView.mapLevel<=it.zoomMax&&it.code!=DataCodeEnum.OMDB_RD_LINK.code
+                }
+            }.toList()
+            if (filterResult.size == 1) {
+                liveDataSignMoreInfo.postValue(filterResult[0])
             } else {
-                liveDataItemList.postValue(itemList)
+                liveDataItemList.postValue(filterResult)
             }
         }
     }
@@ -586,11 +607,11 @@ class MainViewModel @Inject constructor(
 
                 val linkList = realmOperateHelper.queryLink(point = point)
 
-/*                val linkList = realmOperateHelper.queryLine(
-                    point = point,
-                    buffer = 1.0,
-                    table = "OMDB_RD_LINK_KIND"
-                )*/
+                /*                val linkList = realmOperateHelper.queryLine(
+                                    point = point,
+                                    buffer = 1.0,
+                                    table = "OMDB_RD_LINK_KIND"
+                                )*/
 
                 var hisRoadName = false
 
@@ -638,6 +659,7 @@ class MainViewModel @Inject constructor(
                                             )
                                         }
                                     }
+
                                     DataCodeEnum.OMDB_LANE_NUM.code, //车道数
                                     DataCodeEnum.OMDB_RD_LINK_KIND.code,//种别，
                                     DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code, // 功能等级,
@@ -687,10 +709,13 @@ class MainViewModel @Inject constructor(
 
                             }
 
-                            val realm = realmOperateHelper.getRealmDefaultInstance()
+                            val realm = realmOperateHelper.getSelectTaskRealmInstance()
 
                             val entityList =
-                                realmOperateHelper.getRealmTools(RenderEntity::class.java, true)
+                                realmOperateHelper.getSelectTaskRealmTools(
+                                    RenderEntity::class.java,
+                                    true
+                                )
                                     .and()
                                     .equalTo("table", DataCodeEnum.OMDB_RESTRICTION.name)
                                     .and()
@@ -702,7 +727,7 @@ class MainViewModel @Inject constructor(
                                 for (i in outList.indices) {
                                     val outLink = outList[i].properties["linkOut"]
                                     val linkOutEntity =
-                                        realmOperateHelper.getRealmTools(
+                                        realmOperateHelper.getSelectTaskRealmTools(
                                             RenderEntity::class.java,
                                             true
                                         )
@@ -721,6 +746,7 @@ class MainViewModel @Inject constructor(
                                     link.geometry,
                                     Color.BLUE
                                 )
+                                realm.close()
                             }
                         }
 
@@ -755,6 +781,9 @@ class MainViewModel @Inject constructor(
      * 点击我的位置，回到我的位置
      */
     fun onClickLocationButton() {
+        val mapPosition: MapPosition = mapController.mMapView.vtmMap.getMapPosition()
+        mapPosition.setBearing(0f) // 锁定角度，自动将地图旋转到正北方向
+        mapController.mMapView.vtmMap.setMapPosition(mapPosition)
         mapController.locationLayerHandler.animateToCurrentPosition()
         planningPath(currentTaskBean!!)
     }
@@ -1006,6 +1035,7 @@ class MainViewModel @Inject constructor(
                     val geoPoint = GeometryTools.createGeoPoint(data.wkt!!.toText())
                     mapController.markerHandle.addMarker(geoPoint, "moreInfo")
                 }
+
                 Geometry.TYPENAME_LINESTRING -> {
                     mapController.lineHandler.showLine(data.wkt!!.toText())
                 }
@@ -1258,6 +1288,27 @@ class MainViewModel @Inject constructor(
         timer?.cancel()
     }
 
+
+    /**
+     * 开启自动定位
+     */
+    fun startAutoLocationTimer(){
+        if (autoLocationTimer != null) {
+            cancelAutoLocation()
+        }
+        autoLocationTimer = fixedRateTimer("", false, disAutoLocationTime, disAutoLocationTime) {
+            liveDataAutoLocation.postValue(true)
+            Log.e("qj","自动定位开始执行")
+            startAutoLocationTimer()
+        }
+    }
+
+    /**
+     * 结束自动定位
+     */
+    fun cancelAutoLocation() {
+        autoLocationTimer?.cancel()
+    }
 
     /**
      *  开启测量工具

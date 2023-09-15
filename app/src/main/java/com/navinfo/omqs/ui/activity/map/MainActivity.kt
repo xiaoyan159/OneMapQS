@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.blankj.utilcode.util.ClipboardUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
+import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.MeasureLayerHandler
 import com.navinfo.omqs.Constant
@@ -46,6 +47,7 @@ import com.navinfo.omqs.ui.fragment.tasklist.TaskManagerFragment
 import com.navinfo.omqs.ui.other.BaseToast
 import com.navinfo.omqs.ui.widget.RecyclerViewSpacesItemDecoration
 import com.navinfo.omqs.util.FlowEventBus
+import com.navinfo.omqs.util.SignUtil
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -323,12 +325,20 @@ class MainActivity : BaseActivity() {
                             7, RoundingMode.HALF_UP
                         )
                     },${BigDecimal(it.latitude).setScale(7, RoundingMode.HALF_UP)}"
+                    if(Constant.AUTO_LOCATION){
+                        viewModel.startAutoLocationTimer()
+                    }
+                    binding.mainActivityLocation.setImageResource(R.drawable.icon_location)
                 }
             } catch (e: Exception) {
                 Log.e("qj", "异常 $e")
             }
         }
-
+        viewModel.liveDataAutoLocation.observe(this){
+            if(it==true){
+                onClickLocation()
+            }
+        }
         viewModel.liveDataSignMoreInfo.observe(this) {
             val fragment =
                 supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
@@ -337,6 +347,22 @@ class MainActivity : BaseActivity() {
                     .replace(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment())
                     .commit()
             }
+            //启动问题记录
+            val signBean = SignBean(
+                iconId = SignUtil.getSignIcon(it),
+                iconText = SignUtil.getSignIconText(it),
+                linkId = it.properties[RenderEntity.Companion.LinkTable.linkPid]
+                    ?: "",
+                name = SignUtil.getSignNameText(it),
+                bottomRightText = SignUtil.getSignBottomRightText(it),
+                renderEntity = it,
+                isMoreInfo = SignUtil.isMoreInfo(it),
+                index = SignUtil.getRoadInfoIndex(it)
+            )
+            val bundle = Bundle()
+            bundle.putParcelable("SignBean", signBean)
+            bundle.putBoolean("AutoSave", false)
+            rightController.navigate(R.id.EvaluationResultFragment, bundle)
         }
 
         viewModel.liveIndoorToolsResp.observe(this) {
@@ -1113,6 +1139,14 @@ class MainActivity : BaseActivity() {
      */
     fun onClickNewNote() {
         rightController.navigate(R.id.NoteFragment)
+    }
+
+    /**
+     * 点击定位按钮
+     */
+    fun onClickLocation() {
+        binding.mainActivityLocation.setImageResource(R.drawable.icon_location_north)
+        viewModel.onClickLocationButton()
     }
 
     /**

@@ -146,6 +146,7 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
         // 添加显示grid的tile号的图层
         tileGridLayer = TileGridLayer(mMapView.vtmMap)
         addLayer(tileGridLayer, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
+        tileGridLayer.isEnabled = false
     }
 
     private fun resetOMDBVectorTileLayer() {

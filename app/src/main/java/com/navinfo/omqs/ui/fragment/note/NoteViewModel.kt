@@ -117,6 +117,7 @@ class NoteViewModel @Inject constructor(
                 }
                 mapController.markerHandle.addOrUpdateNoteMark(mNoteBean!!)
                 liveDataFinish.postValue(true)
+                realm.close()
             }
         }
     }
@@ -145,6 +146,7 @@ class NoteViewModel @Inject constructor(
                     }
                     mapController.markerHandle.removeNoteMark(mNoteBean!!)
                     liveDataFinish.postValue(true)
+                    realm.close()
                 }
             }
             mDialog.setNegativeButton("取消", null)
@@ -168,6 +170,7 @@ class NoteViewModel @Inject constructor(
                     canvasView.setDrawPathList(list)
                 }
             }
+            realm.close()
         }
     }
 }

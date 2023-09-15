@@ -6,22 +6,23 @@
 				"table": "OMDB_NODE_FORM",
 				"code": 1007,
 				"name": "点形态",
+				"existSubCode": true,
 				"zoomMin": 15,
-				"zoomMax": 20,
-				"checkLinkId": false
+				"zoomMax": 20
 			},
 			"1007_PA": {
 				"table": "OMDB_NODE_PA",
 				"code": 1007,
 				"name": "点形态PA",
+				"existSubCode": true,
 				"zoomMin": 15,
-				"zoomMax": 20,
-				"checkLinkId": false
+				"zoomMax": 20
 			},
 			"1012": {
 				"table": "OMDB_CHECKPOINT",
 				"code": 1012,
 				"name": "检查点",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 20
 			},
@@ -31,8 +32,7 @@
 				"name": "道路线",
 				"zoomMin": 15,
 				"zoomMax": 17,
-				"catch":false,
-				"checkLinkId": false
+				"catch":true
 			},
 			"2002": {
 				"table": "OMDB_RD_LINK_FUNCTION_CLASS",
@@ -81,6 +81,8 @@
 				"zoomMin": 18,
 				"zoomMax": 20,
 				"checkLinkId": false,
+				"filterData": true,
+				"catch":true,
 				"transformer": [
 					{
 						"k": "geometry",
@@ -94,6 +96,7 @@
 				"table": "OMDB_LINK_CONSTRUCTION",
 				"code": 2017,
 				"name": "道路施工",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 17
 			},
@@ -127,22 +130,27 @@
 				"table": "OMDB_RDBOUND_BOUNDARYTYPE",
 				"code": 2083,
 				"name": "道路边界类型",
+				"checkLinkId": false,
+				"filterData": true,
 				"zoomMin": 18,
 				"zoomMax": 20,
-				"checkLinkId": false
+				"catch":true
 			},
 			"2090":{
 				"table": "OMDB_LANE_CONSTRUCTION",
 				"code": 2090,
 				"name": "车道施工",
+				"checkLinkId": false,
+				"existSubCode": true,
+				"catch":true,
 				"zoomMin": 18,
-				"zoomMax": 20,
-				"checkLinkId": false
+				"zoomMax": 20
 			},
 			"2201":{
 				"table": "OMDB_BRIDGE",
 				"code": 2201,
 				"name": "桥",
+				"checkLinkId": false,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -158,6 +166,7 @@
 				"table": "OMDB_TUNNEL",
 				"code": 2202,
 				"name": "隧道",
+				"checkLinkId": false,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -173,23 +182,28 @@
 				"table": "OMDB_OBJECT_TEXT",
 				"code": 3002,
 				"name": "文字",
-				"zoomMin": 15,
+				"zoomMin": 18,
 				"zoomMax": 20,
+				"catch":true,
+				"checkLinkId": false,
 				"transformer": []
 			},
 			"3003":{
 				"table": "OMDB_OBJECT_SYMBOL",
 				"code": 3003,
 				"name": "符号",
-				"zoomMin": 15,
+				"checkLinkId": false,
+				"zoomMin": 18,
 				"zoomMax": 20,
+				"catch":true,
 				"transformer": []
 			},
 			"3004":{
 				"table": "OMDB_OBJECT_ARROW",
 				"code": 3004,
 				"name": "箭头",
-				"zoomMin": 15,
+				"checkLinkId": false,
+				"zoomMin": 18,
 				"zoomMax": 20,
 				"transformer": [
 					{
@@ -204,6 +218,8 @@
 				"table": "OMDB_TRAFFIC_SIGN",
 				"code": 3005,
 				"name": "交通标牌",
+				"zoomMin": 18,
+				"zoomMax": 20,
 				"is3D": true,
 				"transformer": [
 					{
@@ -224,6 +240,10 @@
 				"code": 3006,
 				"name": "杆状物",
 				"is3D": true,
+				"catch":true,
+				"filterData": true,
+				"zoomMin": 18,
+				"zoomMax": 20,
 				"transformer": [
 					{
 						"k": "geometry",
@@ -237,6 +257,8 @@
 				"table": "OMDB_FILL_AREA",
 				"code": 3012,
 				"name": "导流区",
+				"catch":true,
+				"checkLinkId": false,
 				"zoomMin": 18,
 				"zoomMax": 20
 			},
@@ -244,16 +266,19 @@
 				"table": "OMDB_CROSS_WALK",
 				"code": 3014,
 				"name": "人行横道",
-				"zoomMin": 15,
+				"catch":true,
+				"zoomMin": 18,
 				"zoomMax": 20
 			},
 			"3016":{
 				"table": "OMDB_OBJECT_STOPLOCATION",
 				"code": 3016,
 				"name": "停止位置",
+				"checkLinkId": false,
+				"filterData": true,
 				"zoomMin": 18,
-				"zoomMax": 20,
-				"checkLinkId": false
+				"catch":true,
+				"zoomMax": 20
 			},
 			"4001": {
 				"table": "OMDB_INTERSECTION",
@@ -261,6 +286,7 @@
 				"name": "路口",
 				"zoomMin": 15,
 				"zoomMax": 17,
+				"catch":true,
 				"transformer": [
 					{
 						"k": "geometry",
@@ -333,12 +359,14 @@
 					}
 				]
 			},
-			"4006":{
+			"4006": {
 				"table": "OMDB_RESTRICTION",
 				"code": 4006,
 				"name": "普通交限",
 				"zoomMin": 15,
-				"zoomMax": 20,
+				"zoomMax": 17,
+				"filterData":true,
+				"catch":true,
 				"transformer": [
 					{
 						"k": "geometry",
@@ -487,9 +515,9 @@
 				"table": "OMDB_LANE_LINK_LG",
 				"code": 5001,
 				"name": "车道中心线",
+				"checkLinkId": false,
 				"zoomMin": 18,
 				"zoomMax": 20,
-				"catch":false,
 				"transformer": [
 					{
 						"k": "geometry",
@@ -508,6 +536,7 @@
 				"table": "OMDB_LINK_ATTRIBUTE",
 				"code": 2004,
 				"name": "道路属性",
+				"existSubCode": true,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -522,17 +551,24 @@
 			"2022": {
 				"table": "OMDB_CON_ACCESS",
 				"code": 2022,
-				"name": "全封闭"
+				"name": "全封闭",
+				"zoomMin": 15,
+				"zoomMax": 17
 			},
 			"2037": {
 				"table": "OMDB_RAMP",
 				"code": 2037,
-				"name": "匝道"
+				"name": "匝道",
+				"existSubCode": true,
+				"zoomMin": 15,
+				"zoomMax": 17
 			},
 			"2040": {
 				"table": "OMDB_MULTI_DIGITIZED",
 				"code": 2040,
-				"name": "上下线分离"
+				"name": "上下线分离",
+				"zoomMin": 15,
+				"zoomMax": 17
 			},
 			"2204":{
 				"table": "OMDB_ROUNDABOUT",
@@ -547,12 +583,14 @@
 				"table": "OMDB_LINK_FORM1",
 				"code": 2205,
 				"name": "道路形态1",
+				"existSubCode": true,
 				"zoomMin": 15,
 				"zoomMax": 17
 			},
 			"2206":{
 				"table": "OMDB_LINK_FORM2",
 				"code": 2206,
+				"existSubCode": true,
 				"name": "道路形态2",
 				"zoomMin": 15,
 				"zoomMax": 17

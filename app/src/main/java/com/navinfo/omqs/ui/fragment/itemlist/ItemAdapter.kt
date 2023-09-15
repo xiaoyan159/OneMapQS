@@ -1,6 +1,7 @@
 package com.navinfo.omqs.ui.fragment.itemlist
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.enums.DataCodeEnum
@@ -8,8 +9,8 @@ import com.navinfo.omqs.databinding.AdapterItemBinding
 import com.navinfo.omqs.ui.other.BaseRecyclerViewAdapter
 import com.navinfo.omqs.ui.other.BaseViewHolder
 
-class ItemAdapter(private var itemListener: ((Int, RenderEntity) -> Unit?)? = null) :
-    BaseRecyclerViewAdapter<RenderEntity>() {
+class ItemAdapter(private var itemListener: ((Int,Boolean, RenderEntity) -> Unit?)? = null,
+) : BaseRecyclerViewAdapter<RenderEntity>() {
 
     var selectPosition = -1
 
@@ -33,8 +34,14 @@ class ItemAdapter(private var itemListener: ((Int, RenderEntity) -> Unit?)? = nu
             }
 
             if (itemListener != null) {
-                itemListener!!.invoke(position, renderEntity)
+                itemListener!!.invoke(position,false, renderEntity)
             }
         }
+        binding.root.setOnLongClickListener(View.OnLongClickListener {
+            if (itemListener != null) {
+                itemListener!!.invoke(position, true,renderEntity)
+            }
+            true
+        })
     }
 }

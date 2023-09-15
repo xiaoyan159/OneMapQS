@@ -37,6 +37,7 @@ class ConsoleViewModel @Inject constructor() : ViewModel() {
             liveDataTaskCount.postValue(count.toInt())
             val count2 = realm.where(QsRecordBean::class.java).count()
             liveDataEvaluationResultCount.postValue(count2.toInt())
+            realm.close()
         }
     }
 }
