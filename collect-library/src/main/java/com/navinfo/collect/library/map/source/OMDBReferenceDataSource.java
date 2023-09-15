@@ -74,11 +74,11 @@ public class OMDBReferenceDataSource implements ITileDataSource {
                 mThreadLocalDecoders.get().decode(tile.zoomLevel, tile, mapDataSink, listResult);
                 mapDataSink.completed(QueryResult.SUCCESS);
             } else {
-                mapDataSink.completed(QueryResult.TILE_NOT_FOUND);
+                mapDataSink.completed(QueryResult.SUCCESS);
             }
             Realm.getInstance(MapParamUtils.getTaskConfig()).close();
         } else {
-            mapDataSink.completed(QueryResult.TILE_NOT_FOUND);
+            mapDataSink.completed(QueryResult.SUCCESS);
         }
     }
 
