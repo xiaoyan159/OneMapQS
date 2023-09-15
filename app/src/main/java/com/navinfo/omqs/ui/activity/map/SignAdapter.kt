@@ -128,6 +128,7 @@ class SignAdapter(private var listener: OnSignAdapterClickListener?) :
                 } else {
                     bd.signMainInfo.visibility = View.GONE
                 }
+                bd.signDistanceText.text = "${item.distance}米"
                 bd.signSecondIcon.text = ""
                 if (item.renderEntity.code == DataCodeEnum.OMDB_SPEEDLIMIT.code) {
                     val minSpeed = SignUtil.getSpeedLimitMinText(item.renderEntity)

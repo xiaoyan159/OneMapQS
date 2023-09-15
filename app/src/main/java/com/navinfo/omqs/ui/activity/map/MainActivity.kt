@@ -388,8 +388,12 @@ class MainActivity : BaseActivity() {
             }
         }
 
+        viewModel.listDataMessage.observe(this) {
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+        }
+
         viewModel.liveDataItemList.observe(this) {
-            if(it.isNotEmpty()) {
+            if (it.isNotEmpty()) {
                 if (leftFragment == null || leftFragment !is ItemListFragment) {
                     leftFragment = ItemListFragment {
                         binding.mainActivityLeftFragment.visibility = View.GONE
