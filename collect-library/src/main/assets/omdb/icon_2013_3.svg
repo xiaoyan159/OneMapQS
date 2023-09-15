@@ -1,1 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?><svg id="b" xmlns="http://www.w3.org/2000/svg" width="49.7" height="24" viewBox="0 0 49.7 24"><defs><style>.f{fill:rgba(155,155,155,0);}.g{fill:none;}.h{fill:#050505;}.i{fill:#fff;}</style></defs><g id="c"><g><path id="d" class="f" d="M0,0H49.7V24H0V0Z"/><polygon class="g" points="0 0 0 12 0 12 0 24 49.7 24 49.7 12 49.7 12 49.7 0 0 0"/><g><rect id="e" class="i" x="0" y="11.6" width="49.7" height="12.4"/><polygon class="h" points="8.3 11.6 3.8 11.6 11.1 24 14.4 22.1 8.3 11.6 8.3 11.6"/><polygon class="h" points="24.8 11.6 20.4 11.6 27.6 24 31 22.1 24.8 11.6 24.8 11.6"/><polygon class="h" points="41.4 11.6 36.9 11.6 44.2 24 47.5 22.1 41.4 11.6 41.4 11.6"/></g><polygon class="i" points="49.7 11 0 11 0 12.2 49.7 12.2 49.7 11 49.7 11"/></g></g></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="b" xmlns="http://www.w3.org/2000/svg" width="49.7" height="24" viewBox="0 0 49.7 24">
+    <defs>
+        <style>.f{fill:rgba(155,155,155,0);}.g{fill:none;}.h{fill:#050505;}.i{fill:#fff;}</style>
+    </defs>
+    <g id="c">
+        <g>
+            <path id="d" class="f" d="M0,0H49.7V24H0V0Z" />
+            <polygon class="g" points="0 0 0 12 0 12 0 24 49.7 24 49.7 12 49.7 12 49.7 0 0 0" />
+            <g>
+                <rect id="e" class="i" x="0" y="11.6" width="49.7" height="12.4" />
+                <polygon class="h" points="8.3 11.6 3.8 11.6 11.1 24 14.4 22.1 8.3 11.6 8.3 11.6" />
+                <polygon class="h"
+                    points="24.8 11.6 20.4 11.6 27.6 24 31 22.1 24.8 11.6 24.8 11.6" />
+                <polygon class="h"
+                    points="41.4 11.6 36.9 11.6 44.2 24 47.5 22.1 41.4 11.6 41.4 11.6" />
+            </g>
+            <polygon class="i" points="49.7 11 0 11 0 12.2 49.7 12.2 49.7 11 49.7 11" />
+        </g>
+    </g>
+</svg>
