@@ -249,7 +249,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         renderEntity.geometry = map["geometry"].toString()
                                         Log.d("ImportOMDBHelper", "解析===1处理3D")
                                         // 其他数据插入到Properties中
-                                        if (!currentConfig.is3D) { // 如果是非3d要素，则自动将Z轴坐标全部置为0
+/*                                        if (!currentConfig.is3D) { // 如果是非3d要素，则自动将Z轴坐标全部置为0
                                             val coordinates =
                                                 renderEntity.wkt?.coordinates?.map { coordinate ->
                                                     coordinate.z = 0.0
@@ -271,7 +271,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             if (newGeometry != null) {
                                                 renderEntity.geometry = newGeometry.toString()
                                             }
-                                        }
+                                        }*/
                                         Log.d("ImportOMDBHelper", "解析===2处理3D")
                                         Log.d("ImportOMDBHelper", "解析===1处理属性")
                                         for ((key, value) in map) {
