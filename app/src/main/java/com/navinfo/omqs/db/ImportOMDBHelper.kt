@@ -30,6 +30,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.geom.GeometryFactory
+import org.locationtech.jts.geom.LineString
+import org.locationtech.jts.geom.MultiLineString
 import org.spatialite.database.SQLiteDatabase
 import java.io.File
 import javax.inject.Inject
@@ -183,15 +186,23 @@ class ImportOMDBHelper @AssistedInject constructor(
                     tableNum += importConfig.tableMap.size
                 }
                 //缓存任务link信息，便于下面与数据进行任务link匹配
-                val hashMap: HashMap<Long, HadLinkDvoBean> =
-                    HashMap<Long, HadLinkDvoBean>() //define empty hashmap
+                val hashMap: HashMap<Long, HadLinkDvoBean> = HashMap<Long, HadLinkDvoBean>()
+
+                val lineList = arrayOfNulls<LineString>(task.hadLinkDvoList.size)
+                var index = 0
                 task.hadLinkDvoList.forEach {
-                    hashMap[it.linkPid.toLong()] = it;
+                    hashMap[it.linkPid.toLong()] = it
+                    lineList[index] = GeometryTools.createGeometry(it.geometry) as LineString
+                    index++
                 }
 
                 val resHashMap: HashMap<String, RenderEntity> =
                     HashMap<String, RenderEntity>() //define empty hashmap
                 try {
+
+                    var multipLine = MultiLineString(lineList, GeometryFactory())
+
+
                     // 遍历解压后的文件，读取该数据返回
                     Log.d("ImportOMDBHelper", "表解析===开始时间$dataImportTime===")
 
@@ -391,6 +402,7 @@ class ImportOMDBHelper @AssistedInject constructor(
 
                                         Log.d("ImportOMDBHelper", "解析===2处理杆状物")
                                         Log.d("ImportOMDBHelper", "解析===1任务路线匹配")
+
                                         //遍历判断只显示与任务Link相关的任务数据
                                         if (currentConfig.checkLinkId) {
 
@@ -484,7 +496,19 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             }
 
                                         } else {
-                                            renderEntity.enable = 2
+                                            renderEntity.enable = 1
+
+                                            /*                                            var geometry = GeometryTools.createGeometry(renderEntity.geometry)
+                                                                                        if(multipLine.intersects(geometry)){
+                                                                                            renderEntity.enable = 1
+                                                                                        }else{
+                                                                                            val dis = multipLine.distance(GeometryTools.createGeometry(renderEntity.geometry))
+                                                                                            if(dis>36){
+                                                                                                continue
+                                                                                            }else{
+                                                                                                renderEntity.enable = 1
+                                                                                            }
+                                                                                        }*/
                                             Log.e("qj", "${renderEntity.name}==不包括任务linkPid")
                                         }
                                         Log.d("ImportOMDBHelper", "解析===2任务路线匹配")

@@ -80,7 +80,7 @@
 				"name": "车道边界类型",
 				"zoomMin": 18,
 				"zoomMax": 20,
-				"checkLinkId": false,
+				"checkLinkId": true,
 				"filterData": true,
 				"catch":true,
 				"transformer": [
