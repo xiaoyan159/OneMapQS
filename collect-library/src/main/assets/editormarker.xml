@@ -1703,7 +1703,7 @@
             </m>
             <!--路牙-->
             <m k="boundaryType" v="3">
-                <symbol repeat="true" repeat-gap="12" repeat-start="0" src="assets:omdb/icon_2013_3_1.svg" symbol-width="18" symbol-height="32"></symbol>
+                <symbol repeat="true" repeat-gap="10" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="16" symbol-height="10"></symbol>
             </m>
             <m k="boundaryType" v="5|7">
                 <line stroke="#ffffff" use="boundaryType" />
