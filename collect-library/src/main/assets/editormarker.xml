@@ -1933,22 +1933,22 @@
         <!-- 文字 -->
         <m v="OMDB_OBJECT_TEXT">
             <m k="color" v="0">
-                <area use="obj-area" fill="#dfe4ea" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+                <area use="obj-area" stroke="#00000000" fill="#dfe4ea" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
             </m>
             <m k="color" v="1">
-                <area use="obj-area" fill="#ffffff" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+                <area use="obj-area" stroke="#00000000" fill="#ffffff" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
             </m>
             <m k="color" v="2">
-                <area use="obj-area" fill="#ffff00" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+                <area use="obj-area" stroke="#00000000" fill="#ffff00" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
             </m>
             <m k="color" v="3">
-                <area use="obj-area" fill="#ff0000" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+                <area use="obj-area" stroke="#00000000" fill="#ff0000" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
             </m>
             <m k="color" v="4">
-                <area use="obj-area" fill="#00ff00" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+                <area use="obj-area" stroke="#00000000" fill="#00ff00" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
             </m>
             <m k="color" v="9">
-                <area use="obj-area" fill="#0000ff" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+                <area use="obj-area" stroke="#00000000" fill="#0000ff" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
             </m>
         </m>
         <!-- 符号 -->
