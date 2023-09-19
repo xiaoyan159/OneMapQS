@@ -65,7 +65,7 @@ class RealmOperateHelper() {
         val realm = getSelectTaskRealmInstance()
         val realmList =
             getSelectTaskRealmTools(RenderEntity::class.java, false)
-                .equalTo("table", "OMDB_RD_LINK")
+                .equalTo("table", "OMDB_RD_LINK_KIND")
                 .greaterThanOrEqualTo("tileX", xStart)
                 .lessThanOrEqualTo("tileX", xEnd)
                 .greaterThanOrEqualTo("tileY", yStart)
@@ -74,6 +74,7 @@ class RealmOperateHelper() {
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
         val dataList = realm.copyFromRealm(realmList)
         realm.close()
+
         val queryResult = dataList?.stream()?.filter {
             polygon.intersects(it.wkt)
         }?.toList()
@@ -200,7 +201,7 @@ class RealmOperateHelper() {
         var link: RenderEntity? = null
         val realm = getSelectTaskRealmInstance()
         val realmR =
-            getSelectTaskRealmTools(RenderEntity::class.java, true).equalTo("table", "OMDB_RD_LINK")
+            getSelectTaskRealmTools(RenderEntity::class.java, true).equalTo("table", "OMDB_RD_LINK_KIND")
                 .equalTo("properties['${LinkTable.linkPid}']", linkPid).findFirst()
         if (realmR != null) {
             link = realm.copyFromRealm(realmR)
@@ -330,7 +331,7 @@ class RealmOperateHelper() {
         val result = mutableListOf<RenderEntity>()
         val realm = getSelectTaskRealmInstance()
         val realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
-            .notEqualTo("table", DataCodeEnum.OMDB_RD_LINK.name)
+            .notEqualTo("table", DataCodeEnum.OMDB_RD_LINK_KIND.name)
             .equalTo("properties['${LinkTable.linkPid}']", linkPid)
             .findAll()
         result.addAll(realm.copyFromRealm(realmList))
@@ -478,5 +479,5 @@ enum class BUFFER_TYPE(val index: Int) {
     }
 }
 
-private val DEFAULT_BUFFER: Double = 15.0
+private const val DEFAULT_BUFFER: Double = 15.0
 private val DEFAULT_BUFFER_TYPE = BUFFER_TYPE.METER

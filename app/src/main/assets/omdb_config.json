@@ -80,7 +80,6 @@
 				"name": "车道边界类型",
 				"zoomMin": 18,
 				"zoomMax": 20,
-				"checkLinkId": true,
 				"filterData": true,
 				"catch":true,
 				"transformer": [
@@ -140,7 +139,6 @@
 				"table": "OMDB_LANE_CONSTRUCTION",
 				"code": 2090,
 				"name": "车道施工",
-				"checkLinkId": true,
 				"existSubCode": true,
 				"catch":true,
 				"zoomMin": 18,
@@ -150,7 +148,6 @@
 				"table": "OMDB_BRIDGE",
 				"code": 2201,
 				"name": "桥",
-				"checkLinkId": true,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -166,7 +163,6 @@
 				"table": "OMDB_TUNNEL",
 				"code": 2202,
 				"name": "隧道",
-				"checkLinkId": true,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -241,7 +237,6 @@
 				"name": "杆状物",
 				"is3D": true,
 				"catch":true,
-				"checkLinkId": true,
 				"filterData": true,
 				"zoomMin": 18,
 				"zoomMax": 20,
@@ -301,6 +296,7 @@
 				"table": "OMDB_SPEEDLIMIT",
 				"code": 4002,
 				"name": "常规点限速",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -405,6 +401,7 @@
 				"table": "OMDB_WARNINGSIGN",
 				"code": 4009,
 				"name": "警示信息",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -438,6 +435,7 @@
 				"table": "OMDB_ELECTRONICEYE",
 				"code": 4010,
 				"name": "电子眼",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -471,6 +469,7 @@
 				"table": "OMDB_TRAFFICLIGHT",
 				"code": 4022,
 				"name": "交通灯",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -480,6 +479,7 @@
 				"table": "OMDB_TOLLGATE",
 				"code": 4023,
 				"name": "收费站",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -489,6 +489,7 @@
 				"table": "OMDB_LANEINFO",
 				"code": 4601,
 				"name": "车信",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 17,
 				"transformer": [
