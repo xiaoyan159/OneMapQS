@@ -815,4 +815,14 @@ class ImportPreProcess {
         val code = renderEntity.properties[codeName]
         renderEntity.properties["src"] = "${prefix}${code}${suffix}"
     }
+
+    /**
+     * 获取当前数据的中心点坐标
+     * */
+    fun obtainCenterPoint(renderEntity: RenderEntity) {
+        // 获取中心坐标点，将中心坐标作为数据的新的geometry位置
+        val centerPoint = renderEntity.wkt?.centroid
+        // 根据heading方向自动生成新的Geometry
+
+    }
 }

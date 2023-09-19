@@ -226,8 +226,9 @@
 						"k": "geometry",
 						"v": "~",
 						"klib": "geometry",
-						"vlib": "normalizationTrafficSignHeight()"
-					},{
+						"vlib": "obtainCenterPoint()"
+					},
+					{
 						"k": "geometry",
 						"v": "~",
 						"klib": "geometry",
