@@ -1813,7 +1813,7 @@
         <!-- 环岛 -->
         <m v="OMDB_ROUNDABOUT">
             <line stroke="#fcba5a" width="0.5" />
-            <symbol repeat="false" repeat-start="0" repeat-gap="32" src="assets:omdb/icon_2204_0.svg"></symbol>
+            <symbol repeat="false" repeat-start="0" gland="false" repeat-gap="32" src="assets:omdb/icon_2204_0.svg"></symbol>
         </m>
 
         <!-- 停止位置 -->

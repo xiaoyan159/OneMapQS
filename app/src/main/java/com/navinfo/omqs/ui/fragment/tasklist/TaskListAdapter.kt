@@ -352,6 +352,10 @@ class TaskListAdapter(
         refreshData(list)
     }
 
+    fun getSelectTaskPosition():Int{
+        return selectPosition
+    }
+
     companion object {
         object ItemClickStatus {
             const val ITEM_LAYOUT_CLICK = 0 //条目点击

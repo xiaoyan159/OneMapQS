@@ -126,9 +126,9 @@ class SignUtil {
                 //常规线限速
                 DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> "线限速"
 
-                DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code -> "形态"
+                DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code -> "道路属性"
 
-                DataCodeEnum.OMDB_LINK_FORM1_1.code, DataCodeEnum.OMDB_LINK_FORM1_2.code, DataCodeEnum.OMDB_LINK_FORM1_3.code, DataCodeEnum.OMDB_LINK_FORM2_1.code, DataCodeEnum.OMDB_LINK_FORM2_2.code, DataCodeEnum.OMDB_LINK_FORM2_3.code, DataCodeEnum.OMDB_LINK_FORM2_4.code, DataCodeEnum.OMDB_LINK_FORM2_5.code, DataCodeEnum.OMDB_LINK_FORM2_6.code, DataCodeEnum.OMDB_LINK_FORM2_7.code, DataCodeEnum.OMDB_LINK_FORM2_8.code, DataCodeEnum.OMDB_LINK_FORM2_9.code, DataCodeEnum.OMDB_LINK_FORM2_10.code, DataCodeEnum.OMDB_LINK_FORM2_11.code, DataCodeEnum.OMDB_LINK_FORM2_12.code, DataCodeEnum.OMDB_LINK_FORM2_13.code -> "形态"
+                DataCodeEnum.OMDB_LINK_FORM1_1.code, DataCodeEnum.OMDB_LINK_FORM1_2.code, DataCodeEnum.OMDB_LINK_FORM1_3.code, DataCodeEnum.OMDB_LINK_FORM2_1.code, DataCodeEnum.OMDB_LINK_FORM2_2.code, DataCodeEnum.OMDB_LINK_FORM2_3.code, DataCodeEnum.OMDB_LINK_FORM2_4.code, DataCodeEnum.OMDB_LINK_FORM2_5.code, DataCodeEnum.OMDB_LINK_FORM2_6.code, DataCodeEnum.OMDB_LINK_FORM2_7.code, DataCodeEnum.OMDB_LINK_FORM2_8.code, DataCodeEnum.OMDB_LINK_FORM2_9.code, DataCodeEnum.OMDB_LINK_FORM2_10.code, DataCodeEnum.OMDB_LINK_FORM2_11.code, DataCodeEnum.OMDB_LINK_FORM2_12.code, DataCodeEnum.OMDB_LINK_FORM2_13.code -> "道路形态"
 
                 else -> DataCodeEnum.findTableNameByCode(data.code)
             }
