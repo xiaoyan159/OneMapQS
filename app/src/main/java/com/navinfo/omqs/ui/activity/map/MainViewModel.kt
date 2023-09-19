@@ -407,7 +407,7 @@ class MainViewModel @Inject constructor(
                     route.pointList = GeometryTools.getGeoPoints(link.geometry)
                     //查询每条link的snode，enode
                     val res1 = realm.where(RenderEntity::class.java)
-                        .equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).and()
+                        .equalTo("table", DataCodeEnum.OMDB_RD_LINK_KIND.name).and()
                         .equalTo("properties['linkPid']", link.linkPid).findFirst()
                     res1?.let {
 
@@ -678,7 +678,7 @@ class MainViewModel @Inject constructor(
                     point.longitude,
                     point.latitude
                 ),
-                buffer = 2.4, catchAll = false,
+                buffer = 3.2, catchAll = false,
             )
             //增加道路线过滤原则
             val filterResult = itemList.filter {
@@ -711,12 +711,6 @@ class MainViewModel @Inject constructor(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
                 val linkList = realmOperateHelper.queryLink(point = point)
-
-                /*                val linkList = realmOperateHelper.queryLine(
-                                    point = point,
-                                    buffer = 1.0,
-                                    table = "OMDB_RD_LINK_KIND"
-                                )*/
 
                 var hisRoadName = false
 
@@ -841,7 +835,7 @@ class MainViewModel @Inject constructor(
                                             RenderEntity::class.java,
                                             true
                                         )
-                                            .equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).and()
+                                            .equalTo("table", DataCodeEnum.OMDB_RD_LINK_KIND.name).and()
                                             .equalTo(
                                                 "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
                                                 outLink

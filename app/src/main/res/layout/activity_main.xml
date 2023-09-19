@@ -235,6 +235,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_road_name_bg"
+            android:visibility="gone"
             android:onClick="@{()->mainActivity.openRoadNameFragment()}"
             android:layout_marginLeft="10dp"
             android:paddingLeft="10dp"

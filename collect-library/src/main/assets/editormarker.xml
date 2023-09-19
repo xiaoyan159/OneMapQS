@@ -1598,7 +1598,7 @@
         </m>
 
         <!-- 检查点 -->
-        <m v="OMDB_NODE_FORM">
+        <m v="OMDB_CHECKPOINT">
             <symbol src="assets:omdb/icon_1012_0.svg" symbol-height="56"
                 symbol-width="56"></symbol>
         </m>
@@ -1703,7 +1703,7 @@
             </m>
             <!--路牙-->
             <m k="boundaryType" v="3">
-                <symbol repeat="true" repeat-gap="4" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="10" symbol-height="8"></symbol>
+                <symbol repeat="true" repeat-gap="10" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="16" symbol-height="10"></symbol>
             </m>
             <m k="boundaryType" v="5|7">
                 <line stroke="#ffffff" use="boundaryType" />
@@ -1774,7 +1774,7 @@
             </m>
             <m k="type" v="e_2_p">
                 <symbol repeat="false" repeat-start="0" rotate="false" gland="true"
-                    src="assets:omdb/icon_2202_1.svg" symbol-height="24" symbol-width="24"></symbol>
+                    src="assets:omdb/icon_2202_0.svg" symbol-height="24" symbol-width="24"></symbol>
             </m>
         </m>
 
@@ -1790,7 +1790,7 @@
             </m>
             <m k="type" v="e_2_p_1">
                 <symbol gland="true"
-                    src="assets:omdb/icon_2201_1_2.svg" symbol-height="56" symbol-width="56"></symbol>
+                    src="assets:omdb/icon_2201_1_1.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
             <m k="type" v="s_2_p_2">
                 <symbol gland="true"
@@ -1798,7 +1798,7 @@
             </m>
             <m k="type" v="e_2_p_2">
                 <symbol gland="true"
-                    src="assets:omdb/icon_2201_2_2.svg" symbol-height="56" symbol-width="56"></symbol>
+                    src="assets:omdb/icon_2201_2_1.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
             <m k="type" v="s_2_p_3">
                 <symbol gland="true"
@@ -1806,14 +1806,14 @@
             </m>
             <m k="type" v="e_2_p_3">
                 <symbol gland="true"
-                    src="assets:omdb/icon_2201_3_2.svg" symbol-height="56" symbol-width="56"></symbol>
+                    src="assets:omdb/icon_2201_3_1.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
         </m>
 
         <!-- 环岛 -->
         <m v="OMDB_ROUNDABOUT">
             <line stroke="#fcba5a" width="0.5" />
-            <symbol repeat="true" repeat-start="0" repeat-gap="32" src="assets:omdb/icon_2204_0.svg"></symbol>
+            <symbol repeat="false" repeat-start="0" repeat-gap="32" src="assets:omdb/icon_2204_0.svg"></symbol>
         </m>
 
         <!-- 停止位置 -->

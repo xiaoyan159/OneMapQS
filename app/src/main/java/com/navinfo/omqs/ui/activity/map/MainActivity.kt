@@ -281,8 +281,10 @@ class MainActivity : BaseActivity() {
         viewModel.liveDataRoadName.observe(this) {
             if (it != null) {
                 binding.mainActivityRoadName.text = it.properties["name"]
+                binding.mainActivityRoadName.visibility = View.VISIBLE
             } else {
                 binding.mainActivityRoadName.text = "   "
+                binding.mainActivityRoadName.visibility = View.GONE
             }
         }
 
@@ -444,7 +446,8 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        findNavController(R.id.main_activity_right_fragment).addOnDestinationChangedListener { _, destination, arguments ->
+        findNavController(R.id.main_activity_right_fragment).addOnDestinationChangedListener { _, destination, _ ->
+            backSignMoreInfo()
             if (destination.id == R.id.RightEmptyFragment) {
                 binding.mainActivityRightVisibilityButtonsGroup.visibility = View.VISIBLE
             } else {
@@ -1125,6 +1128,7 @@ class MainActivity : BaseActivity() {
      * 打开道路名称属性看板，选择的道路在viewmodel里记录，不用
      */
     fun openRoadNameFragment() {
+        backSignMoreInfo()
         if (viewModel.liveDataRoadName.value != null) {
             viewModel.showSignMoreInfo(viewModel.liveDataRoadName.value!!)
         }
@@ -1152,10 +1156,18 @@ class MainActivity : BaseActivity() {
         rightController.navigate(R.id.TaskLinkFragment)
     }
 
-    /**
-     * 右侧按钮+经纬度按钮
-     */
     fun setRightButtonsVisible(visible: Int) {
         binding.mainActivityRightVisibilityButtonsGroup2.visibility = visible
+    }
+
+    /**
+     * 隐藏更多信息面板
+     */
+    fun backSignMoreInfo(){
+        val fragment =
+            supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
+        if(fragment!=null&&!fragment.isHidden){
+            supportFragmentManager.beginTransaction().remove(fragment).commit()
+        }
     }
 }
