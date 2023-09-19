@@ -815,4 +815,40 @@ class ImportPreProcess {
         val code = renderEntity.properties[codeName]
         renderEntity.properties["src"] = "${prefix}${code}${suffix}"
     }
+
+    /**
+     * 获取当前数据的中心点坐标
+     * */
+    fun obtainTrafficSignCenterPoint(renderEntity: RenderEntity) {
+        // 获取中心坐标点，将中心坐标作为数据的新的geometry位置
+        val centerPoint = renderEntity.wkt?.centroid
+        // 根据heading方向自动生成新的Geometry
+        var radian = 0.0
+        val pointStart = Coordinate(centerPoint!!.x, centerPoint.y)
+        var angle =
+            if (renderEntity?.properties?.get("heading") == null) 0.0 else renderEntity?.properties?.get(
+                "heading"
+            )?.toDouble()!!
+        // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
+        angle = ((450 - angle) % 360)
+        radian = Math.toRadians(angle)
+
+        // 计算偏移距离
+        var dx: Double = GeometryTools.convertDistanceToDegree(
+            defaultTranslateDistance,
+            centerPoint.y
+        ) * Math.cos(radian)
+        var dy: Double = GeometryTools.convertDistanceToDegree(
+            defaultTranslateDistance,
+            centerPoint.y
+        ) * Math.sin(radian)
+        val listResult = mutableListOf<ReferenceEntity>()
+
+        val coorEnd = Coordinate(pointStart.getX() + dx, pointStart.getY() + dy, pointStart.z)
+        renderEntity.geometry =
+            WKTWriter(3).write(GeometryTools.createLineString(arrayOf(pointStart, coorEnd)))
+
+        val code = renderEntity.properties["signType"]
+        renderEntity.properties["src"] = "assets:omdb/appendix/1105_${code}_0.svg"
+    }
 }

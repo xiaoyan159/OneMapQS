@@ -223,12 +223,7 @@
 						"k": "geometry",
 						"v": "~",
 						"klib": "geometry",
-						"vlib": "normalizationTrafficSignHeight()"
-					},{
-						"k": "geometry",
-						"v": "~",
-						"klib": "geometry",
-						"vlib": "generateDirectReferenceLine('', 0.2)"
+						"vlib": "obtainTrafficSignCenterPoint()"
 					}
 				]
 			},
