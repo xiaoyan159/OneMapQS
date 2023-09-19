@@ -1932,7 +1932,24 @@
         </m>
         <!-- 文字 -->
         <m v="OMDB_OBJECT_TEXT">
-            <area use="obj-area" stroke="#00000000" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+            <m k="color" v="0">
+                <area use="obj-area" fill="#dfe4ea" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+            </m>
+            <m k="color" v="1">
+                <area use="obj-area" fill="#ffffff" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+            </m>
+            <m k="color" v="2">
+                <area use="obj-area" fill="#ffff00" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+            </m>
+            <m k="color" v="3">
+                <area use="obj-area" fill="#ff0000" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+            </m>
+            <m k="color" v="4">
+                <area use="obj-area" fill="#00ff00" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+            </m>
+            <m k="color" v="9">
+                <area use="obj-area" fill="#0000ff" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+            </m>
         </m>
         <!-- 符号 -->
         <m v="OMDB_OBJECT_SYMBOL">
@@ -1955,7 +1972,7 @@
 
         <!-- 人行横道 -->
         <m v="OMDB_CROSS_WALK">
-            <area use="obj-area" stroke="#00000000" repeat="true" src="assets:omdb/object_crosswalk_3014.svg" longEdge="s"></area>
+            <area use="obj-area" stroke="#ffffff" repeat="true" src="assets:omdb/object_crosswalk_3014.svg" longEdge="s"></area>
         </m>
 
         <!-- 箭头 -->
