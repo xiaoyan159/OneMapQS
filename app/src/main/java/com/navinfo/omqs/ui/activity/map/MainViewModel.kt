@@ -57,6 +57,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.geom.LineString
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
 import org.oscim.map.Map
@@ -122,7 +123,7 @@ class MainViewModel @Inject constructor(
     /**
      * 提示信息
      */
-    val listDataMessage = MutableLiveData<String>()
+    val liveDataMessage = MutableLiveData<String>()
 
 
     private var traceTag: String = "TRACE_TAG"
@@ -426,8 +427,10 @@ class MainViewModel @Inject constructor(
                         }
                     })
                 naviEngine!!.planningPath(currentTaskBean!!)
-                naviMutex.unlock()
+            } else {
+                liveDataMessage.postValue("请先安装任务数据")
             }
+            naviMutex.unlock()
         }
     }
 
@@ -435,8 +438,11 @@ class MainViewModel @Inject constructor(
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         if (key == Constant.SELECT_TASK_ID) {
             viewModelScope.launch(Dispatchers.IO) {
+                naviMutex.lock()
+                naviEngineStatus = 0
                 getTaskBean()
                 initQsRecordData()
+                naviMutex.unlock()
             }
         }
     }
@@ -680,7 +686,8 @@ class MainViewModel @Inject constructor(
                                     bottomRightText = SignUtil.getSignBottomRightText(element),
                                     renderEntity = element,
                                     isMoreInfo = SignUtil.isMoreInfo(element),
-                                    index = SignUtil.getRoadInfoIndex(element)
+                                    index = SignUtil.getRoadInfoIndex(element),
+
                                 )
                                 topSignList.add(
                                     signBean
@@ -708,10 +715,11 @@ class MainViewModel @Inject constructor(
      * 捕获道路和面板
      */
     private suspend fun captureLink(point: GeoPoint) {
+
         if (captureLinkState) {
             return
         }
-
+        mapController.markerHandle.addMarker(point, "selectLink")
         try {
             captureLinkState = true
 
@@ -731,6 +739,8 @@ class MainViewModel @Inject constructor(
                     if (linkIdCache != linkId) {
 
                         mapController.lineHandler.showLine(link.geometry)
+                        val lineString:Geometry = GeometryTools.createGeometry(link.geometry)
+                        val footAndDistance = GeometryTools.pointToLineDistance(point,lineString)
                         linkId?.let {
                             var elementList = realmOperateHelper.queryLinkByLinkPid(it)
                             for (element in elementList) {
@@ -748,7 +758,8 @@ class MainViewModel @Inject constructor(
                                     bottomRightText = SignUtil.getSignBottomRightText(element),
                                     renderEntity = element,
                                     isMoreInfo = SignUtil.isMoreInfo(element),
-                                    index = SignUtil.getRoadInfoIndex(element)
+                                    index = SignUtil.getRoadInfoIndex(element),
+                                    distance = SignUtil.getDistance(footAndDistance,lineString,element)
                                 )
 //                                Log.e("jingo", "捕捉到的数据code ${element.code}")
                                 when (element.code) {
@@ -829,7 +840,8 @@ class MainViewModel @Inject constructor(
                                             RenderEntity::class.java,
                                             true
                                         )
-                                            .equalTo("table", DataCodeEnum.OMDB_RD_LINK_KIND.name).and()
+                                            .equalTo("table", DataCodeEnum.OMDB_RD_LINK_KIND.name)
+                                            .and()
                                             .equalTo(
                                                 "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
                                                 outLink
@@ -1050,6 +1062,7 @@ class MainViewModel @Inject constructor(
         linkIdCache = ""
         mapController.lineHandler.removeLine()
         liveDataSignList.value = mutableListOf()
+        mapController.markerHandle.removeMarker("selectLink")
         if (bSelectRoad && naviEngineStatus == 1) {
             naviEngineStatus = 2
         } else if (naviEngineStatus == 2) {

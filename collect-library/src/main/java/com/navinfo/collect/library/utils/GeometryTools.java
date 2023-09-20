@@ -443,6 +443,15 @@ public class GeometryTools {
 
     }
 
+    public static double distanceToDouble(Geometry startGeoPoint, Geometry endGeoPoint) {
+        if (startGeoPoint != null && endGeoPoint != null) {
+            double d = startGeoPoint.distance(endGeoPoint);
+            return convertDistanceToDegree(d, startGeoPoint.getCoordinate().y);
+        }
+        return 0;
+
+    }
+
 
     /**
      * LINESTRING (116.4206899999999933 39.9620999999999995,

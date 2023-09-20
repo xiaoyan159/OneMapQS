@@ -1,9 +1,10 @@
 package com.navinfo.omqs.util
 
-import android.provider.ContactsContract.Data
 import android.util.Log
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.enums.DataCodeEnum
+import com.navinfo.collect.library.utils.FootAndDistance
+import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.RoadNameBean
 import com.navinfo.omqs.bean.SignBean
@@ -13,6 +14,10 @@ import com.navinfo.omqs.ui.fragment.signMoreInfo.TwoItemAdapter
 import com.navinfo.omqs.ui.fragment.signMoreInfo.TwoItemAdapterItem
 import org.json.JSONArray
 import org.json.JSONObject
+import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.geom.GeometryFactory
+import org.locationtech.jts.geom.LineString
+import org.oscim.core.Point
 import java.lang.reflect.Field
 
 class SignUtil {
@@ -1552,6 +1557,47 @@ class SignUtil {
             return list
         }
 
+        /**
+         * 计算捕捉点到
+         */
+        fun getDistance(
+            footAndDistance: FootAndDistance,
+            lineString: Geometry,
+            element: RenderEntity
+        ): Int {
+            footAndDistance.footIndex
+            val itemGeometry = GeometryTools.createGeoPoint(element.geometry)
+            if (itemGeometry is Point) {
+                val itemFoot = GeometryTools.pointToLineDistance(itemGeometry, lineString)
+                var dis = GeometryTools.getDistance(
+                    footAndDistance.getCoordinate(0).getY(),
+                    footAndDistance.getCoordinate(0).getX(),
+                    itemFoot.getCoordinate(0).getY(),
+                    itemFoot.getCoordinate(0).getX(),
+                )
+                return if (footAndDistance.footIndex > itemFoot.footIndex) {
+                    dis.toInt()
+                } else {
+                    -dis.toInt()
+                }
+            }else if(itemGeometry is LineString){
+                val factory = GeometryFactory()
+                val geo: Geometry = factory.createPoint(lineString.coordinates[0])
+                val itemFoot = GeometryTools.pointToLineDistance(itemGeometry, geo)
+                var dis = GeometryTools.getDistance(
+                    footAndDistance.getCoordinate(0).getY(),
+                    footAndDistance.getCoordinate(0).getX(),
+                    itemFoot.getCoordinate(0).getY(),
+                    itemFoot.getCoordinate(0).getX(),
+                )
+                return if (footAndDistance.footIndex > itemFoot.footIndex) {
+                    dis.toInt()
+                } else {
+                    -dis.toInt()
+                }
+            }
+            return 0
+        }
 
     }
 

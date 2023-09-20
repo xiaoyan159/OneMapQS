@@ -424,7 +424,7 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        viewModel.listDataMessage.observe(this) {
+        viewModel.liveDataMessage.observe(this) {
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
         }
 
