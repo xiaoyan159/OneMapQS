@@ -475,7 +475,10 @@ class EvaluationResultViewModel @Inject constructor(
                             p.latitude, p.longitude
                         ), TAG, "", null
                     )
-
+                    //定位
+                    val mapPosition = mapController.mMapView.vtmMap.mapPosition
+                    mapPosition.setPosition(p.latitude, p.longitude)
+                    mapController.mMapView.vtmMap.animator().animateTo(300, mapPosition)
                     //获取linkid
                     if (it.linkId.isNotEmpty()) {
                         val link = realmOperateHelper.queryLink(it.linkId)
