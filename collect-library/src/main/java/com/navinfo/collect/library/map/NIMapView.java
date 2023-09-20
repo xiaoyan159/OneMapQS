@@ -262,7 +262,7 @@ public final class NIMapView extends RelativeLayout {
 
         // 增加比例尺图层
         NaviMapScaleBar naviMapScaleBar = new NaviMapScaleBar(getVtmMap());
-        mapScaleBarLayer = naviMapScaleBar.initScaleBarLayer(GLViewport.Position.BOTTOM_LEFT, 10, 0);
+        mapScaleBarLayer = naviMapScaleBar.initScaleBarLayer(GLViewport.Position.BOTTOM_LEFT, 256, 60);
 
 //        if (gridLayer == null) {
 //            gridLayer = new TileGridLayer(getVtmMap());

@@ -271,6 +271,7 @@ class LoginViewModel @Inject constructor(
                     realm.executeTransaction {
                         result.data.obj?.let { list ->
                             for (index in list.indices) {
+                                var  inSertData = true
                                 val task = list[index]
                                 val item = realm.where(TaskBean::class.java).equalTo(
                                     "id", task.id
@@ -287,12 +288,20 @@ class LoginViewModel @Inject constructor(
                                     }
                                 } else {
                                     for (hadLink in task.hadLinkDvoList) {
-                                        hadLink.taskId = task.id
+                                        if(hadLink.geometry==null||hadLink.mesh==null){
+                                            inSertData = false
+                                        }else{
+                                            hadLink.taskId = task.id
+                                        }
+                                        Log.e("qj","mesh==${hadLink.mesh}")
                                     }
                                     //赋值时间，用于查询过滤
                                     task.operationTime = DateTimeUtil.getNowDate().time
                                 }
-                                realm.copyToRealmOrUpdate(task)
+                                Log.e("qj","task==${task.id}")
+                                if(inSertData){
+                                    realm.copyToRealmOrUpdate(task)
+                                }
                             }
                         }
 

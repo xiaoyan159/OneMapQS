@@ -126,9 +126,9 @@ class SignUtil {
                 //常规线限速
                 DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> "线限速"
 
-                DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code -> "形态"
+                DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code -> "道路属性"
 
-                DataCodeEnum.OMDB_LINK_FORM1_1.code, DataCodeEnum.OMDB_LINK_FORM1_2.code, DataCodeEnum.OMDB_LINK_FORM1_3.code, DataCodeEnum.OMDB_LINK_FORM2_1.code, DataCodeEnum.OMDB_LINK_FORM2_2.code, DataCodeEnum.OMDB_LINK_FORM2_3.code, DataCodeEnum.OMDB_LINK_FORM2_4.code, DataCodeEnum.OMDB_LINK_FORM2_5.code, DataCodeEnum.OMDB_LINK_FORM2_6.code, DataCodeEnum.OMDB_LINK_FORM2_7.code, DataCodeEnum.OMDB_LINK_FORM2_8.code, DataCodeEnum.OMDB_LINK_FORM2_9.code, DataCodeEnum.OMDB_LINK_FORM2_10.code, DataCodeEnum.OMDB_LINK_FORM2_11.code, DataCodeEnum.OMDB_LINK_FORM2_12.code, DataCodeEnum.OMDB_LINK_FORM2_13.code -> "形态"
+                DataCodeEnum.OMDB_LINK_FORM1_1.code, DataCodeEnum.OMDB_LINK_FORM1_2.code, DataCodeEnum.OMDB_LINK_FORM1_3.code, DataCodeEnum.OMDB_LINK_FORM2_1.code, DataCodeEnum.OMDB_LINK_FORM2_2.code, DataCodeEnum.OMDB_LINK_FORM2_3.code, DataCodeEnum.OMDB_LINK_FORM2_4.code, DataCodeEnum.OMDB_LINK_FORM2_5.code, DataCodeEnum.OMDB_LINK_FORM2_6.code, DataCodeEnum.OMDB_LINK_FORM2_7.code, DataCodeEnum.OMDB_LINK_FORM2_8.code, DataCodeEnum.OMDB_LINK_FORM2_9.code, DataCodeEnum.OMDB_LINK_FORM2_10.code, DataCodeEnum.OMDB_LINK_FORM2_11.code, DataCodeEnum.OMDB_LINK_FORM2_12.code, DataCodeEnum.OMDB_LINK_FORM2_13.code -> "道路形态"
 
                 else -> DataCodeEnum.findTableNameByCode(data.code)
             }
@@ -805,6 +805,42 @@ class SignUtil {
                         return ""
                     }
                 }
+                DataCodeEnum.OMDB_TRAFFIC_SIGN.code -> {
+                    var color = data.properties["color"]
+                    if (color != null) {
+                        when(color){
+                            "0"->{
+                               return "颜色：未验证"
+                            }
+                            "1"->{
+                                return "颜色：白色"
+                            }
+                            "2"->{
+                                return "颜色：黄色"
+                            }
+                            "3"->{
+                                return "颜色：红色"
+                            }
+                            "5"->{
+                                return "颜色：棕色"
+                            }
+                            "6"->{
+                                return "颜色：蓝色"
+                            }
+                            "7"->{
+                                return "颜色：绿色"
+                            }
+                            "8"->{
+                                return "颜色：黑色"
+                            }
+                            "9"->{
+                                return "颜色：其他"
+                            }
+                        }
+
+                    }
+                    return "颜色：未验证"
+                }
                 else -> ""
             }
         }
@@ -1023,6 +1059,14 @@ class SignUtil {
                     if (backimageCode != null) {
                         backimageCode = backimageCode.lowercase()
                         return getResId(backimageCode, R.drawable::class.java)
+                    }
+                    return 0
+                }
+                DataCodeEnum.OMDB_TRAFFIC_SIGN.code -> {
+                    var trafsignShape = data.properties["trafsignShape"]
+                    if (trafsignShape != null) {
+                        trafsignShape = "icon_${DataCodeEnum.OMDB_TRAFFIC_SIGN.code}_${trafsignShape.lowercase()}"
+                        return getResId(trafsignShape, R.drawable::class.java)
                     }
                     return 0
                 }

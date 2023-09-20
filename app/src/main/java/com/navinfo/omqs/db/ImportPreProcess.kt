@@ -845,10 +845,7 @@ class ImportPreProcess {
         val listResult = mutableListOf<ReferenceEntity>()
 
         val coorEnd = Coordinate(pointStart.getX() + dx, pointStart.getY() + dy, pointStart.z)
-        renderEntity.geometry = GeometryTools.createGeometry(GeoPoint(centerPoint!!.y, centerPoint.x)).toString()
-//        renderEntity.geometry =
-//            WKTWriter(3).write(GeometryTools.createLineString(arrayOf(pointStart, coorEnd)))
-
+        renderEntity.geometry = WKTWriter(3).write(GeometryTools.createLineString(arrayOf(pointStart, coorEnd)))
         val code = renderEntity.properties["signType"]
         renderEntity.properties["src"] = "assets:omdb/appendix/1105_${code}_0.svg"
     }

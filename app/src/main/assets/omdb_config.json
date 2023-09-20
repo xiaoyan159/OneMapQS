@@ -7,6 +7,7 @@
 				"code": 1007,
 				"name": "点形态",
 				"existSubCode": true,
+				"checkLinkId": false,
 				"zoomMin": 15,
 				"zoomMax": 20
 			},
@@ -15,6 +16,7 @@
 				"code": 1007,
 				"name": "点形态PA",
 				"existSubCode": true,
+				"checkLinkId": false,
 				"zoomMin": 15,
 				"zoomMax": 20
 			},
@@ -80,6 +82,7 @@
 				"name": "车道边界类型",
 				"zoomMin": 18,
 				"zoomMax": 20,
+				"checkLinkId": false,
 				"filterData": true,
 				"catch":true,
 				"transformer": [
