@@ -258,6 +258,7 @@
 				"code": 3014,
 				"name": "人行横道",
 				"catch":true,
+				"checkLinkId": false,
 				"zoomMin": 18,
 				"zoomMax": 20
 			},
