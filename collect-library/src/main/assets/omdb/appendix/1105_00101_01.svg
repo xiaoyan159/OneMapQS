@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="28px" viewBox="0 0 30 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>qita_icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="0.0002 0.672 29.465 0.672 29.465 27.9996 0.0002 27.9996"></polygon>
+    </defs>
+    <g id="待定" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="工具栏汇总复制" transform="translate(-432.000000, -394.000000)">
+            <g id="qita_icon-2" transform="translate(432.000000, 393.000000)">
+                <g id="qita_icon">
+                    <g id="编组复制-25">
+                        <g id="编组" transform="translate(0.000000, 0.328000)">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <g id="Clip-2"></g>
+                            <path d="M28.5572,27.9986 C29.0572,27.9986 29.4652,27.5706 29.4652,27.0356 C29.4652,26.8666 29.4212,26.6986 29.3432,26.5536 L15.5192,1.1546 C15.3582,0.8566 15.0582,0.6716 14.7302,0.6716 C14.4082,0.6716 14.1062,0.8566 13.9452,1.1546 L0.1172,26.5546 C0.0432,26.6996 0.0002,26.8686 0.0002,27.0366 C0.0002,27.5666 0.4062,27.9996 0.9092,27.9996 L28.5572,27.9986 Z" id="Fill-1" fill="#100808" mask="url(#mask-2)"></path>
+                        </g>
+                        <polygon id="Fill-3" fill="#F7BD42" points="25.4156 25.4369 4.0526 25.4369 14.7326 5.8169"></polygon>
+                    </g>
+                    <circle id="椭圆形" fill="#000000" cx="10.3" cy="19.3" r="1.3"></circle>
+                    <circle id="椭圆形复制-9" fill="#000000" cx="14.8" cy="19.3" r="1.3"></circle>
+                    <circle id="椭圆形复制-10" fill="#000000" cx="19.3" cy="19.3" r="1.3"></circle>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
