@@ -235,6 +235,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_road_name_bg"
+            android:visibility="gone"
             android:onClick="@{()->mainActivity.openRoadNameFragment()}"
             android:layout_marginLeft="10dp"
             android:paddingLeft="10dp"
@@ -543,7 +544,6 @@
             android:id="@+id/main_activity_bottom_sheet_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             app:constraint_referenced_ids="
             main_bottom_route_text,
             main_bottom_offline_map_text,
@@ -551,7 +551,7 @@
             main_bottom_task_text,main_bottom_route,
             main_bottom_offline_map,
             main_bottom_res,
-             main_activity_bottom_sheet_bg,
+            main_activity_bottom_sheet_bg,
             main_bottom_task,main_bottom_home" />
 
 

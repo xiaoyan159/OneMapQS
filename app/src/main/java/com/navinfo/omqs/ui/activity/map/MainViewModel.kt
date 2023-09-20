@@ -583,7 +583,7 @@ class MainViewModel @Inject constructor(
                 GeometryTools.createPoint(
                     point.longitude, point.latitude
                 ),
-                buffer = 2.4, catchAll = false,
+                buffer = 3.2, catchAll = false,
             )
             //增加道路线过滤原则
             val filterResult = itemList.filter {
@@ -719,12 +719,6 @@ class MainViewModel @Inject constructor(
 
                 val linkList = realmOperateHelper.queryLink(point = point)
 
-                /*                val linkList = realmOperateHelper.queryLine(
-                                    point = point,
-                                    buffer = 1.0,
-                                    table = "OMDB_RD_LINK_KIND"
-                                )*/
-
                 var hisRoadName = false
 
                 if (linkList.isNotEmpty()) {
@@ -830,13 +824,16 @@ class MainViewModel @Inject constructor(
                                 val outList = entityList.distinct()
                                 for (i in outList.indices) {
                                     val outLink = outList[i].properties["linkOut"]
-                                    val linkOutEntity = realmOperateHelper.getSelectTaskRealmTools(
-                                        RenderEntity::class.java, true
-                                    ).equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).and()
-                                        .equalTo(
-                                            "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
-                                            outLink
-                                        ).findFirst()
+                                    val linkOutEntity =
+                                        realmOperateHelper.getSelectTaskRealmTools(
+                                            RenderEntity::class.java,
+                                            true
+                                        )
+                                            .equalTo("table", DataCodeEnum.OMDB_RD_LINK_KIND.name).and()
+                                            .equalTo(
+                                                "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
+                                                outLink
+                                            ).findFirst()
                                     if (linkOutEntity != null) {
                                         mapController.lineHandler.linksLayer.addLine(
                                             linkOutEntity.geometry, 0x7DFF0000
@@ -893,7 +890,6 @@ class MainViewModel @Inject constructor(
     fun onClickMenu() {
         menuState = !menuState
         liveDataMenuState.postValue(menuState)
-//        naviEngine!!.bindingRoute(null, mapController.mMapView.vtmMap.mapPosition.geoPoint)
     }
 
     override fun onCleared() {

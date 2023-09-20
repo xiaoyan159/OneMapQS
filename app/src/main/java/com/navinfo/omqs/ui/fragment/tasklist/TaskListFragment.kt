@@ -126,6 +126,12 @@ class TaskListFragment : BaseFragment() {
         viewModel.liveDataTaskList.observe(viewLifecycleOwner) {
             loadFinish()
             adapter.initSelectTask(it, viewModel.currentSelectTaskBean?.id)
+            var position = adapter.getSelectTaskPosition()
+            if(position<0){
+                position = 0
+            }
+            //定位到被选中的任务
+            binding.taskListRecyclerview.smoothScrollToPosition(position)
         }
 
         //监听并调用上传

@@ -30,7 +30,7 @@ class TopSignAdapter(private var itemListener: ((Int, SignBean) -> Unit?)? = nul
             DataCodeEnum.OMDB_TUNNEL.code,
             DataCodeEnum.OMDB_ROUNDABOUT.code,
             DataCodeEnum.OMDB_VIADUCT.code,
-            -> bd.topSignName.text = ""
+            -> bd.topSignName.text = "形态"
             else -> bd.topSignName.text = item.name
         }
 
