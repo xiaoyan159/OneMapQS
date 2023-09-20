@@ -27,6 +27,7 @@ import com.blankj.utilcode.util.ClipboardUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.navinfo.collect.library.data.entity.RenderEntity
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.MeasureLayerHandler
 import com.navinfo.omqs.Constant
@@ -38,6 +39,7 @@ import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.tools.LayerConfigUtils
 import com.navinfo.omqs.ui.activity.BaseActivity
+import com.navinfo.omqs.ui.dialog.LoadingDialog
 import com.navinfo.omqs.ui.fragment.console.ConsoleFragment
 import com.navinfo.omqs.ui.fragment.itemlist.ItemListFragment
 import com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapFragment
@@ -47,6 +49,7 @@ import com.navinfo.omqs.ui.fragment.tasklist.TaskManagerFragment
 import com.navinfo.omqs.ui.other.BaseToast
 import com.navinfo.omqs.ui.widget.RecyclerViewSpacesItemDecoration
 import com.navinfo.omqs.util.FlowEventBus
+import com.navinfo.omqs.util.NaviStatus
 import com.navinfo.omqs.util.SignUtil
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,6 +69,12 @@ class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel by viewModels<MainViewModel>()
+    private val loadingDialog by lazy {
+        MaterialAlertDialogBuilder(
+            this,
+            com.google.android.material.R.style.MaterialAlertDialog_Material3_Animation
+        ).setMessage("正在计算路线中...").setCancelable(false).show()
+    }
 
     /**
      * 左侧fragment
@@ -280,9 +289,10 @@ class MainActivity : BaseActivity() {
         //道路绑定，名称变化
         viewModel.liveDataRoadName.observe(this) {
             if (it != null) {
+                binding.mainActivityRoadName.visibility = View.VISIBLE
                 binding.mainActivityRoadName.text = it.properties["name"]
             } else {
-                binding.mainActivityRoadName.text = "   "
+                binding.mainActivityRoadName.visibility = View.INVISIBLE
             }
         }
 
@@ -325,7 +335,7 @@ class MainActivity : BaseActivity() {
                             7, RoundingMode.HALF_UP
                         )
                     },${BigDecimal(it.latitude).setScale(7, RoundingMode.HALF_UP)}"
-                    if(Constant.AUTO_LOCATION){
+                    if (Constant.AUTO_LOCATION) {
                         viewModel.startAutoLocationTimer()
                     }
                     binding.mainActivityLocation.setImageResource(R.drawable.icon_location)
@@ -334,8 +344,8 @@ class MainActivity : BaseActivity() {
                 Log.e("qj", "异常 $e")
             }
         }
-        viewModel.liveDataAutoLocation.observe(this){
-            if(it==true){
+        viewModel.liveDataAutoLocation.observe(this) {
+            if (it == true) {
                 onClickLocation()
             }
         }
@@ -416,6 +426,52 @@ class MainActivity : BaseActivity() {
 
         viewModel.listDataMessage.observe(this) {
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+        }
+
+        viewModel.liveDataNaviStatus.observe(this) {
+            when (it) {
+                NaviStatus.NAVI_STATUS_PATH_ERROR_BLOCKED -> {
+                    Toast.makeText(
+                        this,
+                        "路径不通，请检查",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    if (loadingDialog.isShowing)
+                        loadingDialog.dismiss()
+                }
+                NaviStatus.NAVI_STATUS_PATH_PLANNING -> {
+                    if (!loadingDialog.isShowing)
+                        loadingDialog.show()
+                }
+                NaviStatus.NAVI_STATUS_PATH_ERROR_NODE -> {
+                    Toast.makeText(
+                        this,
+                        "查询link基本信息表失败（node表）",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    loadingDialog.dismiss()
+                }
+
+                NaviStatus.NAVI_STATUS_PATH_ERROR_DIRECTION -> {
+                    Toast.makeText(
+                        this,
+                        "查询link基本信息表失败（方向表）",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    loadingDialog.dismiss()
+                }
+                NaviStatus.NAVI_STATUS_PATH_SUCCESS -> {
+                    loadingDialog.dismiss()
+                }
+                NaviStatus.NAVI_STATUS_DISTANCE_OFF -> {
+                    Toast.makeText(
+                        this,
+                        "偏离路线",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                NaviStatus.NAVI_STATUS_DIRECTION_OFF -> TODO()
+            }
         }
 
         viewModel.liveDataItemList.observe(this) {
@@ -1102,7 +1158,7 @@ class MainActivity : BaseActivity() {
      * 路径规划
      */
     fun onClickRouteFragment() {
-        Toast.makeText(this, "功能开发中", Toast.LENGTH_SHORT).show()
+        viewModel.planningPath()
     }
 
     /**

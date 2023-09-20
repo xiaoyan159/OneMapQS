@@ -86,7 +86,7 @@ class MainViewModel @Inject constructor(
     private var mCameraDialog: CommonDialog? = null
 
     //路径计算
-    val liveDataPlanningPathStatus = MutableLiveData<Int>()
+    val liveDataNaviStatus = MutableLiveData<NaviStatus>()
 
     //地图点击捕捉到的质检数据ID列表
     val liveDataQsRecordIdList = MutableLiveData<List<String>>()
@@ -123,6 +123,7 @@ class MainViewModel @Inject constructor(
      * 提示信息
      */
     val listDataMessage = MutableLiveData<String>()
+
 
     private var traceTag: String = "TRACE_TAG"
 
@@ -201,9 +202,11 @@ class MainViewModel @Inject constructor(
     /**
      * 测量类型
      */
-    var measuringType: MeasureLayerHandler.MEASURE_TYPE =
-        MeasureLayerHandler.MEASURE_TYPE.DISTANCE
+    var measuringType: MeasureLayerHandler.MEASURE_TYPE = MeasureLayerHandler.MEASURE_TYPE.DISTANCE
 
+    /**
+     * 捕捉到的上一条link
+     */
     var linkIdCache = ""
 
     private var lastNiLocaion: NiLocation? = null
@@ -230,8 +233,8 @@ class MainViewModel @Inject constructor(
     //导航信息
     private var naviEngine: NaviEngine? = null
 
-    //规划成功
-    private var naviPathSuccess = false
+    // 0:不导航 1：导航 2：暂停
+    private var naviEngineStatus = 0
 
     // 定义一个互斥锁
     private val naviMutex = Mutex()
@@ -257,8 +260,7 @@ class MainViewModel @Inject constructor(
         /**
          * 处理点击道路捕捉回调功能
          */
-        mapController.mMapView.addOnNIMapClickListener(
-            TAG,
+        mapController.mMapView.addOnNIMapClickListener(TAG,
             //处理地图点击操作
             object : OnGeoPointClickListener {
                 override fun onMapClick(tag: String, point: GeoPoint) {
@@ -283,8 +285,7 @@ class MainViewModel @Inject constructor(
              */
             object : OnQsRecordItemClickListener {
                 override fun onQsRecordList(tag: String, list: MutableList<String>) {
-                    if (tag == TAG)
-                        liveDataQsRecordIdList.value = list
+                    if (tag == TAG) liveDataQsRecordIdList.value = list
                 }
             },
             /**
@@ -292,8 +293,7 @@ class MainViewModel @Inject constructor(
              */
             object : OnTaskLinkItemClickListener {
                 override fun onTaskLink(tag: String, taskLinkId: String) {
-                    if (tag == TAG)
-                        liveDataTaskLink.value = taskLinkId
+                    if (tag == TAG) liveDataTaskLink.value = taskLinkId
                 }
             },
             /**
@@ -301,8 +301,7 @@ class MainViewModel @Inject constructor(
              */
             object : ONNoteItemClickListener {
                 override fun onNote(tag: String, noteId: String) {
-                    if (tag == TAG)
-                        liveDataNoteId.value = noteId
+                    if (tag == TAG) liveDataNoteId.value = noteId
                 }
 
             },
@@ -311,11 +310,9 @@ class MainViewModel @Inject constructor(
              */
             object : OnNiLocationItemListener {
                 override fun onNiLocation(tag: String, index: Int, it: NiLocation) {
-                    if (tag == TAG)
-                        liveDataNILocationList.value = it
+                    if (tag == TAG) liveDataNILocationList.value = it
                 }
-            }
-        )
+            })
 
         viewModelScope.launch(Dispatchers.IO) {
             getTaskBean()
@@ -339,26 +336,26 @@ class MainViewModel @Inject constructor(
         socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
 
         viewModelScope.launch(Dispatchers.Default) {
-//            naviTestFlow().collect { point ->
-//                if (naviPathSuccess) {
-//                    naviEngine?.let {
-//                        naviMutex.lock()
-//                        it.bindingRoute(null, point)
-//                        naviMutex.unlock()
-//                    }
-//                }
-//            }
+            naviTestFlow().collect { point ->
+                if (naviEngineStatus == 1) {
+                    naviEngine?.let {
+                        naviMutex.lock()
+                        it.bindingRoute(null, point)
+                        naviMutex.unlock()
+                    }
+                }
+            }
         }
     }
 
 
-//    fun naviTestFlow(): Flow<GeoPoint> = flow {
-//
-//        while (true) {
-//            emit(mapController.mMapView.vtmMap.mapPosition.geoPoint)
-//            delay(1000)
-//        }
-//    }
+    fun naviTestFlow(): Flow<GeoPoint> = flow {
+
+        while (true) {
+            emit(mapController.mMapView.vtmMap.mapPosition.geoPoint)
+            delay(1000)
+        }
+    }
 
     /**
      * 获取当前任务
@@ -369,55 +366,68 @@ class MainViewModel @Inject constructor(
         val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
         if (res != null) {
             currentTaskBean = realm.copyFromRealm(res)
-//            planningPath(currentTaskBean!!)
         }
         realm.close()
     }
 
-
-    private fun planningPath(taskBean: TaskBean) {
-        if (taskBean.status == FileManager.Companion.FileDownloadStatus.DONE) {
-//            Toast.makeText(context, "正在计算导航路径", Toast.LENGTH_SHORT).show()
-            viewModelScope.launch(Dispatchers.Default) {
-                naviMutex.lock()
-                naviEngine = NaviEngine(
-                    niMapController = mapController,
+    /**
+     * 规划路径
+     */
+    fun planningPath() {
+        viewModelScope.launch(Dispatchers.Default) {
+            naviMutex.lock()
+            getTaskBean()
+            if (currentTaskBean != null && currentTaskBean!!.status == FileManager.Companion.FileDownloadStatus.DONE) {
+                naviEngine = NaviEngine(niMapController = mapController,
+                    realmOperateHelper = realmOperateHelper,
                     callback = object : OnNaviEngineCallbackListener {
-                        override fun planningPathSuccess() {
-                            naviPathSuccess = true
-                            listDataMessage.postValue("导航路径规划完成")
+
+                        override fun planningPathStatus(status: NaviStatus) {
+                            when (status) {
+                                NaviStatus.NAVI_STATUS_PATH_PLANNING -> naviEngineStatus = 0
+                                NaviStatus.NAVI_STATUS_PATH_ERROR_NODE -> naviEngineStatus = 0
+                                NaviStatus.NAVI_STATUS_PATH_ERROR_DIRECTION -> naviEngineStatus = 0
+                                NaviStatus.NAVI_STATUS_PATH_ERROR_BLOCKED -> naviEngineStatus = 0
+                                NaviStatus.NAVI_STATUS_PATH_SUCCESS -> naviEngineStatus = 1
+                                NaviStatus.NAVI_STATUS_DISTANCE_OFF -> {
+                                }
+                                NaviStatus.NAVI_STATUS_DIRECTION_OFF -> {}
+                            }
+                            liveDataNaviStatus.postValue(status)
                         }
 
-                        override fun planningPathError(errorCode: Int, errorMessage: String) {
-                            naviPathSuccess = false
-                            listDataMessage.postValue(errorMessage)
-                        }
-
-                        override fun bindingResults(list: List<NaviRouteItem>) {
+                        override suspend fun bindingResults(
+                            route: NaviRoute?,
+                            list: List<NaviRouteItem>
+                        ) {
                             val signList = mutableListOf<SignBean>()
                             for (naviRouteItem in list) {
+
                                 val signBean = SignBean(
                                     iconId = SignUtil.getSignIcon(naviRouteItem.data),
                                     iconText = SignUtil.getSignIconText(naviRouteItem.data),
                                     linkId = naviRouteItem.linkId,
                                     distance = naviRouteItem.distance,
                                     name = SignUtil.getSignNameText(naviRouteItem.data),
-                                    bottomRightText = SignUtil.getSignBottomRightText(naviRouteItem.data),
+                                    bottomRightText = SignUtil.getSignBottomRightText(
+                                        naviRouteItem.data
+                                    ),
                                     renderEntity = naviRouteItem.data,
                                     isMoreInfo = SignUtil.isMoreInfo(naviRouteItem.data),
                                     index = SignUtil.getRoadInfoIndex(naviRouteItem.data)
                                 )
                                 signList.add(signBean)
                             }
+                            if (route != null) {
+                                liveDataRoadName.postValue(route.name)
+                                captureTopSign(route)
+                            }
                             liveDataSignList.postValue(signList)
                         }
                     })
-                listDataMessage.postValue("开始导航路径规划")
-                naviEngine!!.planningPath(taskBean)
+                naviEngine!!.planningPath(currentTaskBean!!)
                 naviMutex.unlock()
             }
-        } else {
-            listDataMessage.postValue("数据未安装，无法计算导航路径")
         }
     }
 
@@ -439,8 +449,7 @@ class MainViewModel @Inject constructor(
             var list = mutableListOf<QsRecordBean>()
             val realm = realmOperateHelper.getRealmDefaultInstance()
             realm.executeTransaction {
-                val objects =
-                    realmOperateHelper.getRealmTools(QsRecordBean::class.java).findAll()
+                val objects = realmOperateHelper.getRealmTools(QsRecordBean::class.java).findAll()
                 list = realm.copyFromRealm(objects)
             }
             realm.close()
@@ -529,8 +538,10 @@ class MainViewModel @Inject constructor(
                     //增加间距判断
                     if (lastNiLocaion != null) {
                         disance = GeometryTools.getDistance(
-                            location.latitude, location.longitude,
-                            lastNiLocaion!!.latitude, lastNiLocaion!!.longitude
+                            location.latitude,
+                            location.longitude,
+                            lastNiLocaion!!.latitude,
+                            lastNiLocaion!!.longitude
                         )
                     }
                     //室内整理工具时不能进行轨迹存储，判断轨迹间隔要超过2.5并小于60米
@@ -570,18 +581,17 @@ class MainViewModel @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val itemList = realmOperateHelper.queryElement(
                 GeometryTools.createPoint(
-                    point.longitude,
-                    point.latitude
+                    point.longitude, point.latitude
                 ),
                 buffer = 2.4, catchAll = false,
             )
             //增加道路线过滤原则
             val filterResult = itemList.filter {
-                if(isHighRoad()){
-                    mapController.mMapView.mapLevel>=it.zoomMin&&mapController.mMapView.mapLevel<=it.zoomMax
-                }else{
+                if (isHighRoad()) {
+                    mapController.mMapView.mapLevel >= it.zoomMin && mapController.mMapView.mapLevel <= it.zoomMax
+                } else {
                     //关闭时过滤道路线捕捉s
-                    mapController.mMapView.mapLevel>=it.zoomMin&&mapController.mMapView.mapLevel<=it.zoomMax&&it.code!=DataCodeEnum.OMDB_RD_LINK.code
+                    mapController.mMapView.mapLevel >= it.zoomMin && mapController.mMapView.mapLevel <= it.zoomMax && it.code != DataCodeEnum.OMDB_RD_LINK.code
                 }
             }.toList()
             if (filterResult.size == 1) {
@@ -589,6 +599,108 @@ class MainViewModel @Inject constructor(
             } else {
                 liveDataItemList.postValue(filterResult)
             }
+        }
+    }
+
+    /**
+     * 获取道路属性
+     */
+    private suspend fun captureTopSign(route: NaviRoute) {
+        try {
+            captureLinkState = true
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                //看板数据
+                val signList = mutableListOf<SignBean>()
+                val topSignList = mutableListOf<SignBean>()
+                mapController.lineHandler.linksLayer.clear()
+                if (linkIdCache != route.linkId) {
+
+                    mapController.lineHandler.showLine(route.pointList)
+                    var elementList = realmOperateHelper.queryLinkByLinkPid(route.linkId)
+                    for (element in elementList) {
+
+                        when (element.code) {
+                            DataCodeEnum.OMDB_MULTI_DIGITIZED.code,//上下线分离
+                            DataCodeEnum.OMDB_CON_ACCESS.code,//全封闭
+                            -> {
+                                val signBean = SignBean(
+                                    iconId = SignUtil.getSignIcon(element),
+                                    iconText = SignUtil.getSignIconText(element),
+                                    linkId = route.linkId,
+                                    name = SignUtil.getSignNameText(element),
+                                    bottomRightText = SignUtil.getSignBottomRightText(element),
+                                    renderEntity = element,
+                                    isMoreInfo = SignUtil.isMoreInfo(element),
+                                    index = SignUtil.getRoadInfoIndex(element)
+                                )
+                                if (signBean.iconText != "") {
+                                    topSignList.add(
+                                        signBean
+                                    )
+                                }
+                            }
+
+                            DataCodeEnum.OMDB_LANE_NUM.code, //车道数
+                            DataCodeEnum.OMDB_RD_LINK_KIND.code,//种别，
+                            DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code, // 功能等级,
+                            DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code, //线限速,
+                            DataCodeEnum.OMDB_LINK_DIRECT.code,//道路方向,
+                            DataCodeEnum.OMDB_RAMP.code, //匝道
+                            DataCodeEnum.OMDB_BRIDGE.code,//桥
+                            DataCodeEnum.OMDB_TUNNEL.code,//隧道
+                            DataCodeEnum.OMDB_ROUNDABOUT.code,//环岛
+                            DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code,//出入口
+                            DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code,//辅路
+                            DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code,//SA
+                            DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code,//PA
+                            DataCodeEnum.OMDB_LINK_FORM1_1.code,
+                            DataCodeEnum.OMDB_LINK_FORM1_2.code,
+                            DataCodeEnum.OMDB_LINK_FORM1_3.code,
+                            DataCodeEnum.OMDB_LINK_FORM2_1.code,
+                            DataCodeEnum.OMDB_LINK_FORM2_2.code,
+                            DataCodeEnum.OMDB_LINK_FORM2_3.code,
+                            DataCodeEnum.OMDB_LINK_FORM2_4.code,
+                            DataCodeEnum.OMDB_LINK_FORM2_5.code,
+                            DataCodeEnum.OMDB_LINK_FORM2_6.code,
+                            DataCodeEnum.OMDB_LINK_FORM2_7.code,
+                            DataCodeEnum.OMDB_LINK_FORM2_8.code,
+                            DataCodeEnum.OMDB_LINK_FORM2_9.code,
+                            DataCodeEnum.OMDB_LINK_FORM2_10.code,
+                            DataCodeEnum.OMDB_LINK_FORM2_11.code,
+                            DataCodeEnum.OMDB_LINK_FORM2_12.code,
+                            DataCodeEnum.OMDB_LINK_FORM2_13.code,
+                            DataCodeEnum.OMDB_VIADUCT.code,
+                            -> {
+                                val signBean = SignBean(
+                                    iconId = SignUtil.getSignIcon(element),
+                                    iconText = SignUtil.getSignIconText(element),
+                                    linkId = route.linkId,
+                                    name = SignUtil.getSignNameText(element),
+                                    bottomRightText = SignUtil.getSignBottomRightText(element),
+                                    renderEntity = element,
+                                    isMoreInfo = SignUtil.isMoreInfo(element),
+                                    index = SignUtil.getRoadInfoIndex(element)
+                                )
+                                topSignList.add(
+                                    signBean
+                                )
+                            }
+                        }
+                    }
+
+                    liveDataTopSignList.postValue(topSignList.distinctBy { it.name }
+                        .sortedBy { it.index })
+
+                    val speechText = SignUtil.getRoadSpeechText(topSignList)
+                    withContext(Dispatchers.Main) {
+                        speakMode?.speakText(speechText)
+                    }
+                    linkIdCache = route.linkId ?: ""
+                }
+            }
+        } catch (e: Exception) {
+
         }
     }
 
@@ -616,22 +728,18 @@ class MainViewModel @Inject constructor(
                 var hisRoadName = false
 
                 if (linkList.isNotEmpty()) {
+                    val link = linkList[0]
+                    val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
                     //看板数据
                     val signList = mutableListOf<SignBean>()
                     val topSignList = mutableListOf<SignBean>()
                     mapController.lineHandler.linksLayer.clear()
-
-                    val link = linkList[0]
-
-                    val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
-
                     if (linkIdCache != linkId) {
 
                         mapController.lineHandler.showLine(link.geometry)
                         linkId?.let {
                             var elementList = realmOperateHelper.queryLinkByLinkPid(it)
                             for (element in elementList) {
-
                                 if (element.code == DataCodeEnum.OMDB_LINK_NAME.code) {
                                     hisRoadName = true
                                     liveDataRoadName.postValue(element)
@@ -693,7 +801,6 @@ class MainViewModel @Inject constructor(
                                     -> topSignList.add(
                                         signBean
                                     )
-
                                     DataCodeEnum.OMDB_SPEEDLIMIT.code,//常规点限速
                                     DataCodeEnum.OMDB_SPEEDLIMIT_COND.code,//条件点限速
                                     DataCodeEnum.OMDB_SPEEDLIMIT_VAR.code,//可变点限速
@@ -702,40 +809,34 @@ class MainViewModel @Inject constructor(
                                     DataCodeEnum.OMDB_LANEINFO.code,//车信
                                     DataCodeEnum.OMDB_WARNINGSIGN.code,//危险信息
                                     DataCodeEnum.OMDB_TOLLGATE.code,//收费站
-                                    -> signList.add(
-                                        signBean
-                                    )
+                                    -> {
+                                        signList.add(
+                                            signBean
+                                        )
+                                    }
                                 }
 
                             }
 
                             val realm = realmOperateHelper.getSelectTaskRealmInstance()
 
-                            val entityList =
-                                realmOperateHelper.getSelectTaskRealmTools(
-                                    RenderEntity::class.java,
-                                    true
-                                )
-                                    .and()
-                                    .equalTo("table", DataCodeEnum.OMDB_RESTRICTION.name)
-                                    .and()
-                                    .equalTo(
-                                        "properties['linkIn']", it
-                                    ).findAll()
+                            val entityList = realmOperateHelper.getSelectTaskRealmTools(
+                                RenderEntity::class.java, true
+                            ).and().equalTo("table", DataCodeEnum.OMDB_RESTRICTION.name).and()
+                                .equalTo(
+                                    "properties['linkIn']", it
+                                ).findAll()
                             if (entityList.isNotEmpty()) {
                                 val outList = entityList.distinct()
                                 for (i in outList.indices) {
                                     val outLink = outList[i].properties["linkOut"]
-                                    val linkOutEntity =
-                                        realmOperateHelper.getSelectTaskRealmTools(
-                                            RenderEntity::class.java,
-                                            true
-                                        )
-                                            .equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).and()
-                                            .equalTo(
-                                                "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
-                                                outLink
-                                            ).findFirst()
+                                    val linkOutEntity = realmOperateHelper.getSelectTaskRealmTools(
+                                        RenderEntity::class.java, true
+                                    ).equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).and()
+                                        .equalTo(
+                                            "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
+                                            outLink
+                                        ).findFirst()
                                     if (linkOutEntity != null) {
                                         mapController.lineHandler.linksLayer.addLine(
                                             linkOutEntity.geometry, 0x7DFF0000
@@ -743,8 +844,7 @@ class MainViewModel @Inject constructor(
                                     }
                                 }
                                 mapController.lineHandler.linksLayer.addLine(
-                                    link.geometry,
-                                    Color.BLUE
+                                    link.geometry, Color.BLUE
                                 )
                                 realm.close()
                             }
@@ -785,7 +885,6 @@ class MainViewModel @Inject constructor(
         mapPosition.setBearing(0f) // 锁定角度，自动将地图旋转到正北方向
         mapController.mMapView.vtmMap.setMapPosition(mapPosition)
         mapController.locationLayerHandler.animateToCurrentPosition()
-        planningPath(currentTaskBean!!)
     }
 
     /**
@@ -794,7 +893,7 @@ class MainViewModel @Inject constructor(
     fun onClickMenu() {
         menuState = !menuState
         liveDataMenuState.postValue(menuState)
-        naviEngine!!.bindingRoute(null, mapController.mMapView.vtmMap.mapPosition.geoPoint)
+//        naviEngine!!.bindingRoute(null, mapController.mMapView.vtmMap.mapPosition.geoPoint)
     }
 
     override fun onCleared() {
@@ -955,6 +1054,11 @@ class MainViewModel @Inject constructor(
         linkIdCache = ""
         mapController.lineHandler.removeLine()
         liveDataSignList.value = mutableListOf()
+        if (bSelectRoad && naviEngineStatus == 1) {
+            naviEngineStatus = 2
+        } else if (naviEngineStatus == 2) {
+            naviEngineStatus = 1
+        }
     }
 
     /**
@@ -1044,9 +1148,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun sendServerCommand(
-        context: Context,
-        traceVideoBean: TraceVideoBean,
-        indoorToolsCommand: IndoorToolsCommand
+        context: Context, traceVideoBean: TraceVideoBean, indoorToolsCommand: IndoorToolsCommand
     ) {
 
         if (TextUtils.isEmpty(Constant.INDOOR_IP)) {
@@ -1060,8 +1162,7 @@ class MainViewModel @Inject constructor(
             val url = "http://${Constant.INDOOR_IP}:8080/sensor/service/${traceVideoBean.command}?"
 
             when (val result = networkService.sendServerCommand(
-                url = url,
-                traceVideoBean = traceVideoBean
+                url = url, traceVideoBean = traceVideoBean
             )) {
                 is NetResult.Success<*> -> {
 
@@ -1074,9 +1175,7 @@ class MainViewModel @Inject constructor(
 
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(
-                                        context,
-                                        "命令成功。",
-                                        Toast.LENGTH_LONG
+                                        context, "命令成功。", Toast.LENGTH_LONG
                                     ).show()
 
                                     liveIndoorToolsResp.postValue(IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_SUCCESS)
@@ -1086,8 +1185,7 @@ class MainViewModel @Inject constructor(
                                     //启动双向控制服务
                                     if (socketServer != null && socketServer!!.isServerClose) {
                                         socketServer!!.connect(
-                                            Constant.INDOOR_IP,
-                                            this@MainViewModel
+                                            Constant.INDOOR_IP, this@MainViewModel
                                         )
                                     }
 
@@ -1098,8 +1196,7 @@ class MainViewModel @Inject constructor(
                                         context,
                                         "命令无效${defaultUserResponse.errmsg}",
                                         Toast.LENGTH_SHORT
-                                    )
-                                        .show()
+                                    ).show()
                                 }
                                 liveIndoorToolsResp.postValue(IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE)
                             }
@@ -1107,9 +1204,7 @@ class MainViewModel @Inject constructor(
                         } catch (e: IOException) {
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(
-                                    context,
-                                    "${e.message}",
-                                    Toast.LENGTH_SHORT
+                                    context, "${e.message}", Toast.LENGTH_SHORT
                                 ).show()
                             }
                         }
@@ -1119,11 +1214,8 @@ class MainViewModel @Inject constructor(
                 is NetResult.Error<*> -> {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
-                            context,
-                            "${result.exception.message}",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
+                            context, "${result.exception.message}", Toast.LENGTH_SHORT
+                        ).show()
                     }
                     liveIndoorToolsResp.postValue(IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE)
                 }
@@ -1131,11 +1223,8 @@ class MainViewModel @Inject constructor(
                 is NetResult.Failure<*> -> {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
-                            context,
-                            "${result.code}:${result.msg}",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
+                            context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT
+                        ).show()
                     }
                     liveIndoorToolsResp.postValue(IndoorToolsResp.QR_CODE_STATUS_UPDATE_VIDEO_INFO_FAILURE)
                 }
@@ -1158,8 +1247,7 @@ class MainViewModel @Inject constructor(
             if (niLocation != null) {
                 mapController.markerHandle.addMarker(
                     GeoPoint(
-                        niLocation.latitude,
-                        niLocation.longitude
+                        niLocation.latitude, niLocation.longitude
                     ), traceTag, "", niLocation as java.lang.Object
                 )
             }
@@ -1197,9 +1285,7 @@ class MainViewModel @Inject constructor(
     override fun onConnect(success: Boolean) {
         if (!success && socketServer != null) {
             BaseToast.makeText(
-                mapController.mMapView.context,
-                "轨迹反向控制服务失败，请确认连接是否正常！",
-                Toast.LENGTH_SHORT
+                mapController.mMapView.context, "轨迹反向控制服务失败，请确认连接是否正常！", Toast.LENGTH_SHORT
             ).show()
         }
     }
@@ -1228,9 +1314,7 @@ class MainViewModel @Inject constructor(
             Log.e("qj", "反向控制$currentIndexNiLocation")
         } else {
             BaseToast.makeText(
-                mapController.mMapView.context,
-                "没有找到对应轨迹点！",
-                Toast.LENGTH_SHORT
+                mapController.mMapView.context, "没有找到对应轨迹点！", Toast.LENGTH_SHORT
             ).show()
         }
     }
@@ -1274,8 +1358,7 @@ class MainViewModel @Inject constructor(
                     startTimer()
                 }
             } else {
-                Toast.makeText(mapController.mMapView.context, "无数据了！", Toast.LENGTH_LONG)
-                    .show()
+                Toast.makeText(mapController.mMapView.context, "无数据了！", Toast.LENGTH_LONG).show()
                 cancelTrace()
             }
         }
@@ -1292,13 +1375,13 @@ class MainViewModel @Inject constructor(
     /**
      * 开启自动定位
      */
-    fun startAutoLocationTimer(){
+    fun startAutoLocationTimer() {
         if (autoLocationTimer != null) {
             cancelAutoLocation()
         }
         autoLocationTimer = fixedRateTimer("", false, disAutoLocationTime, disAutoLocationTime) {
             liveDataAutoLocation.postValue(true)
-            Log.e("qj","自动定位开始执行")
+            Log.e("qj", "自动定位开始执行")
             startAutoLocationTimer()
         }
     }
@@ -1371,9 +1454,7 @@ class MainViewModel @Inject constructor(
                         } else {
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(
-                                    mapController.mMapView.context,
-                                    "未查询到数据",
-                                    Toast.LENGTH_SHORT
+                                    mapController.mMapView.context, "未查询到数据", Toast.LENGTH_SHORT
                                 ).show()
                             }
                         }
@@ -1396,9 +1477,7 @@ class MainViewModel @Inject constructor(
                         } else {
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(
-                                    mapController.mMapView.context,
-                                    "未查询到数据",
-                                    Toast.LENGTH_SHORT
+                                    mapController.mMapView.context, "未查询到数据", Toast.LENGTH_SHORT
                                 ).show()
                             }
                         }
@@ -1415,9 +1494,7 @@ class MainViewModel @Inject constructor(
                         dialog.dismiss()
                     } else {
                         Toast.makeText(
-                            mapController.mMapView.context,
-                            "输入格式不正确",
-                            Toast.LENGTH_SHORT
+                            mapController.mMapView.context, "输入格式不正确", Toast.LENGTH_SHORT
                         ).show()
                     }
                 }

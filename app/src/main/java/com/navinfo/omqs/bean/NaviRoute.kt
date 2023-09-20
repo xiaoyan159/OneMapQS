@@ -16,7 +16,7 @@ data class NaviRoute(
     //方向
     var direct: Int = 0,
     //道路名称
-    var name: String = "",
+    var name: RenderEntity? = null,
     //路段总长
     var length: Double = 0.0,
     //当前link在整段路径中的起点

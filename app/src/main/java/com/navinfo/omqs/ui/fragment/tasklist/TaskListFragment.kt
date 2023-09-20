@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.navinfo.omqs.R
@@ -14,6 +15,8 @@ import com.navinfo.omqs.databinding.FragmentTaskListBinding
 import com.navinfo.omqs.http.taskdownload.TaskDownloadManager
 import com.navinfo.omqs.http.taskupload.TaskUploadManager
 import com.navinfo.omqs.tools.FileManager
+import com.navinfo.omqs.ui.activity.map.MainActivity
+import com.navinfo.omqs.ui.activity.map.MainViewModel
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
 import com.yanzhenjie.recyclerview.SwipeMenuCreator
@@ -57,9 +60,6 @@ class TaskListFragment : BaseFragment() {
                     showLoadingDialog("正在校验")
                     Toast.makeText(context, "正在校验", Toast.LENGTH_SHORT).show()
                     viewModel.checkUploadTask(binding.root.context, taskBean)
-                }
-                else -> {
-
                 }
             }
         }

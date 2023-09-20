@@ -200,7 +200,7 @@ class RealmOperateHelper() {
         var link: RenderEntity? = null
         val realm = getSelectTaskRealmInstance()
         val realmR =
-            getSelectTaskRealmTools(RenderEntity::class.java, true).equalTo("table", "OMDB_RD_LINK")
+            realm.where(RenderEntity::class.java).equalTo("table", "OMDB_RD_LINK")
                 .equalTo("properties['${LinkTable.linkPid}']", linkPid).findFirst()
         if (realmR != null) {
             link = realm.copyFromRealm(realmR)
@@ -287,14 +287,14 @@ class RealmOperateHelper() {
                 .findAll()
         } else {
             // 查询realm中对应tile号的数据
-            if(Constant.CATCH_ALL){
+            if (Constant.CATCH_ALL) {
                 realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
                     .greaterThanOrEqualTo("tileX", xStart)
                     .lessThanOrEqualTo("tileX", xEnd)
                     .greaterThanOrEqualTo("tileY", yStart)
                     .lessThanOrEqualTo("tileY", yEnd)
                     .findAll()
-            }else{
+            } else {
                 realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
                     .greaterThanOrEqualTo("tileX", xStart)
                     .lessThanOrEqualTo("tileX", xEnd)

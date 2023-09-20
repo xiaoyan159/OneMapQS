@@ -9,28 +9,46 @@ import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.bean.NaviRoute
 import com.navinfo.omqs.bean.NaviRouteItem
+import com.navinfo.omqs.db.RealmOperateHelper
 import io.realm.Realm
-import io.realm.RealmQuery
 import org.locationtech.jts.geom.LineString
 import org.locationtech.jts.geom.Point
 import org.oscim.core.GeoPoint
 
 public interface OnNaviEngineCallbackListener {
-    fun planningPathSuccess()
-    fun planningPathError(errorCode: Int, errorMessage: String)
-    fun bindingResults(list: List<NaviRouteItem>)
+    fun planningPathStatus(code: NaviStatus)
+
+    //    fun planningPathError(errorCode: NaviStatus, errorMessage: String)
+    suspend fun bindingResults(route: NaviRoute?, list: List<NaviRouteItem>)
+}
+
+enum class NaviStatus {
+    NAVI_STATUS_PATH_PLANNING, //路径规划中
+    NAVI_STATUS_PATH_ERROR_NODE,//node点缺失
+    NAVI_STATUS_PATH_ERROR_DIRECTION,//缺少方向
+    NAVI_STATUS_PATH_ERROR_BLOCKED,//路径不通
+    NAVI_STATUS_PATH_SUCCESS,//路径规划成功
+    NAVI_STATUS_DISTANCE_OFF,//距离偏离
+    NAVI_STATUS_DIRECTION_OFF,//方向偏离
 }
 
 
-class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngineCallbackListener) {
+class NaviEngine(
+    private val niMapController: NIMapController,
+    private val realmOperateHelper: RealmOperateHelper,
+    val callback: OnNaviEngineCallbackListener
+) {
 
-
-    private val QUERY_KEY_LIST = arrayOf(
+    /**
+     * 要查询的要素列表
+     */
+    private val QUERY_KEY_ITEM_LIST = arrayOf(
+        DataCodeEnum.OMDB_ELECTRONICEYE.name,
         DataCodeEnum.OMDB_SPEEDLIMIT.name,
         DataCodeEnum.OMDB_SPEEDLIMIT_COND.name,
         DataCodeEnum.OMDB_SPEEDLIMIT_VAR.name,
         DataCodeEnum.OMDB_TRAFFICLIGHT.name,
-        DataCodeEnum.OMDB_RESTRICTION.name,
+//        DataCodeEnum.OMDB_RESTRICTION.name,
         DataCodeEnum.OMDB_LANEINFO.name,
         DataCodeEnum.OMDB_TRAFFIC_SIGN.name,
         DataCodeEnum.OMDB_WARNINGSIGN.name,
@@ -38,14 +56,23 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
     )
 
     /**
+     * 要查询的link基本信息列表
+     */
+    private val QUERY_KEY_LINK_INFO_LIST = arrayOf(
+        DataCodeEnum.OMDB_RD_LINK.name,
+        DataCodeEnum.OMDB_LINK_DIRECT.name,
+        DataCodeEnum.OMDB_LINK_NAME.name,
+    )
+
+    /**
      * 偏离距离 单位：米
      */
-    private val DEVIATION_DISTANCE = 150000
+    private val DEVIATION_DISTANCE = 15
 
     /**
      * 偏离次数上限
      */
-    private val DEVIATION_COUNT = 3
+    private val DEVIATION_COUNT = 5
 
     /**
      *  局部匹配时，走过的路段还记录100米
@@ -107,6 +134,7 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
      */
     var tempRoutList = mutableListOf<NaviRoute>()
 
+
     /**
      * 所有路段集合
      */
@@ -149,9 +177,9 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
      *  计算路径
      */
     suspend fun planningPath(taskBean: TaskBean) {
-
+        callback.planningPathStatus(NaviStatus.NAVI_STATUS_PATH_PLANNING)
         val pathList = mutableListOf<NaviRoute>()
-        val realm = Realm.getDefaultInstance()
+        val realm = realmOperateHelper.getSelectTaskRealmInstance()
         for (link in taskBean.hadLinkDvoList) {
             //测线不参与导航
             if (link.linkStatus == 3) {
@@ -162,37 +190,55 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
             )
 
             route.pointList = GeometryTools.getGeoPoints(link.geometry)
-            //查询每条link的snode，enode
-            val res1 = realm.where(RenderEntity::class.java)
-                .equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).and()
-                .equalTo("properties['linkPid']", link.linkPid).findFirst()
-            res1?.let {
 
-                val snodePid = it.properties["snodePid"]
-                if (snodePid != null) {
-                    route.sNode = snodePid
-                }
-                val enodePid = it.properties["enodePid"]
-                if (enodePid != null) {
-                    route.eNode = enodePid
+            val res = realm.where(RenderEntity::class.java).`in`("table", QUERY_KEY_LINK_INFO_LIST)
+                .equalTo("properties['linkPid']", link.linkPid).findAll()
+            var bHasNode = false
+            var bHasDir = false
+            var bHasName = false
+            if (res != null) {
+                for (entity in res) {
+                    when (entity.code) {
+                        DataCodeEnum.OMDB_RD_LINK.code -> {
+                            bHasNode = true
+                            val snodePid = entity.properties["snodePid"]
+                            if (snodePid != null) {
+                                route.sNode = snodePid
+                            } else {
+                                bHasNode = false
+                            }
+                            val enodePid = entity.properties["enodePid"]
+                            if (enodePid != null) {
+                                route.eNode = enodePid
+                            } else {
+                                bHasNode = false
+                            }
+                        }
+                        DataCodeEnum.OMDB_LINK_DIRECT.code -> {
+                            val direct = entity.properties["direct"]
+                            if (direct != null) {
+                                bHasDir = true
+                                route.direct = direct.toInt()
+                            }
+                        }
+                        DataCodeEnum.OMDB_LINK_NAME.code -> {
+                            bHasName = true
+                            route.name = realm.copyFromRealm(entity)
+                        }
+                    }
                 }
             }
-            //查询每条link的方向
-            val res2 = realm.where(RenderEntity::class.java)
-                .equalTo("table", DataCodeEnum.OMDB_LINK_DIRECT.name).and()
-                .equalTo("properties['linkPid']", link.linkPid).findFirst()
-            res2?.let {
-                val direct = it.properties["direct"]
-                if (direct != null) {
-                    route.direct = direct.toInt()
-                }
+            if (!bHasNode) {
+                callback.planningPathStatus(
+                    NaviStatus.NAVI_STATUS_PATH_ERROR_NODE
+                )
+                return
             }
-            //查询每条link的名称
-            val res3 = realm.where(RenderEntity::class.java)
-                .equalTo("table", DataCodeEnum.OMDB_LINK_NAME.name).and()
-                .equalTo("properties['linkPid']", link.linkPid).findFirst()
-            res3?.let {
-                route.name = "${it.properties["name"]}"
+            if (!bHasDir) {
+                callback.planningPathStatus(
+                    NaviStatus.NAVI_STATUS_PATH_ERROR_DIRECTION
+                )
+                return
             }
             pathList.add(route)
         }
@@ -269,7 +315,9 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
                 } else {
                     if (!bHasLast && !bHasNext) {
                         bBreak = false
-                        callback.planningPathError(1, "路径不连通！")
+                        callback.planningPathStatus(
+                            NaviStatus.NAVI_STATUS_PATH_ERROR_BLOCKED
+                        )
                         realm.close()
                         return
                     }
@@ -279,83 +327,20 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
         val itemMap: MutableMap<GeoPoint, MutableList<RenderEntity>> = mutableMapOf()
         //查询每根link上的关联要素
         for (route in newRouteList) {
+            itemMap.clear()
             //常规点限速
-            var res = realm.where(RenderEntity::class.java)
+            val res = realm.where(RenderEntity::class.java)
                 .equalTo("properties['linkPid']", route.linkId).and().`in`(
                     "table",
-                    QUERY_KEY_LIST
+                    QUERY_KEY_ITEM_LIST
                 ).findAll()
-            if (res != null) {
-                Log.e("jingo", "道路查询预警要素 ${route.linkId} ${res.size}条数据")
+            if (res.isNotEmpty()) {
+//                Log.e("jingo", "道路查询预警要素 ${route.linkId} ${res.size}条数据")
                 for (r in res) {
-                    Log.e("jingo", "道路查询预警要素 ${r.name}")
+//                    Log.e("jingo", "道路查询预警要素 ${r.name}")
                     insertItemToRoute(realm, route, r, itemMap)
                 }
             }
-//            //条件点限速
-//            res = realm.where(RenderEntity::class.java)
-//                .equalTo("table", DataCodeEnum.OMDB_SPEEDLIMIT_COND.name).and()
-//                .equalTo("properties['linkPid']", route.linkId).findAll()
-//            if(res != null){
-//                for(r in res)
-//                    insertItemToRoute(realm, route, r, itemMap)
-//            }
-//            //可变点限速
-//            res = realm.where(RenderEntity::class.java)
-//                .equalTo("table", DataCodeEnum.OMDB_SPEEDLIMIT_VAR.name).and()
-//                .equalTo("properties['linkPid']", route.linkId).findAll()
-//            if(res != null){
-//                for(r in res)
-//                    insertItemToRoute(realm, route, r, itemMap)
-//            }
-//            //交通灯
-//            res = realm.where(RenderEntity::class.java)
-//                .equalTo("table", DataCodeEnum.OMDB_TRAFFICLIGHT.name).and()
-//                .equalTo("properties['linkPid']", route.linkId).findAll()
-//            if(res != null){
-//                for(r in res)
-//                    insertItemToRoute(realm, route, r, itemMap)
-//            }
-//            //普通交限
-//            res = realm.where(RenderEntity::class.java)
-//                .equalTo("table", DataCodeEnum.OMDB_RESTRICTION.name).and()
-//                .equalTo("properties['linkPid']", route.linkId).findAll()
-//            if(res != null){
-//                for(r in res)
-//                    insertItemToRoute(realm, route, r, itemMap)
-//            }
-//            //车信
-//            res = realm.where(RenderEntity::class.java)
-//                .equalTo("table", DataCodeEnum.OMDB_LANEINFO.name).and()
-//                .equalTo("properties['linkPid']", route.linkId).findAll()
-//            if(res != null){
-//                for(r in res)
-//                    insertItemToRoute(realm, route, r, itemMap)
-//            }
-//            //交通标牌
-//            res = realm.where(RenderEntity::class.java)
-//                .equalTo("table", DataCodeEnum.OMDB_TRAFFIC_SIGN.name).and()
-//                .equalTo("properties['linkPid']", route.linkId).findAll()
-//            if(res != null){
-//                for(r in res)
-//                    insertItemToRoute(realm, route, r, itemMap)
-//            }
-//            //警示信息
-//            res = realm.where(RenderEntity::class.java)
-//                .equalTo("table", DataCodeEnum.OMDB_WARNINGSIGN.name).and()
-//                .equalTo("properties['linkPid']", route.linkId).findAll()
-//            if(res != null){
-//                for(r in res)
-//                    insertItemToRoute(realm, route, r, itemMap)
-//            }
-//            //OMDB_TOLLGATE
-//            res = realm.where(RenderEntity::class.java)
-//                .equalTo("table", DataCodeEnum.OMDB_TOLLGATE.name).and()
-//                .equalTo("properties['linkPid']", route.linkId).findAll()
-//            if(res != null){
-//                for(r in res)
-//                    insertItemToRoute(realm, route, r, itemMap)
-//            }
             //对路径上的要素进行排序
             if (itemMap.isNotEmpty()) {
                 route.itemList = mutableListOf()
@@ -367,6 +352,7 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
                             val naviRouteItem = NaviRouteItem(i, item, route.linkId)
                             route.itemList!!.add(naviRouteItem)
                         }
+                        itemMap.remove(point)
                     }
                 }
                 route.itemList!!.sortBy { it.index }
@@ -374,8 +360,8 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
         }
         realm.close()
         routeList = newRouteList
-        callback.planningPathSuccess()
-        niMapController.lineHandler.showLine(geometry!!.toText())
+        callback.planningPathStatus(NaviStatus.NAVI_STATUS_PATH_SUCCESS)
+
     }
 
     /**
@@ -399,7 +385,8 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
                 val point = GeoPoint(
                     footAndDistance.getCoordinate(0).y, footAndDistance.getCoordinate(0).x
                 )
-                niMapController.markerHandle.addMarker(point, res.id, res.name)
+                //测试marker
+//                niMapController.markerHandle.addMarker(point, res.id, res.name)
                 route.pointList.add(footAndDistance.footIndex + 1, point)
                 if (itemMap.containsKey(point)) {
                     itemMap[point]!!.add(realm.copyFromRealm(res))
@@ -421,7 +408,7 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
     /**
      * 绑定道路
      */
-    fun bindingRoute(location: NiLocation?, point: GeoPoint) {
+    suspend fun bindingRoute(location: NiLocation?, point: GeoPoint) {
         if (geometry != null) {
             //还没有绑定到路径的时候
             if (routeIndex < 0) {
@@ -430,33 +417,31 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
                 //定位点到垂足距离不超过30米
                 if (pointPairDistance.getMeterDistance() < DEVIATION_DISTANCE) {
                     footIndex = pointPairDistance.footIndex
-                    Log.e(
-                        "jingo",
-                        "当前绑定到了整条路线的第 $footIndex 点 ${pointPairDistance.getMeterDistance()} "
-                    )
+//                    Log.e(
+//                        "jingo",
+//                        "当前绑定到了整条路线的第 ${footIndex} 点 ${pointPairDistance.getMeterDistance()} "
+//                    )
                     val lastRouteIndex = routeIndex
                     for (i in routeList.indices) {
                         val route = routeList[i]
                         if (route.startIndexInPath <= footIndex && route.endIndexIntPath >= footIndex) {
                             routeIndex = route.indexInPath
-                            Log.e(
-                                "jingo",
-                                "当前绑定到了整条路线id ${route.linkId} "
-                            )
-                            niMapController.lineHandler.showLine(route.pointList)
+//                            Log.e(
+//                                "jingo",
+//                                "当前绑定到了整条路线id ${route.linkId} "
+//                            )
+//                            niMapController.lineHandler.showLine(route.pointList)
                             footPoint = GeoPoint(
                                 pointPairDistance.getCoordinate(0).y,
                                 pointPairDistance.getCoordinate(0).x
                             )
-                            val listPoint = mutableListOf(point, footPoint!!)
-                            niMapController.lineHandler.showLine(
-                                listPoint
-                            )
-
+//                            val listPoint = mutableListOf(point, footPoint!!)
+//                            niMapController.lineHandler.showLine(
+//                                listPoint
+//                            )
                             if (lastRouteIndex != routeIndex) {
                                 createTempPath()
                             }
-                            matchingItem()
                             errorCount = 0
                             break
                         }
@@ -470,31 +455,30 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
                 //定位点到垂足距离不超过30米
                 if (pointPairDistance.getMeterDistance() < DEVIATION_DISTANCE) {
                     footIndex = pointPairDistance.footIndex + tempRoutList[0].startIndexInPath
-                    Log.e("jingo", "局部 当前绑定到了整条路线的第 $footIndex 点")
+//                    Log.e("jingo", "局部 当前绑定到了整条路线的第 $footIndex 点")
                     val lastRouteIndex = routeIndex
                     for (i in tempRoutList.indices) {
                         val route = tempRoutList[i]
                         if (route.startIndexInPath <= footIndex && route.endIndexIntPath >= footIndex) {
                             routeIndex = route.indexInPath
-                            Log.e(
-                                "jingo",
-                                "局部 当前绑定到了整条路线id ${route.linkId} "
-                            )
-                            niMapController.lineHandler.showLine(route.pointList)
+//                            Log.e(
+//                                "jingo",
+//                                "局部 当前绑定到了整条路线id ${route.linkId} "
+//                            )
+//                            niMapController.lineHandler.showLine(route.pointList)
                             footPoint = GeoPoint(
                                 pointPairDistance.getCoordinate(0).y,
                                 pointPairDistance.getCoordinate(0).x
                             )
 
-                            val listPoint = mutableListOf(point, footPoint!!)
-                            niMapController.lineHandler.showLine(
-                                listPoint
-                            )
-
+//                            val listPoint = mutableListOf(point, footPoint!!)
+//                            niMapController.lineHandler.showLine(
+//                                listPoint
+//                            )
+                            matchingItem()
                             if (lastRouteIndex != routeIndex) {
                                 createTempPath()
                             }
-                            matchingItem()
                             errorCount = 0
                             break
                         }
@@ -510,31 +494,43 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
      *  匹配要素
      *  @point:定位点
      */
-    private fun matchingItem() {
+    private suspend fun matchingItem() {
+
         if (routeIndex > -1 && tempRoutList.isNotEmpty() && tempGeometry != null) {
+            Log.e("jingo", "当前${routeIndex} ${tempRoutList[0].startIndexInPath} $footIndex")
             //道路前方一定距离范围内的要素信息
             val bindingItemList = mutableListOf<NaviRouteItem>()
-            //临时局部路径的游标对应整条路径的游标
-            val tempFootIndex = footIndex + tempRoutList[0].startIndexInPath
             //定位点到要素的路径距离
             var distance = 0.0
             //计算要素路径距离的点集合
             val disPoints = mutableListOf(footPoint!!)
             //下一个要素的起点游标
-            var tempIndex = footIndex + 1
-            for(route in tempRoutList) {
-                if( route.indexInPath < routeIndex)
+            var tempIndex = footIndex - tempRoutList[0].startIndexInPath + 1
+            var currentRoute: NaviRoute? = null
+            for (route in tempRoutList) {
+//                if (route.itemList != null) {
+//                    Log.e("jingo", "${route.linkId}我有${route.itemList!!.size}个要素 ")
+//                }
+                if (route.indexInPath < routeIndex)
                     continue
+                if (route.indexInPath == routeIndex) {
+                    currentRoute = route
+                }
                 if (route.itemList != null && route.itemList!!.isNotEmpty()) {
                     for (naviItem in route.itemList!!) {
-                        if (naviItem.index > tempFootIndex) {
+//                        Log.e(
+//                            "jingo",
+//                            "我是：${naviItem.data.name} 我的点位 ${naviItem.index} 垂足点位 $footIndex"
+//                        )
+                        if (naviItem.index > footIndex) {
                             val rightI = naviItem.index - tempRoutList[0].startIndexInPath + 1
                             for (i in tempIndex until rightI) {
                                 val geo = tempGeometry!!.coordinates[i]
                                 disPoints.add(GeoPoint(geo.y, geo.x))
                             }
-                            tempIndex = rightI
+                            tempIndex = rightI + 1
                             distance = GeometryTools.getDistance(disPoints)
+//                            Log.e("jingo", "我的距离${distance} 下一个${tempIndex} 位置${rightI}")
                             if (distance < FARTHEST_DISPLAY_DISTANCE && distance > -1) {
                                 naviItem.distance = distance.toInt()
                                 bindingItemList.add(naviItem)
@@ -543,12 +539,12 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
                             }
                         }
                     }
-                    if(distance >= FARTHEST_DISPLAY_DISTANCE){
+                    if (distance >= FARTHEST_DISPLAY_DISTANCE) {
                         break
                     }
                 }
             }
-            callback.bindingResults(bindingItemList)
+            callback.bindingResults(currentRoute, bindingItemList)
         }
     }
 
@@ -601,6 +597,7 @@ class NaviEngine(val niMapController: NIMapController, val callback: OnNaviEngin
     private fun deviationUp() {
         errorCount++
         if (errorCount >= DEVIATION_COUNT) {
+            callback.planningPathStatus(NaviStatus.NAVI_STATUS_DISTANCE_OFF)
             bindingReset()
         }
     }

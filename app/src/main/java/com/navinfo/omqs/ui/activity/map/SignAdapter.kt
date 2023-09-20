@@ -79,6 +79,7 @@ class SignAdapter(private var listener: OnSignAdapterClickListener?) :
                 val bd = holder.viewBinding
 
                 if (item.iconId != 0) {
+                    bd.signMainIconBg.visibility = View.VISIBLE
                     if (item.renderEntity.code == DataCodeEnum.OMDB_WARNINGSIGN.code) {
                         try {
                             var typeCode = "${item.iconId}"
@@ -110,6 +111,8 @@ class SignAdapter(private var listener: OnSignAdapterClickListener?) :
                     } else {
                         bd.signMainIconBg.setImageResource(item.iconId)
                     }
+                }else{
+                    bd.signMainIconBg.visibility = View.INVISIBLE
                 }
 
                 bd.signMainIcon.text = item.iconText
@@ -144,7 +147,7 @@ class SignAdapter(private var listener: OnSignAdapterClickListener?) :
                 val bd = holder.viewBinding
                 bd.signMoreIconsLayout.removeAllViews()
                 bd.signBottomText.text = item.name
-                bd.signBottomRightText.text = item.distance.toString()
+                bd.signBottomRightText.text = "${item.distance}米"
                 val list = SignUtil.getLineInfoIcons(item.renderEntity)
                 val lineViewS = View(context)
                 lineViewS.layoutParams = ViewGroup.LayoutParams(24, 80)
@@ -216,13 +219,13 @@ class SignAdapter(private var listener: OnSignAdapterClickListener?) :
         holder.tag = item.name + position
     }
 
-    override fun refreshData(newData: List<SignBean>) {
-        super.refreshData(newData)
-        for (i in newData.indices) {
-            if (selectMoreInfoTag == newData[i].name + i) {
-                return
-            }
-        }
-    }
+//    override fun refreshData(newData: List<SignBean>) {
+//        super.refreshData(newData)
+////    ?这是要干嘛    for (i in newData.indices) {
+////            if (selectMoreInfoTag == newData[i].name + i) {
+////                return
+////            }
+////        }
+//    }
 
 }
