@@ -336,27 +336,27 @@ class MainViewModel @Inject constructor(
         MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
         socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
 
-        viewModelScope.launch(Dispatchers.Default) {
-            naviTestFlow().collect { point ->
-                if (naviEngineStatus == 1) {
-                    naviEngine?.let {
-                        naviMutex.lock()
-                        it.bindingRoute(null, point)
-                        naviMutex.unlock()
-                    }
-                }
-            }
-        }
+//        viewModelScope.launch(Dispatchers.Default) {
+//            naviTestFlow().collect { point ->
+//                if (naviEngineStatus == 1) {
+//                    naviEngine?.let {
+//                        naviMutex.lock()
+//                        it.bindingRoute(null, point)
+//                        naviMutex.unlock()
+//                    }
+//                }
+//            }
+//        }
     }
 
 
-    fun naviTestFlow(): Flow<GeoPoint> = flow {
-
-        while (true) {
-            emit(mapController.mMapView.vtmMap.mapPosition.geoPoint)
-            delay(1000)
-        }
-    }
+//    fun naviTestFlow(): Flow<GeoPoint> = flow {
+//
+//        while (true) {
+//            emit(mapController.mMapView.vtmMap.mapPosition.geoPoint)
+//            delay(1000)
+//        }
+//    }
 
     /**
      * 获取当前任务
@@ -561,18 +561,30 @@ class MainViewModel @Inject constructor(
             }
 
         }
+
+        /**
+         * 导航预警信息
+         */
         viewModelScope.launch(Dispatchers.Default) {
             //用于定位点捕捉道路
             mapController.locationLayerHandler.niLocationFlow.collectLatest { location ->
+
                 if (!isSelectRoad() && !GeometryTools.isCheckError(
                         location.longitude, location.latitude
                     )
                 ) {
-                    captureLink(
-                        GeoPoint(
-                            location.latitude, location.longitude
+                    if (naviEngine != null && naviEngineStatus == 1) {
+                        naviMutex.lock()
+                        val point = GeoPoint(location.latitude, location.longitude)
+                        naviEngine!!.bindingRoute(location, point)
+                        naviMutex.unlock()
+                    } else {
+                        captureLink(
+                            GeoPoint(
+                                location.latitude, location.longitude
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
@@ -688,7 +700,7 @@ class MainViewModel @Inject constructor(
                                     isMoreInfo = SignUtil.isMoreInfo(element),
                                     index = SignUtil.getRoadInfoIndex(element),
 
-                                )
+                                    )
                                 topSignList.add(
                                     signBean
                                 )
@@ -719,7 +731,7 @@ class MainViewModel @Inject constructor(
         if (captureLinkState) {
             return
         }
-        mapController.markerHandle.addMarker(point, "selectLink")
+
         try {
             captureLinkState = true
 
@@ -737,10 +749,20 @@ class MainViewModel @Inject constructor(
                     val topSignList = mutableListOf<SignBean>()
                     mapController.lineHandler.linksLayer.clear()
                     if (linkIdCache != linkId) {
-
+                        if (bSelectRoad)
+                            mapController.markerHandle.addMarker(point, "selectLink")
                         mapController.lineHandler.showLine(link.geometry)
-                        val lineString:Geometry = GeometryTools.createGeometry(link.geometry)
-                        val footAndDistance = GeometryTools.pointToLineDistance(point,lineString)
+                        val lineString: Geometry = GeometryTools.createGeometry(link.geometry)
+                        val footAndDistance = GeometryTools.pointToLineDistance(point, lineString)
+                        val linePoints = GeometryTools.getGeoPoints(link.geometry)
+                        linePoints.add(
+                            footAndDistance.footIndex + 1,
+                            GeoPoint(
+                                footAndDistance.getCoordinate(0).y,
+                                footAndDistance.getCoordinate(0).x
+                            )
+                        )
+                        val newLineString = GeometryTools.createLineString(linePoints)
                         linkId?.let {
                             var elementList = realmOperateHelper.queryLinkByLinkPid(it)
                             for (element in elementList) {
@@ -759,7 +781,11 @@ class MainViewModel @Inject constructor(
                                     renderEntity = element,
                                     isMoreInfo = SignUtil.isMoreInfo(element),
                                     index = SignUtil.getRoadInfoIndex(element),
-                                    distance = SignUtil.getDistance(footAndDistance,lineString,element)
+                                    distance = SignUtil.getDistance(
+                                        footAndDistance,
+                                        newLineString,
+                                        element
+                                    )
                                 )
 //                                Log.e("jingo", "捕捉到的数据code ${element.code}")
                                 when (element.code) {
