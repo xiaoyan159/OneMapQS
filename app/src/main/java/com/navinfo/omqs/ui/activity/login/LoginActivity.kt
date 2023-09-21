@@ -17,6 +17,7 @@ import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityLoginBinding
 import com.navinfo.omqs.ui.activity.CheckPermissionsActivity
 import com.navinfo.omqs.ui.activity.map.MainActivity
+import com.umeng.commonsdk.UMConfigure
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,6 +40,7 @@ class LoginActivity : CheckPermissionsActivity() {
         binding.activity = this
         initView()
         Log.e("jingo", getScreenParams())
+        UMConfigure.init(this, "650bece7b2f6fa00ba573c7a", "native", UMConfigure.DEVICE_TYPE_PHONE, "")
     }
 
     private fun getScreenParams(): String {

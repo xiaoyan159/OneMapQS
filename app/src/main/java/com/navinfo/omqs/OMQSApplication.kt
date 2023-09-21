@@ -9,6 +9,7 @@ import android.view.WindowManager
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.ui.manager.TakePhotoManager
 import com.navinfo.omqs.util.NetUtils
+import com.umeng.commonsdk.UMConfigure
 import dagger.hilt.android.HiltAndroidApp
 import org.videolan.vlc.Util
 import java.security.MessageDigest
@@ -21,6 +22,8 @@ class OMQSApplication : Application() {
         Util.getInstance().init(applicationContext)
         NetUtils.getInstance().init(this)
         TakePhotoManager.getInstance().init(this, 1)
+        // 初始化友盟统计
+        UMConfigure.preInit(this,"650bece7b2f6fa00ba573c7a","native")
     }
 
     private fun getKey(inputString: String): String {

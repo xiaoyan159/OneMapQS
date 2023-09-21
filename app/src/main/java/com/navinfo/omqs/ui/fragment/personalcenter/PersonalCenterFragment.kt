@@ -35,6 +35,7 @@ import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
+import java.io.File
 import javax.inject.Inject
 
 /**
