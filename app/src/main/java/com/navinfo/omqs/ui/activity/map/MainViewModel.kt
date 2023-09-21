@@ -743,6 +743,7 @@ class MainViewModel @Inject constructor(
 
                 if (linkList.isNotEmpty()) {
                     val link = linkList[0]
+
                     val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
                     //看板数据
                     val signList = mutableListOf<SignBean>()
@@ -752,9 +753,14 @@ class MainViewModel @Inject constructor(
                         if (bSelectRoad)
                             mapController.markerHandle.addMarker(point, "selectLink")
                         mapController.lineHandler.showLine(link.geometry)
-                        val lineString: Geometry = GeometryTools.createGeometry(link.geometry)
-                        val footAndDistance = GeometryTools.pointToLineDistance(point, lineString)
+
                         val linePoints = GeometryTools.getGeoPoints(link.geometry)
+                        val direct = link.properties["direct"]
+                        if(direct == "3"){
+                            linePoints.reverse()
+                        }
+
+                        val footAndDistance = GeometryTools.pointToLineDistance(point, GeometryTools.createLineString(linePoints))
                         linePoints.add(
                             footAndDistance.footIndex + 1,
                             GeoPoint(
@@ -762,6 +768,7 @@ class MainViewModel @Inject constructor(
                                 footAndDistance.getCoordinate(0).x
                             )
                         )
+
                         val newLineString = GeometryTools.createLineString(linePoints)
                         linkId?.let {
                             var elementList = realmOperateHelper.queryLinkByLinkPid(it)
