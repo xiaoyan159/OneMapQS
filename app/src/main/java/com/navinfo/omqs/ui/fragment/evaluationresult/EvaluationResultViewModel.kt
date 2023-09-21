@@ -184,8 +184,8 @@ class EvaluationResultViewModel @Inject constructor(
                     if (linkId.isNotEmpty()) {
                         viewModelScope.launch {
                             val link = realmOperateHelper.queryLink(linkId)
-                            link?.let { l ->
-                                mapController.lineHandler.showLine(l.geometry)
+                            if(link != null){
+                                mapController.lineHandler.showLine(link.geometry)
                             }
                         }
                     }

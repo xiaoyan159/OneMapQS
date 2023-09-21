@@ -35,7 +35,7 @@
 				"zoomMin": 15,
 				"zoomMax": 17,
 				"catch":true,
-				"checkLinkId": true
+				"checkLinkId": false
 			},
 			"2002": {
 				"table": "OMDB_RD_LINK_FUNCTION_CLASS",
@@ -100,6 +100,7 @@
 				"code": 2017,
 				"name": "道路施工",
 				"catch":true,
+				"checkLinkId": false,
 				"zoomMin": 15,
 				"zoomMax": 17
 			},

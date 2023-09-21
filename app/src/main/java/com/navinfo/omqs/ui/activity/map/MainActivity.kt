@@ -478,9 +478,9 @@ class MainActivity : BaseActivity() {
         viewModel.liveDataItemList.observe(this) {
             if (it.isNotEmpty()) {
                 if (leftFragment == null || leftFragment !is ItemListFragment) {
-                    leftFragment = ItemListFragment {
+                    leftFragment = ItemListFragment {fragment->
                         binding.mainActivityLeftFragment.visibility = View.GONE
-                        supportFragmentManager.beginTransaction().remove(leftFragment!!).commit()
+                        supportFragmentManager.beginTransaction().remove(fragment).commit()
                         leftFragment = null
                         null
                     }
@@ -696,7 +696,7 @@ class MainActivity : BaseActivity() {
                     Toast.makeText(this, "输入格式不正确", Toast.LENGTH_SHORT).show()
                 }
             }
-            dialog.dismiss()
+//            dialog.dismiss()
         }
         inputDialog.show()
     }

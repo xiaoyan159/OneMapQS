@@ -1491,10 +1491,12 @@ class MainViewModel @Inject constructor(
             when (searchEnum) {
                 SearchEnum.LINK -> {
                     viewModelScope.launch(Dispatchers.IO) {
+                        Log.e("jingo","查询link $msg")
                         val link = realmOperateHelper.queryLink(linkPid = msg)
                         if (link != null) {
-                            link?.let { l ->
-                                mapController.lineHandler.showLine(l.geometry)
+                            Log.e("jingo","查询link ${link.geometry}")
+                            withContext(Dispatchers.Main){
+                                mapController.lineHandler.showLine(link.geometry)
                                 dialog.dismiss()
                             }
                         } else {
