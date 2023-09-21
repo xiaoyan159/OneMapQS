@@ -1871,18 +1871,10 @@
 
         <!--可变点限速-->
         <m v="OMDB_SPEEDLIMIT_VAR" >
-            <m k="speedFlag" v="0">
-                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
-                    stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4004_0.svg" symbol-height="42"
-                    symbol-width="42"></symbol>
-            </m>
-            <m k="speedFlag" v="1">
-                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
-                    stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4004_0.svg" symbol-height="42"
-                    symbol-width="42"></symbol>
-            </m>
+            <caption fill="#ffffff" k="ref" priority="0" size="12" stroke="#ffffff"
+                stroke-width="1.0"></caption>
+            <symbol src="assets:omdb/icon_4004_0.svg" symbol-height="42"
+                symbol-width="42"></symbol>
         </m>
 
 
