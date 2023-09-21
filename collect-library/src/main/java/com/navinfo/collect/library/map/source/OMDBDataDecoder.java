@@ -77,7 +77,7 @@ public class OMDBDataDecoder extends TileDecoder {
                     properties.putAll(renderEntity.getProperties());
                     parseGeometry(renderEntity.getTable(), renderEntity.getWkt(), properties);
                 }else{
-                    Log.e("qj","render"+renderEntity.name+"=="+renderEntity.getZoomMin()+"==="+renderEntity.getZoomMax()+"==="+renderEntity.getEnable());
+//                    Log.e("qj","render"+renderEntity.name+"=="+renderEntity.getZoomMin()+"==="+renderEntity.getZoomMax()+"==="+renderEntity.getEnable());
                 }
             }
         });

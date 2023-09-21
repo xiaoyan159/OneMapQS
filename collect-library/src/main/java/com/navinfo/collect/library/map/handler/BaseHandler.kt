@@ -10,7 +10,7 @@ abstract class BaseHandler(context: AppCompatActivity, mapView: NIMapView) {
     protected val mMapView: NIMapView = mapView
 
     fun addLayer(layer: Layer, groupType: NIMapView.LAYER_GROUPS) {
-        Log.e("jingo", "增加了图层 ${layer.toString()}")
+//        Log.e("jingo", "增加了图层 ${layer.toString()}")
         mMapView.vtmMap.layers().add(
             layer,
             groupType.groupIndex

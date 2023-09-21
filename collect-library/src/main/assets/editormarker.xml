@@ -1568,7 +1568,7 @@
         <!-- 交通标牌 -->
         <m v="OMDB_TRAFFIC_SIGN">
             <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
-                src="@src" symbol-height="24" symbol-width="24" degree="-90"></symbol>
+                src="@src" symbol-height="24" symbol-width="24" degree="-90" dy="-30"></symbol>
         </m>
 
         <m v="OMDB_AREA">

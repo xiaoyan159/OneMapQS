@@ -1,9 +1,10 @@
 package com.navinfo.omqs.util
 
-import android.provider.ContactsContract.Data
 import android.util.Log
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.enums.DataCodeEnum
+import com.navinfo.collect.library.utils.FootAndDistance
+import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.RoadNameBean
 import com.navinfo.omqs.bean.SignBean
@@ -13,6 +14,10 @@ import com.navinfo.omqs.ui.fragment.signMoreInfo.TwoItemAdapter
 import com.navinfo.omqs.ui.fragment.signMoreInfo.TwoItemAdapterItem
 import org.json.JSONArray
 import org.json.JSONObject
+import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.geom.LineString
+import org.locationtech.jts.geom.Point
+import org.oscim.core.GeoPoint
 import java.lang.reflect.Field
 
 class SignUtil {
@@ -808,32 +813,32 @@ class SignUtil {
                 DataCodeEnum.OMDB_TRAFFIC_SIGN.code -> {
                     var color = data.properties["color"]
                     if (color != null) {
-                        when(color){
-                            "0"->{
-                               return "颜色：未验证"
+                        when (color) {
+                            "0" -> {
+                                return "颜色：未验证"
                             }
-                            "1"->{
+                            "1" -> {
                                 return "颜色：白色"
                             }
-                            "2"->{
+                            "2" -> {
                                 return "颜色：黄色"
                             }
-                            "3"->{
+                            "3" -> {
                                 return "颜色：红色"
                             }
-                            "5"->{
+                            "5" -> {
                                 return "颜色：棕色"
                             }
-                            "6"->{
+                            "6" -> {
                                 return "颜色：蓝色"
                             }
-                            "7"->{
+                            "7" -> {
                                 return "颜色：绿色"
                             }
-                            "8"->{
+                            "8" -> {
                                 return "颜色：黑色"
                             }
-                            "9"->{
+                            "9" -> {
                                 return "颜色：其他"
                             }
                         }
@@ -1065,7 +1070,8 @@ class SignUtil {
                 DataCodeEnum.OMDB_TRAFFIC_SIGN.code -> {
                     var trafsignShape = data.properties["trafsignShape"]
                     if (trafsignShape != null) {
-                        trafsignShape = "icon_${DataCodeEnum.OMDB_TRAFFIC_SIGN.code}_${trafsignShape.lowercase()}"
+                        trafsignShape =
+                            "icon_${DataCodeEnum.OMDB_TRAFFIC_SIGN.code}_${trafsignShape.lowercase()}"
                         return getResId(trafsignShape, R.drawable::class.java)
                     }
                     return 0
@@ -1645,5 +1651,54 @@ class SignUtil {
             return list
         }
 
+        /**
+         * 计算捕捉点到
+         */
+        fun getDistance(
+            footAndDistance: FootAndDistance,
+            lineString: Geometry,
+            element: RenderEntity
+        ): Int {
+
+            val itemGeometry = GeometryTools.createGeometry(element.geometry)
+            if (itemGeometry is Point) {
+                val itemFoot = GeometryTools.pointToLineDistance(
+                    GeoPoint(itemGeometry.y, itemGeometry.x),
+                    lineString
+                )
+                var dis = GeometryTools.getDistance(
+                    footAndDistance.getCoordinate(0).getY(),
+                    footAndDistance.getCoordinate(0).getX(),
+                    itemFoot.getCoordinate(0).getY(),
+                    itemFoot.getCoordinate(0).getX(),
+                )
+                return if (footAndDistance.footIndex < itemFoot.footIndex) {
+                    dis.toInt()
+                } else {
+                    -dis.toInt()
+                }
+            } else if (itemGeometry is LineString) {
+                val itemFoot = GeometryTools.pointToLineDistance(
+                    GeoPoint(
+                        lineString.coordinates[0].y,
+                        lineString.coordinates[0].x
+                    ), lineString
+                )
+                var dis = GeometryTools.getDistance(
+                    footAndDistance.getCoordinate(0).getY(),
+                    footAndDistance.getCoordinate(0).getX(),
+                    itemFoot.getCoordinate(0).getY(),
+                    itemFoot.getCoordinate(0).getX(),
+                )
+                return if (footAndDistance.footIndex < itemFoot.footIndex) {
+                    dis.toInt()
+                } else {
+                    -dis.toInt()
+                }
+            }
+            return 0
+        }
+
     }
+
 }
