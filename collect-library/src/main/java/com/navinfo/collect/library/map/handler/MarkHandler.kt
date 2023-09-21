@@ -372,6 +372,11 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         mMapView.updateMap(true)
     }
 
+    fun setQsRecordMarkEnable(enable:Boolean){
+        qsRecordItemizedLayer.isEnabled = enable
+        mMapView.updateMap(true)
+    }
+
 
     /**
      * 增加或更新便签

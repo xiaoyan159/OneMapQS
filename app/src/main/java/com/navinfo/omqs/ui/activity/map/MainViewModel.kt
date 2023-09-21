@@ -181,6 +181,11 @@ class MainViewModel @Inject constructor(
     private var bHighRoad = true
 
     /**
+     * 是不是捕捉线
+     */
+    private var bCatchRoad = false
+
+    /**
      * 是不是选择轨迹点
      */
     private var bSelectTrace = false
@@ -597,11 +602,15 @@ class MainViewModel @Inject constructor(
      */
     private suspend fun captureItem(point: GeoPoint) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            var buffer = 3.2
+            if(mapController.mMapView.mapLevel>=18){
+                buffer = 2.0
+            }
             val itemList = realmOperateHelper.queryElement(
                 GeometryTools.createPoint(
                     point.longitude, point.latitude
                 ),
-                buffer = 3.2, catchAll = false,
+                buffer = buffer, catchAll = false,
             )
             //增加道路线过滤原则
             val filterResult = itemList.filter {
@@ -1112,10 +1121,25 @@ class MainViewModel @Inject constructor(
     }
 
     /**
+     * 开启捕捉线
+     */
+    fun setCatchRoad(select: Boolean) {
+        bCatchRoad = select
+        Constant.MapCatchLine = bCatchRoad
+    }
+
+    /**
      * 是否开启线高亮
      */
     fun isHighRoad(): Boolean {
         return bHighRoad
+    }
+
+    /**
+     * 是否开启捕捉线
+     */
+    fun isCatchRoad(): Boolean {
+        return bCatchRoad
     }
 
     /**

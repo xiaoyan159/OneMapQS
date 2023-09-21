@@ -21,6 +21,7 @@ import org.locationtech.jts.operation.buffer.BufferOp
 import org.oscim.core.GeoPoint
 import org.oscim.core.MercatorProjection
 import javax.inject.Inject
+import kotlin.reflect.jvm.jvmName
 import kotlin.streams.toList
 
 class RealmOperateHelper() {
@@ -158,6 +159,7 @@ class RealmOperateHelper() {
                 result.addAll(it)
             }
         }
+        realm.close()
         return result
     }
 
@@ -278,36 +280,30 @@ class RealmOperateHelper() {
         val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
         val realm = getSelectTaskRealmInstance()
         var realmList = mutableListOf<RenderEntity>()
+        val realmQuery = getSelectTaskRealmTools(RenderEntity::class.java, false)
+            .greaterThanOrEqualTo("tileX", xStart)
+            .lessThanOrEqualTo("tileX", xEnd)
+            .greaterThanOrEqualTo("tileY", yStart)
+            .lessThanOrEqualTo("tileY", yEnd)
+        // 筛选不显示的数据
         if (catchAll) {
             // 查询realm中对应tile号的数据
-            realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
-                .greaterThanOrEqualTo("tileX", xStart)
-                .lessThanOrEqualTo("tileX", xEnd)
-                .greaterThanOrEqualTo("tileY", yStart)
-                .lessThanOrEqualTo("tileY", yEnd)
-                .findAll()
+            realmList = realmQuery.findAll()
         } else {
             // 查询realm中对应tile号的数据
             if (Constant.CATCH_ALL) {
-                realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
-                    .greaterThanOrEqualTo("tileX", xStart)
-                    .lessThanOrEqualTo("tileX", xEnd)
-                    .greaterThanOrEqualTo("tileY", yStart)
-                    .lessThanOrEqualTo("tileY", yEnd)
-                    .findAll()
+                realmList = realmQuery.findAll()
             } else {
-                realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
-                    .greaterThanOrEqualTo("tileX", xStart)
-                    .lessThanOrEqualTo("tileX", xEnd)
-                    .greaterThanOrEqualTo("tileY", yStart)
-                    .lessThanOrEqualTo("tileY", yEnd)
-                    .greaterThan("catchEnable", 0)
-                    .findAll()
+                realmList = realmQuery.greaterThan("catchEnable", 0).findAll()
             }
         }
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
         val queryResult = realmList?.stream()?.filter {
-            polygon.intersects(it.wkt)
+            if(Constant.MapCatchLine){
+                polygon.intersects(it.wkt) && it.wkt?.geometryType?.uppercase().equals("LINESTRING")||it.wkt?.geometryType?.uppercase().equals("POLYGON")
+            }else{
+                polygon.intersects(it.wkt) && it.wkt?.geometryType?.uppercase().equals("POINT")||it.wkt?.geometryType?.uppercase().equals("POLYGON")
+            }
         }?.toList()
         queryResult?.let {
             if (sort) {
@@ -331,7 +327,7 @@ class RealmOperateHelper() {
         val result = mutableListOf<RenderEntity>()
         val realm = getSelectTaskRealmInstance()
         val realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
-            .notEqualTo("table", DataCodeEnum.OMDB_RD_LINK_KIND.name)
+            .notEqualTo("table", DataCodeEnum.OMDB_RD_LINK.name)
             .equalTo("properties['${LinkTable.linkPid}']", linkPid)
             .findAll()
         result.addAll(realm.copyFromRealm(realmList))
@@ -433,19 +429,26 @@ class RealmOperateHelper() {
         clazz: Class<E>,
         enableSql: Boolean
     ): RealmQuery<E> {
-        return if (MapParamUtils.getDataLayerEnum() != null) {
-
+        var realmQuery = getSelectTaskRealmInstance().where(clazz)
+        if (MapParamUtils.getDataLayerEnum() != null) {
             if (enableSql) {
                 var sql =
                     " enable${MapParamUtils.getDataLayerEnum().sql}"
                 getSelectTaskRealmInstance().where(clazz).rawPredicate(sql)
-            } else {
-                getSelectTaskRealmInstance().where(clazz)
             }
 
-        } else {
-            getSelectTaskRealmInstance().where(clazz)
         }
+        if(clazz.name==RenderEntity::class.jvmName){
+            // 筛选不显示的数据
+            if (com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY != null && com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY.size > 0) {
+                realmQuery.beginGroup()
+                for (type in com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY) {
+                    realmQuery.notEqualTo("table", type)
+                }
+                realmQuery.endGroup()
+            }
+        }
+        return realmQuery
     }
 
     fun getSelectTaskRealmInstance(): Realm {

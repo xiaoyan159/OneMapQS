@@ -781,10 +781,11 @@ class MainActivity : BaseActivity() {
     }
 
     /**
-     * 刷新地图
+     * 线捕捉开关
      */
-    fun refrushOnclick(view: View) {
-        mapController.layerManagerHandler.updateOMDBVectorTileLayer()
+    fun catchLineOnclick(view: View) {
+        viewModel.setCatchRoad(!viewModel.isCatchRoad())
+        binding.mainActivityMapCatchLine.isSelected = viewModel.isCatchRoad()
     }
 
     /**

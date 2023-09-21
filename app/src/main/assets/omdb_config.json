@@ -152,6 +152,7 @@
 				"table": "OMDB_BRIDGE",
 				"code": 2201,
 				"name": "桥",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -169,6 +170,7 @@
 				"name": "隧道",
 				"zoomMin": 15,
 				"zoomMax": 20,
+				"catch":true,
 				"transformer": [
 					{
 						"k": "geometry",
@@ -205,6 +207,7 @@
 				"checkLinkId": false,
 				"zoomMin": 18,
 				"zoomMax": 20,
+				"catch":true,
 				"transformer": [
 					{
 						"k": "geometry",
@@ -319,6 +322,7 @@
 				"table": "OMDB_SPEEDLIMIT_COND",
 				"code": 4003,
 				"name": "条件点限速",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -334,6 +338,7 @@
 				"table": "OMDB_SPEEDLIMIT_VAR",
 				"code": 4004,
 				"name": "可变点限速",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -540,6 +545,7 @@
 				"code": 2004,
 				"name": "道路属性",
 				"existSubCode": true,
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
@@ -577,6 +583,7 @@
 				"table": "OMDB_ROUNDABOUT",
 				"code": 2204,
 				"name": "环岛",
+				"catch":true,
 				"zoomMin": 15,
 				"zoomMax": 17,
 				"transformer": [

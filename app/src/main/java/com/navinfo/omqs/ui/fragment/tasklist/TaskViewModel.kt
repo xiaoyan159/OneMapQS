@@ -487,31 +487,55 @@ class TaskViewModel @Inject constructor(
     fun checkUploadTask(context: Context, taskBean: TaskBean) {
         viewModelScope.launch(Dispatchers.IO) {
             val realm = Realm.getDefaultInstance()
+            var result = 0
+            val map: MutableMap<TaskBean, Boolean> = HashMap<TaskBean, Boolean>()
             taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
                 val objects =
                     realm.where(QsRecordBean::class.java).equalTo("linkId", hadLinkDvoBean.linkPid)
                         .and().equalTo("taskId", hadLinkDvoBean.taskId).findAll()
-                val map: MutableMap<TaskBean, Boolean> = HashMap<TaskBean, Boolean>()
                 if (objects.isEmpty() && hadLinkDvoBean.reason.isEmpty()) {
-                    withContext(Dispatchers.Main) {
-                        liveDataTaskUpload.postValue(map)
-                        val mDialog = FirstDialog(context)
-                        mDialog.setTitle("提示？")
-                        mDialog.setMessage("此任务中存在未测评link，请确认！")
-                        mDialog.setPositiveButton(
-                            "确定"
-                        ) { _, _ ->
-                            mDialog.dismiss()
-                            map[taskBean] = true
-                            liveDataTaskUpload.postValue(map)
-                        }
-                        mDialog.setNegativeButton(
-                            "取消"
-                        ) { _, _ -> mDialog.dismiss() }
-                        mDialog.show()
+                    if(hadLinkDvoBean.linkStatus==3){
+                        result = 1
+                        realm.close()
+                        return@forEach
+                    }else{
+                        result = 2
                     }
-                    return@launch
                 }
+            }
+            if(result==1){
+                withContext(Dispatchers.Main) {
+                    liveDataTaskUpload.postValue(map)
+                    val mDialog = FirstDialog(context)
+                    mDialog.setTitle("提示？")
+                    mDialog.setMessage("此任务中存在新增Link无问题记录，请添加至少一条记录！")
+                    mDialog.setPositiveButton(
+                        "确定"
+                    ) { _, _ ->
+                        mDialog.dismiss()
+                    }
+                    mDialog.setCancelVisibility(View.GONE)
+                    mDialog.show()
+                }
+            }else if(result==2){
+                withContext(Dispatchers.Main) {
+                    liveDataTaskUpload.postValue(map)
+                    val mDialog = FirstDialog(context)
+                    mDialog.setTitle("提示？")
+                    mDialog.setMessage("此任务中存在未测评link，请确认！")
+                    mDialog.setPositiveButton(
+                        "确定"
+                    ) { _, _ ->
+                        mDialog.dismiss()
+                        map[taskBean] = true
+                        liveDataTaskUpload.postValue(map)
+                    }
+                    mDialog.setNegativeButton(
+                        "取消"
+                    ) { _, _ -> mDialog.dismiss() }
+                    mDialog.show()
+                }
+            }else{
                 map[taskBean] = true
                 liveDataTaskUpload.postValue(map)
             }
