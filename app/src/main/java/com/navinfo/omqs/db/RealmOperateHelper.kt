@@ -65,7 +65,7 @@ class RealmOperateHelper() {
         val realm = getSelectTaskRealmInstance()
         val realmList =
             getSelectTaskRealmTools(RenderEntity::class.java, false)
-                .equalTo("table", "OMDB_RD_LINK_KIND")
+                .equalTo("table", DataCodeEnum.OMDB_LINK_DIRECT.name)
                 .greaterThanOrEqualTo("tileX", xStart)
                 .lessThanOrEqualTo("tileX", xEnd)
                 .greaterThanOrEqualTo("tileY", yStart)
