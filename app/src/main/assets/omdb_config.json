@@ -220,6 +220,7 @@
 				"zoomMin": 18,
 				"zoomMax": 20,
 				"is3D": true,
+				"catch":true,
 				"transformer": [
 					{
 						"k": "geometry",
