@@ -156,7 +156,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                     niMapController.mMapView.vtmMap.eventLayer.enableTilt(Constant.MapRotateEnable)
                     Constant.MapMarkerCloseEnable = !Constant.MapMarkerCloseEnable
                     //增加开关控制
-                    niMapController.markerHandle.setQsRecordMarkEnable(Constant.MapMarkerCloseEnable)
+                    niMapController.markerHandle.setQsRecordMarkEnable(!Constant.MapMarkerCloseEnable)
                     if (Constant.MapMarkerCloseEnable) {
                         it.title = "显示Marker"
                     } else {
