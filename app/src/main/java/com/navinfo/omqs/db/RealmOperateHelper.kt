@@ -331,7 +331,7 @@ class RealmOperateHelper() {
         val result = mutableListOf<RenderEntity>()
         val realm = getSelectTaskRealmInstance()
         val realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
-            .notEqualTo("table", DataCodeEnum.OMDB_RD_LINK_KIND.name)
+            .notEqualTo("table", DataCodeEnum.OMDB_RD_LINK.name)
             .equalTo("properties['${LinkTable.linkPid}']", linkPid)
             .findAll()
         result.addAll(realm.copyFromRealm(realmList))

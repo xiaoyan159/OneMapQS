@@ -50,6 +50,10 @@ class SignUtil {
                 DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> {
                     "${data.properties["maxSpeed"]}"
                 }
+                //条件线限速
+                DataCodeEnum.OMDB_LINK_SPEEDLIMIT_COND.code -> {
+                    "${data.properties["maxSpeed"]}"
+                }
                 //全封闭
                 DataCodeEnum.OMDB_CON_ACCESS.code -> {
                     if (data.properties["conAccess"] === "1") "全封闭" else ""
@@ -130,6 +134,8 @@ class SignUtil {
                 DataCodeEnum.OMDB_LINK_DIRECT.code -> "方向"
                 //常规线限速
                 DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> "线限速"
+                //条件线限速
+                DataCodeEnum.OMDB_LINK_SPEEDLIMIT_COND.code -> "条件限速"
 
                 DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code -> "道路属性"
 
@@ -870,13 +876,11 @@ class SignUtil {
                 )
             )
             val carType = renderEntity.properties["vehicleType"]
-            if (carType != "0") {
-                list.add(
-                    TwoItemAdapterItem(
-                        title = "车辆类型", text = getElectronicEyeVehicleType(carType!!.toInt())
-                    )
+            list.add(
+                TwoItemAdapterItem(
+                    title = "车辆类型", text = getElectronicEyeVehicleType(carType!!.toInt())
                 )
-            }
+            )
             val time = renderEntity.properties["validPeriod"]
             if (time?.isNotEmpty() == true) {
                 list.add(
@@ -893,7 +897,7 @@ class SignUtil {
          * 条件点限速文字
          */
         private fun getConditionLimitText(data: RenderEntity): String {
-            var stringBuffer = StringBuffer()
+            val stringBuffer = StringBuffer()
             try {
                 val dependent = data.properties["speedDependent"]
                 dependent?.let {
@@ -1515,7 +1519,8 @@ class SignUtil {
                 DataCodeEnum.OMDB_RD_LINK_KIND.code -> 1
                 DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code -> 2
                 DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> 3
-                DataCodeEnum.OMDB_LINK_DIRECT.code -> 4
+                DataCodeEnum.OMDB_LINK_SPEEDLIMIT_COND.code -> 4
+                DataCodeEnum.OMDB_LINK_DIRECT.code -> 5
                 else -> 999
             }
         }
@@ -1631,8 +1636,8 @@ class SignUtil {
             } else if (itemGeometry is LineString) {
                 val itemFoot = GeometryTools.pointToLineDistance(
                     GeoPoint(
-                        lineString.coordinates[lineString.coordinates.size-1].y,
-                        lineString.coordinates[lineString.coordinates.size-1].x
+                        lineString.coordinates[lineString.coordinates.size - 1].y,
+                        lineString.coordinates[lineString.coordinates.size - 1].x
                     ), lineString
                 )
                 var dis = GeometryTools.getDistance(
@@ -1649,7 +1654,5 @@ class SignUtil {
             }
             return 0
         }
-
     }
-
 }

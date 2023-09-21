@@ -756,11 +756,14 @@ class MainViewModel @Inject constructor(
 
                         val linePoints = GeometryTools.getGeoPoints(link.geometry)
                         val direct = link.properties["direct"]
-                        if(direct == "3"){
+                        if (direct == "3") {
                             linePoints.reverse()
                         }
 
-                        val footAndDistance = GeometryTools.pointToLineDistance(point, GeometryTools.createLineString(linePoints))
+                        val footAndDistance = GeometryTools.pointToLineDistance(
+                            point,
+                            GeometryTools.createLineString(linePoints)
+                        )
                         linePoints.add(
                             footAndDistance.footIndex + 1,
                             GeoPoint(
@@ -810,6 +813,7 @@ class MainViewModel @Inject constructor(
                                     DataCodeEnum.OMDB_RD_LINK_KIND.code,//种别，
                                     DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code, // 功能等级,
                                     DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code, //线限速,
+                                    DataCodeEnum.OMDB_LINK_SPEEDLIMIT_COND.code,//条件线限速
                                     DataCodeEnum.OMDB_LINK_DIRECT.code,//道路方向,
                                     DataCodeEnum.OMDB_RAMP.code, //匝道
                                     DataCodeEnum.OMDB_BRIDGE.code,//桥
