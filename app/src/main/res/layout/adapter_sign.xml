@@ -30,15 +30,28 @@
         android:textSize="16sp" />
 
     <TextView
+        android:id="@+id/sign_distance_text"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignRight="@id/sign_main_bg"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="19dp"
+        android:gravity="center"
+        android:text="范围外"
+        android:textColor="#3736DB"
+        android:textSize="16sp" />
+
+    <TextView
         android:id="@+id/sign_second_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:gravity="center"
         android:layout_marginTop="10dp"
         android:layout_toRightOf="@id/sign_main_icon"
+        android:gravity="center"
         android:text=""
         android:textColor="@color/white"
         android:textSize="16sp" />
+
     <TextView
         android:id="@+id/sign_bottom_text"
         android:layout_width="wrap_content"
@@ -69,8 +82,8 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/sign_main_bg"
         android:layout_marginLeft="2dp"
-        android:padding="4dp"
         android:layout_toRightOf="@id/sign_main_bg"
+        android:padding="4dp"
         android:src="@drawable/icon_sign_info"
         android:visibility="gone" />
 
@@ -81,7 +94,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="172dp"
         android:layout_marginTop="4dp"
-        android:visibility="gone"
-        android:background="@drawable/icon_evaluation" />
+        android:background="@drawable/icon_evaluation"
+        android:visibility="gone" />
 
 </RelativeLayout>

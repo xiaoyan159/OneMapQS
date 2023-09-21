@@ -4,9 +4,6 @@ import android.graphics.Point;
 import android.os.Build;
 import android.util.Log;
 
-import org.jetbrains.annotations.NotNull;
-import org.locationtech.jts.algorithm.distance.DistanceToPoint;
-import org.locationtech.jts.algorithm.distance.PointPairDistance;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -446,148 +443,15 @@ public class GeometryTools {
 
     }
 
-    public static GeoPoint getLineStringCenter(String lineString) {
-        List<GeoPoint> points = getGeoPoints(lineString);
-        return getLineStringCenter(points);
+    public static double distanceToDouble(Geometry startGeoPoint, Geometry endGeoPoint) {
+        if (startGeoPoint != null && endGeoPoint != null) {
+            double d = startGeoPoint.distance(endGeoPoint);
+            return convertDistanceToDegree(d, startGeoPoint.getCoordinate().y);
+        }
+        return 0;
+
     }
 
-    public static GeoPoint getLineStringCenter(List<GeoPoint> points) {
-        if (points != null && points.size() > 1) {
-            if (points.size() == 2) {
-                double x1 = points.get(0).getLongitude();
-                double y1 = points.get(0).getLatitude();
-                double x2 = points.get(1).getLongitude();
-                double y2 = points.get(1).getLatitude();
-                GeoPoint newPoint = new GeoPoint((y1 + y2) / 2, (x1 + x2) / 2);
-                return newPoint;
-            } else {
-                double total = 0;
-                ArrayList<Double> dList = new ArrayList<Double>();
-                for (int i = 0; i < points.size() - 1; i++) {
-                    double lt = total;
-                    double dis = distanceToDouble(points.get(i), points.get(i + 1));
-                    dList.add(lt + dis);
-                    total += dis;
-                }
-                total = total / 2;
-                for (int i = 0; i < dList.size(); i++) {
-                    double a = dList.get(i);
-                    double b = 0;
-                    if (i > 0) {
-                        b = dList.get(i - 1);
-                    }
-                    if (a > total) {
-                        if (a - total < 4) {
-                            return points.get(i);
-                        }
-                        double dx = (a - total) * 0.5 / (a - b);
-                        GeoPoint point1 = points.get(i);
-                        GeoPoint point2 = points.get(i + 1);
-                        double x;
-                        if (point1.getLongitude() < point2.getLongitude()) {
-                            x = (point2.getLongitude() - point1.getLongitude()) * dx;
-                            x = point2.getLongitude() - x;
-                        } else {
-                            x = (point1.getLongitude() - point2.getLongitude()) * dx;
-                            x = point2.getLongitude() + x;
-                        }
-                        double y;
-                        if (point1.getLatitude() > point2.getLatitude()) {
-                            y = (point1.getLatitude() - point2.getLatitude()) * dx;
-                            y = point2.getLatitude() + y;
-                        } else {
-                            y = (point2.getLatitude() - point1.getLatitude()) * dx;
-                            y = point2.getLatitude() - y;
-                        }
-                        GeoPoint geoPoint = new GeoPoint(y, x);
-                        return geoPoint;
-                    } else {
-                        if (total - a < 4) {
-                            return points.get(i + 1);
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    public static GeoPoint getLineStringCenter(List<GeoPoint> points, int[] index) {
-        if (points != null && points.size() > 1) {
-            if (points.size() == 2) {
-                double x1 = points.get(0).getLongitude();
-                double y1 = points.get(0).getLatitude();
-                double x2 = points.get(1).getLongitude();
-                double y2 = points.get(1).getLatitude();
-                GeoPoint newPoint = new GeoPoint((y1 + y2) / 2, (x1 + x2) / 2);
-                if (index != null && index.length > 1) {
-                    index[0] = 0;
-                    index[1] = 1;
-                }
-                return newPoint;
-            } else {
-                double total = 0;
-                ArrayList<Double> dList = new ArrayList<Double>();
-                for (int i = 0; i < points.size() - 1; i++) {
-                    double lt = total;
-                    double dis = distance(points.get(i).toString(), points.get(i + 1).toString());
-                    dList.add(lt + dis);
-                    total += dis;
-                }
-                total = total / 2;
-                for (int i = 0; i < dList.size(); i++) {
-                    double a = dList.get(i);
-                    double b = 0;
-                    if (i > 0) {
-                        b = dList.get(i - 1);
-                    }
-                    if (a > total) {
-                        if (a - total < 4) {
-                            if (index != null && index.length > 1) {
-                                index[0] = i;
-                                index[1] = i + 1;
-                            }
-                            return points.get(i);
-                        }
-                        double dx = (a - total) * 0.5 / (a - b);
-                        GeoPoint point1 = points.get(i);
-                        GeoPoint point2 = points.get(i + 1);
-                        double x;
-                        if (point1.getLongitude() < point2.getLongitude()) {
-                            x = (point2.getLongitude() - point1.getLongitude()) * dx;
-                            x = point2.getLongitude() - x;
-                        } else {
-                            x = (point1.getLongitude() - point2.getLongitude()) * dx;
-                            x = point2.getLongitude() + x;
-                        }
-                        double y;
-                        if (point1.getLatitude() > point2.getLatitude()) {
-                            y = (point1.getLatitude() - point2.getLatitude()) * dx;
-                            y = point2.getLatitude() + y;
-                        } else {
-                            y = (point2.getLatitude() - point1.getLatitude()) * dx;
-                            y = point2.getLatitude() - y;
-                        }
-                        GeoPoint geoPoint = new GeoPoint(y, x);
-                        if (index != null && index.length > 1) {
-                            index[0] = i;
-                            index[1] = i + 1;
-                        }
-                        return geoPoint;
-                    } else {
-                        if (total - a < 4) {
-                            if (index != null && index.length > 1) {
-                                index[0] = i;
-                                index[1] = i + 1;
-                            }
-                            return points.get(i + 1);
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
 
     /**
      * LINESTRING (116.4206899999999933 39.9620999999999995,
@@ -1160,39 +1024,6 @@ public class GeometryTools {
         return null;
     }
 
-    /**
-     * 点与几何最近点位置
-     *
-     * @param list
-     * @param geoPoint
-     * @return geopoint
-     * @author qiji
-     */
-    public static GeoPoint getZuijinGeoPoint(List<GeoPoint> list, GeoPoint geoPoint) {//MapManager.getInstance().getMap().getMapCenterGeoLocation()屏幕中心点
-
-        if (list == null || list.size() == 0 || geoPoint == null)
-            return null;
-
-        double dis = 0;
-
-        GeoPoint geo = null;
-
-        for (GeoPoint geopoint : list) {
-
-            double disTemp = distanceToDouble(geoPoint, geopoint);
-
-            if (dis == 0 || dis < disTemp) {
-
-                dis = disTemp;
-
-                geo = geopoint;
-
-            }
-
-        }
-
-        return geo;
-    }
 
     public static String GeometryFormatDouble5(String geometry) {
         try {
@@ -1331,8 +1162,6 @@ public class GeometryTools {
         }
         return -1;
     }
-
-
 
 
     public enum SNAP_TYPE {
@@ -1570,7 +1399,7 @@ public class GeometryTools {
      */
     public static double getDistance(List<GeoPoint> list) {
         if (list.size() < 2) {
-            return 0;
+            return -1;
         }
         double dis = 0;
         for (int i = 0; i < list.size() - 1; i++) {
@@ -1618,6 +1447,12 @@ public class GeometryTools {
      */
     private static final double EARTH_RADIUS = 6371000.0;
 
+    /**
+     * 距离转米
+     * @param distance
+     * @param latitude
+     * @return
+     */
     public static double convertDistanceToDegree(double distance, double latitude) {
         double radianDistance = distance / EARTH_RADIUS;
         double radianLatitude = Math.toRadians(latitude);
@@ -1669,28 +1504,13 @@ public class GeometryTools {
         return point;
     }
 
-    public static List<GeoPoint> pointToLineDistance(GeoPoint point, List<GeoPoint> pointList) {
 
-        Coordinate coordinate = geoPointToMercator(point);
-        Coordinate[] cs = new Coordinate[pointList.size()];
+    public static FootAndDistance pointToLineDistance(GeoPoint point, Geometry geometry) {
+        //定义垂线
+        FootAndDistance pointPairDistance = new FootAndDistance(point);
+        Coordinate coordinate = new Coordinate(point.getLongitude(), point.getLatitude());
+        pointPairDistance.computeDistance(geometry,coordinate);
 
-        for (int i = 0; i < pointList.size(); i++) {
-            Coordinate c = geoPointToMercator(pointList.get(i));
-            cs[i] = c;
-        }
-        GeometryFactory factory = new GeometryFactory();
-        LineString lineString = factory.createLineString(cs);
-        PointPairDistance pointPairDistance = new PointPairDistance();
-        DistanceToPoint.computeDistance(
-                lineString,
-                coordinate,
-                pointPairDistance
-        );
-
-        List newPoints = new ArrayList<GeoPoint>();
-        for (int i = 0; i < pointPairDistance.getCoordinates().length; i++) {
-            newPoints.add(mercatorToGeoPoint(pointPairDistance.getCoordinate(i)));
-        }
-        return newPoints;
+        return pointPairDistance;
     }
 }

@@ -152,6 +152,7 @@ class TaskListAdapter(
         if (taskBean.status == FileDownloadStatus.DONE) {
             binding.taskDownloadBtn.visibility = View.INVISIBLE
             binding.taskUploadBtn.visibility = View.VISIBLE
+
         } else {
             binding.taskDownloadBtn.visibility = View.VISIBLE
             binding.taskUploadBtn.visibility = View.INVISIBLE

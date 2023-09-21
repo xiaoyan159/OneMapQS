@@ -10,6 +10,7 @@ import com.navinfo.collect.library.map.layers.MultiLinesLayer
 import com.navinfo.collect.library.map.layers.OmdbTaskLinkLayer
 import com.navinfo.collect.library.utils.GeometryTools
 import org.oscim.android.canvas.AndroidBitmap
+import org.oscim.core.GeoPoint
 import org.oscim.layers.marker.ItemizedLayer
 import org.oscim.layers.marker.ItemizedLayer.OnItemGestureListener
 import org.oscim.layers.marker.MarkerInterface
@@ -112,6 +113,18 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
         layer
     }
 
+    /**
+     * 高亮一条线
+     */
+    fun showLine(list:List<GeoPoint>) {
+        try {
+            mDefaultPathLayer.clearPath()
+            mDefaultPathLayer.setPoints(list)
+            mDefaultPathLayer.isEnabled = true
+        } catch (e: Exception) {
+            Toast.makeText(mContext, "高亮路线失败 ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     /**
      * 高亮一条线
@@ -125,6 +138,7 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
             Toast.makeText(mContext, "高亮路线失败 ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     /**
      * 取消高亮线

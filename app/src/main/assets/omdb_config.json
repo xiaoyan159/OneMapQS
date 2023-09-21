@@ -34,7 +34,8 @@
 				"name": "道路线",
 				"zoomMin": 15,
 				"zoomMax": 17,
-				"catch":true
+				"catch":true,
+				"checkLinkId": true
 			},
 			"2002": {
 				"table": "OMDB_RD_LINK_FUNCTION_CLASS",
