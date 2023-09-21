@@ -1470,8 +1470,8 @@ public class GeometryTools {
         double startLatitude = MercatorProjection.tileYToLatitude(tile.tileY, tile.zoomLevel);
         double endLongitude = MercatorProjection.tileXToLongitude(tile.tileX + 1, tile.zoomLevel);
         double endLatitude = MercatorProjection.tileYToLatitude(tile.tileY + 1, tile.zoomLevel);
-        return GeometryTools.createPolygonFromCoords(new Coordinate[]{new Coordinate(startLongitude, startLongitude), new Coordinate(endLongitude, startLatitude),
-                new Coordinate(endLongitude, endLatitude), new Coordinate(startLongitude, endLatitude), new Coordinate(startLongitude, startLongitude)});
+        return GeometryTools.createPolygonFromCoords(new Coordinate[]{new Coordinate(startLongitude, startLatitude), new Coordinate(endLongitude, startLatitude),
+                new Coordinate(endLongitude, endLatitude), new Coordinate(startLongitude, endLatitude), new Coordinate(startLongitude, startLatitude)});
     }
     /**
      * 经纬度转墨卡托

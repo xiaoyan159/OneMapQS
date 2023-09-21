@@ -1680,8 +1680,8 @@ class SignUtil {
             } else if (itemGeometry is LineString) {
                 val itemFoot = GeometryTools.pointToLineDistance(
                     GeoPoint(
-                        lineString.coordinates[0].y,
-                        lineString.coordinates[0].x
+                        lineString.coordinates[lineString.coordinates.size-1].y,
+                        lineString.coordinates[lineString.coordinates.size-1].x
                     ), lineString
                 )
                 var dis = GeometryTools.getDistance(

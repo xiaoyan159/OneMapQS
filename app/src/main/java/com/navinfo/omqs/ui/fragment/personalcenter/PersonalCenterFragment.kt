@@ -35,6 +35,7 @@ import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
+import java.io.File
 import javax.inject.Inject
 
 /**
@@ -177,7 +178,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                     // 定位到指定位置
                     niMapController.mMapView.vtmMap.animator()
 //                        .animateTo(GeoPoint( 40.05108004733645, 116.29187746293708    ))
-                        .animateTo(GeoPoint(40.09819324139729,116.53123207733361 ))
+                        .animateTo(GeoPoint(40.5016054261786, 115.82381251427815))
                 }
 
                 R.id.personal_center_menu_open_all_layer -> {

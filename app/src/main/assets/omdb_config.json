@@ -35,7 +35,7 @@
 				"zoomMin": 15,
 				"zoomMax": 17,
 				"catch":true,
-				"checkLinkId": true
+				"checkLinkId": false
 			},
 			"2002": {
 				"table": "OMDB_RD_LINK_FUNCTION_CLASS",
@@ -345,19 +345,19 @@
 					{
 						"k": "location",
 						"v": "1",
-						"klib": "location",
+						"klib": "ref",
 						"vlib": "左"
 					},
 					{
 						"k": "location",
 						"v": "2",
-						"klib": "locationlib",
+						"klib": "ref",
 						"vlib": "右"
 					},
 					{
 						"k": "location",
 						"v": "3",
-						"klib": "location",
+						"klib": "ref",
 						"vlib": "上"
 					}
 				]
