@@ -505,7 +505,6 @@ class TaskViewModel @Inject constructor(
             }
             if(result==1){
                 withContext(Dispatchers.Main) {
-                    liveDataTaskUpload.postValue(map)
                     val mDialog = FirstDialog(context)
                     mDialog.setTitle("提示？")
                     mDialog.setMessage("此任务中存在新增Link无问题记录，请添加至少一条记录！")
@@ -519,7 +518,6 @@ class TaskViewModel @Inject constructor(
                 }
             }else if(result==2){
                 withContext(Dispatchers.Main) {
-                    liveDataTaskUpload.postValue(map)
                     val mDialog = FirstDialog(context)
                     mDialog.setTitle("提示？")
                     mDialog.setMessage("此任务中存在未测评link，请确认！")
