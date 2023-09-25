@@ -1814,6 +1814,21 @@
             <symbol repeat="false" repeat-start="0" gland="false" repeat-gap="32" src="assets:omdb/icon_2204_0.svg"></symbol>
         </m>
 
+        <!-- 上方障碍物 -->
+        <m v="OMDB_OBJECT_OH_STRUCT">
+            <symbol repeat="false" repeat-start="0" gland="false" repeat-gap="32" symbol-width="42" symbol-height="42" src="assets:omdb/icon_3001_0.svg"></symbol>
+        </m>
+
+        <!-- 路口内交通岛 -->
+        <m v="OMDB_OBJECT_REFUGE_ISLAND">
+            <m k="type" v="1">
+                <area use="obj-area" repeat="true" fill="#33666666"></area>
+            </m>
+            <m k="type" v="2">
+                <area use="obj-area" repeat="true" fill="#33333333"></area>
+            </m>
+        </m>
+
         <!-- 停止位置 -->
         <m v="OMDB_OBJECT_STOPLOCATION">
 
@@ -1923,26 +1938,30 @@
         <!-- 文字 -->
         <m v="OMDB_OBJECT_TEXT">
             <m k="color" v="0">
-                <area use="obj-area" stroke="#00000000" fill="#dfe4ea" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+                <area use="obj-area" stroke="#00000000" fill="#3C4C56" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
             </m>
             <m k="color" v="1">
                 <area use="obj-area" stroke="#00000000" fill="#ffffff" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
             </m>
             <m k="color" v="2">
-                <area use="obj-area" stroke="#00000000" fill="#ffff00" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+                <area use="obj-area" stroke="#00000000" fill="#FFC729" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
             </m>
             <m k="color" v="3">
-                <area use="obj-area" stroke="#00000000" fill="#ff0000" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+                <area use="obj-area" stroke="#00000000" fill="#E2233A" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
             </m>
             <m k="color" v="4">
-                <area use="obj-area" stroke="#00000000" fill="#00ff00" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+                <area use="obj-area" stroke="#00000000" fill="#6A30C6" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
             </m>
             <m k="color" v="9">
-                <area use="obj-area" stroke="#00000000" fill="#0000ff" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
+                <area use="obj-area" stroke="#00000000" fill="#053CD6" repeat="false" src="@text-src:textString" longEdge="t" hasDirect="true"></area>
             </m>
         </m>
         <!-- 符号 -->
         <m v="OMDB_OBJECT_SYMBOL">
+            <!-- 未验证 -->
+            <m k="color" v="0">
+                <area use="obj-area" stroke="#00000000"  repeat="false" src="assets:omdb/object_symbol_3003_0.svg" longEdge="t" hasDirect="true"></area>
+            </m>
             <m k="color" v="1">
                 <area use="obj-area" stroke="#00000000"  repeat="false" src="assets:omdb/object_symbol_3003_1.svg" longEdge="t" hasDirect="true"></area>
             </m>
