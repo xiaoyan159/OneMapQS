@@ -1591,7 +1591,7 @@
             <line stroke="#7A88A0" width="2.5" />
 -->
             <m k="widthProperties">
-                <area use="obj-area" stroke="#7A88A0" repeat="true" src="assets:omdb/icon_5001_1.png" longEdge="t"></area>
+                <area use="obj-area" stroke="#7A88A0" repeat="true" src="assets:omdb/icon_5001_0.png" longEdge="t"></area>
             </m>
         </m>
 
@@ -1630,7 +1630,7 @@
             </m>-->
             <m k="boundaryType" v="1">
                 <!--无标线无可区分边界-->
-                <line dasharray="5,5" repeat-start="0" stroke="#ffffff" width="0.2"/>
+                <line dasharray="2,2" repeat-start="0" stroke="#ffffff" width="0.2"/>
             </m>
         </m>
 
