@@ -16,6 +16,8 @@ import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -48,6 +50,7 @@ import com.navinfo.omqs.util.NaviStatus
 import com.navinfo.omqs.util.SignUtil
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
 import org.oscim.renderer.GLViewport
@@ -345,12 +348,19 @@ class MainActivity : BaseActivity() {
             }
         }
         viewModel.liveDataSignMoreInfo.observe(this) {
+
+            if(!rightController.backQueue.isEmpty()){
+                rightController.navigateUp()
+            }
+
             val fragment =
                 supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
             if (fragment == null) {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment())
                     .commit()
+            }else{
+                supportFragmentManager.beginTransaction().add(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment()).commit()
             }
             //启动问题记录
             val signBean = SignBean(
