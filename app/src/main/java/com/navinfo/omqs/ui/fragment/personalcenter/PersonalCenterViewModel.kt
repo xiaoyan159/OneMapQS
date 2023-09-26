@@ -14,11 +14,11 @@ import com.google.gson.Gson
 import com.navinfo.collect.library.data.entity.*
 import com.navinfo.omqs.bean.ScProblemTypeBean
 import com.navinfo.omqs.bean.ScRootCauseAnalysisBean
+import com.navinfo.omqs.bean.ScWarningCodeBean
 import com.navinfo.omqs.db.ImportOMDBHelper
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.db.RoomAppDatabase
-import com.navinfo.omqs.tools.MetadataUtils.Companion.ScProblemTypeTitle
-import com.navinfo.omqs.tools.MetadataUtils.Companion.ScRootCauseAnalysisTitle
+import com.navinfo.omqs.tools.MetadataUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -134,7 +134,7 @@ class PersonalCenterViewModel @Inject constructor(
                             hadSpeedLimitVarFile, gson.toJson(hadSpeedlimitVar) + "\r", true
                         )
                     }
-               }
+                }
             }
         }
         ZipUtils.zipFiles(
@@ -154,7 +154,7 @@ class PersonalCenterViewModel @Inject constructor(
     /**
      * 导入OMDB数据
      * */
-    fun importOMDBData(importOMDBHelper: ImportOMDBHelper, task: TaskBean? =null) {
+    fun importOMDBData(importOMDBHelper: ImportOMDBHelper, task: TaskBean? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("OMQSApplication", "开始导入数据")
             if (task != null) {
@@ -192,35 +192,45 @@ class PersonalCenterViewModel @Inject constructor(
                 var phenomenonIndex = -1
                 var problemLinkIndex = -1
                 var problemCauseIndex = -1
+                var warningCodeIndex = -1
+                var warningDescribeIndex = -1
                 val list = mutableListOf<ScProblemTypeBean>()
                 val list2 = mutableListOf<ScRootCauseAnalysisBean>()
+                val list3 = mutableListOf<ScWarningCodeBean>()
                 while (bufferedReader.readLine()?.also { line = it } != null) {  // 处理 CSV 文件中的每一行数据
                     val data =
                         line!!.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                     if (index == 0) {
                         for (i in data.indices) {
                             when (data[i]) {
-                                ScProblemTypeTitle.TITLE_ELEMENT_TYPE -> {
+                                MetadataUtils.Companion.ScProblemTypeTitle.TITLE_ELEMENT_TYPE -> {
                                     elementTypeIndex = i
                                 }
-                                ScProblemTypeTitle.TITLE_ELEMENT_CODE -> {
+                                MetadataUtils.Companion.ScProblemTypeTitle.TITLE_ELEMENT_CODE -> {
                                     elementCodeIndex = i
                                 }
-                                ScProblemTypeTitle.TITLE_CLASS_TYPE -> {
+                                MetadataUtils.Companion.ScProblemTypeTitle.TITLE_CLASS_TYPE -> {
                                     classTypeIndex = i
                                 }
-                                ScProblemTypeTitle.TITLE_PROBLEM_TYPE -> {
+                                MetadataUtils.Companion.ScProblemTypeTitle.TITLE_PROBLEM_TYPE -> {
                                     problemTypeIndex = i
                                 }
-                                ScProblemTypeTitle.TITLE_PHENOMENON -> {
+                                MetadataUtils.Companion.ScProblemTypeTitle.TITLE_PHENOMENON -> {
                                     phenomenonIndex = i
                                 }
-                                ScRootCauseAnalysisTitle.TITLE_PROBLEM_LINK -> {
+                                MetadataUtils.Companion.ScRootCauseAnalysisTitle.TITLE_PROBLEM_LINK -> {
                                     problemLinkIndex = i
                                 }
-                                ScRootCauseAnalysisTitle.TITLE_PROBLEM_CAUSE -> {
+                                MetadataUtils.Companion.ScRootCauseAnalysisTitle.TITLE_PROBLEM_CAUSE -> {
                                     problemCauseIndex = i
                                 }
+                                MetadataUtils.Companion.ScWarningCodeTitle.TITLE_CODE -> {
+                                    warningCodeIndex = i
+                                }
+                                MetadataUtils.Companion.ScWarningCodeTitle.TITLE_DESCRIBE -> {
+                                    warningDescribeIndex = i
+                                }
+
                             }
                         }
                     } else {
@@ -244,6 +254,12 @@ class PersonalCenterViewModel @Inject constructor(
                                 problemCause = data[problemCauseIndex],
                             )
                             list2.add(bean)
+                        } else if (warningDescribeIndex > -1 && warningCodeIndex > -1) {
+                            val bean = ScWarningCodeBean(
+                                code = data[warningCodeIndex],
+                                describe = data[warningDescribeIndex]
+                            )
+                            list3.add(bean)
                         } else {
                             liveDataMessage.postValue("元数据表规格不正确，请仔细核对")
                             break
@@ -259,49 +275,14 @@ class PersonalCenterViewModel @Inject constructor(
                     liveDataMessage.postValue("元数据表导入成功")
                     roomAppDatabase.getScRootCauseAnalysisDao().insertOrUpdateList(list2)
                 }
+                if(list3.isNotEmpty()){
+                    liveDataMessage.postValue("标牌对照表导入成功")
+                    roomAppDatabase.getScWarningCodeDao().insertList(list3)
+                }
 
                 bufferedReader.close()
                 inputStreamReader.close()
                 inputStream.close()
-//                val workbook = WorkbookFactory.create(inputStream)
-//                //获取所有sheet
-//                val sheet1 = workbook.getSheet("SC_PROBLEM_TYPE")
-//                sheet1?.let {
-//                    val rowCount: Int = it.physicalNumberOfRows // 获取行数
-//                    val list = mutableListOf<ScProblemTypeBean>()
-//                    for (i in 1 until rowCount) {
-//                        val row: Row = it.getRow(i) // 获取行
-////                        val cellCount: Int = row.physicalNumberOfCells // 获取列数
-//                        val bean = ScProblemTypeBean(
-//                            elementType = row.getCell(0).stringCellValue,
-//                            elementCode = row.getCell(1).numericCellValue.toString(),
-//                            classType = row.getCell(2).stringCellValue,
-//                            problemType = row.getCell(3).stringCellValue,
-//                            phenomenon = row.getCell(4).stringCellValue
-//                        )
-//                        list.add(bean)
-//                        Log.e("jingo", bean.toString())
-//                    }
-//                    roomAppDatabase.getScProblemTypeDao().insertOrUpdateList(list)
-//                }
-//                val sheet2 = workbook.getSheet("SC_ROOT_CAUSE_ANALYSIS")
-//                sheet2?.let {
-//                    val rowCount: Int = it.physicalNumberOfRows // 获取行数
-//                    val list = mutableListOf<ScRootCauseAnalysisBean>()
-//                    for (i in 1 until rowCount) {
-//                        val row: Row = it.getRow(i) // 获取行
-//                        val cellCount: Int = row.physicalNumberOfCells // 获取列数
-//                        if (cellCount == 2) {
-//                            val bean = ScRootCauseAnalysisBean()
-//                            bean.problemLink = row.getCell(0).stringCellValue
-//                            bean.problemCause = row.getCell(1).stringCellValue
-//                            list.add(bean)
-//                            Log.e("jingo", bean.toString())
-//                        }
-//                    }
-//                    roomAppDatabase.getScRootCauseAnalysisDao().insertOrUpdateList(list)
-//                }
-//                workbook.close()
 
             } catch (e: IOException) {
                 e.printStackTrace()

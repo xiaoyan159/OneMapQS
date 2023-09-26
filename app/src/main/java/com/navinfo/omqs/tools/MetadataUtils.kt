@@ -15,5 +15,10 @@ class MetadataUtils {
             const val TITLE_PROBLEM_LINK = "问题环节"
             const val TITLE_PROBLEM_CAUSE = "初步分析"
         }
+
+        object ScWarningCodeTitle{
+            const val TITLE_CODE = "编码"
+            const val TITLE_DESCRIBE = "描述"
+        }
     }
 }

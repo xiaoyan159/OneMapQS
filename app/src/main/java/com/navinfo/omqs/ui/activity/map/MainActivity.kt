@@ -1,9 +1,6 @@
 package com.navinfo.omqs.ui.activity.map
 
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -11,7 +8,6 @@ import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnLongClickListener
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -20,14 +16,14 @@ import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blankj.utilcode.util.ClipboardUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
-import com.navinfo.collect.library.data.entity.RenderEntity
-import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.MeasureLayerHandler
 import com.navinfo.omqs.Constant
@@ -39,7 +35,6 @@ import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.tools.LayerConfigUtils
 import com.navinfo.omqs.ui.activity.BaseActivity
-import com.navinfo.omqs.ui.dialog.LoadingDialog
 import com.navinfo.omqs.ui.fragment.console.ConsoleFragment
 import com.navinfo.omqs.ui.fragment.itemlist.ItemListFragment
 import com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapFragment
@@ -50,9 +45,9 @@ import com.navinfo.omqs.ui.other.BaseToast
 import com.navinfo.omqs.ui.widget.RecyclerViewSpacesItemDecoration
 import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.NaviStatus
-import com.navinfo.omqs.util.SignUtil
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
 import org.oscim.renderer.GLViewport
@@ -60,6 +55,7 @@ import org.videolan.vlc.Util
 import java.math.BigDecimal
 import java.math.RoundingMode
 import javax.inject.Inject
+
 
 /**
  * 地图主页面
@@ -357,22 +353,28 @@ class MainActivity : BaseActivity() {
                     .replace(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment())
                     .commit()
             }
-            //启动问题记录
-            val signBean = SignBean(
-                iconId = SignUtil.getSignIcon(it),
-                iconText = SignUtil.getSignIconText(it),
-                linkId = it.properties[RenderEntity.Companion.LinkTable.linkPid]
-                    ?: "",
-                name = SignUtil.getSignNameText(it),
-                bottomRightText = SignUtil.getSignBottomRightText(it),
-                renderEntity = it,
-                isMoreInfo = SignUtil.isMoreInfo(it),
-                index = SignUtil.getRoadInfoIndex(it)
-            )
-            val bundle = Bundle()
-            bundle.putParcelable("SignBean", signBean)
-            bundle.putBoolean("AutoSave", false)
-            rightController.navigate(R.id.EvaluationResultFragment, bundle)
+//            val listener: NavController.OnDestinationChangedListener =
+//                NavController.OnDestinationChangedListener { _, _, _ ->
+//                    val bundle = Bundle()
+//                    bundle.putParcelable("SignBean", it)
+//                    bundle.putBoolean("AutoSave", false)
+//                    rightController.navigate(R.id.EvaluationResultFragment, bundle)
+//                }
+//            rightController.addOnDestinationChangedListener(listener)
+//            if(!rightController.navigateUp()) {
+//                val bundle = Bundle()
+//                bundle.putParcelable("SignBean", it)
+//                bundle.putBoolean("AutoSave", false)
+//                rightController.navigate(R.id.EvaluationResultFragment, bundle)
+//            }
+            rightController.navigateUp()
+            lifecycleScope.launch{
+                delay(100)
+                val bundle = Bundle()
+                bundle.putParcelable("SignBean", it)
+                bundle.putBoolean("AutoSave", false)
+                rightController.navigate(R.id.EvaluationResultFragment, bundle)
+            }
         }
 
         viewModel.liveIndoorToolsResp.observe(this) {
@@ -478,7 +480,7 @@ class MainActivity : BaseActivity() {
         viewModel.liveDataItemList.observe(this) {
             if (it.isNotEmpty()) {
                 if (leftFragment == null || leftFragment !is ItemListFragment) {
-                    leftFragment = ItemListFragment {fragment->
+                    leftFragment = ItemListFragment { fragment ->
                         binding.mainActivityLeftFragment.visibility = View.GONE
                         supportFragmentManager.beginTransaction().remove(fragment).commit()
                         leftFragment = null
@@ -1222,10 +1224,10 @@ class MainActivity : BaseActivity() {
     /**
      * 隐藏更多信息面板
      */
-    fun backSignMoreInfo(){
+    fun backSignMoreInfo() {
         val fragment =
             supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
-        if(fragment!=null&&!fragment.isHidden){
+        if (fragment != null && !fragment.isHidden) {
             supportFragmentManager.beginTransaction().remove(fragment).commit()
         }
     }

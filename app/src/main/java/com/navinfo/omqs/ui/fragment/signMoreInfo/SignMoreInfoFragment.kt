@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.navinfo.collect.library.data.entity.RenderEntity
@@ -56,29 +57,29 @@ class SignMoreInfoFragment : BaseFragment() {
                 drawableLeft, null, drawableRight, null
             )
 
-            when (it.code) {
+            when (it.renderEntity.code) {
                 //道路名
                 DataCodeEnum.OMDB_LINK_NAME.code -> {
                     val adapter = RoadNameInfoAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
-                    adapter.refreshData(SignUtil.getRoadNameList(it))
+                    adapter.refreshData(SignUtil.getRoadNameList(it.renderEntity))
                 }
                 //车道边界类型
                 DataCodeEnum.OMDB_LANE_MARK_BOUNDARYTYPE.code -> {
                     val adapter = LaneBoundaryAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
-                    adapter.refreshData(SignUtil.getLaneBoundaryTypeInfo(it))
+                    adapter.refreshData(SignUtil.getLaneBoundaryTypeInfo(it.renderEntity))
                 }
                 DataCodeEnum.OMDB_INTERSECTION.code -> {
                     val adapter = LaneBoundaryAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
-                    adapter.refreshData(SignUtil.getIntersectionInfo(it))
+                    adapter.refreshData(SignUtil.getIntersectionInfo(it.renderEntity))
                 }
                 //收费站
                 DataCodeEnum.OMDB_TOLLGATE.code -> {
                     val adapter = LaneBoundaryAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
-                    adapter.refreshData(SignUtil.getTollgateInfo(it))
+                    adapter.refreshData(SignUtil.getTollgateInfo(it.renderEntity))
                 }
                 //电子眼
                 DataCodeEnum.OMDB_ELECTRONICEYE.code -> {
@@ -94,10 +95,10 @@ class SignMoreInfoFragment : BaseFragment() {
                     )
                     val adapter = TwoItemAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
-                    adapter.refreshData(SignUtil.getElectronicEyeMoreInfo(it))
+                    adapter.refreshData(SignUtil.getElectronicEyeMoreInfo(it.renderEntity))
                 }
                 else -> {
-                    val adapter = SignUtil.getMoreInfoAdapter(it)
+                    val adapter = SignUtil.getMoreInfoAdapter(it.renderEntity)
                     binding.signInfoRecyclerview.adapter = adapter
                 }
             }
@@ -117,18 +118,7 @@ class SignMoreInfoFragment : BaseFragment() {
                         val bundle = Bundle()
                         val element = viewModel.liveDataSignMoreInfo.value
                         if (element != null) {
-                            val signBean = SignBean(
-                                iconId = SignUtil.getSignIcon(element),
-                                iconText = SignUtil.getSignIconText(element),
-                                linkId = element.properties[RenderEntity.Companion.LinkTable.linkPid]
-                                    ?: "",
-                                name = SignUtil.getSignNameText(element),
-                                bottomRightText = SignUtil.getSignBottomRightText(element),
-                                renderEntity = element,
-                                isMoreInfo = SignUtil.isMoreInfo(element),
-                                index = SignUtil.getRoadInfoIndex(element)
-                            )
-                            bundle.putParcelable("SignBean", signBean)
+                            bundle.putParcelable("SignBean", element)
                             bundle.putBoolean("AutoSave", false)
                             rightController.navigate(R.id.EvaluationResultFragment, bundle)
                         }

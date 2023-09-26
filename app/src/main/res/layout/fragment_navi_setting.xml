@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/left_pannel_title_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_left_pannel"
+    android:padding="5dp">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/img_back"
+        style="@style/btn_round"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/selector_bg_round_button"
+        android:foreground="@drawable/ripple_btn_press"
+        android:src="@drawable/ic_baseline_keyboard_arrow_left_24"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/img_confirm"
+        style="@style/btn_round"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/selector_bg_round_button"
+        android:foreground="@drawable/ripple_btn_press"
+        android:src="@drawable/ic_baseline_check_24"
+        app:layout_constraintBottom_toBottomOf="@id/img_back"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/img_back" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="导航设置"
+        android:textColor="@color/highFontColor"
+        android:textSize="@dimen/left_pannel_title_font"
+        app:layout_constraintBottom_toBottomOf="@id/img_back"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/img_back" />
+
+
+    <LinearLayout
+        style="@style/default_card_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/img_back">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:textSize="16sp"
+                android:text="偏离距离(米)" />
+
+            <com.navinfo.omqs.ui.widget.AddAndSubEditView
+                android:id="@+id/off_distance"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center_vertical"
+                app:textValue="15" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:textSize="16sp"
+                android:text="提示范围(米)" />
+
+            <com.navinfo.omqs.ui.widget.AddAndSubEditView
+                android:id="@+id/tips_distance"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center_vertical"
+                app:textValue="500" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:textSize="16sp"
+                android:text="偏离次数" />
+
+            <com.navinfo.omqs.ui.widget.AddAndSubEditView
+                android:id="@+id/off_count"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center_vertical"
+                app:textValue="3" />
+        </FrameLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+
