@@ -101,7 +101,7 @@ class SignMoreInfoFragment : BaseFragment() {
                 DataCodeEnum.OMDB_TRAFFIC_SIGN.code -> {
                     val adapter = TwoItemAdapter()
                     binding.signInfoRecyclerview.adapter = adapter
-                    adapter.refreshData(SignUtil.getTrafficSignMoreInfo(it))
+                    adapter.refreshData(SignUtil.getTrafficSignMoreInfo(it.renderEntity))
                 }
                 else -> {
                     val adapter = SignUtil.getMoreInfoAdapter(it.renderEntity)

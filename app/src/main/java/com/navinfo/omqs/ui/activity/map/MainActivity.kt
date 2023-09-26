@@ -51,6 +51,7 @@ import com.navinfo.omqs.util.SignUtil
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
 import org.oscim.renderer.GLViewport
@@ -353,31 +354,22 @@ class MainActivity : BaseActivity() {
                 rightController.navigateUp()
             }
 
-            val fragment =
-                supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
-            if (fragment == null) {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment())
-                    .commit()
-            }else{
-                supportFragmentManager.beginTransaction().add(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment()).commit()
+            lifecycleScope.launch{
+                delay(100)
+                val fragment =
+                    supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
+                if (fragment == null) {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment())
+                        .commit()
+                }else{
+                    supportFragmentManager.beginTransaction().add(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment()).commit()
+                }
+                val bundle = Bundle()
+                bundle.putParcelable("SignBean", it)
+                bundle.putBoolean("AutoSave", false)
+                rightController.navigate(R.id.EvaluationResultFragment, bundle)
             }
-            //启动问题记录
-            val signBean = SignBean(
-                iconId = SignUtil.getSignIcon(it),
-                iconText = SignUtil.getSignIconText(it),
-                linkId = it.properties[RenderEntity.Companion.LinkTable.linkPid]
-                    ?: "",
-                name = SignUtil.getSignNameText(it),
-                bottomRightText = SignUtil.getSignBottomRightText(it),
-                renderEntity = it,
-                isMoreInfo = SignUtil.isMoreInfo(it),
-                index = SignUtil.getRoadInfoIndex(it)
-            )
-            val bundle = Bundle()
-            bundle.putParcelable("SignBean", signBean)
-            bundle.putBoolean("AutoSave", false)
-            rightController.navigate(R.id.EvaluationResultFragment, bundle)
         }
 
         viewModel.liveIndoorToolsResp.observe(this) {
