@@ -37,6 +37,7 @@ import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.*
 import com.navinfo.omqs.db.RealmOperateHelper
+import com.navinfo.omqs.db.RoomAppDatabase
 import com.navinfo.omqs.http.NetResult
 import com.navinfo.omqs.http.NetworkService
 import com.navinfo.omqs.tools.FileManager
@@ -56,8 +57,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
+import org.locationtech.jts.geom.Envelope
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.LineString
+import org.locationtech.spatial4j.shape.Rectangle
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
 import org.oscim.map.Map
@@ -78,7 +81,8 @@ class MainViewModel @Inject constructor(
     private val traceDataBase: TraceDataBase,
     private val realmOperateHelper: RealmOperateHelper,
     private val networkService: NetworkService,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    val roomAppDatabase: RoomAppDatabase
 ) : ViewModel(), SocketServer.OnConnectSinsListener,
     SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -113,7 +117,7 @@ class MainViewModel @Inject constructor(
     /**
      * 当前选中的要展示的详细信息的要素
      */
-    val liveDataSignMoreInfo = MutableLiveData<RenderEntity>()
+    val liveDataSignMoreInfo = MutableLiveData<SignBean>()
 
     /**
      * 捕捉到的itemList
@@ -384,8 +388,23 @@ class MainViewModel @Inject constructor(
             naviMutex.lock()
             getTaskBean()
             if (currentTaskBean != null && currentTaskBean!!.status == FileManager.Companion.FileDownloadStatus.DONE) {
+                val naviOption = NaviOption(
+                    deviationCount = sharedPreferences.getInt(
+                        Constant.NAVI_DEVIATION_COUNT,
+                        3
+                    ),
+                    deviationDistance = sharedPreferences.getInt(
+                        Constant.NAVI_DEVIATION_DISTANCE,
+                        15
+                    ),
+                    farthestDisplayDistance = sharedPreferences.getInt(
+                        Constant.NAVI_FARTHEST_DISPLAY_DISTANCE,
+                        500
+                    )
+                )
                 naviEngine = NaviEngine(niMapController = mapController,
                     realmOperateHelper = realmOperateHelper,
+                    naviOption = naviOption,
                     callback = object : OnNaviEngineCallbackListener {
 
                         override fun planningPathStatus(status: NaviStatus) {
@@ -408,20 +427,12 @@ class MainViewModel @Inject constructor(
                         ) {
                             val signList = mutableListOf<SignBean>()
                             for (naviRouteItem in list) {
-
-                                val signBean = SignBean(
-                                    iconId = SignUtil.getSignIcon(naviRouteItem.data),
-                                    iconText = SignUtil.getSignIconText(naviRouteItem.data),
-                                    linkId = naviRouteItem.linkId,
-                                    distance = naviRouteItem.distance,
-                                    name = SignUtil.getSignNameText(naviRouteItem.data),
-                                    bottomRightText = SignUtil.getSignBottomRightText(
-                                        naviRouteItem.data
-                                    ),
-                                    renderEntity = naviRouteItem.data,
-                                    isMoreInfo = SignUtil.isMoreInfo(naviRouteItem.data),
-                                    index = SignUtil.getRoadInfoIndex(naviRouteItem.data)
+                                val signBean = SignUtil.createSignBean(
+                                    viewModelScope,
+                                    roomAppDatabase,
+                                    naviRouteItem.data
                                 )
+                                signBean.distance = naviRouteItem.distance
                                 signList.add(signBean)
                             }
                             if (route != null) {
@@ -441,13 +452,36 @@ class MainViewModel @Inject constructor(
 
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        if (key == Constant.SELECT_TASK_ID) {
-            viewModelScope.launch(Dispatchers.IO) {
-                naviMutex.lock()
-                naviEngineStatus = 0
-                getTaskBean()
-                initQsRecordData()
-                naviMutex.unlock()
+        when (key) {
+            Constant.SELECT_TASK_ID -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    naviMutex.lock()
+                    naviEngineStatus = 0
+                    getTaskBean()
+                    initQsRecordData()
+                    naviMutex.unlock()
+                }
+            }
+            Constant.NAVI_DEVIATION_COUNT,
+            Constant.NAVI_FARTHEST_DISPLAY_DISTANCE,
+            Constant.NAVI_DEVIATION_DISTANCE -> {
+                if (naviEngine != null) {
+                    val naviOption = NaviOption(
+                        deviationCount = sharedPreferences.getInt(
+                            Constant.NAVI_DEVIATION_COUNT,
+                            3
+                        ),
+                        deviationDistance = sharedPreferences.getInt(
+                            Constant.NAVI_DEVIATION_DISTANCE,
+                            15
+                        ),
+                        farthestDisplayDistance = sharedPreferences.getInt(
+                            Constant.NAVI_FARTHEST_DISPLAY_DISTANCE,
+                            500
+                        )
+                    )
+                    naviEngine!!.naviOption = naviOption
+                }
             }
         }
     }
@@ -622,7 +656,8 @@ class MainViewModel @Inject constructor(
                 }
             }.toList()
             if (filterResult.size == 1) {
-                liveDataSignMoreInfo.postValue(filterResult[0])
+                val bean = SignUtil.createSignBean(viewModelScope, roomAppDatabase, filterResult[0])
+                liveDataSignMoreInfo.postValue(bean)
             } else {
                 liveDataItemList.postValue(filterResult)
             }
@@ -651,15 +686,10 @@ class MainViewModel @Inject constructor(
                             DataCodeEnum.OMDB_MULTI_DIGITIZED.code,//上下线分离
                             DataCodeEnum.OMDB_CON_ACCESS.code,//全封闭
                             -> {
-                                val signBean = SignBean(
-                                    iconId = SignUtil.getSignIcon(element),
-                                    iconText = SignUtil.getSignIconText(element),
-                                    linkId = route.linkId,
-                                    name = SignUtil.getSignNameText(element),
-                                    bottomRightText = SignUtil.getSignBottomRightText(element),
-                                    renderEntity = element,
-                                    isMoreInfo = SignUtil.isMoreInfo(element),
-                                    index = SignUtil.getRoadInfoIndex(element)
+                                val signBean = SignUtil.createSignBean(
+                                    viewModelScope,
+                                    roomAppDatabase,
+                                    element
                                 )
                                 if (signBean.iconText != "") {
                                     topSignList.add(
@@ -699,17 +729,11 @@ class MainViewModel @Inject constructor(
                             DataCodeEnum.OMDB_LINK_FORM2_13.code,
                             DataCodeEnum.OMDB_VIADUCT.code,
                             -> {
-                                val signBean = SignBean(
-                                    iconId = SignUtil.getSignIcon(element),
-                                    iconText = SignUtil.getSignIconText(element),
-                                    linkId = route.linkId,
-                                    name = SignUtil.getSignNameText(element),
-                                    bottomRightText = SignUtil.getSignBottomRightText(element),
-                                    renderEntity = element,
-                                    isMoreInfo = SignUtil.isMoreInfo(element),
-                                    index = SignUtil.getRoadInfoIndex(element),
-
-                                    )
+                                val signBean = SignUtil.createSignBean(
+                                    viewModelScope,
+                                    roomAppDatabase,
+                                    element
+                                )
                                 topSignList.add(
                                     signBean
                                 )
@@ -765,11 +789,14 @@ class MainViewModel @Inject constructor(
 
                         val linePoints = GeometryTools.getGeoPoints(link.geometry)
                         val direct = link.properties["direct"]
-                        if(direct == "3"){
+                        if (direct == "3") {
                             linePoints.reverse()
                         }
 
-                        val footAndDistance = GeometryTools.pointToLineDistance(point, GeometryTools.createLineString(linePoints))
+                        val footAndDistance = GeometryTools.pointToLineDistance(
+                            point,
+                            GeometryTools.createLineString(linePoints)
+                        )
                         linePoints.add(
                             footAndDistance.footIndex + 1,
                             GeoPoint(
@@ -787,21 +814,15 @@ class MainViewModel @Inject constructor(
                                     liveDataRoadName.postValue(element)
                                     continue
                                 }
-
-                                val signBean = SignBean(
-                                    iconId = SignUtil.getSignIcon(element),
-                                    iconText = SignUtil.getSignIconText(element),
-                                    linkId = linkId,
-                                    name = SignUtil.getSignNameText(element),
-                                    bottomRightText = SignUtil.getSignBottomRightText(element),
-                                    renderEntity = element,
-                                    isMoreInfo = SignUtil.isMoreInfo(element),
-                                    index = SignUtil.getRoadInfoIndex(element),
-                                    distance = SignUtil.getDistance(
-                                        footAndDistance,
-                                        newLineString,
-                                        element
-                                    )
+                                val signBean = SignUtil.createSignBean(
+                                    viewModelScope,
+                                    roomAppDatabase,
+                                    element
+                                )
+                                signBean.distance = SignUtil.getDistance(
+                                    footAndDistance,
+                                    newLineString,
+                                    element
                                 )
 //                                Log.e("jingo", "捕捉到的数据code ${element.code}")
                                 when (element.code) {
@@ -819,6 +840,7 @@ class MainViewModel @Inject constructor(
                                     DataCodeEnum.OMDB_RD_LINK_KIND.code,//种别，
                                     DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code, // 功能等级,
                                     DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code, //线限速,
+                                    DataCodeEnum.OMDB_LINK_SPEEDLIMIT_COND.code,//条件线限速
                                     DataCodeEnum.OMDB_LINK_DIRECT.code,//道路方向,
                                     DataCodeEnum.OMDB_RAMP.code, //匝道
                                     DataCodeEnum.OMDB_BRIDGE.code,//桥
@@ -1196,7 +1218,16 @@ class MainViewModel @Inject constructor(
      */
 
     fun showSignMoreInfo(data: RenderEntity) {
-        liveDataSignMoreInfo.value = data
+        viewModelScope.launch(Dispatchers.IO) {
+            liveDataSignMoreInfo.postValue(
+                SignUtil.createSignBean(
+                    viewModelScope,
+                    roomAppDatabase,
+                    data
+                )
+            )
+        }
+
         if (data.wkt != null) {
             mapController.markerHandle.removeMarker("moreInfo")
             mapController.lineHandler.removeLine()
@@ -1511,10 +1542,20 @@ class MainViewModel @Inject constructor(
             when (searchEnum) {
                 SearchEnum.LINK -> {
                     viewModelScope.launch(Dispatchers.IO) {
+                        Log.e("jingo", "查询link $msg")
                         val link = realmOperateHelper.queryLink(linkPid = msg)
                         if (link != null) {
-                            link?.let { l ->
-                                mapController.lineHandler.showLine(l.geometry)
+                            Log.e("jingo", "查询link ${link.geometry}")
+                            val lineString = GeometryTools.createGeometry(link.geometry)
+                            val envelope = lineString.envelopeInternal
+                            withContext(Dispatchers.Main) {
+                                mapController.animationHandler.animateToBox(
+                                    envelope.maxX,
+                                    envelope.maxY,
+                                    envelope.minX,
+                                    envelope.minY
+                                )
+                                mapController.lineHandler.showLine(link.geometry)
                                 dialog.dismiss()
                             }
                         } else {
@@ -1531,15 +1572,13 @@ class MainViewModel @Inject constructor(
                     viewModelScope.launch(Dispatchers.IO) {
                         val qsRecordBean = realmOperateHelper.queryQcRecordBean(markId = msg)
                         if (qsRecordBean != null) {
-                            qsRecordBean?.let { l ->
-                                val naviController =
-                                    (mapController.mMapView.context as Activity).findNavController(R.id.main_activity_right_fragment)
-                                val bundle = Bundle()
-                                bundle.putString("QsId", l.id)
-                                naviController.navigate(R.id.EvaluationResultFragment, bundle)
-                                ToastUtils.showLong(l.classType)
-                                dialog.dismiss()
-                            }
+                            val naviController =
+                                (mapController.mMapView.context as Activity).findNavController(R.id.main_activity_right_fragment)
+                            val bundle = Bundle()
+                            bundle.putString("QsId", qsRecordBean.id)
+                            naviController.navigate(R.id.EvaluationResultFragment, bundle)
+                            ToastUtils.showLong(qsRecordBean.classType)
+                            dialog.dismiss()
                         } else {
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(

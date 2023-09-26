@@ -1,6 +1,7 @@
 package com.navinfo.omqs.util
 
 import android.util.Log
+import androidx.lifecycle.lifecycleScope
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.utils.FootAndDistance
@@ -8,10 +9,15 @@ import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.RoadNameBean
 import com.navinfo.omqs.bean.SignBean
+import com.navinfo.omqs.db.RoomAppDatabase
 import com.navinfo.omqs.ui.activity.map.LaneInfoItem
 import com.navinfo.omqs.ui.fragment.signMoreInfo.LaneBoundaryItem
 import com.navinfo.omqs.ui.fragment.signMoreInfo.TwoItemAdapter
 import com.navinfo.omqs.ui.fragment.signMoreInfo.TwoItemAdapterItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import org.locationtech.jts.geom.Geometry
@@ -22,6 +28,28 @@ import java.lang.reflect.Field
 
 class SignUtil {
     companion object {
+
+        suspend fun createSignBean(
+            scope: CoroutineScope,
+            roomAppDatabase: RoomAppDatabase,
+            element: RenderEntity
+        ): SignBean {
+            return SignBean(
+                iconId = getSignIcon(element),
+                iconText = getSignIconText(element),
+                linkId = element.properties[RenderEntity.Companion.LinkTable.linkPid]
+                    ?: "",
+                name = getSignNameText(element),
+                bottomRightText = getSignBottomRightText(
+                    scope,
+                    roomAppDatabase,
+                    element
+                ),
+                renderEntity = element,
+                isMoreInfo = isMoreInfo(element),
+                index = getRoadInfoIndex(element)
+            )
+        }
 
         /**
          * 获取面板上的文字
@@ -48,6 +76,10 @@ class SignUtil {
                 }
                 //常规线限速
                 DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> {
+                    "${data.properties["maxSpeed"]}"
+                }
+                //条件线限速
+                DataCodeEnum.OMDB_LINK_SPEEDLIMIT_COND.code -> {
                     "${data.properties["maxSpeed"]}"
                 }
                 //全封闭
@@ -130,6 +162,8 @@ class SignUtil {
                 DataCodeEnum.OMDB_LINK_DIRECT.code -> "方向"
                 //常规线限速
                 DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> "线限速"
+                //条件线限速
+                DataCodeEnum.OMDB_LINK_SPEEDLIMIT_COND.code -> "条件限速"
 
                 DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code -> "道路属性"
 
@@ -197,7 +231,6 @@ class SignUtil {
                     } catch (e: Throwable) {
 
                     }
-
                 }
                 //道路方向
                 DataCodeEnum.OMDB_LINK_DIRECT.code -> {
@@ -793,9 +826,25 @@ class SignUtil {
         /**
          * 右下角文字
          */
-        fun getSignBottomRightText(data: RenderEntity): String {
+        suspend fun getSignBottomRightText(
+            scope: CoroutineScope,
+            roomAppDatabase: RoomAppDatabase,
+            data: RenderEntity
+        ): String {
             return when (data.code) {
-
+                //警示信息
+                DataCodeEnum.OMDB_WARNINGSIGN.code -> {
+                    var describe = ""
+                    val job = scope.launch(Dispatchers.IO) {
+                        val typeCode = data.properties["typeCode"]
+                        if (typeCode != null) {
+                            describe = roomAppDatabase.getScWarningCodeDao().findScWarningDescribe(typeCode).toString()
+                        }
+                    }
+                    job.join()
+                    Log.e("jingo", "警示信息 类型： $describe")
+                    return describe
+                }
                 //条件点限速
                 DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> getConditionLimitText(data)
                 //电子眼
@@ -870,13 +919,11 @@ class SignUtil {
                 )
             )
             val carType = renderEntity.properties["vehicleType"]
-            if (carType != "0") {
-                list.add(
-                    TwoItemAdapterItem(
-                        title = "车辆类型", text = getElectronicEyeVehicleType(carType!!.toInt())
-                    )
+            list.add(
+                TwoItemAdapterItem(
+                    title = "车辆类型", text = getElectronicEyeVehicleType(carType!!.toInt())
                 )
-            }
+            )
             val time = renderEntity.properties["validPeriod"]
             if (time?.isNotEmpty() == true) {
                 list.add(
@@ -893,7 +940,7 @@ class SignUtil {
          * 条件点限速文字
          */
         private fun getConditionLimitText(data: RenderEntity): String {
-            var stringBuffer = StringBuffer()
+            val stringBuffer = StringBuffer()
             try {
                 val dependent = data.properties["speedDependent"]
                 dependent?.let {
@@ -1515,7 +1562,8 @@ class SignUtil {
                 DataCodeEnum.OMDB_RD_LINK_KIND.code -> 1
                 DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code -> 2
                 DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> 3
-                DataCodeEnum.OMDB_LINK_DIRECT.code -> 4
+                DataCodeEnum.OMDB_LINK_SPEEDLIMIT_COND.code -> 4
+                DataCodeEnum.OMDB_LINK_DIRECT.code -> 5
                 else -> 999
             }
         }
@@ -1680,8 +1728,8 @@ class SignUtil {
             } else if (itemGeometry is LineString) {
                 val itemFoot = GeometryTools.pointToLineDistance(
                     GeoPoint(
-                        lineString.coordinates[lineString.coordinates.size-1].y,
-                        lineString.coordinates[lineString.coordinates.size-1].x
+                        lineString.coordinates[lineString.coordinates.size - 1].y,
+                        lineString.coordinates[lineString.coordinates.size - 1].x
                     ), lineString
                 )
                 var dis = GeometryTools.getDistance(
@@ -1698,7 +1746,5 @@ class SignUtil {
             }
             return 0
         }
-
     }
-
 }

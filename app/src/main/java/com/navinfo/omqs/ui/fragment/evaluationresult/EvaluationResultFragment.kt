@@ -89,6 +89,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
 
         //返回按钮点击
         binding.evaluationBar.setOnClickListener {
+            it.isEnabled = false
             val mDialog = FirstDialog(context)
             mDialog.setTitle("提示？")
             mDialog.setMessage("是否退出，请确认！")
@@ -98,7 +99,10 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
                 mDialog.dismiss()
                 onBackPressed()
             }
-            mDialog.setNegativeButton("取消", null)
+            mDialog.setNegativeButton("取消") { _, _ ->
+                mDialog.dismiss()
+                it.isEnabled = true
+            }
             mDialog.show()
         }
 
@@ -199,7 +203,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         viewModel.liveDataToastMessage.observe(viewLifecycleOwner) {
             Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
         }
-        viewModel.liveDataQsRecordBean.observe(viewLifecycleOwner){
+        viewModel.liveDataQsRecordBean.observe(viewLifecycleOwner) {
             binding.evaluationId.text = it.id
         }
 

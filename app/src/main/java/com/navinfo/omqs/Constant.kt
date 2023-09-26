@@ -53,16 +53,16 @@ class Constant {
         /**
          * 当前安装的任务文件
          */
-        lateinit var currentInstallTaskFolder:File
+        lateinit var currentInstallTaskFolder: File
 
-        lateinit var currentInstallTaskConfig:RealmConfiguration
+        lateinit var currentInstallTaskConfig: RealmConfiguration
 
         /**
          * 当前选择的任务
          */
-        lateinit var currentSelectTaskFolder:File
+        lateinit var currentSelectTaskFolder: File
 
-        lateinit var currentSelectTaskConfig:RealmConfiguration
+        lateinit var currentSelectTaskConfig: RealmConfiguration
 
         /**
          * 用户附件数据目录
@@ -88,7 +88,6 @@ class Constant {
          * 室内整理工具IP
          */
         var INDOOR_IP: String = ""
-
 
 
         const val DEBUG = true
@@ -160,6 +159,21 @@ class Constant {
         const val SELECT_TASK_ID = "select_task_id" //选中的任务ID
 
         const val SHARED_SYNC_TASK_LINK_ID = "shared_sync_task_link_id"//利用shared通知任务页面更新
+
+        /**
+         * 偏离距离 单位：米
+         */
+        const val NAVI_DEVIATION_DISTANCE = "navi_deviation_distance"
+
+        /**
+         * 偏离次数上限
+         */
+        const val NAVI_DEVIATION_COUNT = "navi_deviation_count"
+
+        /**
+         * 最远显示距离 米
+         */
+        const val NAVI_FARTHEST_DISPLAY_DISTANCE = "navi_farthest_display_distance"
     }
 
 

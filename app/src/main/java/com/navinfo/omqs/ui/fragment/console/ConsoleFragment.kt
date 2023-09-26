@@ -18,6 +18,7 @@ import com.navinfo.omqs.databinding.FragmentConsoleBinding
 import com.navinfo.omqs.ui.activity.map.MainActivity
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.fragment.layermanager.LayerManagerFragment
+import com.navinfo.omqs.ui.fragment.navi.NaviSettingFragment
 import com.navinfo.omqs.ui.fragment.personalcenter.PersonalCenterFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -290,7 +291,23 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
                  * 路径规划
                  */
                 R.id.console_route_bg, R.id.console_route_icon_bg -> {
-                    Toast.makeText(requireContext(), "功能开发中", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(requireContext(), "功能开发中", Toast.LENGTH_SHORT).show()
+                    if (sceneFlag) {
+                        mFragment = NaviSettingFragment {
+                            TransitionManager.go(aScene, aTransition)
+                        }
+                        sceneFlag = false
+                        TransitionManager.go(bScene, bTransition)
+                    } else {
+                        if (mFragment !is NaviSettingFragment) {
+                            mFragment = NaviSettingFragment {
+                                TransitionManager.go(aScene, aTransition)
+                            }
+                            childFragmentManager.beginTransaction().replace(fragmentId, mFragment!!)
+                                .commit()
+                        }
+                        return
+                    }
                 }
                 else -> {}
             }

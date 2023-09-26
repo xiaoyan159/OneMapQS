@@ -44,4 +44,12 @@
         tools:layout="@layout/fragment_qs_record_list">
 
     </fragment>
+
+    <fragment
+        android:id="@+id/QsNaviSettingFragment"
+        android:name="com.navinfo.omqs.ui.fragment.navi.NaviSettingFragment"
+        android:label="导航设置"
+        tools:layout="@layout/fragment_navi_setting">
+
+    </fragment>
 </navigation>
