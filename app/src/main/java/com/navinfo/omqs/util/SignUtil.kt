@@ -1651,6 +1651,55 @@ class SignUtil {
         }
 
         /**
+         * 获取交通标牌详细信息
+         */
+        fun getTrafficSignMoreInfo(renderEntity: RenderEntity): List<TwoItemAdapterItem> {
+            val list = mutableListOf<TwoItemAdapterItem>()
+            val trafsignShape = when (renderEntity.properties["trafsignShape"]) {
+                "1" -> "不规则形状"
+                "2" -> "长方形"
+                "3" -> "三角形"
+                "4" -> "圆形"
+                "5" -> "菱形"
+                "6" -> "到三角形"
+                "7" -> "正方形"
+                "8" -> "八角形"
+                else -> ""
+            }
+            if (trafsignShape != "") {
+                list.add(
+                    TwoItemAdapterItem(
+                        title = "形状", text = trafsignShape
+                    )
+                )
+            }
+
+            val color = when (renderEntity.properties["color"]) {
+                "0" -> "未验证"
+                "1" -> "白色"
+                "2" -> "黄色"
+                "3" -> "红色"
+                "5" -> "棕色"
+                "6" -> "蓝色"
+                "7" -> "绿色"
+                "8" -> "黑色"
+                "9" -> "其他"
+                else -> ""
+            }
+            list.add(
+                TwoItemAdapterItem(
+                    title = "颜色", text = color
+                )
+            )
+            list.add(
+                TwoItemAdapterItem(
+                    title = "正北夹角", text = "${renderEntity.properties["heading"]}"
+                )
+            )
+            return list
+        }
+
+        /**
          * 计算捕捉点到
          */
         fun getDistance(

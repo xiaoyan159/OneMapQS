@@ -43,6 +43,8 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
      */
     private val mDefaultTextColor = "#4E55AF"
 
+    private var markerEnable = true
+
     /**
      * 文字画笔
      */
@@ -275,7 +277,12 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         // 设置矢量图层均在12级以上才显示
         mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
             if (e == Map.SCALE_EVENT) {
-                qsRecordItemizedLayer.isEnabled = mapPosition.getZoomLevel() >= 12
+                if(markerEnable){
+                    qsRecordItemizedLayer.isEnabled = mapPosition.getZoomLevel() >= 12
+                }else{
+                    qsRecordItemizedLayer.isEnabled = false
+                }
+
                 niLocationItemizedLayer.isEnabled = mapPosition.getZoomLevel() >= 12
             }
         })
@@ -369,6 +376,13 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
             }
         }
         createQsRecordMarker(data)
+        mMapView.updateMap(true)
+    }
+
+    fun setQsRecordMarkEnable(enable:Boolean){
+        qsRecordItemizedLayer.isEnabled = enable
+        markerEnable = enable
+        qsRecordItemizedLayer.populate()
         mMapView.updateMap(true)
     }
 

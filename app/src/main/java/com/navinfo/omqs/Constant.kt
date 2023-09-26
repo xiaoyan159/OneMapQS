@@ -108,6 +108,16 @@ class Constant {
         var MapRotateEnable = false
 
         /**
+         * Marker显隐
+         */
+        var MapMarkerCloseEnable = false
+
+        /**
+         * 是否开启线捕捉
+         */
+        var MapCatchLine = false
+
+        /**
          * 全要素捕捉
          */
         var CATCH_ALL = false
