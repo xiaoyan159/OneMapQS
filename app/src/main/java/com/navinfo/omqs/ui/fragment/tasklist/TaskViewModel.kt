@@ -503,7 +503,9 @@ class TaskViewModel @Inject constructor(
                     }
                 }
             }
+            realm.close()
             if(result==1){
+                liveDataTaskUpload.postValue(map)
                 withContext(Dispatchers.Main) {
                     val mDialog = FirstDialog(context)
                     mDialog.setTitle("提示？")
@@ -517,6 +519,7 @@ class TaskViewModel @Inject constructor(
                     mDialog.show()
                 }
             }else if(result==2){
+                liveDataTaskUpload.postValue(map)
                 withContext(Dispatchers.Main) {
                     val mDialog = FirstDialog(context)
                     mDialog.setTitle("提示？")
@@ -537,7 +540,6 @@ class TaskViewModel @Inject constructor(
                 map[taskBean] = true
                 liveDataTaskUpload.postValue(map)
             }
-            realm.close()
         }
     }
 

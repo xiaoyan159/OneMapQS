@@ -2,6 +2,7 @@ package com.navinfo.collect.library.utils;
 
 import android.graphics.Point;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -13,6 +14,8 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.oscim.core.GeoPoint;
 import org.oscim.core.MercatorProjection;
@@ -1504,6 +1507,28 @@ public class GeometryTools {
         return point;
     }
 
+
+    /**
+     * @param distLeft 单位km
+     * @param distRight 单位km
+     * @param wkt  几何
+     * @return
+     */
+    public static String computeLine(Double distLeft,Double distRight,String wkt){
+        if(!TextUtils.isEmpty(wkt)){
+            Geometry lineString1 = GeometryTools.createGeometry(wkt);
+            BufferParameters parameters1 = new BufferParameters();
+            parameters1.setEndCapStyle(BufferParameters.CAP_FLAT);
+            parameters1.setSingleSided(true);
+
+            Geometry buffer = BufferOp.bufferOp(lineString1, distLeft, parameters1);
+            Geometry buffer2 = BufferOp.bufferOp(lineString1, -distRight, parameters1);
+            String bufferWkt = buffer.union(buffer2).toString();
+            Log.e("qj",bufferWkt);
+            return bufferWkt;
+        }
+        return "";
+    }
 
     public static FootAndDistance pointToLineDistance(GeoPoint point, Geometry geometry) {
         //定义垂线

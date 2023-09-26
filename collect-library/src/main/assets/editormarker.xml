@@ -1587,12 +1587,12 @@
 
         <!--车道中心线-->
         <m v="OMDB_LANE_LINK_LG">
-            <m k="width" v="~">
-                <line stroke="#7A88A0" width="2.8" />
+<!--
+            <line stroke="#7A88A0" width="2.5" />
+-->
+            <m k="widthProperties">
+                <area use="obj-area" stroke="#7A88A0" repeat="true" src="assets:omdb/icon_5001_1.png" longEdge="t"></area>
             </m>
-<!--            <m k="width" v="~">
-                <line stroke="#4624FF" width="0.1" />
-            </m>-->
         </m>
 
         <!-- 检查点 -->

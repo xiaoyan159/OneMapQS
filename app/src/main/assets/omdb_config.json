@@ -523,6 +523,7 @@
 				"table": "OMDB_LANE_LINK_LG",
 				"code": 5001,
 				"name": "车道中心线",
+				"catch":false,
 				"checkLinkId": false,
 				"zoomMin": 18,
 				"zoomMax": 20,
