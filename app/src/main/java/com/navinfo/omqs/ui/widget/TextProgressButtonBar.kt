@@ -29,7 +29,7 @@ class TextProgressButtonBar : View {
     private var backgroundcolor = 0
     private var text: String? = null
     private var max = 100
-    private val corner = 30 // 圆角的弧度
+    private val corner = 15 // 圆角的弧度
     private val mStartColor = resources.getColor(R.color.default_button_blue_color)
     private val mEndColor = resources.getColor(R.color.ripple_end_color)
     private val mValueAnimator = ValueAnimator.ofInt(
@@ -109,6 +109,7 @@ class TextProgressButtonBar : View {
             canvas.drawRoundRect(oval, corner.toFloat(), corner.toFloat(), it)
             it.style = Paint.Style.FILL
             it.color = this.backgroundcolor
+            oval = RectF(1F, 1F, width.toFloat()-1, height.toFloat()-1)
             canvas.drawRoundRect(oval, corner.toFloat(), corner.toFloat(), it)
 
             if (progress <= corner) {
