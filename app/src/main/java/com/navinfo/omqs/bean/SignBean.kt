@@ -9,7 +9,7 @@ data class SignBean(
     //图标ID
     var iconId: Int = 0,
     //定位点到目标距离
-    val distance: Int = 0,
+    var distance: Int = 0,
     //左上图标中的文字
     val iconText: String = "",
     //绑定的linkid

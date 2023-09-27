@@ -153,6 +153,17 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         it.title = "锁定地图旋转及视角"
                     }
                 }
+                R.id.personal_center_menu_marker -> {
+                    niMapController.mMapView.vtmMap.eventLayer.enableTilt(Constant.MapRotateEnable)
+                    Constant.MapMarkerCloseEnable = !Constant.MapMarkerCloseEnable
+                    //增加开关控制
+                    niMapController.markerHandle.setQsRecordMarkEnable(!Constant.MapMarkerCloseEnable)
+                    if (Constant.MapMarkerCloseEnable) {
+                        it.title = "显示Marker"
+                    } else {
+                        it.title = "隐藏Marker"
+                    }
+                }
                 R.id.personal_center_menu_catch_all -> {
                     Constant.CATCH_ALL = !Constant.CATCH_ALL
                     if (Constant.CATCH_ALL) {
@@ -219,6 +230,13 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         it.title = "关闭全要素捕捉"
                     } else {
                         it.title = "开启全要素捕捉"
+                    }
+                }
+                R.id.personal_center_menu_marker -> {
+                    if (Constant.MapMarkerCloseEnable) {
+                        it.title = "显示Marker"
+                    } else {
+                        it.title = "隐藏Marker"
                     }
                 }
             }

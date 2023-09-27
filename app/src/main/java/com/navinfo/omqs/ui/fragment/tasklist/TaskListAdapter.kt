@@ -2,6 +2,7 @@ package com.navinfo.omqs.ui.fragment.tasklist
 
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -225,6 +226,9 @@ class TaskListAdapter(
                 binding.taskUploadBtn.stopAnimator()
                 binding.taskUploadBtn.setText("重新同步")
                 binding.taskUploadBtn.setProgress(100)
+                if(!TextUtils.isEmpty(taskBean.errMsg)){
+                    Toast.makeText(binding.root.context,taskBean.errMsg,Toast.LENGTH_LONG).show()
+                }
             }
 
             FileUploadStatus.NONE -> {

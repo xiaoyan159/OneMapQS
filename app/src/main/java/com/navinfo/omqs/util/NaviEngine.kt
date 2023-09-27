@@ -15,7 +15,7 @@ import org.locationtech.jts.geom.LineString
 import org.locationtech.jts.geom.Point
 import org.oscim.core.GeoPoint
 
-public interface OnNaviEngineCallbackListener {
+interface OnNaviEngineCallbackListener {
     fun planningPathStatus(code: NaviStatus)
 
     //    fun planningPathError(errorCode: NaviStatus, errorMessage: String)
@@ -33,10 +33,33 @@ enum class NaviStatus {
 }
 
 
+data class NaviOption(
+    /**
+     * 偏离距离 单位：米
+     */
+    var deviationDistance: Int = 15,
+
+    /**
+     * 偏离次数上限
+     */
+    var deviationCount: Int = 5,
+
+//    /**
+//     * 局部匹配时，没走过的路段还记录1000米
+//     */
+//    var nextRouteDistance: Int = 1000,
+
+    /**
+     * 最远显示距离 米
+     */
+    var farthestDisplayDistance: Int = 550,
+)
+
 class NaviEngine(
     private val niMapController: NIMapController,
     private val realmOperateHelper: RealmOperateHelper,
-    val callback: OnNaviEngineCallbackListener
+    val callback: OnNaviEngineCallbackListener,
+    var naviOption: NaviOption = NaviOption()
 ) {
 
     /**
@@ -64,30 +87,30 @@ class NaviEngine(
         DataCodeEnum.OMDB_LINK_NAME.name,
     )
 
-    /**
-     * 偏离距离 单位：米
-     */
-    private val DEVIATION_DISTANCE = 15
-
-    /**
-     * 偏离次数上限
-     */
-    private val DEVIATION_COUNT = 5
-
+//    /**
+//     * 偏离距离 单位：米
+//     */
+//    private val DEVIATION_DISTANCE = 15
+//
+//    /**
+//     * 偏离次数上限
+//     */
+//    private val DEVIATION_COUNT = 5
+//
     /**
      *  局部匹配时，走过的路段还记录100米
      */
     private val PASSED_ROUTE_DISTANCE = 100
-
-    /**
-     * 局部匹配时，没走过的路段还记录1000米
-     */
-    private val NEXT_ROUTE_DISTANCE = 1000
-
-    /**
-     * 最远显示距离 米
-     */
-    private val FARTHEST_DISPLAY_DISTANCE = 550
+//
+//    /**
+//     * 局部匹配时，没走过的路段还记录1000米
+//     */
+//    private val NEXT_ROUTE_DISTANCE = 1000
+//
+//    /**
+//     * 最远显示距离 米
+//     */
+//    private val FARTHEST_DISPLAY_DISTANCE = 550
 
     /**
      * 绑定失败次数
@@ -144,32 +167,34 @@ class NaviEngine(
         }
         set(value) {
             val list = mutableListOf<GeoPoint>()
-            val fRoute = value[0]
-            //第一个路段加入
-            list.addAll(fRoute.pointList)
-            //起始点位置
-            fRoute.startIndexInPath = 0
-            var startPoint = fRoute.pointList.size - 1
-            //终点位置
-            fRoute.endIndexIntPath = startPoint
-            fRoute.indexInPath = 0
+            if (value.size > 0) {
+                val fRoute = value[0]
+                //第一个路段加入
+                list.addAll(fRoute.pointList)
+                //起始点位置
+                fRoute.startIndexInPath = 0
+                var startPoint = fRoute.pointList.size - 1
+                //终点位置
+                fRoute.endIndexIntPath = startPoint
+                fRoute.indexInPath = 0
 
-            for (i in 1 until value.size) {
-                val route = value[i]
-                route.startIndexInPath = startPoint
-                if (route.itemList != null) {
-                    for (naviItem in route.itemList!!) {
-                        naviItem.index += startPoint
+                for (i in 1 until value.size) {
+                    val route = value[i]
+                    route.startIndexInPath = startPoint
+                    if (route.itemList != null) {
+                        for (naviItem in route.itemList!!) {
+                            naviItem.index += startPoint
+                        }
                     }
+                    startPoint += route.pointList.size - 1
+                    route.endIndexIntPath = startPoint
+                    route.indexInPath = i
+                    val list2 = ArrayList(route.pointList.toList())
+                    list2.removeAt(0)
+                    list.addAll(list2)
                 }
-                startPoint += route.pointList.size - 1
-                route.endIndexIntPath = startPoint
-                route.indexInPath = i
-                val list2 = ArrayList(route.pointList.toList())
-                list2.removeAt(0)
-                list.addAll(list2)
+                geometry = GeometryTools.createLineString(list)
             }
-            geometry = GeometryTools.createLineString(list)
             field = value
         }
 
@@ -257,73 +282,78 @@ class NaviEngine(
                 break
             }
         }
-        if (routeStart != null) {
-            var sNode = ""
-            var eNode = ""
-            //如果sNode，eNode是顺方向，geometry 不动，否则反转
-            if (routeStart.direct == 3) {
-                routeStart.pointList.reverse()
-                sNode = routeStart.eNode
-                eNode = routeStart.sNode
-            } else {
-                sNode = routeStart.sNode
-                eNode = routeStart.eNode
+
+        if (routeStart == null) {
+            routeStart = tempRouteList[0]
+            tempRouteList.removeAt(0)
+        }
+
+        var sNode = ""
+        var eNode = ""
+        //如果sNode，eNode是顺方向，geometry 不动，否则反转
+        if (routeStart.direct == 3) {
+            routeStart.pointList.reverse()
+            sNode = routeStart.eNode
+            eNode = routeStart.sNode
+        } else {
+            sNode = routeStart.sNode
+            eNode = routeStart.eNode
+        }
+        newRouteList.add(routeStart)
+        var bBreak = true
+        while (bBreak) {
+            //先找其实link的后续link
+            var bHasNext = false
+            for (route in tempRouteList) {
+                //如果是link 的e 对下个link的s，方向不用动，否则下个link的geometry反转
+                if (route.sNode != "" && eNode == route.sNode) {
+                    newRouteList.add(route)
+                    tempRouteList.remove(route)
+                    eNode = route.eNode
+                    bHasNext = true
+                    break
+                } else if (route.eNode != "" && eNode == route.eNode) {
+                    route.pointList.reverse()
+                    newRouteList.add(route)
+                    tempRouteList.remove(route)
+                    eNode = route.sNode
+                    bHasNext = true
+                    break
+                }
             }
-            newRouteList.add(routeStart)
-            var bBreak = true
-            while (bBreak) {
-                //先找其实link的后续link
-                var bHasNext = false
-                for (route in tempRouteList) {
-                    //如果是link 的e 对下个link的s，方向不用动，否则下个link的geometry反转
-                    if (route.sNode != "" && eNode == route.sNode) {
-                        newRouteList.add(route)
-                        tempRouteList.remove(route)
-                        eNode = route.eNode
-                        bHasNext = true
-                        break
-                    } else if (route.eNode != "" && eNode == route.eNode) {
-                        route.pointList.reverse()
-                        newRouteList.add(route)
-                        tempRouteList.remove(route)
-                        eNode = route.sNode
-                        bHasNext = true
-                        break
-                    }
+            //先找其实link的起始link
+            var bHasLast = false
+            for (route in tempRouteList) {
+                //如果是link 的s 对上个link的e，方向不用动，否则下个link的geometry反转
+                if (route.eNode != "" && sNode == route.eNode) {
+                    newRouteList.add(0, route)
+                    tempRouteList.remove(route)
+                    sNode = route.sNode
+                    bHasLast = true
+                    break
+                } else if (route.sNode != "" && sNode == route.sNode) {
+                    route.pointList.reverse()
+                    newRouteList.add(0, route)
+                    tempRouteList.remove(route)
+                    sNode = route.eNode
+                    bHasLast = true
+                    break
                 }
-                //先找其实link的起始link
-                var bHasLast = false
-                for (route in tempRouteList) {
-                    //如果是link 的s 对上个link的e，方向不用动，否则下个link的geometry反转
-                    if (route.eNode != "" && sNode == route.eNode) {
-                        newRouteList.add(0, route)
-                        tempRouteList.remove(route)
-                        sNode = route.sNode
-                        bHasLast = true
-                        break
-                    } else if (route.sNode != "" && sNode == route.sNode) {
-                        route.pointList.reverse()
-                        newRouteList.add(0, route)
-                        tempRouteList.remove(route)
-                        sNode = route.eNode
-                        bHasLast = true
-                        break
-                    }
-                }
-                if (tempRouteList.size == 0) {
+            }
+            if (tempRouteList.size == 0) {
+                bBreak = false
+            } else {
+                if (!bHasLast && !bHasNext) {
                     bBreak = false
-                } else {
-                    if (!bHasLast && !bHasNext) {
-                        bBreak = false
-                        callback.planningPathStatus(
-                            NaviStatus.NAVI_STATUS_PATH_ERROR_BLOCKED
-                        )
-                        realm.close()
-                        return
-                    }
+                    callback.planningPathStatus(
+                        NaviStatus.NAVI_STATUS_PATH_ERROR_BLOCKED
+                    )
+                    realm.close()
+                    return
                 }
             }
         }
+
         val itemMap: MutableMap<GeoPoint, MutableList<RenderEntity>> = mutableMapOf()
         //查询每根link上的关联要素
         for (route in newRouteList) {
@@ -415,7 +445,7 @@ class NaviEngine(
                 val pointPairDistance = GeometryTools.pointToLineDistance(point, geometry)
                 //定义垂线
                 //定位点到垂足距离不超过30米
-                if (pointPairDistance.getMeterDistance() < DEVIATION_DISTANCE) {
+                if (pointPairDistance.getMeterDistance() < naviOption.deviationDistance) {
                     footIndex = pointPairDistance.footIndex
 //                    Log.e(
 //                        "jingo",
@@ -453,7 +483,7 @@ class NaviEngine(
                 val pointPairDistance = GeometryTools.pointToLineDistance(point, tempGeometry)
                 //定义垂线
                 //定位点到垂足距离不超过30米
-                if (pointPairDistance.getMeterDistance() < DEVIATION_DISTANCE) {
+                if (pointPairDistance.getMeterDistance() < naviOption.deviationDistance) {
                     footIndex = pointPairDistance.footIndex + tempRoutList[0].startIndexInPath
 //                    Log.e("jingo", "局部 当前绑定到了整条路线的第 $footIndex 点")
                     val lastRouteIndex = routeIndex
@@ -531,7 +561,7 @@ class NaviEngine(
                             tempIndex = rightI + 1
                             distance = GeometryTools.getDistance(disPoints)
 //                            Log.e("jingo", "我的距离${distance} 下一个${tempIndex} 位置${rightI}")
-                            if (distance < FARTHEST_DISPLAY_DISTANCE && distance > -1) {
+                            if (distance < naviOption.farthestDisplayDistance && distance > -1) {
                                 naviItem.distance = distance.toInt()
                                 bindingItemList.add(naviItem)
                             } else {
@@ -539,7 +569,7 @@ class NaviEngine(
                             }
                         }
                     }
-                    if (distance >= FARTHEST_DISPLAY_DISTANCE) {
+                    if (distance >= naviOption.farthestDisplayDistance) {
                         break
                     }
                 }
@@ -570,7 +600,8 @@ class NaviEngine(
             distance = 0.0
             //没走过的路是否有1000米
             var j = routeIndex + 1
-            while (j < routeList.size && distance < NEXT_ROUTE_DISTANCE) {
+            val nextDis = naviOption.farthestDisplayDistance + 500
+            while (j < routeList.size && distance < nextDis) {
                 val routeT = routeList[j]
                 tempRoutList.add(routeT)
                 distance += routeT.length
@@ -596,7 +627,7 @@ class NaviEngine(
      */
     private fun deviationUp() {
         errorCount++
-        if (errorCount >= DEVIATION_COUNT) {
+        if (errorCount >= naviOption.deviationCount) {
             callback.planningPathStatus(NaviStatus.NAVI_STATUS_DISTANCE_OFF)
             bindingReset()
         }

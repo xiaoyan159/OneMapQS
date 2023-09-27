@@ -1,9 +1,6 @@
 package com.navinfo.omqs.ui.activity.map
 
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -11,7 +8,6 @@ import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnLongClickListener
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -20,6 +16,8 @@ import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,9 +25,9 @@ import com.blankj.utilcode.util.ClipboardUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.navinfo.collect.library.data.entity.RenderEntity
-import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.MeasureLayerHandler
+import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.ImportConfig
@@ -39,7 +37,6 @@ import com.navinfo.omqs.databinding.ActivityMainBinding
 import com.navinfo.omqs.http.offlinemapdownload.OfflineMapDownloadManager
 import com.navinfo.omqs.tools.LayerConfigUtils
 import com.navinfo.omqs.ui.activity.BaseActivity
-import com.navinfo.omqs.ui.dialog.LoadingDialog
 import com.navinfo.omqs.ui.fragment.console.ConsoleFragment
 import com.navinfo.omqs.ui.fragment.itemlist.ItemListFragment
 import com.navinfo.omqs.ui.fragment.offlinemap.OfflineMapFragment
@@ -53,6 +50,8 @@ import com.navinfo.omqs.util.NaviStatus
 import com.navinfo.omqs.util.SignUtil
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
 import org.oscim.renderer.GLViewport
@@ -350,29 +349,27 @@ class MainActivity : BaseActivity() {
             }
         }
         viewModel.liveDataSignMoreInfo.observe(this) {
-            val fragment =
-                supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
-            if (fragment == null) {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment())
-                    .commit()
+
+            if(!rightController.backQueue.isEmpty()){
+                rightController.navigateUp()
             }
-            //启动问题记录
-            val signBean = SignBean(
-                iconId = SignUtil.getSignIcon(it),
-                iconText = SignUtil.getSignIconText(it),
-                linkId = it.properties[RenderEntity.Companion.LinkTable.linkPid]
-                    ?: "",
-                name = SignUtil.getSignNameText(it),
-                bottomRightText = SignUtil.getSignBottomRightText(it),
-                renderEntity = it,
-                isMoreInfo = SignUtil.isMoreInfo(it),
-                index = SignUtil.getRoadInfoIndex(it)
-            )
-            val bundle = Bundle()
-            bundle.putParcelable("SignBean", signBean)
-            bundle.putBoolean("AutoSave", false)
-            rightController.navigate(R.id.EvaluationResultFragment, bundle)
+
+            lifecycleScope.launch{
+                delay(100)
+                val fragment =
+                    supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
+                if (fragment == null) {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment())
+                        .commit()
+                }else{
+                    supportFragmentManager.beginTransaction().add(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment()).commit()
+                }
+                val bundle = Bundle()
+                bundle.putParcelable("SignBean", it)
+                bundle.putBoolean("AutoSave", false)
+                rightController.navigate(R.id.EvaluationResultFragment, bundle)
+            }
         }
 
         viewModel.liveIndoorToolsResp.observe(this) {
@@ -781,17 +778,20 @@ class MainActivity : BaseActivity() {
     }
 
     /**
-     * 刷新地图
+     * 线捕捉开关
      */
-    fun refrushOnclick(view: View) {
-        mapController.layerManagerHandler.updateOMDBVectorTileLayer()
+    fun catchLineOnclick(view: View) {
+        viewModel.setCatchRoad(!viewModel.isCatchRoad())
+        binding.mainActivityMapCatchLine.isSelected = viewModel.isCatchRoad()
     }
 
     /**
      * zoomin
      */
     fun zoomInOnclick(view: View) {
-        mapController.animationHandler.zoomIn()
+        Log.e("qj", "computeline==${GeometryTools.computeLine(0.00003,0.00003,"LINESTRING(116.2730063860964 40.09052257957624 36.75, 116.27376497186042 40.090072453495395 38.34, 116.27413076766412 40.089855289361786 39.01, 116.27417239035157 40.08983061650492 39.15, 116.27466896728139 40.089535645040385 39.99, 116.2751211296483 40.089267551829636 40.67, 116.27545352868347 40.089070581974944 40.98, 116.27589660200627 40.088807594767246 41.28, 116.27604819769634 40.088718103405185 41.34, 116.27667570485863 40.08834486145473 41.43, 116.2770275412774 40.08813642434714 41.36, 116.27745673745146 40.087882150865546 41.14, 116.27778797172138 40.08768490714857 40.89, 116.2781675465249 40.087459905560266 40.45, 116.2783819045443 40.087332076220086 40.02, 116.27880692426884 40.0870801193608 39.32, 116.27943180930261 40.08670963506418 38.04, 116.27977508323622 40.08650562397605 37.39, 116.28016410016664 40.08627485623695 36.77, 116.28057924586821 40.0860283164225 36.29)")}")
+
+        //mapController.animationHandler.zoomIn()
     }
 
     /**

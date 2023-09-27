@@ -6,7 +6,6 @@ import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
 import io.realm.Realm
-import io.realm.RealmConfiguration
 import org.json.JSONArray
 import org.json.JSONObject
 import org.locationtech.jts.algorithm.Angle
@@ -583,9 +582,9 @@ class ImportPreProcess {
         angleReference.renderEntityId = renderEntity.id
         angleReference.name = "${renderEntity.name}车道中线面"
         angleReference.table = renderEntity.table
-        angleReference.geometry = renderEntity.geometry
+        angleReference.geometry = GeometryTools.computeLine(0.00002,0.00002,renderEntity.geometry)
         angleReference.properties["qi_table"] = renderEntity.table
-        angleReference.properties["width"] = "3"
+        angleReference.properties["widthProperties"] = "3"
         angleReference.zoomMin = renderEntity.zoomMin
         angleReference.zoomMax = renderEntity.zoomMax
         angleReference.taskId = renderEntity.taskId

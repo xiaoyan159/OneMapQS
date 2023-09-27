@@ -15,4 +15,13 @@
         <attr name="deleteBtnWidth" format="float"/>
     </declare-styleable>
 
+
+    <declare-styleable name="CanvasView">
+        <attr name="isSavePoint" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="AddAndSubEditView">
+        <attr name="textValue" format="integer" />
+    </declare-styleable>
+
 </resources>
