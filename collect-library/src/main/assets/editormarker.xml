@@ -1822,10 +1822,10 @@
         <!-- 路口内交通岛 -->
         <m v="OMDB_OBJECT_REFUGE_ISLAND">
             <m k="type" v="1">
-                <area use="obj-area" repeat="true" fill="#33666666"></area>
+                <area use="obj-area" repeat="true" src="assets:omdb/tex_fill_area_3027_1.svg"></area>
             </m>
             <m k="type" v="2">
-                <area use="obj-area" repeat="true" fill="#33333333"></area>
+                <area use="obj-area" repeat="true" src="assets:omdb/tex_fill_area_3027_2.svg"></area>
             </m>
         </m>
 
