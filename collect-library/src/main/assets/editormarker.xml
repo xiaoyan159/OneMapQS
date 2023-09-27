@@ -1622,15 +1622,21 @@
         <!-- 道路边界类型 -->
         <m v="OMDB_RDBOUND_BOUNDARYTYPE">
             <outline-layer id="boundaryType" stroke="#8e44ad" width="0.1" />
-            <m k="boundaryType" v="2|6|8">
+            <!--护栏-->
+            <m k="boundaryType" v="4">
+                <line stroke="#FFBC6E" use="boundaryType" width="0.1"/>
+                <symbol repeat-gap="12" repeat="true" repeat-start="0" src="assets:omdb/icon_2013_4.svg" symbol-width="16" symbol-height="46"></symbol>
+            </m>
+            <!--路牙-->
+            <m k="boundaryType" v="3">
+                <symbol repeat="true" repeat-gap="10" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="16" symbol-height="10"></symbol>
+            </m>
+            <m k="boundaryType" v="2|6">
                 <line stroke="#ffffff" use="boundaryType" width="0.1"/>
             </m>
-<!--            <m k="boundaryType" v="0|2|3|4|5|6|7|8|9">
-                <line stroke="#ffffff" use="boundaryType" width="0.1"/>
-            </m>-->
-            <m k="boundaryType" v="1">
-                <!--无标线无可区分边界-->
-                <line dasharray="2,2" repeat-start="0" stroke="#ffffff" width="0.2"/>
+            <m k="boundaryType" v="8">
+                <line stroke="#FFBC6E" use="boundaryType" width="0.1"/>
+                <symbol repeat-gap="12" repeat="true" repeat-start="0" src="assets:omdb/icon_2083_8.svg" symbol-width="24" symbol-height="32"></symbol>
             </m>
         </m>
 
