@@ -93,11 +93,6 @@ class Constant {
         const val DEBUG = true
 
         /**
-         * 地图最多缩放级别20
-         */
-        const val MAX_ZOOM = 20
-
-        /**
          * 是否自动定位
          */
         var AUTO_LOCATION = false

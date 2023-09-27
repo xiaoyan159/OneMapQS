@@ -35,12 +35,18 @@ public class OMDBTileDataSource implements ITileDataSource {
     @Override
     public void query(MapTile tile, ITileDataSink mapDataSink) {
         // 获取tile对应的坐标范围
-        if (tile.zoomLevel >= Constant.OMDB_MIN_ZOOM && tile.zoomLevel < Constant.OVER_ZOOM) {
-            int m = Constant.OVER_ZOOM - tile.zoomLevel;
-            int xStart = (int) tile.tileX << m;
-            int xEnd = (int) ((tile.tileX + 1) << m);
-            int yStart = (int) tile.tileY << m;
-            int yEnd = (int) ((tile.tileY + 1) << m);
+        if (tile.zoomLevel >= Constant.OMDB_MIN_ZOOM && tile.zoomLevel <= Constant.DATA_ZOOM) {
+            int m = Constant.DATA_ZOOM - tile.zoomLevel;
+            int xStart = tile.tileX;
+            int xEnd = tile.tileX + 1;
+            int yStart = tile.tileY;
+            int yEnd = tile.tileY + 1;
+            if (m>0) {
+                xStart = (int) (xStart << m);
+                xEnd = (int) (xEnd << m);
+                yStart = (int) (yStart << m);
+                yEnd = (int) (yEnd << m);
+            }
 
             if(isUpdate){
                 Realm.getInstance(MapParamUtils.getTaskConfig()).refresh();

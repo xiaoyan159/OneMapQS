@@ -181,6 +181,23 @@
 					}
 				]
 			},
+			"3001":{
+				"table": "OMDB_OBJECT_OH_STRUCT",
+				"code": 3001,
+				"name": "上方障碍物",
+				"zoomMin": 15,
+				"zoomMax": 20,
+				"catch":true,
+				"checkLinkId": false,
+				"transformer": [
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "getPolygonCenterPoint()"
+					}
+				]
+			},
 			"3002":{
 				"table": "OMDB_OBJECT_TEXT",
 				"code": 3002,
@@ -279,6 +296,15 @@
 				"filterData": true,
 				"zoomMin": 18,
 				"catch":true,
+				"zoomMax": 20
+			},
+			"3027":{
+				"table": "OMDB_OBJECT_REFUGE_ISLAND",
+				"code": 3027,
+				"name": "路口内交通岛",
+				"catch":true,
+				"checkLinkId": false,
+				"zoomMin": 18,
 				"zoomMax": 20
 			},
 			"4001": {

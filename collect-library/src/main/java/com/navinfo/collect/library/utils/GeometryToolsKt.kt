@@ -38,8 +38,8 @@ class GeometryToolsKt {
                         }
                     }
                     // 分别计算最大和最小x值对应的tile号
-                    val tileY0 = MercatorProjection.latitudeToTileY(minMaxY[0], Constant.OVER_ZOOM.toByte())
-                    val tileY1 = MercatorProjection.latitudeToTileY(minMaxY[1], Constant.OVER_ZOOM.toByte())
+                    val tileY0 = MercatorProjection.latitudeToTileY(minMaxY[0], Constant.DATA_ZOOM.toByte())
+                    val tileY1 = MercatorProjection.latitudeToTileY(minMaxY[1], Constant.DATA_ZOOM.toByte())
                     val minTileY = if (tileY0 <= tileY1) tileY0 else tileY1
                     val maxTileY = if (tileY0 <= tileY1) tileY1 else tileY0
 //                    println("getTileYByGeometry$envelope===$minTileY===$maxTileY")
@@ -82,8 +82,8 @@ class GeometryToolsKt {
                             }
                         }
                         // 分别计算最大和最小x值对应的tile号
-                        val tileX0 = MercatorProjection.longitudeToTileX(minMaxX[0], Constant.OVER_ZOOM.toByte())
-                        val tileX1 = MercatorProjection.longitudeToTileX(minMaxX[1], Constant.OVER_ZOOM.toByte())
+                        val tileX0 = MercatorProjection.longitudeToTileX(minMaxX[0], Constant.DATA_ZOOM.toByte())
+                        val tileX1 = MercatorProjection.longitudeToTileX(minMaxX[1], Constant.DATA_ZOOM.toByte())
                         val minTileX = if (tileX0 <= tileX1) tileX0 else tileX1
                         val maxTileX = if (tileX0 <= tileX1) tileX1 else tileX0
 //                        println("getTileXByGeometry$envelope$minTileX===$maxTileX")
