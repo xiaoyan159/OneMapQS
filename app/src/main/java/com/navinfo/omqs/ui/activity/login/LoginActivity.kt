@@ -40,7 +40,13 @@ class LoginActivity : CheckPermissionsActivity() {
         binding.activity = this
         initView()
         Log.e("jingo", getScreenParams())
-        UMConfigure.init(this, "650bece7b2f6fa00ba573c7a", "native", UMConfigure.DEVICE_TYPE_PHONE, "")
+        UMConfigure.init(
+            this,
+            "650bece7b2f6fa00ba573c7a",
+            "native",
+            UMConfigure.DEVICE_TYPE_PHONE,
+            ""
+        )
     }
 
     private fun getScreenParams(): String {

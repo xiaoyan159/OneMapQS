@@ -2,10 +2,6 @@ package com.navinfo.collect.library.system;
 
 import android.os.Environment;
 
-import com.navinfo.collect.library.map.source.RealmDBTileDataSource;
-
-import org.oscim.tiling.OverzoomTileDataSource;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,8 +26,11 @@ public class Constant {
     }
 
     public static String[] HAD_LAYER_INVISIABLE_ARRAY;
-    public static final int OVER_ZOOM = 20;
-    public static final int MAX_ZOOM = 20;
+    // 渲染引擎开始切割的级别
+    public static final int OVER_ZOOM = 18;
+    public static final int MAX_ZOOM = 22;
+    // 数据保存时的zoom
+    public static final int DATA_ZOOM = 23;
     public static final int OMDB_MIN_ZOOM = 15;
 
     /**

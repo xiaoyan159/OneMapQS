@@ -503,9 +503,10 @@ class TaskViewModel @Inject constructor(
                     }
                 }
             }
+            realm.close()
             if(result==1){
+                liveDataTaskUpload.postValue(map)
                 withContext(Dispatchers.Main) {
-                    liveDataTaskUpload.postValue(map)
                     val mDialog = FirstDialog(context)
                     mDialog.setTitle("提示？")
                     mDialog.setMessage("此任务中存在新增Link无问题记录，请添加至少一条记录！")
@@ -518,8 +519,8 @@ class TaskViewModel @Inject constructor(
                     mDialog.show()
                 }
             }else if(result==2){
+                liveDataTaskUpload.postValue(map)
                 withContext(Dispatchers.Main) {
-                    liveDataTaskUpload.postValue(map)
                     val mDialog = FirstDialog(context)
                     mDialog.setTitle("提示？")
                     mDialog.setMessage("此任务中存在未测评link，请确认！")
@@ -539,7 +540,6 @@ class TaskViewModel @Inject constructor(
                 map[taskBean] = true
                 liveDataTaskUpload.postValue(map)
             }
-            realm.close()
         }
     }
 

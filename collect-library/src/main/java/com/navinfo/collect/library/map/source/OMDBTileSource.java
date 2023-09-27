@@ -7,7 +7,6 @@ import com.navinfo.collect.library.system.Constant;
 
 import org.oscim.tiling.ITileDataSource;
 import org.oscim.tiling.OverzoomTileDataSource;
-import org.oscim.tiling.TileSource;
 
 import io.realm.Realm;
 
@@ -16,7 +15,7 @@ public class OMDBTileSource extends RealmDBTileSource {
     @Override
     public ITileDataSource getDataSource() {
        // return new OverzoomTileDataSource(new OMDBTileDataSource(), Constant.OVER_ZOOM);
-        return omdbTileSource;
+        return new OverzoomTileDataSource(omdbTileSource, Constant.OVER_ZOOM);
     }
 
     @Override

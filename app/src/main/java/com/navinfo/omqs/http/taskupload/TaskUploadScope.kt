@@ -125,10 +125,13 @@ class TaskUploadScope(
             }
 
             taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
+                Log.e("jingo", "数据上传遍历开始")
 
                 val linkStatus = 1
                 //存在原因标记未测评
                 if (hadLinkDvoBean.reason.isNotEmpty()) {
+                    Log.e("jingo", "数据上传遍历开始0${hadLinkDvoBean.linkPid}")
+
                     //未测评
                     val linkStatus = 0
 
@@ -159,6 +162,8 @@ class TaskUploadScope(
                     bodyList.add(evaluationInfo)
 
                 } else {
+
+                    Log.e("jingo", "数据上传遍历开始1${hadLinkDvoBean.linkPid}")
 
                     val linkStatus = hadLinkDvoBean.linkStatus
 
@@ -221,8 +226,9 @@ class TaskUploadScope(
                         }
                     }
                 }
-                realm.close()
+                Log.e("jingo", "数据上传遍历结束")
             }
+            realm.close()
 
             if (bodyList.size > 0) {
                 val result = uploadManager.netApi.postRequest(bodyList)// .enqueue(object :
