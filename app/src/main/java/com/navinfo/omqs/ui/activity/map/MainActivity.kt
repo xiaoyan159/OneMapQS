@@ -356,6 +356,11 @@ class MainActivity : BaseActivity() {
 
             lifecycleScope.launch{
                 delay(100)
+
+                val bundle = Bundle()
+                bundle.putParcelable("SignBean", it)
+                bundle.putBoolean("AutoSave", false)
+                rightController.navigate(R.id.EvaluationResultFragment, bundle)
                 val fragment =
                     supportFragmentManager.findFragmentById(R.id.main_activity_sign_more_info_fragment)
                 if (fragment == null) {
@@ -365,10 +370,6 @@ class MainActivity : BaseActivity() {
                 }else{
                     supportFragmentManager.beginTransaction().add(R.id.main_activity_sign_more_info_fragment, SignMoreInfoFragment()).commit()
                 }
-                val bundle = Bundle()
-                bundle.putParcelable("SignBean", it)
-                bundle.putBoolean("AutoSave", false)
-                rightController.navigate(R.id.EvaluationResultFragment, bundle)
             }
         }
 
