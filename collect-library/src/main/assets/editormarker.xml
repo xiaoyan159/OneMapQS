@@ -1510,7 +1510,7 @@
                 <line outline="kind0" use="trunk" fix="true" width="2.6"/>
             </m>
 
-            <m k="kind" v="4">width="0.4"
+            <m k="kind" v="4">
                 <line outline="kind0" use="primary:z11" fix="true" width="2.2"/>
             </m>
 

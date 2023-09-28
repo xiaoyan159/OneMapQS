@@ -28,7 +28,7 @@ public class Constant {
     public static String[] HAD_LAYER_INVISIABLE_ARRAY;
     // 渲染引擎开始切割的级别
     public static final int OVER_ZOOM = 18;
-    public static final int MAX_ZOOM = 22;
+    public static final int MAX_ZOOM = 20;
     // 数据保存时的zoom
     public static final int DATA_ZOOM = 23;
     public static final int OMDB_MIN_ZOOM = 15;

@@ -1,7 +1,6 @@
 package com.navinfo.omqs.util
 
 import android.util.Log
-import androidx.lifecycle.lifecycleScope
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.utils.FootAndDistance
@@ -17,7 +16,6 @@ import com.navinfo.omqs.ui.fragment.signMoreInfo.TwoItemAdapterItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import org.locationtech.jts.geom.Geometry
@@ -432,6 +430,7 @@ class SignUtil {
                         )
                     )
                 }
+                //停止位置
                 DataCodeEnum.OMDB_OBJECT_STOPLOCATION.code -> {
                     list.add(
                         TwoItemAdapterItem(
@@ -501,6 +500,7 @@ class SignUtil {
                         )
                     )
                 }
+                //文字
                 DataCodeEnum.OMDB_OBJECT_TEXT.code -> {
                     list.add(
                         TwoItemAdapterItem(
@@ -545,7 +545,168 @@ class SignUtil {
                         )
                     )
                 }
-
+                //上方障碍物
+                DataCodeEnum.OMDB_OBJECT_OH_STRUCT.code -> {
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "对象号码",
+                            text = "${data.properties["objectPid"]}"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "符合高精", text = when (data.properties["compliant"]) {
+                                "0" -> "否"
+                                "1" -> "是"
+                                else -> ""
+                            }
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "车道组", text = "${data.properties["lgId"]}"
+                        )
+                    )
+                }
+                //符号
+                DataCodeEnum.OMDB_OBJECT_SYMBOL.code -> {
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "对象号码",
+                            text = "${data.properties["objectPid"]}"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "颜色",
+                            text = when (data.properties["color"]) {
+                                "0" -> "未验证"
+                                "1" -> "白色"
+                                "2" -> "黄色"
+                                "3" -> "红色"
+                                "4" -> "彩色"
+                                "9" -> "其他"
+                                else -> ""
+                            }
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "符合高精", text = when (data.properties["compliant"]) {
+                                "0" -> "否"
+                                "1" -> "是"
+                                else -> ""
+                            }
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "关联车道中心线", text = "${data.properties["laneLinkPid"]}"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "长度", text = "${data.properties["length"]}mm"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "宽度", text = "${data.properties["width"]}mm"
+                        )
+                    )
+                }
+                //杆状物
+                DataCodeEnum.OMDB_POLE.code ->{
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "对象号码",
+                            text = "${data.properties["objectPid"]}"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "类型",
+                            text = when (data.properties["poleType"]) {
+                                "1" -> "其他"
+                                "2" -> "树干"
+                                else -> ""
+                            }
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "顶面直径",
+                            text = "${data.properties["diameterTop"]}"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "底面直径",
+                            text = "${data.properties["diameterBottom"]}"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "符合高精", text = when (data.properties["compliant"]) {
+                                "0" -> "否"
+                                "1" -> "是"
+                                else -> ""
+                            }
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "车道组", text = "${data.properties["lgList"]}"
+                        )
+                    )
+                }
+                //箭头
+                DataCodeEnum.OMDB_OBJECT_ARROW.code ->{
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "对象号码",
+                            text = "${data.properties["objectPid"]}"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "颜色",
+                            text = when (data.properties["color"]) {
+                                "0" -> "未验证"
+                                "1" -> "白色"
+                                "2" -> "黄色"
+                                "3" -> "红色"
+                                "4" -> "彩色"
+                                "9" -> "其他"
+                                else -> ""
+                            }
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "符合高精", text = when (data.properties["compliant"]) {
+                                "0" -> "否"
+                                "1" -> "是"
+                                else -> ""
+                            }
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "关联车道中心线", text = "${data.properties["laneLinkPid"]}"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "长度", text = "${data.properties["length"]}mm"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "宽度", text = "${data.properties["width"]}mm"
+                        )
+                    )
+                }
             }
             adapter.data = list
             return adapter
@@ -838,7 +999,8 @@ class SignUtil {
                     val job = scope.launch(Dispatchers.IO) {
                         val typeCode = data.properties["typeCode"]
                         if (typeCode != null) {
-                            describe = roomAppDatabase.getScWarningCodeDao().findScWarningDescribe(typeCode).toString()
+                            describe = roomAppDatabase.getScWarningCodeDao()
+                                .findScWarningDescribe(typeCode).toString()
                         }
                     }
                     job.join()
