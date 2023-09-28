@@ -346,7 +346,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                         renderEntity.properties["boundaryType"]
                                                     if (boundaryType != null) {
                                                         when (boundaryType.toInt()) {
-                                                            0, 3, 4, 5, 7, 9 -> {
+                                                            0, 1, 5, 7, 9 -> {
                                                                 renderEntity.enable = 0
                                                                 Log.e(
                                                                     "qj",
