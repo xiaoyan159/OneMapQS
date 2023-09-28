@@ -12,7 +12,7 @@
     <g id="--" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="C9_1_icon-汇总说明(一)" transform="translate(-2487.000000, -1539.000000)" fill="#ffffff" fill-rule="nonzero" stroke="#ffffff">
             <g id="编组-5" transform="translate(2487.000000, 1465.000000)">
-                <g id="提示前方可自行或右后方掉头复制-2" transform="translate(1.000000, 74.000000)">
+                <g id="提示前方可自行或右后方掉头复制-2" transform="translate(1.000000, 74.000000) scale(0.9)">
                     <polygon id="path2214_3_" stroke-width="0.8" points="5.909 29.208 5.895 4.113 9.36 6.968 9.422 4.391 4.918 0.792 0.308 4.386 0.377 7.13 4.054 4.003 4.071 29.167"></polygon>
                     <use id="path22940_9_" mask="url(#mask-2)" stroke-width="1.6" stroke-dasharray="6" xlink:href="#path-1"></use>
                 </g>
