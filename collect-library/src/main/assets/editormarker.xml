@@ -2020,7 +2020,7 @@
 
         <!-- 箭头 -->
         <m v="OMDB_OBJECT_ARROW">
-            <area use="obj-area" stroke="#ffffff" repeat="false" src="@src" longEdge="n" hasDirect="true"></area>
+            <area use="obj-area" stroke="#00000000" repeat="false" src="@src" longEdge="n" hasDirect="true"></area>
         </m>
 
         <!-- 道路施工 -->
