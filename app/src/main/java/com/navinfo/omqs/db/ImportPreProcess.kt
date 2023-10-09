@@ -52,24 +52,33 @@ class ImportPreProcess {
         // 获取当前renderEntity的geometry
         val geometry = renderEntity.wkt
         var radian = 0.0 // geometry的角度，如果是点，获取angle，如果是线，获取最后两个点的方向
-        var point = Coordinate(geometry?.coordinate)
+
+        var isReverse = false // 是否为逆向
+        if (direction.isNotEmpty()) {
+            val paramDirections = direction.split("=")
+            if (paramDirections.size >= 2 && renderEntity.properties[paramDirections[0].trim()] == paramDirections[1].trim()) {
+                isReverse = true;
+            }
+        }
+        // 如果是正向，则取最后一个点作为渲染图标的位置
+        var point = geometry!!.coordinates[geometry!!.coordinates.size-1]
+        if (isReverse){
+            // 逆向的话取第一个点作为渲染图标的位置
+            point = geometry.coordinates[0]
+        }
+
         // 如果数据属性中存在angle，则使用该值，否则需要根据line中的数据进行计算
         if (renderEntity?.properties?.get(
                 "angle"
             ) != null
         ) {
+            // 带有angle字段的数据，也有可能是线，需要判断是否需要根据指定字段判断数据是否为逆向
+
             var angle = renderEntity?.properties?.get("angle")?.toDouble()!!
             // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
             angle = ((450 - angle) % 360)
             radian = Math.toRadians(angle)
         } else {
-            var isReverse = false // 是否为逆向
-            if (direction.isNotEmpty()) {
-                val paramDirections = direction.split("=")
-                if (paramDirections.size >= 2 && renderEntity.properties[paramDirections[0].trim()] == paramDirections[1].trim()) {
-                    isReverse = true;
-                }
-            }
             if (Geometry.TYPENAME_LINESTRING == geometry?.geometryType) {
                 var coordinates = geometry.coordinates
                 if (isReverse) {
@@ -79,7 +88,7 @@ class ImportPreProcess {
                 val p2: Coordinate = coordinates.get(coordinates.size - 1)
                 // 计算线段的方向
                 radian = Angle.angle(p1, p2)
-                point = p1
+                point = p2
             }
         }
 
@@ -97,7 +106,7 @@ class ImportPreProcess {
         val coord =
             Coordinate(point.getX() + dy, point.getY() - dx)
 
-        // 记录偏移后的点位或线数据，如果数据为线时，记录的偏移后数据为倒数第二个点右移后，方向与线的最后两个点平行同向的单位向量
+        // 记录偏移后的点位或线数据，如果数据为线时，记录的偏移后数据为最后一个点右移后，方向与线的最后两个点平行同向的单位向量
         if (Geometry.TYPENAME_POINT == geometry?.geometryType) {
             val geometryTranslate: Geometry =
                 GeometryTools.createGeometry(doubleArrayOf(coord.x, coord.y))

@@ -2,11 +2,18 @@ package com.navinfo.collect.library.map.source;
 
 import com.navinfo.collect.library.system.Constant;
 
+import org.oscim.map.Viewport;
 import org.oscim.tiling.ITileDataSource;
 import org.oscim.tiling.OverzoomTileDataSource;
 
 public class OMDBReferenceTileSource extends RealmDBTileSource {
-    private OMDBReferenceDataSource omdbReferenceTileSource = new OMDBReferenceDataSource();
+    private OMDBReferenceDataSource omdbReferenceTileSource;
+    private Viewport viewport;
+
+    public OMDBReferenceTileSource(Viewport viewport) {
+        this.viewport = viewport;
+        this.omdbReferenceTileSource = new OMDBReferenceDataSource(this.viewport);
+    }
 
     @Override
     public ITileDataSource getDataSource() {
