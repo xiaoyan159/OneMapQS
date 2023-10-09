@@ -12,6 +12,7 @@ import com.navinfo.collect.library.utils.MapParamUtils;
 
 import org.locationtech.jts.geom.Polygon;
 import org.oscim.layers.tile.MapTile;
+import org.oscim.map.Viewport;
 import org.oscim.tiling.ITileDataSink;
 import org.oscim.tiling.ITileDataSource;
 import org.oscim.tiling.QueryResult;
@@ -24,12 +25,17 @@ import io.realm.RealmQuery;
 
 public class OMDBTileDataSource implements ITileDataSource {
     private boolean isUpdate;
+    private Viewport viewport;
     private final ThreadLocal<OMDBDataDecoder> mThreadLocalDecoders = new ThreadLocal<OMDBDataDecoder>() {
         @Override
         protected OMDBDataDecoder initialValue() {
             return new OMDBDataDecoder();
         }
     };
+
+    public OMDBTileDataSource(Viewport viewport) {
+        this.viewport = viewport;
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -48,6 +54,7 @@ public class OMDBTileDataSource implements ITileDataSource {
                 yEnd = (int) (yEnd << m);
             }
 
+            final int currentTileX = xStart;
             if(isUpdate){
                 Realm.getInstance(MapParamUtils.getTaskConfig()).refresh();
                 isUpdate = false;
@@ -74,7 +81,12 @@ public class OMDBTileDataSource implements ITileDataSource {
             // 数据记录的tile号是以正外接tile号列表，此处过滤并未与当前tile相交的数据
             if (!listResult.isEmpty()) {
                 Polygon tilePolygon = GeometryTools.getTilePolygon(tile);
-                listResult = listResult.stream().filter((RenderEntity renderEntity) -> renderEntity.getWkt().intersects(tilePolygon)).collect(Collectors.toList());
+                System.out.println("第一条数据的最小x值:" + listResult.get(0).getTileX().stream().min(Integer::compare).get());
+                System.out.println("当前tile的:" + listResult.get(0).getTileX().stream().min(Integer::compare).get());
+                listResult = listResult.stream().filter((RenderEntity renderEntity) -> renderEntity.getWkt().intersects(tilePolygon))
+                        /*过滤数据，只有最小x（屏幕的最小x或数据的最小x会被渲染，跨Tile的其他数据不再重复渲染）*/
+//                        .filter((RenderEntity renderEntity) -> MercatorProjection.longitudeToTileX(viewport.fromScreenPoint(0,0).getLongitude(), (byte) Constant.DATA_ZOOM) == currentTileX || renderEntity.getTileX().stream().min(Integer::compare).get() == currentTileX)
+                        .collect(Collectors.toList());
                 mThreadLocalDecoders.get().decode(tile.zoomLevel, tile, mapDataSink, listResult);
                 mapDataSink.completed(QueryResult.SUCCESS);
             } else {
