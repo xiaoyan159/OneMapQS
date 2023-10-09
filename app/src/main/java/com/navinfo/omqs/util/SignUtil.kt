@@ -707,6 +707,28 @@ class SignUtil {
                         )
                     )
                 }
+                DataCodeEnum.OMDB_FILL_AREA.code->{
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "对象号码",
+                            text = "${data.properties["objectPid"]}"
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "符合高精", text = when (data.properties["compliant"]) {
+                                "0" -> "否"
+                                "1" -> "是"
+                                else -> ""
+                            }
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "关联车道组", text = "${data.properties["lgList"]}"
+                        )
+                    )
+                }
             }
             adapter.data = list
             return adapter

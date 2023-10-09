@@ -88,7 +88,12 @@ class TaskViewModel @Inject constructor(
     /**
      * 是否开启了道路选择
      */
-    var liveDataSelectNewLink = MutableLiveData(false)
+    val liveDataSelectNewLink = MutableLiveData(false)
+
+    /**
+     * 选中link
+     */
+    val liveDataAddLinkDialog = MutableLiveData<RenderEntity>()
 
     init {
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
@@ -98,10 +103,11 @@ class TaskViewModel @Inject constructor(
                 if (tag == TAG) {
                     if (liveDataSelectNewLink.value == true) {
                         viewModelScope.launch(Dispatchers.Default) {
+                            val realm = realmOperateHelper.getSelectTaskRealmInstance()
                             if (currentSelectTaskBean == null) {
                                 liveDataToastMessage.postValue("还没有开启任何任务")
                             } else {
-                                val links = realmOperateHelper.queryLink(
+                                val links = realmOperateHelper.queryLink(realm,
                                     point = point,
                                 )
                                 if (links.isNotEmpty()) {
@@ -111,43 +117,15 @@ class TaskViewModel @Inject constructor(
                                             return@launch
                                         }
                                     }
-                                    val hadLinkDvoBean = HadLinkDvoBean(
-                                        taskId = currentSelectTaskBean!!.id,
-                                        linkPid = l.properties["linkPid"]!!,
-                                        geometry = l.geometry,
-                                        linkStatus = 2
-                                    )
-                                    currentSelectTaskBean!!.hadLinkDvoList.add(
-                                        hadLinkDvoBean
-                                    )
-                                    val realm = Realm.getDefaultInstance()
-                                    realm.executeTransaction { r ->
-                                        r.copyToRealmOrUpdate(hadLinkDvoBean)
-                                        r.copyToRealmOrUpdate(currentSelectTaskBean!!)
-                                    }
-                                    //根据Link数据查询对应数据上要素，对要素进行显示重置
-                                    l.properties["linkPid"]?.let {
-                                        realmOperateHelper.queryLinkToMutableRenderEntityList(it)
-                                            ?.forEach { renderEntity ->
-                                                if (renderEntity.enable != 1) {
-                                                    renderEntity.enable = 1
-                                                    realm.executeTransaction { r ->
-                                                        r.copyToRealmOrUpdate(renderEntity)
-                                                    }
-                                                }
-                                            }
-                                    }
-                                    liveDataTaskLinks.postValue(currentSelectTaskBean!!.hadLinkDvoList)
-                                    mapController.lineHandler.addTaskLink(hadLinkDvoBean)
-                                    mapController.layerManagerHandler.updateOMDBVectorTileLayer()
-                                    mapController.mMapView.vtmMap.updateMap(true)
-                                    realm.close()
+                                    liveDataAddLinkDialog.postValue(l)
                                 }
                             }
+                            realm.close()
                         }
                     } else {
                         viewModelScope.launch(Dispatchers.IO) {
-                            val links = realmOperateHelper.queryLink(
+                            val realm = realmOperateHelper.getSelectTaskRealmInstance()
+                            val links = realmOperateHelper.queryLink(realm,
                                 point = point,
                             )
                             if (links.isNotEmpty()) {
@@ -160,6 +138,7 @@ class TaskViewModel @Inject constructor(
                                     }
                                 }
                             }
+                            realm.close()
                         }
                     }
                 }
@@ -285,7 +264,7 @@ class TaskViewModel @Inject constructor(
      * 设置当前选择的任务，并高亮当前任务的所有link
      */
 
-    fun setSelectTaskBean( taskBean: TaskBean) {
+    fun setSelectTaskBean(taskBean: TaskBean) {
 
         sharedPreferences.edit().putInt(Constant.SELECT_TASK_ID, taskBean.id).apply()
 
@@ -294,13 +273,15 @@ class TaskViewModel @Inject constructor(
         liveDataTaskLinks.value = taskBean.hadLinkDvoList
         showTaskLinks(taskBean)
         MapParamUtils.setTaskId(taskBean.id)
-        Constant.currentSelectTaskFolder =  File(Constant.USER_DATA_PATH +"/${taskBean.id}")
-        Constant.currentSelectTaskConfig = RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder).name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true).schemaVersion(2).build()
+        Constant.currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
+        Constant.currentSelectTaskConfig =
+            RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder)
+                .name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true)
+                .schemaVersion(2).build()
         MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
         mapController.layerManagerHandler.updateOMDBVectorTileLayer()
         mapController.mMapView.updateMap(true)
     }
-
 
 
     private fun showTaskLinks(taskBean: TaskBean) {
@@ -497,17 +478,17 @@ class TaskViewModel @Inject constructor(
                     realm.where(QsRecordBean::class.java).equalTo("linkId", hadLinkDvoBean.linkPid)
                         .and().equalTo("taskId", hadLinkDvoBean.taskId).findAll()
                 if (objects.isEmpty() && hadLinkDvoBean.reason.isEmpty()) {
-                    if(hadLinkDvoBean.linkStatus==3){
+                    if (hadLinkDvoBean.linkStatus == 3) {
                         result = 1
                         realm.close()
                         return@forEach
-                    }else{
+                    } else {
                         result = 2
                     }
                 }
             }
             realm.close()
-            if(result==1){
+            if (result == 1) {
                 liveDataTaskUpload.postValue(map)
                 withContext(Dispatchers.Main) {
                     val mDialog = FirstDialog(context)
@@ -521,7 +502,7 @@ class TaskViewModel @Inject constructor(
                     mDialog.setCancelVisibility(View.GONE)
                     mDialog.show()
                 }
-            }else if(result==2){
+            } else if (result == 2) {
                 liveDataTaskUpload.postValue(map)
                 withContext(Dispatchers.Main) {
                     val mDialog = FirstDialog(context)
@@ -539,7 +520,7 @@ class TaskViewModel @Inject constructor(
                     ) { _, _ -> mDialog.dismiss() }
                     mDialog.show()
                 }
-            }else{
+            } else {
                 map[taskBean] = true
                 liveDataTaskUpload.postValue(map)
             }
@@ -562,68 +543,61 @@ class TaskViewModel @Inject constructor(
      */
     fun setSelectLink(selected: Boolean) {
         liveDataSelectNewLink.value = selected
-//        //开始捕捉
-//        if (selected) {
-//            mapController.mMapView.addOnNIMapClickListener(TAG, object : OnGeoPointClickListener {
-//                override fun onMapClick(tag: String, point: GeoPoint) {
-//                    if (tag == TAG) {
-//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                            viewModelScope.launch(Dispatchers.Default) {
-//                                if (currentSelectTaskBean == null) {
-//                                    liveDataToastMessage.postValue("还没有开启任何任务")
-//                                } else {
-//                                    val links = realmOperateHelper.queryLink(
-//                                        point = point,
-//                                    )
-//                                    if (links.isNotEmpty()) {
-//                                        val l = links[0]
-//                                        for (link in currentSelectTaskBean!!.hadLinkDvoList) {
-//                                            if (link.linkPid == l.properties["linkPid"]) {
-//                                                return@launch
-//                                            }
-//                                        }
-//                                        val hadLinkDvoBean = HadLinkDvoBean(
-//                                            taskId = currentSelectTaskBean!!.id,
-//                                            linkPid = l.properties["linkPid"]!!,
-//                                            geometry = l.geometry,
-//                                            linkStatus = 2
-//                                        )
-//                                        currentSelectTaskBean!!.hadLinkDvoList.add(
-//                                            hadLinkDvoBean
-//                                        )
-//                                        val realm = Realm.getDefaultInstance()
-//                                        realm.executeTransaction { r ->
-//                                            r.copyToRealmOrUpdate(hadLinkDvoBean)
-//                                            r.copyToRealmOrUpdate(currentSelectTaskBean!!)
-//                                        }
-//                                        //根据Link数据查询对应数据上要素，对要素进行显示重置
-//                                        l.properties["linkPid"]?.let {
-//                                            realmOperateHelper.queryLinkToMutableRenderEntityList(it)
-//                                                ?.forEach { renderEntity ->
-//                                                    if (renderEntity.enable != 1) {
-//                                                        renderEntity.enable = 1
-//                                                        realm.executeTransaction { r ->
-//                                                            r.copyToRealmOrUpdate(renderEntity)
-//                                                        }
-//                                                    }
-//                                                }
-//                                        }
-//                                        liveDataTaskLinks.postValue(currentSelectTaskBean!!.hadLinkDvoList)
-//                                        mapController.lineHandler.addTaskLink(hadLinkDvoBean)
-//                                        mapController.layerManagerHandler.updateOMDBVectorTileLayer()
-//                                        mapController.mMapView.vtmMap.updateMap(true)
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            })
-//        } else {
-//            mapController.mMapView.removeOnNIMapClickListener(TAG)
-//            mapController.lineHandler.removeLine()
-//        }
     }
+
+    /**
+     * 添加link
+     */
+    fun addTaskLink(context: Context, data: RenderEntity) {
+        val mDialog = FirstDialog(context)
+        mDialog.setTitle("提示")
+        mDialog.setMessage("是否添加当前link")
+        mDialog.setPositiveButton(
+            "确定"
+        ) { dialog, _ ->
+            dialog.dismiss()
+            viewModelScope.launch(Dispatchers.IO) {
+                val hadLinkDvoBean = HadLinkDvoBean(
+                    taskId = currentSelectTaskBean!!.id,
+                    linkPid = data.properties["linkPid"]!!,
+                    geometry = data.geometry,
+                    linkStatus = 2
+                )
+                currentSelectTaskBean!!.hadLinkDvoList.add(
+                    hadLinkDvoBean
+                )
+                val realm = Realm.getDefaultInstance()
+                realm.executeTransaction { r ->
+                    r.copyToRealmOrUpdate(hadLinkDvoBean)
+                    r.copyToRealmOrUpdate(currentSelectTaskBean!!)
+                }
+                //根据Link数据查询对应数据上要素，对要素进行显示重置
+                data.properties["linkPid"]?.let {
+                    realmOperateHelper.queryLinkToMutableRenderEntityList(realm,it)
+                        ?.forEach { renderEntity ->
+                            if (renderEntity.enable != 1) {
+                                renderEntity.enable = 1
+                                realm.executeTransaction { r ->
+                                    r.copyToRealmOrUpdate(renderEntity)
+                                }
+                            }
+                        }
+                }
+                liveDataTaskLinks.postValue(currentSelectTaskBean!!.hadLinkDvoList)
+                mapController.lineHandler.addTaskLink(hadLinkDvoBean)
+                mapController.layerManagerHandler.updateOMDBVectorTileLayer()
+                mapController.mMapView.vtmMap.updateMap(true)
+                realm.close()
+            }
+        }
+        mDialog.setNegativeButton(
+            "取消"
+        ) { _, _ ->
+            mDialog.dismiss()
+        }
+        mDialog.show()
+    }
+
 
     /**
      * 删除评测link
@@ -654,7 +628,7 @@ class TaskViewModel @Inject constructor(
 
                     //重置数据为隐藏
                     if (hadLinkDvoBean.linkStatus == 2) {
-                        realmOperateHelper.queryLinkToMutableRenderEntityList(hadLinkDvoBean.linkPid)
+                        realmOperateHelper.queryLinkToMutableRenderEntityList(realm,hadLinkDvoBean.linkPid)
                             ?.forEach { renderEntity ->
                                 if (renderEntity.enable == 1) {
                                     renderEntity.enable = 0

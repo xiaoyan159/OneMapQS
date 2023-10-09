@@ -39,6 +39,7 @@ class RealmOperateHelper() {
      * */
     @RequiresApi(Build.VERSION_CODES.N)
     suspend fun queryLink(
+        realm: Realm,
         point: GeoPoint,
         buffer: Double = DEFAULT_BUFFER,
         bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE,
@@ -63,9 +64,9 @@ class RealmOperateHelper() {
         val yStart = tileYSet.stream().min(Comparator.naturalOrder()).orElse(null)
         val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
         // 查询realm中对应tile号的数据
-        val realm = getSelectTaskRealmInstance()
+//        val realm = getSelectTaskRealmInstance()
         val realmList =
-            getSelectTaskRealmTools(RenderEntity::class.java, false)
+            getSelectTaskRealmTools(realm, RenderEntity::class.java, false)
                 .equalTo("table", DataCodeEnum.OMDB_LINK_DIRECT.name)
                 .greaterThanOrEqualTo("tileX", xStart)
                 .lessThanOrEqualTo("tileX", xEnd)
@@ -74,7 +75,7 @@ class RealmOperateHelper() {
                 .findAll()
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
         val dataList = realm.copyFromRealm(realmList)
-        realm.close()
+//        realm.close()
 
         val queryResult = dataList?.stream()?.filter {
             polygon.intersects(it.wkt)
@@ -132,7 +133,7 @@ class RealmOperateHelper() {
         val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
         // 查询realm中对应tile号的数据
         val realm = getSelectTaskRealmInstance()
-        val realmList = getSelectTaskRealmTools(RenderEntity::class.java, true)
+        val realmList = getSelectTaskRealmTools(realm, RenderEntity::class.java, true)
             .equalTo("table", table)
             .greaterThanOrEqualTo("tileX", xStart)
             .lessThanOrEqualTo("tileX", xEnd)
@@ -228,12 +229,14 @@ class RealmOperateHelper() {
         return qsRecordBean
     }
 
-    suspend fun queryLinkToMutableRenderEntityList(linkPid: String): MutableList<RenderEntity>? {
+    suspend fun queryLinkToMutableRenderEntityList(
+        realm: Realm,
+        linkPid: String
+    ): MutableList<RenderEntity>? {
         val resultList = mutableListOf<RenderEntity>()
+//        val realm = getSelectTaskRealmInstance()
 
-        val realm = getSelectTaskRealmInstance()
-
-        val realmR = getSelectTaskRealmTools(RenderEntity::class.java, true)
+        val realmR = getSelectTaskRealmTools(realm, RenderEntity::class.java, true)
             .equalTo("properties['${LinkTable.linkPid}']", linkPid).findAll()
 
         val dataList = realm.copyFromRealm(realmR)
@@ -242,7 +245,7 @@ class RealmOperateHelper() {
             resultList.add(it)
         }
 
-        realm.close()
+//        realm.close()
         return resultList
     }
 
@@ -280,7 +283,7 @@ class RealmOperateHelper() {
         val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
         val realm = getSelectTaskRealmInstance()
         var realmList = mutableListOf<RenderEntity>()
-        val realmQuery = getSelectTaskRealmTools(RenderEntity::class.java, false)
+        val realmQuery = getSelectTaskRealmTools(realm, RenderEntity::class.java, false)
             .greaterThanOrEqualTo("tileX", xStart)
             .lessThanOrEqualTo("tileX", xEnd)
             .greaterThanOrEqualTo("tileY", yStart)
@@ -299,10 +302,12 @@ class RealmOperateHelper() {
         }
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
         val queryResult = realmList?.stream()?.filter {
-            if(Constant.MapCatchLine){
-                polygon.intersects(it.wkt) && it.wkt?.geometryType?.uppercase().equals("LINESTRING")||it.wkt?.geometryType?.uppercase().equals("POLYGON")
-            }else{
-                polygon.intersects(it.wkt) && it.wkt?.geometryType?.uppercase().equals("POINT")||it.wkt?.geometryType?.uppercase().equals("POLYGON")
+            if (Constant.MapCatchLine) {
+                polygon.intersects(it.wkt) && it.wkt?.geometryType?.uppercase()
+                    .equals("LINESTRING") || it.wkt?.geometryType?.uppercase().equals("POLYGON")
+            } else {
+                polygon.intersects(it.wkt) && it.wkt?.geometryType?.uppercase()
+                    .equals("POINT") || it.wkt?.geometryType?.uppercase().equals("POLYGON")
             }
         }?.toList()
         queryResult?.let {
@@ -323,15 +328,13 @@ class RealmOperateHelper() {
      * @param bufferType 点位外扩距离的单位： 米-Meter，像素-PIXEL
      * @param sort 是否需要排序
      * */
-    suspend fun queryLinkByLinkPid(linkPid: String): MutableList<RenderEntity> {
+    suspend fun queryLinkByLinkPid(realm: Realm,linkPid: String): MutableList<RenderEntity> {
         val result = mutableListOf<RenderEntity>()
-        val realm = getSelectTaskRealmInstance()
-        val realmList = getSelectTaskRealmTools(RenderEntity::class.java, false)
+        val realmList = getSelectTaskRealmTools(realm, RenderEntity::class.java, false)
             .notEqualTo("table", DataCodeEnum.OMDB_RD_LINK.name)
             .equalTo("properties['${LinkTable.linkPid}']", linkPid)
             .findAll()
         result.addAll(realm.copyFromRealm(realmList))
-        realm.close()
         return result
     }
 
@@ -426,19 +429,20 @@ class RealmOperateHelper() {
 
 
     fun <E : RealmModel> getSelectTaskRealmTools(
+        realm: Realm,
         clazz: Class<E>,
         enableSql: Boolean
     ): RealmQuery<E> {
-        var realmQuery = getSelectTaskRealmInstance().where(clazz)
+        val realmQuery = realm.where(clazz)
         if (MapParamUtils.getDataLayerEnum() != null) {
             if (enableSql) {
                 var sql =
                     " enable${MapParamUtils.getDataLayerEnum().sql}"
-                getSelectTaskRealmInstance().where(clazz).rawPredicate(sql)
+                realm.where(clazz).rawPredicate(sql)
             }
 
         }
-        if(clazz.name==RenderEntity::class.jvmName){
+        if (clazz.name == RenderEntity::class.jvmName) {
             // 筛选不显示的数据
             if (com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY != null && com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY.size > 0) {
                 realmQuery.beginGroup()

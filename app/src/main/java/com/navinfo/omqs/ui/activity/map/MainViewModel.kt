@@ -50,17 +50,11 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmSet
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
-import org.locationtech.jts.geom.Envelope
 import org.locationtech.jts.geom.Geometry
-import org.locationtech.jts.geom.LineString
-import org.locationtech.spatial4j.shape.Rectangle
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
 import org.oscim.map.Map
@@ -637,7 +631,7 @@ class MainViewModel @Inject constructor(
     private suspend fun captureItem(point: GeoPoint) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             var buffer = 3.2
-            if(mapController.mMapView.mapLevel>=18){
+            if (mapController.mMapView.mapLevel >= 18) {
                 buffer = 2.0
             }
             val itemList = realmOperateHelper.queryElement(
@@ -677,9 +671,9 @@ class MainViewModel @Inject constructor(
                 val topSignList = mutableListOf<SignBean>()
                 mapController.lineHandler.linksLayer.clear()
                 if (linkIdCache != route.linkId) {
-
+                    val realm = realmOperateHelper.getSelectTaskRealmInstance()
                     mapController.lineHandler.showLine(route.pointList)
-                    var elementList = realmOperateHelper.queryLinkByLinkPid(route.linkId)
+                    val elementList = realmOperateHelper.queryLinkByLinkPid(realm, route.linkId)
                     for (element in elementList) {
 
                         when (element.code) {
@@ -749,6 +743,7 @@ class MainViewModel @Inject constructor(
                         speakMode?.speakText(speechText)
                     }
                     linkIdCache = route.linkId ?: ""
+                    realm.close()
                 }
             }
         } catch (e: Exception) {
@@ -769,8 +764,8 @@ class MainViewModel @Inject constructor(
             captureLinkState = true
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-
-                val linkList = realmOperateHelper.queryLink(point = point)
+                val realm = realmOperateHelper.getSelectTaskRealmInstance()
+                val linkList = realmOperateHelper.queryLink(realm, point = point)
 
                 var hisRoadName = false
 
@@ -807,7 +802,8 @@ class MainViewModel @Inject constructor(
 
                         val newLineString = GeometryTools.createLineString(linePoints)
                         linkId?.let {
-                            var elementList = realmOperateHelper.queryLinkByLinkPid(it)
+                            val elementList = realmOperateHelper.queryLinkByLinkPid(realm, it)
+                            Log.e("jingo", "捕捉到数据 ${elementList.size} 个")
                             for (element in elementList) {
                                 if (element.code == DataCodeEnum.OMDB_LINK_NAME.code) {
                                     hisRoadName = true
@@ -824,7 +820,10 @@ class MainViewModel @Inject constructor(
                                     newLineString,
                                     element
                                 )
-//                                Log.e("jingo", "捕捉到的数据code ${element.code}")
+                                Log.e(
+                                    "jingo",
+                                    "捕捉到的数据code ${DataCodeEnum.findTableNameByCode(element.code)}"
+                                )
                                 when (element.code) {
                                     DataCodeEnum.OMDB_MULTI_DIGITIZED.code,//上下线分离
                                     DataCodeEnum.OMDB_CON_ACCESS.code,//全封闭
@@ -887,10 +886,10 @@ class MainViewModel @Inject constructor(
 
                             }
 
-                            val realm = realmOperateHelper.getSelectTaskRealmInstance()
+//                            val realm = realmOperateHelper.getSelectTaskRealmInstance()
 
                             val entityList = realmOperateHelper.getSelectTaskRealmTools(
-                                RenderEntity::class.java, true
+                                realm, RenderEntity::class.java, true
                             ).and().equalTo("table", DataCodeEnum.OMDB_RESTRICTION.name).and()
                                 .equalTo(
                                     "properties['linkIn']", it
@@ -901,7 +900,7 @@ class MainViewModel @Inject constructor(
                                     val outLink = outList[i].properties["linkOut"]
                                     val linkOutEntity =
                                         realmOperateHelper.getSelectTaskRealmTools(
-                                            RenderEntity::class.java,
+                                            realm, RenderEntity::class.java,
                                             true
                                         )
                                             .equalTo("table", DataCodeEnum.OMDB_RD_LINK_KIND.name)
@@ -919,8 +918,8 @@ class MainViewModel @Inject constructor(
                                 mapController.lineHandler.linksLayer.addLine(
                                     link.geometry, Color.BLUE
                                 )
-                                realm.close()
                             }
+
                         }
 
                         liveDataTopSignList.postValue(topSignList.distinctBy { it.name }
@@ -941,6 +940,7 @@ class MainViewModel @Inject constructor(
                 if (!hisRoadName) {
                     liveDataRoadName.postValue(null)
                 }
+                realm.close()
             }
         } catch (e: Exception) {
 

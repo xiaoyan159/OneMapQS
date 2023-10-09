@@ -5,17 +5,25 @@ import android.util.Log;
 import com.navinfo.collect.library.data.entity.RenderEntity;
 import com.navinfo.collect.library.system.Constant;
 
+import org.oscim.map.Viewport;
 import org.oscim.tiling.ITileDataSource;
 import org.oscim.tiling.OverzoomTileDataSource;
 
 import io.realm.Realm;
 
 public class OMDBTileSource extends RealmDBTileSource {
-    private OMDBTileDataSource omdbTileSource = new OMDBTileDataSource();
+    private Viewport viewport;
+    private OMDBTileDataSource omdbTileDataSource;
+
+    public OMDBTileSource(Viewport viewport) {
+        this.viewport = viewport;
+        this.omdbTileDataSource = new OMDBTileDataSource(this.viewport);
+    }
+
     @Override
     public ITileDataSource getDataSource() {
        // return new OverzoomTileDataSource(new OMDBTileDataSource(), Constant.OVER_ZOOM);
-        return new OverzoomTileDataSource(omdbTileSource, Constant.OVER_ZOOM);
+        return new OverzoomTileDataSource(omdbTileDataSource, Constant.OVER_ZOOM);
     }
 
     @Override
@@ -32,6 +40,6 @@ public class OMDBTileSource extends RealmDBTileSource {
     @Override
     public void update() {
         super.update();
-        omdbTileSource.update();
+        omdbTileDataSource.update();
     }
 }

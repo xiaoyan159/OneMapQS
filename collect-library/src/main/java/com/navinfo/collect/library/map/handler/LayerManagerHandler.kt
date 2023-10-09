@@ -58,8 +58,8 @@ class LayerManagerHandler(context: AppCompatActivity, mapView: NIMapView, traceP
     private lateinit var omdbReferenceLabelLayer: LabelLayer
     private lateinit var tileGridLayer: TileGridLayer // 用来显示tile号的layer
 
-    private val omdbTileSource by lazy { OMDBTileSource() }
-    private val omdbReferenceTileSource by lazy { OMDBReferenceTileSource() }
+    private val omdbTileSource by lazy { OMDBTileSource(mMapView.vtmMap.viewport()) }
+    private val omdbReferenceTileSource by lazy { OMDBReferenceTileSource(mMapView.vtmMap.viewport()) }
     private val labelTileLoaderHook = LabelTileLoaderHook()
     private val navinfoTileThemeHook = NavinfoTileThemeHook()
 

@@ -128,21 +128,29 @@ class TaskListAdapter(
         holder.addObserver(object : OnLifecycleStateListener {
             override fun onState(tag: String, state: Lifecycle.State) {
                 when (state) {
-                    Lifecycle.State.STARTED ->
+                    Lifecycle.State.STARTED -> {
+                        uploadManager.observer(
+                            taskBean.id,
+                            holder,
+                            UploadObserver(taskBean.id, binding)
+                        )
                         downloadManager.observer(
                             taskBean.id,
                             holder,
                             DownloadObserver(taskBean.id, holder)
                         )
-                    Lifecycle.State.DESTROYED ->
+                    }
+                    Lifecycle.State.DESTROYED -> {
                         downloadManager.removeObserver(tag.toInt())
+                        uploadManager.removeObserver(tag.toInt())
+                    }
                     else -> {}
                 }
             }
         })
         downloadManager.addTask(taskBean)
         uploadManager.addTask(taskBean)
-        uploadManager.observer(taskBean.id, holder, UploadObserver(taskBean.id, binding))
+//        uploadManager.observer(taskBean.id, holder, UploadObserver(taskBean.id, binding))
         if (taskBean.status == FileDownloadStatus.NONE) {
             binding.taskDownloadBtn.setBackgroundColor(Color.WHITE)
             binding.taskDownloadBtn.setTextColor(Color.parseColor("#888FB3"))
@@ -187,7 +195,6 @@ class TaskListAdapter(
             }
         }
 
-
     }
 
 
@@ -227,8 +234,8 @@ class TaskListAdapter(
                 binding.taskUploadBtn.stopAnimator()
                 binding.taskUploadBtn.setText("重新同步")
                 binding.taskUploadBtn.setProgress(100)
-                if(!TextUtils.isEmpty(taskBean.errMsg)){
-                    Toast.makeText(binding.root.context,taskBean.errMsg,Toast.LENGTH_LONG).show()
+                if (!TextUtils.isEmpty(taskBean.errMsg)) {
+                    Toast.makeText(binding.root.context, taskBean.errMsg, Toast.LENGTH_LONG).show()
                 }
             }
 
@@ -359,7 +366,7 @@ class TaskListAdapter(
         refreshData(list)
     }
 
-    fun getSelectTaskPosition():Int{
+    fun getSelectTaskPosition(): Int {
         return selectPosition
     }
 
