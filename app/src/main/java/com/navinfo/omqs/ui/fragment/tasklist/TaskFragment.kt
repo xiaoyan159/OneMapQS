@@ -76,6 +76,11 @@ class TaskFragment : BaseFragment() {
             binding.taskAddLink.isSelected = it
         }
 
+        viewModel.liveDataAddLinkDialog.observe(viewLifecycleOwner){
+            viewModel.addTaskLink(requireContext(),it)
+        }
+
+
         //注意：使用滑动菜单不能开启滑动删除，否则只有滑动删除没有滑动菜单
         val mSwipeMenuCreator = SwipeMenuCreator { _, rightMenu, _ ->
             //添加菜单自动添加至尾部
@@ -110,6 +115,7 @@ class TaskFragment : BaseFragment() {
         viewModel.liveDataTaskLinks.observe(viewLifecycleOwner) {
             adapter.resetSelect()
             adapter.refreshData(it)
+//            adapter.setSelectTag(it.last().linkPid)
         }
         viewModel.getTaskList(requireContext())
         binding.taskSearch.addTextChangedListener(object : TextWatcher {
