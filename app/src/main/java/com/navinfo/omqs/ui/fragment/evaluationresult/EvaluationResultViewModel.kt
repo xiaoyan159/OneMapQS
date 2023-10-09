@@ -218,7 +218,7 @@ class EvaluationResultViewModel @Inject constructor(
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             liveDataQsRecordBean.value?.let {
-
+                val realm = realmOperateHelper.getSelectTaskRealmInstance()
                 val taskLink =
                     realmOperateHelper.captureTaskLink(point)
                 if (taskLink != null) {
@@ -226,7 +226,7 @@ class EvaluationResultViewModel @Inject constructor(
                     mapController.lineHandler.showLine(taskLink.geometry)
                     return
                 } else {
-                    val linkList = realmOperateHelper.queryLink(point = point)
+                    val linkList = realmOperateHelper.queryLink(realm,point = point)
                     if (linkList.isNotEmpty()) {
                         it.linkId = linkList[0].properties[LinkTable.linkPid] ?: ""
                         mapController.lineHandler.showLine(linkList[0].geometry)
@@ -235,6 +235,7 @@ class EvaluationResultViewModel @Inject constructor(
                 }
                 it.linkId = ""
                 mapController.lineHandler.removeLine()
+                realm.close()
             }
         }
     }

@@ -275,7 +275,7 @@ class PersonalCenterViewModel @Inject constructor(
                     liveDataMessage.postValue("元数据表导入成功")
                     roomAppDatabase.getScRootCauseAnalysisDao().insertOrUpdateList(list2)
                 }
-                if(list3.isNotEmpty()){
+                if (list3.isNotEmpty()) {
                     liveDataMessage.postValue("标牌对照表导入成功")
                     roomAppDatabase.getScWarningCodeDao().insertList(list3)
                 }
@@ -295,7 +295,9 @@ class PersonalCenterViewModel @Inject constructor(
     fun readRealmData() {
         viewModelScope.launch(Dispatchers.IO) {
 //            val result = realmOperateHelper.queryLink(GeometryTools.createPoint(115.685817,28.62759))
-            val result = realmOperateHelper.queryLinkByLinkPid("84206617008217069")
+            val realm = realmOperateHelper.getSelectTaskRealmInstance()
+            val result = realmOperateHelper.queryLinkByLinkPid(realm, "84206617008217069")
+            realm.close()
             Log.d("xiaoyan", result.toString())
         }
     }
