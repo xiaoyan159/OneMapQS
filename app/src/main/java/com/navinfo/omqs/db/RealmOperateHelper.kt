@@ -436,7 +436,7 @@ class RealmOperateHelper() {
         val realmQuery = realm.where(clazz)
         if (MapParamUtils.getDataLayerEnum() != null) {
             if (enableSql) {
-                var sql =
+                val sql =
                     " enable${MapParamUtils.getDataLayerEnum().sql}"
                 realm.where(clazz).rawPredicate(sql)
             }

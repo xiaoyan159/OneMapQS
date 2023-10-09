@@ -35,7 +35,6 @@ import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
-import java.io.File
 import javax.inject.Inject
 
 /**
@@ -201,6 +200,10 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                 R.id.personal_center_menu_scan_indoor_data -> {
                     indoorDataListener?.invoke(true)
                 }
+                //导航定位测试
+                R.id.personal_center_menu_location_test ->{
+//                    viewModel.
+                }
             }
             true
         }
@@ -244,7 +247,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
     }
 
     private fun intentTOQRCode() {
-        var intent = Intent(context, QrCodeActivity::class.java);
+        val intent = Intent(context, QrCodeActivity::class.java);
         startActivity(intent)
     }
 
@@ -265,7 +268,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
     private fun checkPermission() {
         PermissionX.init(this)
             .permissions(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
-            .request { allGranted, grantedList, deniedList ->
+            .request { allGranted, _, deniedList ->
                 if (allGranted) {
                     //所有权限已经授权
                     Toast.makeText(context, "授权成功", Toast.LENGTH_LONG).show()
