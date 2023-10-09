@@ -582,7 +582,7 @@ class ImportPreProcess {
         angleReference.renderEntityId = renderEntity.id
         angleReference.name = "${renderEntity.name}车道中线面"
         angleReference.table = renderEntity.table
-        angleReference.geometry = GeometryTools.computeLine(0.00003,0.00003,renderEntity.geometry)
+        angleReference.geometry = GeometryTools.createGeometry(renderEntity.geometry).buffer(0.000035).toString()//GeometryTools.computeLine(0.000035,0.000035,renderEntity.geometry)
         angleReference.properties["qi_table"] = renderEntity.table
         angleReference.properties["widthProperties"] = "3"
         angleReference.zoomMin = renderEntity.zoomMin

@@ -49,7 +49,7 @@
 				"code": 2008,
 				"name": "道路种别",
 				"zoomMin": 15,
-				"zoomMax": 20,
+				"zoomMax": 17,
 				"catch":false,
 				"checkLinkId": false
 			},

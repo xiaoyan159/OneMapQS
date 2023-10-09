@@ -1509,7 +1509,7 @@ public class GeometryTools {
 
 
     /**
-     * @param distLeft 单位km
+     * @param distLeft 0.00001为一米
      * @param distRight 单位km
      * @param wkt  几何
      * @return
@@ -1518,7 +1518,8 @@ public class GeometryTools {
         if(!TextUtils.isEmpty(wkt)){
             Geometry lineString1 = GeometryTools.createGeometry(wkt);
             BufferParameters parameters1 = new BufferParameters();
-            parameters1.setEndCapStyle(BufferParameters.CAP_FLAT);
+            parameters1.setJoinStyle(BufferParameters.DEFAULT_QUADRANT_SEGMENTS);
+            parameters1.setEndCapStyle(BufferParameters.DEFAULT_QUADRANT_SEGMENTS);
             parameters1.setSingleSided(true);
 
             Geometry buffer = BufferOp.bufferOp(lineString1, distLeft, parameters1);
