@@ -3,9 +3,11 @@ package com.navinfo.omqs.db
 import android.util.Log
 import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
+import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
 import io.realm.Realm
+import io.realm.RealmModel
 import org.json.JSONArray
 import org.json.JSONObject
 import org.locationtech.jts.algorithm.Angle
@@ -61,8 +63,8 @@ class ImportPreProcess {
             }
         }
         // 如果是正向，则取最后一个点作为渲染图标的位置
-        var point = geometry!!.coordinates[geometry!!.coordinates.size-1]
-        if (isReverse){
+        var point = geometry!!.coordinates[geometry!!.coordinates.size - 1]
+        if (isReverse) {
             // 逆向的话取第一个点作为渲染图标的位置
             point = geometry.coordinates[0]
         }
@@ -430,29 +432,74 @@ class ImportPreProcess {
      * 解析车道边线数据二级属性
      * */
     fun unpackingLaneBoundary(renderEntity: RenderEntity) {
-        var shape: JSONObject = JSONObject(
-            mapOf(
-                "lateralOffset" to 0,
-                "markType" to 1,
-                "markColor" to 0,
-                "markMaterial" to 1,
-                "markSeqNum" to 1,
-                "markWidth" to 10,
-                "markingCount" to 1
-            )
-        )
-        if (renderEntity.code == "2013" && !renderEntity.properties["shapeList"].isNullOrEmpty() && renderEntity.properties["shapeList"] != "null") {
+
+        if (renderEntity.code == DataCodeEnum.OMDB_LANE_MARK_BOUNDARYTYPE.code && !renderEntity.properties["shapeList"].isNullOrEmpty() && renderEntity.properties["shapeList"] != "null") {
             // 解析shapeList，将数组中的属性放会properties
             val shapeList = JSONArray(renderEntity.properties["shapeList"])
+            val boundaryType = renderEntity.properties["boundaryType"]
+            val listResult = mutableListOf<RenderEntity>()
             for (i in 0 until shapeList.length()) {
-                shape = shapeList.getJSONObject(i)
-                if (shape.optInt("lateralOffset", 0) == 0) {
-                    break
+                var shape = shapeList.getJSONObject(i)
+                val lateralOffset = shape.optInt("lateralOffset", 0)
+                //999999时不应用也不渲染
+                if (lateralOffset != 999999) {
+                    //需要做偏移处理
+                    if (lateralOffset != 0) {
+                        if (boundaryType != null) {
+                            //只处理标线类型,App要求值渲染1、2、6、8
+                            if(boundaryType.toInt()==2){
+                                val markType = shape.optInt("markType",0)
+                                when(markType){
+                                    1, 2, 6, 8 -> {
+                                        val renderEntityTemp = RenderEntity()
+                                        for (key in shape.keys()) {
+                                            renderEntityTemp.properties[key] = shape[key].toString()
+                                        }
+                                        renderEntityTemp.properties["qi_table"] = renderEntity.properties["qi_table"]
+                                        renderEntityTemp.properties["qi_code"] = renderEntity.properties["qi_code"]
+                                        renderEntityTemp.properties["qi_zoomMin"] = renderEntity.properties["qi_zoomMin"]
+                                        renderEntityTemp.properties["qi_zoomMax"] = renderEntity.properties["qi_zoomMax"]
+                                        renderEntityTemp.properties["name"] = renderEntity.properties["name"]
+                                        renderEntityTemp.properties["qi_name"] = renderEntity.properties["qi_name"]
+                                        renderEntityTemp.properties["boundaryType"] = renderEntity.properties["boundaryType"]
+                                        renderEntityTemp.properties["featureClass"] = renderEntity.properties["featureClass"]
+                                        renderEntityTemp.properties["featurePid"] = renderEntity.properties["featurePid"]
+
+                                        renderEntityTemp.code = renderEntity.code
+                                        renderEntityTemp.table = renderEntity.table
+                                        renderEntityTemp.name = renderEntity.name
+                                        renderEntityTemp.zoomMin = renderEntity.zoomMin
+                                        renderEntityTemp.zoomMax = renderEntity.zoomMax
+                                        renderEntityTemp.enable = renderEntity.enable
+                                        renderEntityTemp.taskId = renderEntity.taskId
+                                        renderEntityTemp.catchEnable = renderEntity.catchEnable
+                                        var dis = -lateralOffset.toDouble() / 100000000
+                                        //最小值取10厘米，否正渲染太近无法显示
+                                        if(dis>0&&dis<0.0000025){
+                                            dis = 0.0000025
+                                        }else if(dis>-0.0000025&&dis<0){
+                                            dis = -0.0000025
+                                        }
+                                        renderEntityTemp.geometry = GeometryTools.computeLine(
+                                            dis,
+                                            renderEntity.geometry
+                                        )
+                                        listResult.add(renderEntityTemp)
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        //遍历赋值
+                        for (key in shape.keys()) {
+                            renderEntity.properties[key] = shape[key].toString()
+                        }
+                    }
                 }
             }
-        }
-        for (key in shape.keys()) {
-            renderEntity.properties[key] = shape[key].toString()
+            if (listResult.size > 0) {
+                insertData(listResult)
+            }
         }
     }
 
@@ -591,7 +638,9 @@ class ImportPreProcess {
         angleReference.renderEntityId = renderEntity.id
         angleReference.name = "${renderEntity.name}车道中线面"
         angleReference.table = renderEntity.table
-        angleReference.geometry = GeometryTools.createGeometry(renderEntity.geometry).buffer(0.000035).toString()//GeometryTools.computeLine(0.000035,0.000035,renderEntity.geometry)
+        angleReference.geometry =
+            GeometryTools.createGeometry(renderEntity.geometry).buffer(0.000035)
+                .toString()//GeometryTools.computeLine(0.000035,0.000035,renderEntity.geometry)
         angleReference.properties["qi_table"] = renderEntity.table
         angleReference.properties["widthProperties"] = "3"
         angleReference.zoomMin = renderEntity.zoomMin
@@ -802,9 +851,9 @@ class ImportPreProcess {
         insertData(listResult)
     }
 
-    private fun insertData(list:List<ReferenceEntity>){
+    private fun insertData(list: List<RealmModel>) {
         Log.e("qj", "子表插入==")
-        if(list!=null&& list.isNotEmpty()){
+        if (list != null && list.isNotEmpty()) {
             Log.e("qj", "子表插入开始==")
             Realm.getInstance(Constant.currentInstallTaskConfig).insert(list)
             Log.e("qj", "子表插入结束==")
@@ -854,7 +903,8 @@ class ImportPreProcess {
 
         val coorEnd = Coordinate(pointStart.getX() + dx, pointStart.getY() + dy, pointStart.z)
 //        renderEntity.geometry = WKTWriter(3).write(GeometryTools.createLineString(arrayOf(pointStart, coorEnd)))
-        renderEntity.geometry = GeometryTools.createGeometry(GeoPoint(centerPoint!!.y, centerPoint.x)).toString()
+        renderEntity.geometry =
+            GeometryTools.createGeometry(GeoPoint(centerPoint!!.y, centerPoint.x)).toString()
         val code = renderEntity.properties["signType"]
         renderEntity.properties["src"] = "assets:omdb/appendix/1105_${code}_0.svg"
     }
@@ -890,9 +940,11 @@ class ImportPreProcess {
             val listResult = mutableListOf<ReferenceEntity>()
 
             val coorEnd = Coordinate(pointStart.getX() + dx, pointStart.getY() + dy, pointStart.z)
-            renderEntity.geometry = WKTWriter(3).write(GeometryTools.createLineString(arrayOf(pointStart, coorEnd)))
+            renderEntity.geometry =
+                WKTWriter(3).write(GeometryTools.createLineString(arrayOf(pointStart, coorEnd)))
         } else {
-            renderEntity.geometry = GeometryTools.createGeometry(GeoPoint(centerPoint!!.y, centerPoint.x)).toString()
+            renderEntity.geometry =
+                GeometryTools.createGeometry(GeoPoint(centerPoint!!.y, centerPoint.x)).toString()
         }
     }
 }

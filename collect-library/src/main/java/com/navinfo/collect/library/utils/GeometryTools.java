@@ -1531,6 +1531,35 @@ public class GeometryTools {
         return "";
     }
 
+    /**
+     * @param dist 0.00001为一米 大于0为左侧，小于0为右侧
+     * @param wkt  几何
+     * @return
+     */
+    public static String computeLine(Double dist,String wkt){
+        if(!TextUtils.isEmpty(wkt)){
+            Geometry lineString1 = GeometryTools.createGeometry(wkt);
+            BufferParameters parameters1 = new BufferParameters();
+            parameters1.setJoinStyle(BufferParameters.CAP_FLAT);
+            parameters1.setEndCapStyle(BufferParameters.CAP_FLAT);
+            parameters1.setSingleSided(true);
+
+            Geometry buffer = BufferOp.bufferOp(lineString1, dist, parameters1);
+            int coorsLength = lineString1.getCoordinates().length;
+            List<Coordinate> list = new ArrayList<>();
+            for (int i = coorsLength; i < buffer.getCoordinates().length-1; i++) {
+                 list.add(buffer.getCoordinates()[i]);
+            }
+            Coordinate[] coordinates = new Coordinate[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                coordinates[i] = list.get(i);
+            }
+            String lineString = createLineString(coordinates).toString();
+            return lineString;
+        }
+        return "";
+    }
+
     public static FootAndDistance pointToLineDistance(GeoPoint point, Geometry geometry) {
         //定义垂线
         FootAndDistance pointPairDistance = new FootAndDistance(point);

@@ -23,7 +23,7 @@ public class OMDBTileSource extends RealmDBTileSource {
     @Override
     public ITileDataSource getDataSource() {
        // return new OverzoomTileDataSource(new OMDBTileDataSource(), Constant.OVER_ZOOM);
-        return new OverzoomTileDataSource(omdbTileDataSource, Constant.OVER_ZOOM);
+        return  omdbTileDataSource;
     }
 
     @Override
