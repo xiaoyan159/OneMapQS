@@ -6,6 +6,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
 import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
 import java.util.concurrent.ConcurrentHashMap
@@ -18,7 +19,8 @@ import java.util.concurrent.ConcurrentHashMap
 class TaskDownloadManager constructor(
     val importFactory: ImportOMDBHiltFactory,
     val netApi: RetrofitNetworkServiceAPI,
-    val mapController: NIMapController
+    val mapController: NIMapController,
+    val realmOperateHelper: RealmOperateHelper,
 ) {
 
     lateinit var context: Context
@@ -111,7 +113,7 @@ class TaskDownloadManager constructor(
 
     fun addTask(taskBean: TaskBean) {
         if (!scopeMap.containsKey(taskBean.id)) {
-            scopeMap[taskBean.id] = TaskDownloadScope(this, taskBean)
+            scopeMap[taskBean.id] = TaskDownloadScope(this, realmOperateHelper, taskBean)
         }
     }
 

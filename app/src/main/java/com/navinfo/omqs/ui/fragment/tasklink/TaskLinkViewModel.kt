@@ -2,6 +2,7 @@ package com.navinfo.omqs.ui.fragment.tasklink
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.MeasureLayerHandler
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
+import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.ui.dialog.FirstDialog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
@@ -25,7 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskLinkViewModel @Inject constructor(
     private val mapController: NIMapController,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val realmOperateHelper: RealmOperateHelper
 ) : ViewModel(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     /**
@@ -120,7 +123,7 @@ class TaskLinkViewModel @Inject constructor(
     private fun getTaskBean() {
         viewModelScope.launch(Dispatchers.IO) {
             val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
-            val realm = Realm.getDefaultInstance()
+            val realm = realmOperateHelper.getRealmDefaultInstance()
             val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
             liveDataTaskBean.postValue(res?.let { realm.copyFromRealm(it) })
             realm.close()
@@ -225,17 +228,19 @@ class TaskLinkViewModel @Inject constructor(
             }
 
 
-            val realm = Realm.getDefaultInstance()
+            val realm = realmOperateHelper.getRealmDefaultInstance()
             realm.executeTransaction {
                 it.copyToRealmOrUpdate(hadLinkDvoBean)
                 it.copyToRealmOrUpdate(task)
+                Log.e("jingo", "当前任务link数量：${task.hadLinkDvoList.size}")
             }
+            realm.refresh()
+            realm.close()
             mapController.lineHandler.addTaskLink(hadLinkDvoBean!!)
             sharedPreferences.edit()
                 .putString(Constant.SHARED_SYNC_TASK_LINK_ID, hadLinkDvoBean!!.linkPid)
                 .apply()
             liveDataFinish.postValue(true)
-            realm.close()
         }
     }
 
@@ -267,7 +272,7 @@ class TaskLinkViewModel @Inject constructor(
      */
     fun initData(id: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val realm = Realm.getDefaultInstance()
+            val realm = realmOperateHelper.getRealmDefaultInstance()
             val objects =
                 realm.where(HadLinkDvoBean::class.java).equalTo("linkPid", id)
                     .findFirst()
@@ -298,7 +303,7 @@ class TaskLinkViewModel @Inject constructor(
             if (task != null) {
                 liveDataTaskBean.postValue(realm.copyFromRealm(task))
             }
-            if(objects != null) {
+            if (objects != null) {
                 hadLinkDvoBean = realm.copyFromRealm(objects)
                 withContext(Dispatchers.Main) {
                     mapController.measureLayerHandler.initPathLine(hadLinkDvoBean?.geometry!!)
@@ -324,7 +329,7 @@ class TaskLinkViewModel @Inject constructor(
         ) { _, _ ->
             mDialog.dismiss()
             viewModelScope.launch(Dispatchers.IO) {
-                val realm = Realm.getDefaultInstance()
+                val realm = realmOperateHelper.getRealmDefaultInstance()
                 realm.executeTransaction {
                     //先找到对应的任务
                     val task = it.where(TaskBean::class.java).equalTo("id", hadLinkDvoBean!!.taskId)

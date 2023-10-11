@@ -44,9 +44,10 @@ class ActivityModule {
     fun providesTaskListDownloadManager(
         networkServiceAPI: RetrofitNetworkServiceAPI,
         importFactory: ImportOMDBHiltFactory,
-        mapController: NIMapController
+        mapController: NIMapController,
+        realmOperateHelper: RealmOperateHelper,
     ): TaskDownloadManager =
-        TaskDownloadManager(importFactory, networkServiceAPI, mapController)
+        TaskDownloadManager(importFactory, networkServiceAPI, mapController, realmOperateHelper)
 
     /**
      * 注入任务下载
@@ -55,8 +56,9 @@ class ActivityModule {
     @Provides
     fun providesTaskListUploadManager(
         networkServiceAPI: RetrofitNetworkServiceAPI,
+        realmOperateHelper: RealmOperateHelper,
     ): TaskUploadManager =
-        TaskUploadManager(networkServiceAPI)
+        TaskUploadManager(networkServiceAPI, realmOperateHelper)
 
     /**
      * 实验失败，这样创建，viewmodel不会在activity销毁的时候同时销毁

@@ -23,6 +23,9 @@ data class EvaluationInfo(
     @SerializedName("markGeometry")
     val markGeometry: String = "",//MARK_几何坐标
 
+    @SerializedName("linkGeometry")
+    val linkGeometry: String = "",//link_几何坐标
+
     @SerializedName("featureName")
     val featureName: String = "",//问题类型
 

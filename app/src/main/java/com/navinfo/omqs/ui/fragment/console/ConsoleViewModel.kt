@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.util.DateTimeUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +14,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ConsoleViewModel @Inject constructor() : ViewModel() {
+class ConsoleViewModel @Inject constructor(
+    private val realmOperateHelper: RealmOperateHelper
+) : ViewModel() {
     /**
      * 当前任务量统计
      */
@@ -26,7 +29,7 @@ class ConsoleViewModel @Inject constructor() : ViewModel() {
 
     init {
         viewModelScope.launch {
-            val realm = Realm.getDefaultInstance()
+            val realm = realmOperateHelper.getRealmDefaultInstance()
             val nowTime: Long = DateTimeUtil.getNowDate().time
             val beginNowTime: Long = nowTime - 90 * 3600 * 24 * 1000L
             val syncUpload: Int = FileManager.Companion.FileUploadStatus.DONE

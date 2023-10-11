@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.data.entity.NoteBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.MapParamUtils
+import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.ui.dialog.FirstDialog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NoteViewModel @Inject constructor(
-    val mapController: NIMapController
+    private val mapController: NIMapController,
+    private val realmOperateHelper: RealmOperateHelper
 ) : ViewModel() {
 
     lateinit var canvasView: CanvasView
@@ -111,7 +113,7 @@ class NoteViewModel @Inject constructor(
                 }
                 noteBean.taskId = MapParamUtils.getTaskId()
                 mNoteBean = noteBean
-                val realm = Realm.getDefaultInstance()
+                val realm = realmOperateHelper.getRealmDefaultInstance()
                 realm.executeTransaction {
                     it.copyToRealmOrUpdate(noteBean)
                 }
@@ -138,7 +140,7 @@ class NoteViewModel @Inject constructor(
             ) { dialog, _ ->
                 dialog.dismiss()
                 viewModelScope.launch(Dispatchers.IO) {
-                    val realm = Realm.getDefaultInstance()
+                    val realm = realmOperateHelper.getRealmDefaultInstance()
                     realm.executeTransaction {
                         val objects = it.where(NoteBean::class.java)
                             .equalTo("id", mNoteBean!!.id).findFirst()
@@ -159,7 +161,7 @@ class NoteViewModel @Inject constructor(
      */
     fun initData(id: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val realm = Realm.getDefaultInstance()
+            val realm = realmOperateHelper.getRealmDefaultInstance()
             realm.executeTransaction { it ->
                 val objects = it.where(NoteBean::class.java)
                     .equalTo("id", id).findFirst()
