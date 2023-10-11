@@ -283,10 +283,13 @@ class LoginViewModel @Inject constructor(
                                     task.status = item.status
                                     task.currentSize = item.currentSize
                                     task.hadLinkDvoList = item.hadLinkDvoList
+                                    task.syncStatus = item.syncStatus
                                     //已上传后不在更新操作时间
                                     if (task.syncStatus != FileManager.Companion.FileUploadStatus.DONE) {
                                         //赋值时间，用于查询过滤
                                         task.operationTime = DateTimeUtil.getNowDate().time
+                                    }else{
+                                        continue
                                     }
                                 } else {
                                     for (hadLink in task.hadLinkDvoList) {
