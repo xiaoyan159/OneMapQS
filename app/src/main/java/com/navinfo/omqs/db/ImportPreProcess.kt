@@ -438,32 +438,42 @@ class ImportPreProcess {
             val shapeList = JSONArray(renderEntity.properties["shapeList"])
             val boundaryType = renderEntity.properties["boundaryType"]
             val listResult = mutableListOf<RenderEntity>()
-            for (i in 0 until shapeList.length()) {
-                var shape = shapeList.getJSONObject(i)
-                val lateralOffset = shape.optInt("lateralOffset", 0)
-                //999999时不应用也不渲染
-                if (lateralOffset != 999999) {
-                    //需要做偏移处理
-                    if (lateralOffset != 0) {
-                        if (boundaryType != null) {
-                            //只处理标线类型,App要求值渲染1、2、6、8
-                            if(boundaryType.toInt()==2){
-                                val markType = shape.optInt("markType",0)
-                                when(markType){
+            if (boundaryType != null) {
+                var isExistOffSet0 = false
+                //只处理标线类型,App要求值渲染1、2、6、8
+                if (boundaryType.toInt() == 2) {
+                    for (i in 0 until shapeList.length()) {
+                        var shape = shapeList.getJSONObject(i)
+                        val lateralOffset = shape.optInt("lateralOffset", 0)
+                        //999999时不应用也不渲染
+                        if (lateralOffset != 999999) {
+                            //需要做偏移处理
+                            if (lateralOffset != 0) {
+
+                                when (shape.optInt("markType", 0)) {
                                     1, 2, 6, 8 -> {
                                         val renderEntityTemp = RenderEntity()
                                         for (key in shape.keys()) {
                                             renderEntityTemp.properties[key] = shape[key].toString()
                                         }
-                                        renderEntityTemp.properties["qi_table"] = renderEntity.properties["qi_table"]
-                                        renderEntityTemp.properties["qi_code"] = renderEntity.properties["qi_code"]
-                                        renderEntityTemp.properties["qi_zoomMin"] = renderEntity.properties["qi_zoomMin"]
-                                        renderEntityTemp.properties["qi_zoomMax"] = renderEntity.properties["qi_zoomMax"]
-                                        renderEntityTemp.properties["name"] = renderEntity.properties["name"]
-                                        renderEntityTemp.properties["qi_name"] = renderEntity.properties["qi_name"]
-                                        renderEntityTemp.properties["boundaryType"] = renderEntity.properties["boundaryType"]
-                                        renderEntityTemp.properties["featureClass"] = renderEntity.properties["featureClass"]
-                                        renderEntityTemp.properties["featurePid"] = renderEntity.properties["featurePid"]
+                                        renderEntityTemp.properties["qi_table"] =
+                                            renderEntity.properties["qi_table"]
+                                        renderEntityTemp.properties["qi_code"] =
+                                            renderEntity.properties["qi_code"]
+                                        renderEntityTemp.properties["qi_zoomMin"] =
+                                            renderEntity.properties["qi_zoomMin"]
+                                        renderEntityTemp.properties["qi_zoomMax"] =
+                                            renderEntity.properties["qi_zoomMax"]
+                                        renderEntityTemp.properties["name"] =
+                                            renderEntity.properties["name"]
+                                        renderEntityTemp.properties["qi_name"] =
+                                            renderEntity.properties["qi_name"]
+                                        renderEntityTemp.properties["boundaryType"] =
+                                            renderEntity.properties["boundaryType"]
+                                        renderEntityTemp.properties["featureClass"] =
+                                            renderEntity.properties["featureClass"]
+                                        renderEntityTemp.properties["featurePid"] =
+                                            renderEntity.properties["featurePid"]
 
                                         renderEntityTemp.code = renderEntity.code
                                         renderEntityTemp.table = renderEntity.table
@@ -475,9 +485,9 @@ class ImportPreProcess {
                                         renderEntityTemp.catchEnable = renderEntity.catchEnable
                                         var dis = -lateralOffset.toDouble() / 100000000
                                         //最小值取10厘米，否正渲染太近无法显示
-                                        if(dis>0&&dis<0.0000025){
+                                        if (dis > 0 && dis < 0.0000025) {
                                             dis = 0.0000025
-                                        }else if(dis>-0.0000025&&dis<0){
+                                        } else if (dis > -0.0000025 && dis < 0) {
                                             dis = -0.0000025
                                         }
                                         renderEntityTemp.geometry = GeometryTools.computeLine(
@@ -487,18 +497,23 @@ class ImportPreProcess {
                                         listResult.add(renderEntityTemp)
                                     }
                                 }
+                            } else {
+                                isExistOffSet0 = true
+                                //遍历赋值
+                                for (key in shape.keys()) {
+                                    renderEntity.properties[key] = shape[key].toString()
+                                }
                             }
                         }
-                    } else {
-                        //遍历赋值
-                        for (key in shape.keys()) {
-                            renderEntity.properties[key] = shape[key].toString()
-                        }
+                    }
+                    //如果不存在偏移的数据时，数据本身不渲染同时也不进行捕捉
+                    if (!isExistOffSet0) {
+                        renderEntity.catchEnable = 0
+                    }
+                    if (listResult.size > 0) {
+                        insertData(listResult)
                     }
                 }
-            }
-            if (listResult.size > 0) {
-                insertData(listResult)
             }
         }
     }

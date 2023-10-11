@@ -325,8 +325,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                 }
 
                                                 DataCodeEnum.OMDB_LANE_MARK_BOUNDARYTYPE.code.toInt() -> {
-                                                    var boundaryType =
-                                                        renderEntity.properties["boundaryType"]
+                                                    var boundaryType = renderEntity.properties["boundaryType"]
                                                     if (boundaryType != null) {
                                                         when (boundaryType.toInt()) {
                                                             0, 1, 6, 8, 9 -> {
@@ -521,8 +520,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         }
 
                                         // 对renderEntity做预处理后再保存
-                                        val resultEntity =
-                                            importConfig.transformProperties(renderEntity)
+                                        val resultEntity = importConfig.transformProperties(renderEntity)
                                         Log.d("ImportOMDBHelper", "解析===2预处理")
                                         if (resultEntity != null) {
 
