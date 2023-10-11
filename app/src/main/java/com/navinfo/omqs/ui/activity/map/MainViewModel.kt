@@ -366,7 +366,7 @@ class MainViewModel @Inject constructor(
      */
     private suspend fun getTaskBean() {
         val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
-        val realm = Realm.getDefaultInstance()
+        val realm = realmOperateHelper.getRealmDefaultInstance()
         val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
         if (res != null) {
             currentTaskBean = realm.copyFromRealm(res)

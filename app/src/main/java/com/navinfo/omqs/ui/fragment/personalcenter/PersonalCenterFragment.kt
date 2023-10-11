@@ -1,6 +1,7 @@
 package com.navinfo.omqs.ui.fragment.personalcenter
 
 import android.Manifest
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -8,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TimePicker
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.view.forEach
@@ -19,6 +21,7 @@ import com.blankj.utilcode.util.UriUtils
 import com.github.k1rakishou.fsaf.FileChooser
 import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
 import com.github.k1rakishou.fsaf.callback.FileChooserCallback
+import com.google.android.material.timepicker.MaterialTimePicker
 import com.navinfo.collect.library.enums.DataLayerEnum
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.MapParamUtils
@@ -30,6 +33,7 @@ import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
 import com.navinfo.omqs.tools.CoroutineUtils
 import com.navinfo.omqs.ui.activity.map.MainViewModel
 import com.navinfo.omqs.ui.activity.scan.QrCodeActivity
+import com.navinfo.omqs.ui.dialog.TimeDialog
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
@@ -142,7 +146,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                     niMapController.mMapView.vtmMap.eventLayer.enableTilt(Constant.MapRotateEnable)
                     niMapController.mMapView.vtmMap.eventLayer.enableRotation(Constant.MapRotateEnable)
                     Constant.MapRotateEnable = !Constant.MapRotateEnable
-                     if (Constant.MapRotateEnable) {
+                    if (Constant.MapRotateEnable) {
                         val mapPosition: MapPosition =
                             niMapController.mMapView.vtmMap.getMapPosition()
                         mapPosition.setBearing(0f) // 锁定角度，自动将地图旋转到正北方向
@@ -201,12 +205,17 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                     indoorDataListener?.invoke(true)
                 }
                 //导航定位测试
-                R.id.personal_center_menu_location_test ->{
-//                    viewModel.
+                R.id.personal_center_menu_location_test -> {
+                    val dialog = TimeDialog(
+                        requireContext(),
+                    )
+                    dialog.show()
                 }
             }
             true
         }
+
+
 
         viewModel.liveDataMessage.observe(viewLifecycleOwner) {
             ToastUtils.showShort(it)
@@ -228,7 +237,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         it.title = "锁定地图旋转及视角"
                     }
                 }
-                R.id.personal_center_menu_catch_all->{
+                R.id.personal_center_menu_catch_all -> {
                     if (Constant.CATCH_ALL) {
                         it.title = "关闭全要素捕捉"
                     } else {
