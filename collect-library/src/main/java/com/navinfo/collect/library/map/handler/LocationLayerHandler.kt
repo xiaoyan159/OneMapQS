@@ -26,6 +26,11 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
     private var bFirst = true
     private val mLocationLayer: LocationLayer = LocationLayer(mMapView.vtmMap)
     private lateinit var locationClient: LocationClient
+
+    /**
+     * 定位测试
+     */
+    private var naviLocationTest = false
 //    private var niLocationListener: NiLocationListener by lazy{
 //
 //    }
@@ -64,6 +69,10 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
                 //获取经纬度坐标类型，以LocationClientOption中设置过的坐标类型为准
 //                val coorType = it.coorType
                 //获取定位类型、定位错误返回码，具体信息可参照类参考中BDLocation类中的说明
+                //定位测试开始，后续不再处理
+                if (naviLocationTest)
+                    return@MyLocationListener
+
                 val errorCode = it.locType
                 mCurrentLocation = it
                 mLocationLayer.setPosition(it.latitude, it.longitude, it.radius)
@@ -215,7 +224,7 @@ private class MyLocationListener(callback: (BDLocation) -> Unit) : BDAbstractLoc
     val call = callback;
     override fun onReceiveLocation(location: BDLocation) {
         call(location)
-        Log.e("jingo", "定位结果：速度=" + location.speed +" 方向=" + location.direction)
+        Log.e("jingo", "定位结果：速度=" + location.speed + " 方向=" + location.direction)
     }
 }
 

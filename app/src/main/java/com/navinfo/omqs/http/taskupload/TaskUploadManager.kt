@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.http.RetrofitNetworkServiceAPI
 import java.util.concurrent.ConcurrentHashMap
 
@@ -13,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 class TaskUploadManager constructor(
     val netApi: RetrofitNetworkServiceAPI,
+    val realmOperateHelper: RealmOperateHelper,
 ) {
 
     lateinit var context: Context
@@ -84,7 +86,7 @@ class TaskUploadManager constructor(
 
     fun addTask(taskBean: TaskBean) {
         if (!scopeMap.containsKey(taskBean.id)) {
-            scopeMap[taskBean.id] = TaskUploadScope( this, taskBean)
+            scopeMap[taskBean.id] = TaskUploadScope(this, realmOperateHelper, taskBean)
         }
     }
 

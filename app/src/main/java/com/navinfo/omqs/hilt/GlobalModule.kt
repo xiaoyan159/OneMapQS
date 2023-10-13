@@ -163,11 +163,11 @@ class GlobalModule {
 //        return RealmCoroutineScope(context)
 //    }
 
-    @Singleton
-    @Provides
-    fun provideRealmDefaultInstance(): Realm {
-        return Realm.getDefaultInstance()
-    }
+//    @Singleton
+//    @Provides
+//    fun provideRealmDefaultInstance(): Realm {
+//        return Realm.getDefaultInstance()
+//    }
 
     @Singleton
     @Provides

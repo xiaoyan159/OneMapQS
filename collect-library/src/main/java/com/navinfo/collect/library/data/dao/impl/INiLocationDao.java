@@ -9,6 +9,7 @@ import androidx.room.Update;
 
 import com.navinfo.collect.library.data.entity.Element;
 import com.navinfo.collect.library.data.entity.NiLocation;
+
 import java.util.List;
 import java.util.Set;
 
@@ -42,13 +43,16 @@ public interface INiLocationDao {
     List<NiLocation> findList(int minx, int maxx, int miny, int maxy);
 
     @Query("SELECT * FROM niLocation where tilex>=:minx and tilex<=:maxx and tiley>=:miny and tiley <=:maxy and time>=:startTime and time<=:endTime")
-    List<NiLocation> timeTofindList(int minx, int maxx, int miny, int maxy,long startTime,long endTime);
+    List<NiLocation> timeTofindList(int minx, int maxx, int miny, int maxy, long startTime, long endTime);
 
     @Query("SELECT * FROM niLocation")
     List<NiLocation> findAll();
 
     @Query("SELECT * FROM niLocation where  time>=:startTime and time<=:endTime and taskId=:taskId")
-    List<NiLocation> taskIdAndTimeTofindList(String taskId,long startTime,long endTime);
+    List<NiLocation> taskIdAndTimeTofindList(String taskId, long startTime, long endTime);
+
+    @Query("SELECT * FROM niLocation where timeStamp>:startTime  limit:limit ")
+    List<NiLocation> findListWithStartTime(long startTime, int limit);
 
     @Query("SELECT * FROM niLocation where taskId =:taskId")
     List<NiLocation> findToTaskIdAll(String taskId);

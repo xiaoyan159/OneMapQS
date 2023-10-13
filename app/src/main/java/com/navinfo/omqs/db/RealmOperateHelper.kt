@@ -166,6 +166,7 @@ class RealmOperateHelper() {
 
     suspend fun captureTaskLink(
         point: GeoPoint,
+        taskId: Int,
         buffer: Double = DEFAULT_BUFFER,
         bufferType: BUFFER_TYPE = DEFAULT_BUFFER_TYPE,
     ): HadLinkDvoBean? {
@@ -177,7 +178,7 @@ class RealmOperateHelper() {
         )
         val realm = getRealmDefaultInstance()
         try {
-            val realmList = getRealmTools(HadLinkDvoBean::class.java).findAll()
+            val realmList = realm.where(HadLinkDvoBean::class.java).equalTo("taskId", taskId).findAll()
             var linkBean: HadLinkDvoBean? = null
             var nearLast: Double = 99999.99
             for (link in realmList) {
@@ -328,7 +329,7 @@ class RealmOperateHelper() {
      * @param bufferType 点位外扩距离的单位： 米-Meter，像素-PIXEL
      * @param sort 是否需要排序
      * */
-    suspend fun queryLinkByLinkPid(realm: Realm,linkPid: String): MutableList<RenderEntity> {
+    suspend fun queryLinkByLinkPid(realm: Realm, linkPid: String): MutableList<RenderEntity> {
         val result = mutableListOf<RenderEntity>()
         val realmList = getSelectTaskRealmTools(realm, RenderEntity::class.java, false)
             .notEqualTo("table", DataCodeEnum.OMDB_RD_LINK.name)
@@ -415,16 +416,17 @@ class RealmOperateHelper() {
     }
 
     fun getRealmDefaultInstance(): Realm {
+        val realm = Realm.getDefaultInstance()
         if (isUpdate) {
             Log.e("jingo", "数据库更新")
-            if (Realm.getDefaultInstance().isInTransaction) {
-                Realm.getDefaultInstance().cancelTransaction()
+            if (realm.isInTransaction) {
+                realm.cancelTransaction()
                 Log.e("jingo", "数据库正在事物，需要退出当前事物")
             }
-            Realm.getDefaultInstance().refresh()
+            realm.refresh()
             isUpdate = false;
         }
-        return Realm.getDefaultInstance()
+        return realm
     }
 
 
@@ -436,7 +438,7 @@ class RealmOperateHelper() {
         val realmQuery = realm.where(clazz)
         if (MapParamUtils.getDataLayerEnum() != null) {
             if (enableSql) {
-                var sql =
+                val sql =
                     " enable${MapParamUtils.getDataLayerEnum().sql}"
                 realm.where(clazz).rawPredicate(sql)
             }
@@ -456,16 +458,17 @@ class RealmOperateHelper() {
     }
 
     fun getSelectTaskRealmInstance(): Realm {
+        val realm = Realm.getInstance(Constant.currentSelectTaskConfig)
         if (isUpdate) {
             Log.e("jingo", "数据库更新")
-            if (Realm.getInstance(Constant.currentSelectTaskConfig).isInTransaction) {
-                Realm.getInstance(Constant.currentSelectTaskConfig).cancelTransaction()
+            if (realm.isInTransaction) {
+                realm.cancelTransaction()
                 Log.e("jingo", "数据库正在事物，需要退出当前事物")
             }
-            Realm.getInstance(Constant.currentSelectTaskConfig).refresh()
+            realm.refresh()
             isUpdate = false;
         }
-        return Realm.getInstance(Constant.currentSelectTaskConfig)
+        return realm
     }
 
     fun updateRealmDefaultInstance() {

@@ -166,7 +166,7 @@ class TaskViewModel @Inject constructor(
             when (val result = networkService.getTaskList(Constant.USER_ID)) {
                 is NetResult.Success -> {
                     if (result.data != null) {
-                        val realm = Realm.getDefaultInstance()
+                        val realm = realmOperateHelper.getRealmDefaultInstance()
                         realm.executeTransaction {
                             result.data.obj?.let { list ->
                                 for (index in list.indices) {
@@ -179,10 +179,13 @@ class TaskViewModel @Inject constructor(
                                         task.status = item.status
                                         task.currentSize = item.currentSize
                                         task.hadLinkDvoList = item.hadLinkDvoList
+                                        task.syncStatus = item.syncStatus
                                         //已上传后不在更新操作时间
                                         if (task.syncStatus != FileManager.Companion.FileUploadStatus.DONE) {
                                             //赋值时间，用于查询过滤
                                             task.operationTime = DateTimeUtil.getNowDate().time
+                                        }else{//已上传数据不做更新
+                                            continue
                                         }
                                     } else {
                                         for (hadLink in task.hadLinkDvoList) {
@@ -228,7 +231,7 @@ class TaskViewModel @Inject constructor(
      * 获取任务列表
      */
     private suspend fun getLocalTaskList() {
-        val realm = Realm.getDefaultInstance()
+        val realm = realmOperateHelper.getRealmDefaultInstance()
         //过滤掉已上传的超过90天的数据
         val nowTime: Long = DateTimeUtil.getNowDate().time
         val beginNowTime: Long = nowTime - 90 * 3600 * 24 * 1000L
@@ -365,7 +368,7 @@ class TaskViewModel @Inject constructor(
                         item.reason = text
                     }
                 }
-                val realm = Realm.getDefaultInstance()
+                val realm = realmOperateHelper.getRealmDefaultInstance()
                 realm.executeTransaction { r ->
                     r.copyToRealmOrUpdate(it)
                 }
@@ -382,7 +385,7 @@ class TaskViewModel @Inject constructor(
         if (filterTaskListJob != null) filterTaskListJob!!.cancel()
         filterTaskListJob = viewModelScope.launch(Dispatchers.IO) {
             delay(500)
-            val realm = Realm.getDefaultInstance()
+            val realm = realmOperateHelper.getRealmDefaultInstance()
             val list = realm.where(TaskBean::class.java).contains("evaluationTaskName", key).or()
                 .contains("dataVersion", key).or().contains("cityName", key).findAll()
             liveDataTaskList.postValue(realm.copyFromRealm(list))
@@ -419,7 +422,7 @@ class TaskViewModel @Inject constructor(
         ) { dialog, _ ->
             dialog.dismiss()
             viewModelScope.launch(Dispatchers.IO) {
-                val realm = Realm.getDefaultInstance()
+                val realm = realmOperateHelper.getRealmDefaultInstance()
                 realm.executeTransaction {
                     val objects =
                         it.where(TaskBean::class.java).equalTo("id", taskBean.id).findFirst()
@@ -467,7 +470,7 @@ class TaskViewModel @Inject constructor(
 
     fun checkUploadTask(context: Context, taskBean: TaskBean) {
         viewModelScope.launch(Dispatchers.IO) {
-            val realm = Realm.getDefaultInstance()
+            val realm = realmOperateHelper.getRealmDefaultInstance()
             var result = 0
             val map: MutableMap<TaskBean, Boolean> = HashMap<TaskBean, Boolean>()
             taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
@@ -563,7 +566,7 @@ class TaskViewModel @Inject constructor(
                 currentSelectTaskBean!!.hadLinkDvoList.add(
                     hadLinkDvoBean
                 )
-                val realm = Realm.getDefaultInstance()
+                val realm = realmOperateHelper.getRealmDefaultInstance()
                 realm.executeTransaction { r ->
                     r.copyToRealmOrUpdate(hadLinkDvoBean)
                     r.copyToRealmOrUpdate(currentSelectTaskBean!!)
@@ -621,7 +624,7 @@ class TaskViewModel @Inject constructor(
                 dialog.dismiss()
                 viewModelScope.launch(Dispatchers.IO) {
 
-                    val realm = Realm.getDefaultInstance()
+                    val realm = realmOperateHelper.getRealmDefaultInstance()
 
                     //重置数据为隐藏
                     if (hadLinkDvoBean.linkStatus == 2) {

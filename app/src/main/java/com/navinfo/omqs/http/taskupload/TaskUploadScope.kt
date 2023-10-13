@@ -10,7 +10,9 @@ import androidx.lifecycle.Observer
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.omqs.bean.EvaluationInfo
 import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.bean.SysUserBean
+import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.http.DefaultResponse
 import com.navinfo.omqs.tools.FileManager.Companion.FileUploadStatus
 import com.navinfo.omqs.util.DateTimeUtil
@@ -21,7 +23,8 @@ import java.util.*
 
 class TaskUploadScope(
     private val uploadManager: TaskUploadManager,
-    val taskBean: TaskBean,
+    private val realmOperateHelper: RealmOperateHelper,
+    var taskBean: TaskBean,
 ) :
     CoroutineScope by CoroutineScope(Dispatchers.IO + CoroutineName("OfflineMapUpLoad")) {
 
@@ -71,22 +74,35 @@ class TaskUploadScope(
      * @param status [OfflineMapCityBean.Status]
      */
     private fun change(status: Int, message: String = "") {
-        if (taskBean.syncStatus != status) {
-            taskBean.syncStatus = status
-            taskBean.errMsg = message
-            //赋值时间，用于查询过滤
-            taskBean.operationTime = DateTimeUtil.getNowDate().time
-            uploadData.postValue(taskBean)
-            //同步中不进行状态记录,只做界面变更显示
-            if (status != FileUploadStatus.UPLOADING) {
-                launch {
-                    val realm = Realm.getDefaultInstance()
-                    realm.executeTransaction {
-                        it.copyToRealmOrUpdate(taskBean)
+        launch {
+            if (taskBean.syncStatus != status) {
+                taskBean.syncStatus = status
+                taskBean.errMsg = message
+                //赋值时间，用于查询过滤
+                taskBean.operationTime = DateTimeUtil.getNowDate().time
+                //同步中不进行状态记录,只做界面变更显示
+                if (status != FileUploadStatus.UPLOADING) {
+                    val realm = realmOperateHelper.getRealmDefaultInstance()
+                    Log.e(
+                        "jingo",
+                        "数据上传更新状态change status:${status} 任务link数量：${taskBean.hadLinkDvoList.size}"
+                    )
+                    realm.executeTransaction { r ->
+                        val newTask =
+                            realm.where(TaskBean::class.java).equalTo("id", taskBean.id).findFirst()
+                        newTask?.let {
+                            it.syncStatus = taskBean.syncStatus
+                            it.errMsg = taskBean.errMsg
+                            //赋值时间，用于查询过滤
+                            it.operationTime = taskBean.operationTime
+                            r.copyToRealmOrUpdate(it)
+                            taskBean = realm.copyFromRealm(it)
+                        }
                     }
                     realm.close()
                 }
             }
+            uploadData.postValue(taskBean)
         }
     }
 
@@ -116,21 +132,26 @@ class TaskUploadScope(
                 return
             }
 
-            val realm = Realm.getDefaultInstance()
-
+            val realm = realmOperateHelper.getRealmDefaultInstance()
+            realm.refresh()
             val bodyList: MutableList<EvaluationInfo> = ArrayList()
 
             if (taskBean.syncStatus == FileUploadStatus.WAITING) {
                 change(FileUploadStatus.UPLOADING)
             }
+            Log.e("jingo", "上传link数量1 ：${taskBean.hadLinkDvoList.size}")
+            val newTaskBean =
+                realm.where(TaskBean::class.java).equalTo("id", taskBean.id).findFirst()
+            if (newTaskBean != null) {
+                Log.e("jingo", "上传link数量2 ：${newTaskBean.hadLinkDvoList.size}")
+                taskBean = realm.copyFromRealm(newTaskBean)
+            }
 
-            taskBean.hadLinkDvoList.forEach { hadLinkDvoBean ->
-                Log.e("jingo", "数据上传遍历开始")
-
+            for (hadLinkDvoBean in taskBean.hadLinkDvoList) {
+                Log.e("jingo", "数据上传遍历开始0${hadLinkDvoBean.linkPid}")
                 val linkStatus = 1
                 //存在原因标记未测评
                 if (hadLinkDvoBean.reason.isNotEmpty()) {
-                    Log.e("jingo", "数据上传遍历开始0${hadLinkDvoBean.linkPid}")
 
                     //未测评
                     val linkStatus = 0
@@ -142,6 +163,7 @@ class TaskUploadScope(
                         markId = UUID.randomUUID().toString(),//"20065597"
                         trackPhotoNumber = "",
                         markGeometry = "",
+                        linkGeometry = "",
                         featureName = "",
                         problemType = 0,
                         problemPhenomenon = "",
@@ -151,7 +173,7 @@ class TaskUploadScope(
                         evaluatorName = "",
                         evaluationDate = "",
                         evaluationWay = 2,
-                        roadClassfcation = 1,
+                        roadClassifcation = 1,
                         roadFunctionGrade = 0,
                         noEvaluationreason = hadLinkDvoBean.reason,
                         linkLength = 0.0,
@@ -163,8 +185,6 @@ class TaskUploadScope(
 
                 } else {
 
-                    Log.e("jingo", "数据上传遍历开始1${hadLinkDvoBean.linkPid}")
-
                     val linkStatus = hadLinkDvoBean.linkStatus
 
                     var s: String = "%.3f".format(hadLinkDvoBean.length)//保留一位小数(且支持四舍五入)
@@ -175,29 +195,37 @@ class TaskUploadScope(
 
                     if (objects != null && objects.size > 0) {
                         val copyList = realm.copyFromRealm(objects)
-                        copyList.forEach {
-                            var problemType = 0
-                            if (it.problemType == "错误") {
-                                problemType = 0
-                            } else if (it.problemType == "多余") {
-                                problemType = 1
-                            } else if (it.problemType == "遗漏") {
-                                problemType = 2
+                        for (it in copyList) {
+                            val problemType = when (it.problemType) {
+//                                "错误" -> {
+//                                    0
+//                                }
+                                "多余" -> {
+                                    1
+                                }
+                                "遗漏" -> {
+                                    2
+                                }
+                                else -> {
+                                    0
+                                }
                             }
 
-                            var roadClassfcation = 0
+                            var roadClassifcation = 0
 
                             var roadFunctionGrade = 0
 
                             var dataLevel = 0
 
                             if (hadLinkDvoBean.linkInfo != null) {
-                                roadClassfcation = hadLinkDvoBean.linkInfo!!.kind
+                                roadClassifcation = hadLinkDvoBean.linkInfo!!.kind
                                 roadFunctionGrade = hadLinkDvoBean.linkInfo!!.functionLevel
                                 dataLevel = hadLinkDvoBean.linkInfo!!.dataLevel
                             }
-
-                            var evaluationWay = 2
+                            var linkGeometry = ""
+                            if(linkStatus == 3)
+                                linkGeometry = hadLinkDvoBean.geometry
+                            val evaluationWay = 2
                             val evaluationInfo = EvaluationInfo(
                                 evaluationTaskId = taskBean.id.toString(),
                                 linkPid = hadLinkDvoBean.linkPid,//"84207223282277331"
@@ -205,6 +233,7 @@ class TaskUploadScope(
                                 markId = it.id,
                                 trackPhotoNumber = "",
                                 markGeometry = it.geometry,
+                                linkGeometry = linkGeometry,
                                 featureName = it.classCode,
                                 problemType = problemType,
                                 problemPhenomenon = it.phenomenon,
@@ -214,7 +243,7 @@ class TaskUploadScope(
                                 evaluatorName = it.checkUserId,
                                 evaluationDate = it.checkTime,
                                 evaluationWay = evaluationWay,
-                                roadClassfcation = roadClassfcation,
+                                roadClassifcation = roadClassifcation,
                                 roadFunctionGrade = roadFunctionGrade,
                                 noEvaluationreason = "",
                                 linkLength = s.toDouble(),
@@ -226,11 +255,11 @@ class TaskUploadScope(
                         }
                     }
                 }
-                Log.e("jingo", "数据上传遍历结束")
             }
             realm.close()
-
+            Log.e("jingo", "数据上传条数 ${bodyList.size}")
             if (bodyList.size > 0) {
+
                 val result = uploadManager.netApi.postRequest(bodyList)// .enqueue(object :
 //                        Callback<ResponseBody> {
                 if (result.isSuccessful) {
@@ -240,6 +269,7 @@ class TaskUploadScope(
                             change(FileUploadStatus.DONE, "上传成功")
                         } else {
                             change(FileUploadStatus.ERROR, "${defaultUserResponse.msg}")
+                            Log.e("jingo", "数据上传出错 ${defaultUserResponse.msg}")
                         }
                     } else {
                         // handle the failure
@@ -249,13 +279,12 @@ class TaskUploadScope(
                     change(FileUploadStatus.ERROR)
                 }
             } else {
-                change(FileUploadStatus.NONE,"无可上传数据")
+                change(FileUploadStatus.NONE, "无可上传数据")
             }
         } catch (e: Throwable) {
             change(FileUploadStatus.ERROR)
             Log.e("jingo", "数据上传出错 ${e.message}")
         } finally {
-
         }
     }
 

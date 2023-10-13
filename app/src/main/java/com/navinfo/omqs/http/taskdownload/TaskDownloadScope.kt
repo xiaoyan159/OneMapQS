@@ -9,6 +9,7 @@ import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.utils.MapParamUtils
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.db.ImportOMDBHelper
+import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
 import com.navinfo.omqs.util.DateTimeUtil
@@ -22,7 +23,8 @@ import java.io.RandomAccessFile
 
 class TaskDownloadScope(
     private val downloadManager: TaskDownloadManager,
-    val taskBean: TaskBean,
+    private val realmOperateHelper: RealmOperateHelper,
+    var taskBean: TaskBean,
 ) :
     CoroutineScope by CoroutineScope(Dispatchers.IO + CoroutineName("TaskMapDownLoad")) {
 
@@ -107,10 +109,22 @@ class TaskDownloadScope(
             taskBean.operationTime = DateTimeUtil.getNowDate().time
             downloadData.postValue(taskBean)
             if (status != FileDownloadStatus.LOADING && status != FileDownloadStatus.IMPORTING) {
-                val realm = Realm.getDefaultInstance()
-                realm.beginTransaction()
-                realm.insertOrUpdate(taskBean)
-                realm.commitTransaction()
+                val realm = realmOperateHelper.getRealmDefaultInstance()
+//                Log.e("jingo", "数据下载更新状态 原${}")
+                realm.executeTransaction { r ->
+//                    realm.insertOrUpdate(taskBean)
+                    val newTask =
+                        realm.where(TaskBean::class.java).equalTo("id", taskBean.id).findFirst()
+                    newTask?.let {
+                        it.syncStatus = taskBean.syncStatus
+                        it.status = taskBean.status
+                        it.errMsg = taskBean.errMsg
+                        //赋值时间，用于查询过滤
+                        it.operationTime = taskBean.operationTime
+                        r.copyToRealmOrUpdate(it)
+                        taskBean = realm.copyFromRealm(it)
+                    }
+                }
                 realm.close()
             }
         }
@@ -148,7 +162,7 @@ class TaskDownloadScope(
                         Log.e("jingo", "数据安装结束")
                         withContext(Dispatchers.Main) {
                             //任务与当前一致，需要更新渲染图层
-                            if(MapParamUtils.getTaskId()==taskBean.id){
+                            if (MapParamUtils.getTaskId() == taskBean.id) {
                                 downloadManager.mapController.layerManagerHandler.updateOMDBVectorTileLayer()
                             }
                         }

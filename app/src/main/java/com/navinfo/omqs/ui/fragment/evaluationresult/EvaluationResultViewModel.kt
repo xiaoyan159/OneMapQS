@@ -129,8 +129,10 @@ class EvaluationResultViewModel @Inject constructor(
                     liveDataQsRecordBean.value!!.geometry =
                         GeometryTools.createGeometry(point).toText()
                     mapController.markerHandle.addMarker(point, TAG)
-                    viewModelScope.launch {
-                        captureLink(point)
+                    viewModelScope.launch(Dispatchers.IO) {
+                        val realm = realmOperateHelper.getSelectTaskRealmInstance()
+                        captureLink(realm, point)
+                        realm.close()
                     }
                 }
 
@@ -151,17 +153,20 @@ class EvaluationResultViewModel @Inject constructor(
      * 查询数据库，获取问题分类
      */
     fun initNewData(bean: SignBean?, filePath: String) {
+
         //查询元数据
         viewModelScope.launch(Dispatchers.IO) {
             /**
              * 获取当前所选的任务
              */
             val taskId = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
-            val realm = Realm.getDefaultInstance()
+            val realm = realmOperateHelper.getRealmDefaultInstance()
+
             val objects = realm.where(TaskBean::class.java).equalTo("id", taskId).findFirst()
             if (objects != null) {
                 liveDataTaskBean.postValue(realm.copyFromRealm(objects))
             }
+            realm.close()
             //获取当前定位点
             val geoPoint = mapController.locationLayerHandler.getCurrentGeoPoint()
             //如果不是从面板进来的
@@ -171,11 +176,13 @@ class EvaluationResultViewModel @Inject constructor(
                         GeometryTools.createGeometry(it).toText()
                     withContext(Dispatchers.Main) {
                         mapController.markerHandle.addMarker(geoPoint, TAG)
-                        mapController.animationHandler.animationByLatLon(
-                            geoPoint.latitude, geoPoint.longitude
-                        )
+//                        mapController.animationHandler.animationByLatLon(
+//                            geoPoint.latitude, geoPoint.longitude
+//                        )
                     }
-                    captureLink(geoPoint)
+                    val realm = realmOperateHelper.getSelectTaskRealmInstance()
+                    captureLink(realm, geoPoint)
+                    realm.close()
                 }
             } else {
                 liveDataQsRecordBean.value?.run {
@@ -184,7 +191,7 @@ class EvaluationResultViewModel @Inject constructor(
                     if (linkId.isNotEmpty()) {
                         viewModelScope.launch {
                             val link = realmOperateHelper.queryLink(linkId)
-                            if(link != null){
+                            if (link != null) {
                                 mapController.lineHandler.showLine(link.geometry)
                             }
                         }
@@ -200,44 +207,46 @@ class EvaluationResultViewModel @Inject constructor(
                     }
                 }
             }
-
+        }
+        viewModelScope.launch(Dispatchers.IO) {
             getClassTypeList(bean)
             getProblemLinkList()
-            realm.close()
+            addChatMsgEntity(filePath)
         }
-        addChatMsgEntity(filePath)
     }
 
     /**
      * 捕捉道路或新增评测link
      */
-    private suspend fun captureLink(point: GeoPoint) {
+    private suspend fun captureLink(realm: Realm, point: GeoPoint) {
+        Log.e("jingo", "捕捉道路SSS")
         if (liveDataTaskBean.value == null) {
             liveDataToastMessage.postValue("请先选择所属任务!")
             return
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             liveDataQsRecordBean.value?.let {
-                val realm = realmOperateHelper.getSelectTaskRealmInstance()
                 val taskLink =
-                    realmOperateHelper.captureTaskLink(point)
+                    realmOperateHelper.captureTaskLink(point, taskId = liveDataTaskBean.value!!.id)
                 if (taskLink != null) {
                     it.linkId = taskLink.linkPid
                     mapController.lineHandler.showLine(taskLink.geometry)
+                    Log.e("jingo", "捕捉道路EEE 1")
                     return
                 } else {
-                    val linkList = realmOperateHelper.queryLink(realm,point = point)
+                    val linkList = realmOperateHelper.queryLink(realm, point = point)
                     if (linkList.isNotEmpty()) {
                         it.linkId = linkList[0].properties[LinkTable.linkPid] ?: ""
                         mapController.lineHandler.showLine(linkList[0].geometry)
+                        Log.e("jingo", "捕捉道路EEE 2")
                         return
                     }
                 }
                 it.linkId = ""
                 mapController.lineHandler.removeLine()
-                realm.close()
             }
         }
+        Log.e("jingo", "捕捉道路EEE 3")
     }
 
     /**
@@ -245,6 +254,7 @@ class EvaluationResultViewModel @Inject constructor(
      */
     fun getClassTypeList(bean: SignBean? = null) {
         viewModelScope.launch(Dispatchers.IO) {
+            Log.e("jingo", "获取问题分类列表 SSS")
             val list = roomAppDatabase.getScProblemTypeDao().findClassTypeList()
             list?.let {
                 if (list.isNotEmpty()) {
@@ -273,6 +283,7 @@ class EvaluationResultViewModel @Inject constructor(
                     getProblemList(classType)
                 }
             }
+            Log.e("jingo", "获取问题分类列表 EEE")
         }
     }
 
@@ -281,6 +292,7 @@ class EvaluationResultViewModel @Inject constructor(
      */
     fun getProblemLinkList() {
         viewModelScope.launch(Dispatchers.IO) {
+            Log.e("jingo", "获取问题环节列表 SSS")
             val list = roomAppDatabase.getScRootCauseAnalysisDao().findAllData()
             list?.let { tl ->
                 if (tl.isNotEmpty()) {
@@ -307,6 +319,7 @@ class EvaluationResultViewModel @Inject constructor(
                     liveDataRightTypeList.postValue(rightList)
                 }
             }
+            Log.e("jingo", "获取问题环节列表 EEE")
         }
     }
 
@@ -314,6 +327,7 @@ class EvaluationResultViewModel @Inject constructor(
      * 获取问题类型列表和问题现象
      */
     private suspend fun getProblemList(classType: String) {
+        Log.e("jingo", "获取问题类型列表和问题现象 SSS")
         val typeList = roomAppDatabase.getScProblemTypeDao().findProblemTypeList(classType)
         typeList?.let { tl ->
             if (tl.isNotEmpty()) {
@@ -340,6 +354,7 @@ class EvaluationResultViewModel @Inject constructor(
                 liveDataRightTypeList.postValue(phenomenonRightList)
             }
         }
+        Log.e("jingo", "获取问题类型列表和问题现象 EEE")
     }
 
     /**
@@ -404,7 +419,7 @@ class EvaluationResultViewModel @Inject constructor(
                 return@launch
             }
 
-            val realm = Realm.getDefaultInstance()
+            val realm = realmOperateHelper.getRealmDefaultInstance()
             liveDataQsRecordBean.value!!.taskId = liveDataTaskBean.value!!.id
             liveDataQsRecordBean.value!!.checkTime = DateTimeUtil.getDataTime()
             liveDataQsRecordBean.value!!.checkUserId = Constant.USER_REAL_NAME
@@ -413,6 +428,7 @@ class EvaluationResultViewModel @Inject constructor(
             }
             mapController.markerHandle.addOrUpdateQsRecordMark(liveDataQsRecordBean.value!!)
             liveDataFinish.postValue(true)
+            realm.refresh()
             realm.close()
         }
     }
@@ -428,7 +444,7 @@ class EvaluationResultViewModel @Inject constructor(
             override fun onClick(dialog: Dialog?, which: Int) {
                 mDialog.dismiss()
                 viewModelScope.launch(Dispatchers.IO) {
-                    val realm = Realm.getDefaultInstance()
+                    val realm = realmOperateHelper.getRealmDefaultInstance()
                     realm.executeTransaction {
                         val objects = it.where(QsRecordBean::class.java)
                             .equalTo("id", liveDataQsRecordBean.value?.id).findFirst()
@@ -453,7 +469,7 @@ class EvaluationResultViewModel @Inject constructor(
         Log.e("jingo", "捕捉到的要素 id = $id")
         viewModelScope.launch(Dispatchers.Main) {
 
-            val realm = Realm.getDefaultInstance()
+            val realm = realmOperateHelper.getRealmDefaultInstance()
 
             val objects = realm.where(QsRecordBean::class.java).equalTo("id", id).findFirst()
             Log.e("jingo", "查询数据 id= $id")
@@ -666,7 +682,7 @@ class EvaluationResultViewModel @Inject constructor(
             if (oldBean == null) {
                 viewModelScope.launch(Dispatchers.IO) {
                     val taskId = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
-                    val realm = Realm.getDefaultInstance()
+                    val realm = realmOperateHelper.getRealmDefaultInstance()
                     val objects =
                         realm.where(TaskBean::class.java).equalTo("id", taskId).findFirst()
                     if (objects != null) {
