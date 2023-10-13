@@ -50,6 +50,7 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmSet
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -233,6 +234,9 @@ class MainViewModel @Inject constructor(
     private var disTime: Long = 1000
 
     private var currentMapZoomLevel: Int = 0
+
+    //导航轨迹回顾
+    private var naviLocationTest = false
 
     //导航信息
     private var naviEngine: NaviEngine? = null
@@ -487,10 +491,9 @@ class MainViewModel @Inject constructor(
         if (currentTaskBean != null) {
             var list = mutableListOf<QsRecordBean>()
             val realm = realmOperateHelper.getRealmDefaultInstance()
-            realm.executeTransaction {
-                val objects = realmOperateHelper.getRealmTools(QsRecordBean::class.java).findAll()
-                list = realm.copyFromRealm(objects)
-            }
+            val id = sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1)
+            val objects = realm.where(QsRecordBean::class.java).equalTo("taskId", id).findAll()
+            list = realm.copyFromRealm(objects)
             realm.close()
             mapController.markerHandle.removeAllQsMarker()
             for (item in list) {
@@ -541,7 +544,11 @@ class MainViewModel @Inject constructor(
             mapController.locationLayerHandler.niLocationFlow.collect { location ->
 
                 //过滤掉无效点
-                if (!GeometryTools.isCheckError(location.longitude, location.latitude)) {
+                if (!naviLocationTest && !GeometryTools.isCheckError(
+                        location.longitude,
+                        location.latitude
+                    )
+                ) {
                     val geometry = GeometryTools.createGeometry(
                         GeoPoint(
                             location.latitude, location.longitude
@@ -698,7 +705,16 @@ class MainViewModel @Inject constructor(
                             DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code, //线限速,
                             DataCodeEnum.OMDB_LINK_DIRECT.code,//道路方向,
                             DataCodeEnum.OMDB_RAMP.code, //匝道
+                            DataCodeEnum.OMDB_RAMP_1.code,
+                            DataCodeEnum.OMDB_RAMP_2.code,
+                            DataCodeEnum.OMDB_RAMP_3.code,
+                            DataCodeEnum.OMDB_RAMP_4.code,
+                            DataCodeEnum.OMDB_RAMP_5.code,
+                            DataCodeEnum.OMDB_RAMP_6.code,
+                            DataCodeEnum.OMDB_RAMP_7.code,
                             DataCodeEnum.OMDB_BRIDGE.code,//桥
+                            DataCodeEnum.OMDB_BRIDGE_1.code,
+                            DataCodeEnum.OMDB_BRIDGE_2.code,
                             DataCodeEnum.OMDB_TUNNEL.code,//隧道
                             DataCodeEnum.OMDB_ROUNDABOUT.code,//环岛
                             DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code,//出入口
@@ -842,7 +858,17 @@ class MainViewModel @Inject constructor(
                                     DataCodeEnum.OMDB_LINK_SPEEDLIMIT_COND.code,//条件线限速
                                     DataCodeEnum.OMDB_LINK_DIRECT.code,//道路方向,
                                     DataCodeEnum.OMDB_RAMP.code, //匝道
+                                    DataCodeEnum.OMDB_RAMP_1.code,
+                                    DataCodeEnum.OMDB_RAMP_2.code,
+                                    DataCodeEnum.OMDB_RAMP_3.code,
+                                    DataCodeEnum.OMDB_RAMP_4.code,
+                                    DataCodeEnum.OMDB_RAMP_5.code,
+                                    DataCodeEnum.OMDB_RAMP_6.code,
+                                    DataCodeEnum.OMDB_RAMP_7.code,
                                     DataCodeEnum.OMDB_BRIDGE.code,//桥
+                                    DataCodeEnum.OMDB_BRIDGE_1.code,//桥
+                                    DataCodeEnum.OMDB_BRIDGE_2.code,//桥
+
                                     DataCodeEnum.OMDB_TUNNEL.code,//隧道
                                     DataCodeEnum.OMDB_ROUNDABOUT.code,//环岛
                                     DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code,//出入口
@@ -1610,5 +1636,57 @@ class MainViewModel @Inject constructor(
     fun clearMarker() {
         mapController.markerHandle.removeMarker()
     }
+
+    /**
+     * 导航测试
+     */
+    fun setNaviLocationTestStartTime(time: Long) {
+        stopNaviLocationTest()
+        viewModelScope.launch(Dispatchers.IO) {
+            var b = true
+            while (b) {
+                val list = traceDataBase.niLocationDao.findListWithStartTime(time, 20)
+                var lastTime: Long = 0
+                for (location in list) {
+                    if(!naviLocationTest)
+                        break
+                    lastTime = if (lastTime != 0L) {
+                        val nowTime = location.timeStamp.toLong()
+                        val tempTime = nowTime - lastTime
+                        if (tempTime > 10000) {
+                            liveDataMessage.postValue("下个定位点与当前定位点时间间隔超过10秒(${tempTime})，将直接跳转到下个点")
+                            delay(5000)
+                        } else {
+                            delay(tempTime)
+                        }
+                        nowTime
+                    } else {
+                        location.timeStamp.toLong()
+                    }
+                    withContext(Dispatchers.Main) {
+                        mapController.animationHandler.animationByLatLon(
+                            location.latitude,
+                            location.longitude
+                        )
+                    }
+
+                    mapController.locationLayerHandler.niLocationFlow.emit(location)
+                }
+                if (list.size < 100) {
+                    b = false
+                }
+            }
+            mapController.locationLayerHandler.startLocation()
+        }
+    }
+
+    /**
+     * 停止测试
+     */
+    fun stopNaviLocationTest() {
+        mapController.locationLayerHandler.startLocation()
+        naviLocationTest = false
+    }
+
 }
 

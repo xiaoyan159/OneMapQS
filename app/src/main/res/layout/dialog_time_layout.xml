@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     android:background="@color/white"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.navinfo.omqs.ui.dialog.TimeDialog">
 
     <TextView
         android:layout_width="wrap_content"
@@ -53,12 +54,13 @@
             android:padding="5dp"
             android:layout_weight="1"
             android:gravity="center"
+            android:textColor="@color/red"
             android:text="取消"
             android:textSize="18sp" />
 
         <View
             android:layout_width="1dp"
-            android:layout_height="20dp"
+            android:layout_height="match_parent"
             android:background="@color/gray"
             android:gravity="center"
              />

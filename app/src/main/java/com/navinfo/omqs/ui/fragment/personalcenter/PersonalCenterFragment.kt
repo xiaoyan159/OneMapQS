@@ -33,6 +33,7 @@ import com.navinfo.omqs.hilt.ImportOMDBHiltFactory
 import com.navinfo.omqs.tools.CoroutineUtils
 import com.navinfo.omqs.ui.activity.map.MainViewModel
 import com.navinfo.omqs.ui.activity.scan.QrCodeActivity
+import com.navinfo.omqs.ui.dialog.OnTimeDialogListener
 import com.navinfo.omqs.ui.dialog.TimeDialog
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.permissionx.guolindev.PermissionX
@@ -206,8 +207,14 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                 }
                 //导航定位测试
                 R.id.personal_center_menu_location_test -> {
+                    viewMainModel.stopNaviLocationTest()
                     val dialog = TimeDialog(
                         requireContext(),
+                        object : OnTimeDialogListener {
+                            override fun selectTime(milliseconds: Long) {
+                                viewMainModel.setNaviLocationTestStartTime(milliseconds)
+                            }
+                        }
                     )
                     dialog.show()
                 }
