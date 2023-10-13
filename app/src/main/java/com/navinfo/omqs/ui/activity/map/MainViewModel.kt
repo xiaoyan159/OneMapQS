@@ -49,12 +49,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmSet
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.withContext
 import org.locationtech.jts.geom.Geometry
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
@@ -237,6 +234,7 @@ class MainViewModel @Inject constructor(
 
     //导航轨迹回顾
     private var naviLocationTest = false
+    private var naviLocationTestJob: Job? = null
 
     //导航信息
     private var naviEngine: NaviEngine? = null
@@ -1641,17 +1639,22 @@ class MainViewModel @Inject constructor(
      * 导航测试
      */
     fun setNaviLocationTestStartTime(time: Long) {
-        stopNaviLocationTest()
-        viewModelScope.launch(Dispatchers.IO) {
+        naviLocationTest = true
+        if (naviLocationTestJob != null && naviLocationTestJob!!.isActive)
+            naviLocationTestJob!!.cancel()
+        naviLocationTestJob = viewModelScope.launch(Dispatchers.IO) {
             var b = true
+            val limitCount = 20
+            var lastTime: Long = time
             while (b) {
-                val list = traceDataBase.niLocationDao.findListWithStartTime(time, 20)
-                var lastTime: Long = 0
+                Log.e("jingo", "下一组定位点起始时间 $lastTime")
+                val list = traceDataBase.niLocationDao.findListWithStartTime(lastTime, limitCount)
+
                 for (location in list) {
-                    if(!naviLocationTest)
+                    if (!naviLocationTest)
                         break
-                    lastTime = if (lastTime != 0L) {
-                        val nowTime = location.timeStamp.toLong()
+                    val nowTime = location.timeStamp.toLong()
+                    if (lastTime != 0L) {
                         val tempTime = nowTime - lastTime
                         if (tempTime > 10000) {
                             liveDataMessage.postValue("下个定位点与当前定位点时间间隔超过10秒(${tempTime})，将直接跳转到下个点")
@@ -1659,10 +1662,9 @@ class MainViewModel @Inject constructor(
                         } else {
                             delay(tempTime)
                         }
-                        nowTime
-                    } else {
-                        location.timeStamp.toLong()
                     }
+                    lastTime = nowTime
+
                     withContext(Dispatchers.Main) {
                         mapController.animationHandler.animationByLatLon(
                             location.latitude,
@@ -1672,11 +1674,10 @@ class MainViewModel @Inject constructor(
 
                     mapController.locationLayerHandler.niLocationFlow.emit(location)
                 }
-                if (list.size < 100) {
+                if (list.size < limitCount) {
                     b = false
                 }
             }
-            mapController.locationLayerHandler.startLocation()
         }
     }
 
@@ -1684,8 +1685,10 @@ class MainViewModel @Inject constructor(
      * 停止测试
      */
     fun stopNaviLocationTest() {
-        mapController.locationLayerHandler.startLocation()
         naviLocationTest = false
+        if (naviLocationTestJob != null) {
+            naviLocationTestJob!!.cancel()
+        }
     }
 
 }

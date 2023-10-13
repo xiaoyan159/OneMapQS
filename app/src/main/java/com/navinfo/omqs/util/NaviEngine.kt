@@ -527,7 +527,7 @@ class NaviEngine(
     private suspend fun matchingItem() {
 
         if (routeIndex > -1 && tempRoutList.isNotEmpty() && tempGeometry != null) {
-            Log.e("jingo", "当前${routeIndex} ${tempRoutList[0].startIndexInPath} $footIndex")
+//            Log.e("jingo", "当前${routeIndex} ${tempRoutList[0].startIndexInPath} $footIndex")
             //道路前方一定距离范围内的要素信息
             val bindingItemList = mutableListOf<NaviRouteItem>()
             //定位点到要素的路径距离
