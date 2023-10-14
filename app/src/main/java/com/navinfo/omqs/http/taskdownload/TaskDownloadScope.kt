@@ -110,13 +110,14 @@ class TaskDownloadScope(
             downloadData.postValue(taskBean)
             if (status != FileDownloadStatus.LOADING && status != FileDownloadStatus.IMPORTING) {
                 val realm = realmOperateHelper.getRealmDefaultInstance()
-                Log.e("jingo", "数据下载更新状态 任务link数量：${taskBean.hadLinkDvoList.size}")
+//                Log.e("jingo", "数据下载更新状态 原${}")
                 realm.executeTransaction { r ->
 //                    realm.insertOrUpdate(taskBean)
                     val newTask =
                         realm.where(TaskBean::class.java).equalTo("id", taskBean.id).findFirst()
                     newTask?.let {
                         it.syncStatus = taskBean.syncStatus
+                        it.status = taskBean.status
                         it.errMsg = taskBean.errMsg
                         //赋值时间，用于查询过滤
                         it.operationTime = taskBean.operationTime

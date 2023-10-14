@@ -3,6 +3,7 @@ package com.navinfo.omqs.db
 import android.content.Context
 import android.database.Cursor.*
 import android.os.Build
+import android.provider.ContactsContract.Data
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.blankj.utilcode.util.FileIOUtils
@@ -234,7 +235,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             continue
                                         }
                                         elementIndex += 1
-                                        dataIndex +=1
+                                        dataIndex += 1
                                         Log.d("ImportOMDBHelper", "解析第：${index + 1}行")
                                         val map = gson.fromJson<Map<String, Any>>(
                                             line,
@@ -313,12 +314,13 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         Log.d("ImportOMDBHelper", "解析===2处理name")
                                         Log.d("ImportOMDBHelper", "解析===1处理杆状物")
 
-                                        if(currentConfig.filterData){
+                                        if (currentConfig.filterData) {
                                             when (renderEntity.code.toInt()) {
 
                                                 DataCodeEnum.OMDB_POLE.code.toInt() -> {
                                                     //过滤树类型的杆状物，无需导入到数据库中
-                                                    val poleType = renderEntity.properties["poleType"]
+                                                    val poleType =
+                                                        renderEntity.properties["poleType"]
                                                     if (poleType != null && poleType.toInt() == 2) {
                                                         continue
                                                     }
@@ -345,7 +347,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                         renderEntity.properties["boundaryType"]
                                                     if (boundaryType != null) {
                                                         when (boundaryType.toInt()) {
-                                                            0, 1,3,4, 5, 7, 9 -> {
+                                                            0, 1, 3, 4, 5, 7, 9 -> {
                                                                 renderEntity.enable = 0
                                                                 Log.e(
                                                                     "qj",
@@ -379,8 +381,10 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                             "linkOut"
                                                         )
                                                     ) {
-                                                        var linkIn = renderEntity.properties["linkIn"]
-                                                        var linkOut = renderEntity.properties["linkOut"]
+                                                        var linkIn =
+                                                            renderEntity.properties["linkIn"]
+                                                        var linkOut =
+                                                            renderEntity.properties["linkOut"]
                                                         if (linkIn != null && linkOut != null) {
                                                             var checkMsg = "$linkIn$linkOut"
                                                             if (resHashMap.containsKey(checkMsg)) {
@@ -527,7 +531,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             Log.d("ImportOMDBHelper", "解析===1子code处理")
                                             //对code编码需要特殊处理 存在多个属性值时，渲染优先级：SA>PA,存在多个属性值时，渲染优先级：FRONTAGE>MAIN_SIDE_A CCESS
 
-                                            if(currentConfig.existSubCode){
+                                            if (currentConfig.existSubCode) {
                                                 when (renderEntity.code.toInt()) {
                                                     DataCodeEnum.OMDB_LINK_ATTRIBUTE.code.toInt() -> {
 
@@ -576,6 +580,17 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                                     }
                                                                 }
                                                             }
+                                                        }
+                                                    }
+                                                    //桥
+                                                    DataCodeEnum.OMDB_BRIDGE.code.toInt() -> {
+                                                        when (renderEntity.properties["bridgeType"]) {
+                                                            "1" -> renderEntity.code =
+                                                                DataCodeEnum.OMDB_BRIDGE_1.code
+                                                            "2" -> renderEntity.code =
+                                                                DataCodeEnum.OMDB_BRIDGE_2.code
+//                                                            "3" -> renderEntity.code = DataCodeEnum.OMDB_BRIDGE_3.code
+                                                            else -> DataCodeEnum.OMDB_BRIDGE.code
                                                         }
                                                     }
 
@@ -692,7 +707,8 @@ class ImportOMDBHelper @AssistedInject constructor(
 
                                                 if (renderEntity.table == DataCodeEnum.OMDB_NODE_FORM.name) {//特殊处理，因为code相同，使用表名判断
                                                     //过滤不需要渲染的要素
-                                                    var formOfWay = renderEntity.properties["formOfWay"]
+                                                    var formOfWay =
+                                                        renderEntity.properties["formOfWay"]
                                                     if (formOfWay != null && formOfWay.toInt() == 30) {
                                                         renderEntity.enable = 2
                                                         renderEntity.code =
@@ -756,7 +772,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                             )
                             elementIndex = 0
                             tableImportTime = System.currentTimeMillis()
-                            if(insertIndex%20000==0){
+                            if (insertIndex % 20000 == 0) {
                                 Log.d(
                                     "ImportOMDBHelper",
                                     "表解析===结束用时时间===事物开始"
@@ -766,12 +782,16 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 Log.d(
                                     "ImportOMDBHelper",
                                     "表解析===结束用时时间===事物结束"
-                                )                            }
+                                )
+                            }
                         }
                     }
                     Realm.getInstance(currentInstallTaskConfig).commitTransaction()
                     Realm.getInstance(currentInstallTaskConfig).close()
-                    Log.d("ImportOMDBHelper", "表解析===结束用时时间${(System.currentTimeMillis() - dataImportTime)}===$dataIndex===插入$insertIndex")
+                    Log.d(
+                        "ImportOMDBHelper",
+                        "表解析===结束用时时间${(System.currentTimeMillis() - dataImportTime)}===$dataIndex===插入$insertIndex"
+                    )
                     Log.e("qj", "安装结束")
                 } catch (e: Exception) {
                     if (Realm.getInstance(currentInstallTaskConfig).isInTransaction) {

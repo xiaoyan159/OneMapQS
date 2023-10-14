@@ -173,7 +173,7 @@ class TaskUploadScope(
                         evaluatorName = "",
                         evaluationDate = "",
                         evaluationWay = 2,
-                        roadClassfcation = 1,
+                        roadClassifcation = 1,
                         roadFunctionGrade = 0,
                         noEvaluationreason = hadLinkDvoBean.reason,
                         linkLength = 0.0,
@@ -211,14 +211,14 @@ class TaskUploadScope(
                                 }
                             }
 
-                            var roadClassfcation = 0
+                            var roadClassifcation = 0
 
                             var roadFunctionGrade = 0
 
                             var dataLevel = 0
 
                             if (hadLinkDvoBean.linkInfo != null) {
-                                roadClassfcation = hadLinkDvoBean.linkInfo!!.kind
+                                roadClassifcation = hadLinkDvoBean.linkInfo!!.kind
                                 roadFunctionGrade = hadLinkDvoBean.linkInfo!!.functionLevel
                                 dataLevel = hadLinkDvoBean.linkInfo!!.dataLevel
                             }
@@ -243,7 +243,7 @@ class TaskUploadScope(
                                 evaluatorName = it.checkUserId,
                                 evaluationDate = it.checkTime,
                                 evaluationWay = evaluationWay,
-                                roadClassfcation = roadClassfcation,
+                                roadClassifcation = roadClassifcation,
                                 roadFunctionGrade = roadFunctionGrade,
                                 noEvaluationreason = "",
                                 linkLength = s.toDouble(),

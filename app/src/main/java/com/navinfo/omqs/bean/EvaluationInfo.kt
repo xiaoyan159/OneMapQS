@@ -53,8 +53,8 @@ data class EvaluationInfo(
     @SerializedName("evaluationWay")
     val evaluationWay: Int = 2,//测评方式 1生产测评 2现场测评 服务字段定义为Integer，使用包装类，对应无值情况为空
 
-    @SerializedName("roadClassfcation")
-    val roadClassfcation: Int = 1,//道路种别
+    @SerializedName("roadClassifcation")
+    val roadClassifcation: Int = 1,//道路种别
 
     @SerializedName("roadFunctionGrade")
     val roadFunctionGrade: Int = 1,//道路功能等级

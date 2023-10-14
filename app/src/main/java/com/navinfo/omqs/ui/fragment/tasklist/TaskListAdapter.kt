@@ -227,7 +227,6 @@ class TaskListAdapter(
                 binding.taskUploadBtn.isEnabled = false
                 binding.taskUploadBtn.setProgress(0)
                 binding.taskUploadBtn.setBackgroundColor(binding.root.resources.getColor(R.color.gray_121))
-                Log.e("qj","${taskBean.id}===changeUploadTxtViews===已上传")
             }
 
             FileUploadStatus.ERROR -> {
@@ -242,7 +241,6 @@ class TaskListAdapter(
             FileUploadStatus.NONE -> {
                 binding.taskUploadBtn.setText("未上传")
                 binding.taskUploadBtn.setProgress(0)
-                Log.e("qj","${taskBean.id}===changeUploadTxtViews===未上传")
             }
 
             FileUploadStatus.WAITING -> {

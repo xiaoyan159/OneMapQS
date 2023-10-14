@@ -181,6 +181,7 @@ class ConsoleFragment : BaseFragment(), OnClickListener {
          */
         binding.consoleRoot.findViewById<View>(R.id.console_route_bg)?.setOnClickListener(this)
         binding.consoleRoot.findViewById<View>(R.id.console_route_icon_bg)?.setOnClickListener(this)
+
     }
 
     override fun onDestroy() {

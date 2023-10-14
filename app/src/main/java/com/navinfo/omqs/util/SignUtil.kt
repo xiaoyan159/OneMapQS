@@ -85,6 +85,13 @@ class SignUtil {
                     if (data.properties["conAccess"] === "1") "全封闭" else ""
                 }
                 //匝道
+                DataCodeEnum.OMDB_RAMP_1.code,
+                DataCodeEnum.OMDB_RAMP_2.code,
+                DataCodeEnum.OMDB_RAMP_3.code,
+                DataCodeEnum.OMDB_RAMP_4.code,
+                DataCodeEnum.OMDB_RAMP_5.code,
+                DataCodeEnum.OMDB_RAMP_6.code,
+                DataCodeEnum.OMDB_RAMP_7.code,
                 DataCodeEnum.OMDB_RAMP.code -> {
                     when (data.properties["formOfWay"]) {
                         "93" -> "普通匝"
@@ -110,6 +117,8 @@ class SignUtil {
                     if (data.properties["multiDigitized"] == "1") "上下线" else " "
                 }
                 //桥
+                DataCodeEnum.OMDB_BRIDGE_1.code,//桥
+                DataCodeEnum.OMDB_BRIDGE_2.code,//桥
                 DataCodeEnum.OMDB_BRIDGE.code -> {
                     when (data.properties["bridgeType"]) {
                         "1" -> return "固定桥"

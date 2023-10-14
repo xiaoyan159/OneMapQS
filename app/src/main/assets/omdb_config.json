@@ -154,6 +154,7 @@
 				"code": 2201,
 				"name": "桥",
 				"catch":true,
+				"existSubCode": true,
 				"zoomMin": 15,
 				"zoomMax": 20,
 				"transformer": [
