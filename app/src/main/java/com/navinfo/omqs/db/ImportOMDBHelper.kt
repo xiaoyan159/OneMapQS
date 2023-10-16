@@ -443,7 +443,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                     }
                                                 }
 
-                                            } else if (renderEntity.code.toInt() == DataCodeEnum.OMDB_INTERSECTION.code.toInt()||renderEntity.code.toInt() == DataCodeEnum.OMDB_LINK_CONSTRUCTION.code.toInt() && renderEntity.properties.containsKey(
+                                            } else if (renderEntity.code.toInt() == DataCodeEnum.OMDB_INTERSECTION.code.toInt()||renderEntity.code.toInt() == DataCodeEnum.OMDB_LANE_CONSTRUCTION.code.toInt() && renderEntity.properties.containsKey(
                                                     "linkList"
                                                 )
                                             ) {
