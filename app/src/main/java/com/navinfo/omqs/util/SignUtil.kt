@@ -111,9 +111,8 @@ class SignUtil {
                 }
 
                 //常规点限速,条件点限速
-                DataCodeEnum.OMDB_SPEEDLIMIT.code, DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> getSpeedLimitMaxText(
-                    data
-                )
+                DataCodeEnum.OMDB_SPEEDLIMIT.code, DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> getSpeedLimitMaxText(data)
+
                 //上下线分离
                 DataCodeEnum.OMDB_MULTI_DIGITIZED.code -> {
                     if (data.properties["multiDigitized"] == "1") "上下线" else " "
