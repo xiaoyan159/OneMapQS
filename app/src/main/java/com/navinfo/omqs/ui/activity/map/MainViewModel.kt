@@ -403,7 +403,10 @@ class MainViewModel @Inject constructor(
                     naviOption = naviOption,
                     callback = object : OnNaviEngineCallbackListener {
 
-                        override fun planningPathStatus(status: NaviStatus) {
+                        override fun planningPathStatus(
+                            status: NaviStatus, linkdId: String?,
+                            geometry: String?
+                        ) {
                             when (status) {
                                 NaviStatus.NAVI_STATUS_PATH_PLANNING -> naviEngineStatus = 0
                                 NaviStatus.NAVI_STATUS_PATH_ERROR_NODE -> naviEngineStatus = 0
@@ -415,7 +418,23 @@ class MainViewModel @Inject constructor(
                                 NaviStatus.NAVI_STATUS_DIRECTION_OFF -> {}
                             }
                             liveDataNaviStatus.postValue(status)
+                            if (geometry != null) {
+                                viewModelScope.launch(Dispatchers.Main) {
+
+                                    val lineString = GeometryTools.createGeometry(geometry)
+                                    val envelope = lineString.envelopeInternal
+                                    mapController.animationHandler.animateToBox(
+                                        envelope.maxX,
+                                        envelope.maxY,
+                                        envelope.minX,
+                                        envelope.minY
+                                    )
+
+                                    mapController.lineHandler.showLine(geometry)
+                                }
+                            }
                         }
+
 
                         override suspend fun bindingResults(
                             route: NaviRoute?,
