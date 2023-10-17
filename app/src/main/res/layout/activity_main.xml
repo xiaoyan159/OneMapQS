@@ -102,7 +102,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/top_right_drawer_btns_mr"
-            app:constraint_referenced_ids="main_activity_add_new,main_activity_task_line,main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_calc_distance,main_activity_menu,main_activity_status_camera"
+            app:constraint_referenced_ids="main_activity_add_new,main_activity_task_line,main_activity_serach,main_activity_2d_3d,main_activity_camera,main_activity_trace,main_activity_calc_distance,main_activity_menu_layout"
             app:flow_horizontalGap="6dp"
             app:flow_wrapMode="aligned"
             app:layout_constraintRight_toLeftOf="@id/main_activity_right_fragment"
@@ -157,21 +157,29 @@
             android:onClick="@{()->mainActivity.onClickTaskLink()}"
             android:src="@drawable/icon_add_road" />
 
-        <ImageButton
-            android:id="@+id/main_activity_menu"
-            android:layout_width="@dimen/top_right_drawer_wh"
-            android:layout_height="@dimen/top_right_drawer_wh"
-            android:background="@drawable/chk_icon_menu_open_close_xml"
-            android:elevation="2dp"
-            android:onClick="@{()->mainActivity.onClickMenu()}" />
+        <FrameLayout
+            android:id="@+id/main_activity_menu_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/main_activity_status_camera"
-            android:layout_width="@dimen/top_right_drawer_wh"
-            android:layout_height="@dimen/top_right_drawer_wh"
-            android:background="@drawable/chk_icon_camera_contect_discontect_xml"
-            android:elevation="2dp"
-            tools:ignore="DuplicateIds,MissingConstraints" />
+            <ImageButton
+                android:id="@+id/main_activity_menu"
+                android:layout_width="@dimen/top_right_drawer_wh"
+                android:layout_height="@dimen/top_right_drawer_wh"
+                android:background="@drawable/chk_icon_menu_open_close_xml"
+                android:elevation="2dp"
+                android:onClick="@{()->mainActivity.onClickMenu()}" />
+
+            <ImageView
+                android:layout_marginLeft="16dp"
+                android:id="@+id/main_activity_status_camera"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@drawable/chk_icon_camera_contect_discontect_xml"
+                android:elevation="2dp"
+                tools:ignore="DuplicateIds,MissingConstraints" />
+
+        </FrameLayout>
 
         <include
             android:id="@+id/main_activity_measuring_tool"
