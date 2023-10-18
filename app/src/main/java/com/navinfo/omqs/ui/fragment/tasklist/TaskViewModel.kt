@@ -411,6 +411,62 @@ class TaskViewModel @Inject constructor(
     }
 
     /**
+     * 重新下载数据任务
+     */
+    fun resetDownload(context: Context, taskBean: TaskBean){
+        val mDialog = FirstDialog(context)
+        mDialog.setTitle("提示？")
+        mDialog.setMessage("是否重置下载状态，请确认！")
+        mDialog.setPositiveButton(
+            "确定"
+        ) { dialog, _ ->
+            dialog.dismiss()
+            viewModelScope.launch(Dispatchers.IO) {
+                //删除已下载的数据
+                val fileTemp = File("${Constant.DOWNLOAD_PATH}${taskBean.evaluationTaskName}_${taskBean.dataVersion}.zip")
+                if(fileTemp.exists()){
+                    fileTemp.deleteOnExit()
+                }
+                val taskFileTemp = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
+                //重命名
+                if(taskFileTemp.exists()){
+                    taskFileTemp.renameTo(File(Constant.USER_DATA_PATH + "/${taskBean.id}-back-${DateTimeUtil.getNowDate().time}"))
+                }
+                //将下载状态修改已下载
+                val realm = realmOperateHelper.getRealmDefaultInstance()
+                taskBean.syncStatus = FileManager.Companion.FileUploadStatus.NONE
+                taskBean.status = FileManager.Companion.FileDownloadStatus.NONE
+                realm.executeTransaction { r ->
+                    r.copyToRealmOrUpdate(taskBean)
+                }
+                val nowTime: Long = DateTimeUtil.getNowDate().time
+                val beginNowTime: Long = nowTime - 90 * 3600 * 24 * 1000L
+                val syncUpload: Int = FileManager.Companion.FileUploadStatus.DONE
+                val objects =
+                    realm.where(TaskBean::class.java).notEqualTo("syncStatus", syncUpload).or()
+                        .between("operationTime", beginNowTime, nowTime)
+                        .equalTo("syncStatus", syncUpload).findAll()
+                val taskList = realm.copyFromRealm(objects)
+                for (item in taskList) {
+                    FileManager.checkOMDBFileInfo(item)
+                }
+                liveDataTaskList.postValue(taskList)
+                realm.close()
+                withContext(Dispatchers.Main) {
+                    setSelectTaskBean(taskBean)
+                }
+            }
+        }
+        mDialog.setNegativeButton(
+            "取消"
+        ) { _, _ ->
+            liveDataCloseTask.postValue(false)
+            mDialog.dismiss()
+        }
+        mDialog.show()
+    }
+
+    /**
      * 关闭任务
      */
     fun removeTask(context: Context, taskBean: TaskBean) {
