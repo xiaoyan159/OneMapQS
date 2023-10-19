@@ -2029,6 +2029,11 @@
             <symbol repeat="true" repeat-start="0"  src="assets:omdb/icon_2017_1.svg"></symbol>
         </m>
 
+        <!-- 通行车辆类型Lane -->
+        <m v="OMDB_LANE_ACCESS">
+            <text use="road" size="14" stroke="#ffffff" fill="#e7a32d"></text>
+        </m>
+
         <!-- 车道施工 -->
         <m v="OMDB_LANE_CONSTRUCTION">
             <line stroke="#eccc68" width="0.1" />

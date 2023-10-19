@@ -895,4 +895,41 @@ class ImportPreProcess {
             renderEntity.geometry = GeometryTools.createGeometry(GeoPoint(centerPoint!!.y, centerPoint.x)).toString()
         }
     }
+
+    /**
+     * 生成通行车辆类型Lane的渲染名称字段
+     * */
+    fun generateLaneAccessType(renderEntity: RenderEntity): Boolean {
+        if (renderEntity.properties.containsKey("accessCharacteristic")) {
+            // 解析accessCharacteristic，判断是否存在指定属性
+            val accessCharacteristic = renderEntity.properties["accessCharacteristic"].toString().toInt()
+            var str = ""
+            if (accessCharacteristic.and(4)>0) {
+                str += "公"
+            }
+            if (accessCharacteristic.and(8)>0) {
+                if (str.isNotEmpty()) {
+                    str += "|"
+                }
+                str += "多"
+            }
+            if (accessCharacteristic.and(64)>0) {
+                if (str.isNotEmpty()) {
+                    str += "|"
+                }
+                str += "行"
+            }
+            if (accessCharacteristic.and(128)>0) {
+                if (str.isNotEmpty()) {
+                    str += "|"
+                }
+                str += "自"
+            }
+            if (str.isNotEmpty()) {
+                renderEntity.properties["name"] = str
+                return true
+            }
+        }
+        return false
+    }
 }

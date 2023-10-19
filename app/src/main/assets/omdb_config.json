@@ -182,6 +182,24 @@
 					}
 				]
 			},
+			"2638":{
+				"table": "OMDB_LANE_ACCESS",
+				"code": 2638,
+				"name": "通行车辆类型Lane",
+				"zoomMin": 15,
+				"zoomMax": 20,
+				"catch":true,
+				"filterData": false,
+				"checkLinkId": false,
+				"transformer": [
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "generateLaneAccessType()"
+					}
+				]
+			},
 			"3001":{
 				"table": "OMDB_OBJECT_OH_STRUCT",
 				"code": 3001,

@@ -752,9 +752,9 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             Realm.getInstance(currentInstallTaskConfig)
                                                 .insert(renderEntity)
                                             Log.d("ImportOMDBHelper", "解析===2insert")
-                                        }
-                                        if (currentConfig.code == DataCodeEnum.OMDB_RD_LINK.code.toInt()) {
-                                            listResult.add(renderEntity)
+                                            if (currentConfig.code == DataCodeEnum.OMDB_RD_LINK.code.toInt()) {
+                                                listResult.add(renderEntity)
+                                            }
                                         }
                                     }
                                 }
