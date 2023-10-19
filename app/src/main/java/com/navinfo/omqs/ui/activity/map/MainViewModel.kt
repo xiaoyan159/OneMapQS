@@ -50,7 +50,9 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmSet
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Mutex
 import org.locationtech.jts.geom.Geometry
 import org.oscim.core.GeoPoint
@@ -239,11 +241,14 @@ class MainViewModel @Inject constructor(
     //导航信息
     private var naviEngine: NaviEngine? = null
 
+    private var naviEngineNew: NaviEngineNew = NaviEngineNew(realmOperateHelper)
+
     // 0:不导航 1：导航 2：暂停
     private var naviEngineStatus = 0
 
     // 定义一个互斥锁
     private val naviMutex = Mutex()
+    private var testRealm: Realm? = null;
 
     init {
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
@@ -336,32 +341,44 @@ class MainViewModel @Inject constructor(
             File(Constant.USER_DATA_PATH + "/${MapParamUtils.getTaskId()}")
         Constant.currentSelectTaskConfig =
             RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder)
-                .name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true)
+                .name("OMQS.realm").encryptionKey(Constant.PASSWORD)
+//                .allowQueriesOnUiThread(true)
                 .schemaVersion(2).build()
         MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
         socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
 
-//        viewModelScope.launch(Dispatchers.Default) {
-//            naviTestFlow().collect { point ->
-//                if (naviEngineStatus == 1) {
-//                    naviEngine?.let {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            naviTestFlow().collect { point ->
+                if (naviEngineStatus == 1) {
+                    naviEngineNew.let {
 //                        naviMutex.lock()
+                        Log.e("jingo","${Thread.currentThread().name} ${Thread.currentThread().hashCode()}")
+                        if (testRealm == null)
+                            testRealm = realmOperateHelper.getSelectTaskRealmInstance()
+                        if (currentTaskBean != null) {
+                            naviEngineNew.bindingRoute(
+                                taskBean = currentTaskBean!!,
+                                geoPoint = point,
+                                realm = testRealm!!
+                            )
+                        }
 //                        it.bindingRoute(null, point)
 //                        naviMutex.unlock()
-//                    }
-//                }
-//            }
-//        }
+                    }
+                }
+            }
+        }
     }
 
 
-//    fun naviTestFlow(): Flow<GeoPoint> = flow {
-//
-//        while (true) {
-//            emit(mapController.mMapView.vtmMap.mapPosition.geoPoint)
-//            delay(1000)
-//        }
-//    }
+    fun naviTestFlow(): Flow<GeoPoint> = flow {
+
+        while (true) {
+            emit(mapController.mMapView.vtmMap.mapPosition.geoPoint)
+            delay(5000)
+        }
+    }
 
     /**
      * 获取当前任务
@@ -559,62 +576,62 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Default) {
             //用于定位点捕捉道路
             mapController.locationLayerHandler.niLocationFlow.collect { location ->
-
-                //过滤掉无效点
-                if (!naviLocationTest && !GeometryTools.isCheckError(
-                        location.longitude,
-                        location.latitude
-                    )
-                ) {
-                    val geometry = GeometryTools.createGeometry(
-                        GeoPoint(
-                            location.latitude, location.longitude
-                        )
-                    )
-                    val tileX = RealmSet<Int>()
-                    GeometryToolsKt.getTileXByGeometry(geometry.toString(), tileX)
-                    val tileY = RealmSet<Int>()
-                    GeometryToolsKt.getTileYByGeometry(geometry.toString(), tileY)
-
-                    //遍历存储tile对应的x与y的值
-                    tileX.forEach { x ->
-                        tileY.forEach { y ->
-                            location.tilex = x
-                            location.tiley = y
-                        }
-                    }
-                    location.groupId = uuid
-                    try {
-                        location.timeStamp = DateTimeUtil.getTime(location.time).toString()
-                    } catch (e: Exception) {
-
-                    }
-
-                    location.taskId =
-                        sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1).toString()
-
-                    //判断如果是连接状态并处于录像模式，标记为有效点
-                    if (shareUtil?.connectstate == true && shareUtil?.takeCameraMode == 0) {
-                        location.media = 1
-                    }
-                    var disance = 0.0
-                    //增加间距判断
-                    if (lastNiLocaion != null) {
-                        disance = GeometryTools.getDistance(
-                            location.latitude,
-                            location.longitude,
-                            lastNiLocaion!!.latitude,
-                            lastNiLocaion!!.longitude
-                        )
-                    }
-                    //室内整理工具时不能进行轨迹存储，判断轨迹间隔要超过2.5并小于60米
-                    if (Constant.INDOOR_IP.isEmpty() && (disance == 0.0 || (disance > 2.5 && disance < 60))) {
-                        traceDataBase.niLocationDao.insert(location)
-                        mapController.markerHandle.addNiLocationMarkerItem(location)
-                        mapController.mMapView.vtmMap.updateMap(true)
-                        lastNiLocaion = location
-                    }
-                }
+//
+//                //过滤掉无效点
+//                if (!naviLocationTest && !GeometryTools.isCheckError(
+//                        location.longitude,
+//                        location.latitude
+//                    )
+//                ) {
+//                    val geometry = GeometryTools.createGeometry(
+//                        GeoPoint(
+//                            location.latitude, location.longitude
+//                        )
+//                    )
+//                    val tileX = RealmSet<Int>()
+//                    GeometryToolsKt.getTileXByGeometry(geometry.toString(), tileX)
+//                    val tileY = RealmSet<Int>()
+//                    GeometryToolsKt.getTileYByGeometry(geometry.toString(), tileY)
+//
+//                    //遍历存储tile对应的x与y的值
+//                    tileX.forEach { x ->
+//                        tileY.forEach { y ->
+//                            location.tilex = x
+//                            location.tiley = y
+//                        }
+//                    }
+//                    location.groupId = uuid
+//                    try {
+//                        location.timeStamp = DateTimeUtil.getTime(location.time).toString()
+//                    } catch (e: Exception) {
+//
+//                    }
+//
+//                    location.taskId =
+//                        sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1).toString()
+//
+//                    //判断如果是连接状态并处于录像模式，标记为有效点
+//                    if (shareUtil?.connectstate == true && shareUtil?.takeCameraMode == 0) {
+//                        location.media = 1
+//                    }
+//                    var disance = 0.0
+//                    //增加间距判断
+//                    if (lastNiLocaion != null) {
+//                        disance = GeometryTools.getDistance(
+//                            location.latitude,
+//                            location.longitude,
+//                            lastNiLocaion!!.latitude,
+//                            lastNiLocaion!!.longitude
+//                        )
+//                    }
+//                    //室内整理工具时不能进行轨迹存储，判断轨迹间隔要超过2.5并小于60米
+//                    if (Constant.INDOOR_IP.isEmpty() && (disance == 0.0 || (disance > 2.5 && disance < 60))) {
+//                        traceDataBase.niLocationDao.insert(location)
+//                        mapController.markerHandle.addNiLocationMarkerItem(location)
+//                        mapController.mMapView.vtmMap.updateMap(true)
+//                        lastNiLocaion = location
+//                    }
+//                }
             }
 
         }
@@ -636,11 +653,11 @@ class MainViewModel @Inject constructor(
                         naviEngine!!.bindingRoute(location, point)
                         naviMutex.unlock()
                     } else {
-                        captureLink(
-                            GeoPoint(
-                                location.latitude, location.longitude
-                            )
-                        )
+//                        captureLink(
+//                            GeoPoint(
+//                                location.latitude, location.longitude
+//                            )
+//                        )
                     }
                 }
             }
@@ -983,6 +1000,7 @@ class MainViewModel @Inject constructor(
                 if (!hisRoadName) {
                     liveDataRoadName.postValue(null)
                 }
+                Log.e("jingo", "另一个地方查询数据库")
                 realm.close()
             }
         } catch (e: Exception) {
@@ -1001,6 +1019,7 @@ class MainViewModel @Inject constructor(
         mapPosition.setBearing(0f) // 锁定角度，自动将地图旋转到正北方向
         mapController.mMapView.vtmMap.setMapPosition(mapPosition)
         mapController.locationLayerHandler.animateToCurrentPosition()
+        naviEngineStatus = 1
     }
 
     /**
@@ -1677,7 +1696,7 @@ class MainViewModel @Inject constructor(
                         val tempTime = nowTime - lastTime
                         if (tempTime > 10000) {
                             liveDataMessage.postValue("下个定位点与当前定位点时间间隔超过10秒(${tempTime})，将直接跳转到下个点")
-                            delay(5000)
+                            delay(2000)
                         } else {
                             delay(tempTime)
                         }

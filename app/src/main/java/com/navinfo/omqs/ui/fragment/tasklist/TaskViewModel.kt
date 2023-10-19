@@ -276,7 +276,8 @@ class TaskViewModel @Inject constructor(
         Constant.currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
         Constant.currentSelectTaskConfig =
             RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder)
-                .name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true)
+                .name("OMQS.realm").encryptionKey(Constant.PASSWORD)
+                //.allowQueriesOnUiThread(true)
                 .schemaVersion(2).build()
         MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
         mapController.layerManagerHandler.updateOMDBVectorTileLayer()

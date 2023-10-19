@@ -154,7 +154,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                 .directory(currentInstallTaskFolder)
                 .name("OMQS.realm")
                 .encryptionKey(Constant.PASSWORD)
-                .allowQueriesOnUiThread(true)
+//                .allowQueriesOnUiThread(true)
                 .schemaVersion(2)
                 .build()
             val unZipFolder = File(omdbZipFile.parentFile, "result")

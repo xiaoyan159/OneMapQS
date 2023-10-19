@@ -34,7 +34,15 @@ open class RenderEntity() : RealmObject(), Parcelable {
             field = value
             // 根据geometry自动计算当前要素的x-tile和y-tile
             GeometryToolsKt.getTileXByGeometry(value, tileX)
+
+            tileXMin = tileX.min()
+            tileXMax = tileX.max()
+
             GeometryToolsKt.getTileYByGeometry(value, tileY)
+
+            tileYMin = tileY.min()
+            tileYMax = tileY.max()
+
             // 根据传入的geometry文本，自动转换为Geometry对象
             try {
                 wkt = GeometryTools.createGeometry(value)
@@ -58,6 +66,10 @@ open class RenderEntity() : RealmObject(), Parcelable {
     var properties: RealmDictionary<String> = RealmDictionary()
     var tileX: RealmSet<Int> = RealmSet() // x方向的tile编码
     var tileY: RealmSet<Int> = RealmSet()  // y方向的tile编码
+    var tileXMin:Int =0
+    var tileXMax:Int = 0
+    var tileYMin:Int =0
+    var tileYMax:Int = 0
     var taskId: Int = 0 //任务ID
     var zoomMin: Int = 18 //显示最小级别
     var zoomMax: Int = 23 //显示最大级别
