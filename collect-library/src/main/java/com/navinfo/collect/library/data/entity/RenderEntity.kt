@@ -63,6 +63,8 @@ open class RenderEntity() : RealmObject(), Parcelable {
     var zoomMax: Int = 23 //显示最大级别
     var enable:Int = 0 // 默认0不是显示 1为渲染显示 2为常显
     var catchEnable:Int = 0 // 0不捕捉 1捕捉
+    lateinit var linkPid: String // RenderEntity关联的linkPid集合(可能会关联多个)
+    var linkRelation: LinkRelation? = null
 
     constructor(name: String) : this() {
         this.name = name

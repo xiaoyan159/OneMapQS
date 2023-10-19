@@ -59,7 +59,15 @@
 				"name": "道路方向",
 				"zoomMin": 15,
 				"zoomMax": 17,
-				"checkLinkId": false
+				"checkLinkId": false,
+				"transformer": [
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "addRdLinkDirect()"
+					}
+				]
 			},
 			"2011": {
 				"table": "OMDB_LINK_NAME",

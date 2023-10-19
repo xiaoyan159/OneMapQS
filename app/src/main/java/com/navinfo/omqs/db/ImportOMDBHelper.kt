@@ -11,6 +11,7 @@ import com.blankj.utilcode.util.ZipUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
+import com.navinfo.collect.library.data.entity.LinkRelation
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.enums.DataCodeEnum
@@ -257,6 +258,25 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         renderEntity.taskId = task.id
                                         renderEntity.zoomMin = map["qi_zoomMin"].toString().toInt()
                                         renderEntity.zoomMax = map["qi_zoomMax"].toString().toInt()
+                                        // 在外层记录当前数据的linkPid
+                                        if (renderEntity.properties.containsKey("linkPid")) {
+                                            renderEntity.linkPid =
+                                                renderEntity.properties["linkPid"]?.split(",")?.get(0)
+                                                    .toString()
+                                        } else if (renderEntity.properties.containsKey("linkList")){
+                                            val linkList =
+                                                renderEntity.properties["linkList"]
+                                            if (!linkList.isNullOrEmpty() && linkList != "null") {
+                                                val list: List<LinkList> = gson.fromJson(
+                                                    linkList,
+                                                    object :
+                                                        TypeToken<List<LinkList>>() {}.type
+                                                )
+                                                if (list != null) {
+                                                    renderEntity.linkPid = list[0].linkPid
+                                                }
+                                            }
+                                        }
 
                                         renderEntity.geometry = map["geometry"].toString()
                                         Log.d("ImportOMDBHelper", "解析===1处理3D")
@@ -748,6 +768,16 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             if (renderEntity.properties.containsKey("geometry")) {
                                                 renderEntity.properties.remove("geometry")
                                             }
+
+                                            // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
+                                            if (currentConfig.code == DataCodeEnum.OMDB_RD_LINK.code.toInt()) {
+                                                if (renderEntity.linkRelation == null) {
+                                                    renderEntity.linkRelation = LinkRelation()
+                                                }
+                                                renderEntity.linkRelation!!.sNodeId = renderEntity.properties["snodePid"]
+                                                renderEntity.linkRelation!!.eNodeId = renderEntity.properties["enodePid"]
+                                            }
+
                                             Log.d("ImportOMDBHelper", "解析===1insert")
                                             Realm.getInstance(currentInstallTaskConfig)
                                                 .insert(renderEntity)
@@ -762,8 +792,9 @@ class ImportOMDBHelper @AssistedInject constructor(
 
                             // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
                             if (currentConfig.code == DataCodeEnum.OMDB_RD_LINK.code.toInt()) {
-                                importConfig.preProcess.cacheRdLink =
-                                    listResult.associateBy { it.properties["linkPid"] }
+//                                importConfig.preProcess.cacheRdLink =
+//                                    listResult.associateBy { it.properties["linkPid"] }
+                                // 将sNodeId和eNodeId放在外层关联对象中，优化查询效率
                             }
                             // 1个文件发送一次flow流
                             emit("${processIndex}/${tableNum}")

@@ -1,8 +1,10 @@
 package com.navinfo.omqs.db
 
 import android.util.Log
+import com.navinfo.collect.library.data.entity.LinkRelation
 import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
+import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
 import io.realm.Realm
@@ -17,27 +19,41 @@ import org.oscim.core.GeoPoint
 
 class ImportPreProcess {
     val code2NameMap = Code2NameMap()
-    lateinit var cacheRdLink: Map<String?, RenderEntity>
+//    lateinit var cacheRdLink: Map<String?, RenderEntity>
     val defaultTranslateDistance = 3.0
     val testFlag: Boolean = false
     fun checkCircleRoad(renderEntity: RenderEntity): Boolean {
         val linkInId = renderEntity.properties["linkIn"]
         val linkOutId = renderEntity.properties["linkOut"]
-        // 根据linkIn和linkOut获取对应的link数据
-        val linkInEntity = cacheRdLink[linkInId]
-        val linkOutEntity = cacheRdLink[linkOutId]
-        Log.d(
-            "checkCircleRoad",
-            "LinkInEntity: ${linkInId}- ${linkInEntity?.properties?.get("snodePid")}，LinkOutEntity: ${linkOutId}- ${
-                linkOutEntity?.properties?.get("enodePid")
-            }"
-        )
-        // 查询linkIn的sNode和linkOut的eNode是否相同，如果相同，认为数据是环形路口，返回false
-        if (linkInEntity != null && linkOutEntity != null) {
-            if (linkInEntity.properties["snodePid"] == linkOutEntity.properties["enodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["snodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["enodePid"]) {
-                return false
+//        // 根据linkIn和linkOut获取对应的link数据
+//        val linkInEntity = cacheRdLink[linkInId]
+//        val linkOutEntity = cacheRdLink[linkOutId]
+
+        // 根据linkIn和linkOut从数据库获取对应的link数据
+        Realm.getInstance(Constant.currentInstallTaskConfig)
+            .use { realm ->
+                val linkInEntity = realm.where(RenderEntity::class.java)
+                    .equalTo("code", DataCodeEnum.OMDB_RD_LINK.code)
+                    .and().equalTo("linkPid", linkInId)
+                    .findFirst()
+                val linkOutEntity = realm.where(RenderEntity::class.java)
+                    .equalTo("code", DataCodeEnum.OMDB_RD_LINK.code)
+                    .and().equalTo("linkPid", linkOutId)
+                    .findFirst()
+
+                Log.d(
+                    "checkCircleRoad",
+                    "LinkInEntity: ${linkInId}- ${linkInEntity?.properties?.get("snodePid")}，LinkOutEntity: ${linkOutId}- ${
+                        linkOutEntity?.properties?.get("enodePid")
+                    }"
+                )
+                // 查询linkIn的sNode和linkOut的eNode是否相同，如果相同，认为数据是环形路口，返回false
+                if (linkInEntity != null && linkOutEntity != null) {
+                    if (linkInEntity.properties["snodePid"] == linkOutEntity.properties["enodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["snodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["enodePid"]) {
+                        return false
+                    }
+                }
             }
-        }
         return true
     }
 
@@ -566,6 +582,36 @@ class ImportPreProcess {
         } else {
             renderEntity.properties["name"] = ""
         }
+        // 同时尝试更新RD_link的relation记录中的名称字段
+        val rdLinkEntity = queryRdLink(renderEntity.properties["linkPid"]!!)
+        if (rdLinkEntity?.linkRelation == null) {
+            rdLinkEntity?.linkRelation = LinkRelation()
+        }
+        rdLinkEntity?.linkRelation?.linkName = renderEntity.properties["name"]
+        Realm.getInstance(Constant.currentInstallTaskConfig).insertOrUpdate(rdLinkEntity)
+    }
+
+    /**
+     * 通过rdDirect对象向rdLink的relation字段
+     * */
+    fun addRdLinkDirect(renderEntity: RenderEntity) {
+        // 尝试更新RD_link的relation记录中的方向字段
+        val rdLinkEntity = queryRdLink(renderEntity.properties["linkPid"]!!)
+        if (rdLinkEntity?.linkRelation == null) {
+            rdLinkEntity?.linkRelation = LinkRelation()
+        }
+        rdLinkEntity?.linkRelation?.direct = renderEntity.properties["direct"]!!.toInt()
+        Realm.getInstance(Constant.currentInstallTaskConfig).insertOrUpdate(rdLinkEntity)
+    }
+
+    /**
+     * 查询指定的Rdlink数据
+     * */
+    fun queryRdLink(rdLinkId: String): RenderEntity? {
+        return Realm.getInstance(Constant.currentInstallTaskConfig).where(RenderEntity::class.java)
+            .equalTo("code", DataCodeEnum.OMDB_RD_LINK.code)
+            .and().equalTo("linkPid", rdLinkId)
+            .findFirst()
     }
 
     /**
