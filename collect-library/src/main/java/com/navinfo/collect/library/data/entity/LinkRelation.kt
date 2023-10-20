@@ -8,6 +8,7 @@ import io.realm.RealmDictionary
 import io.realm.RealmObject
 import io.realm.RealmSet
 import io.realm.annotations.Ignore
+import io.realm.annotations.Index
 import io.realm.annotations.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import org.locationtech.jts.geom.Coordinate
@@ -21,10 +22,12 @@ import java.util.*
 @Parcelize
 open class LinkRelation() : RealmObject(), Parcelable {
     @PrimaryKey
-    var id: String = UUID.randomUUID().toString() // id
+    var linkPid:String = UUID.randomUUID().toString()
+    @Index
     var sNodeId: String? = null
+    @Index
     var eNodeId: String? = null
-    var linkName: String? = null
+  
     var direct: Int = 0
 
     constructor(direct: Int) : this() {

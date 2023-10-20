@@ -15,6 +15,7 @@ import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.io.WKTWriter
 import org.oscim.core.GeoPoint
+import java.util.*
 
 
 class ImportPreProcess {
@@ -582,13 +583,6 @@ class ImportPreProcess {
         } else {
             renderEntity.properties["name"] = ""
         }
-        // 同时尝试更新RD_link的relation记录中的名称字段
-        val rdLinkEntity = queryRdLink(renderEntity.properties["linkPid"]!!)
-        if (rdLinkEntity?.linkRelation == null) {
-            rdLinkEntity?.linkRelation = LinkRelation()
-        }
-        rdLinkEntity?.linkRelation?.linkName = renderEntity.properties["name"]
-        Realm.getInstance(Constant.currentInstallTaskConfig).insertOrUpdate(rdLinkEntity)
     }
 
     /**

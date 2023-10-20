@@ -8,6 +8,7 @@ import io.realm.RealmDictionary
 import io.realm.RealmObject
 import io.realm.RealmSet
 import io.realm.annotations.Ignore
+import io.realm.annotations.Index
 import io.realm.annotations.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import org.locationtech.jts.geom.Coordinate
@@ -56,13 +57,16 @@ open class RenderEntity() : RealmObject(), Parcelable {
             return field
         }
     var properties: RealmDictionary<String> = RealmDictionary()
+    @Ignore
     var tileX: RealmSet<Int> = RealmSet() // x方向的tile编码
+    @Ignore
     var tileY: RealmSet<Int> = RealmSet()  // y方向的tile编码
     var taskId: Int = 0 //任务ID
     var zoomMin: Int = 18 //显示最小级别
     var zoomMax: Int = 23 //显示最大级别
     var enable:Int = 0 // 默认0不是显示 1为渲染显示 2为常显
     var catchEnable:Int = 0 // 0不捕捉 1捕捉
+    @Index
     lateinit var linkPid: String // RenderEntity关联的linkPid集合(可能会关联多个)
     var linkRelation: LinkRelation? = null
 

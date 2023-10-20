@@ -81,11 +81,11 @@ class NaviEngine(
     /**
      * 要查询的link基本信息列表
      */
-    private val QUERY_KEY_LINK_INFO_LIST = arrayOf(
-        DataCodeEnum.OMDB_RD_LINK.name,
-        DataCodeEnum.OMDB_LINK_DIRECT.name,
-        DataCodeEnum.OMDB_LINK_NAME.name,
-    )
+//    private val QUERY_KEY_LINK_INFO_LIST = arrayOf(
+//        DataCodeEnum.OMDB_RD_LINK.name,
+//        DataCodeEnum.OMDB_LINK_DIRECT.name,
+//        DataCodeEnum.OMDB_LINK_NAME.name,
+//    )
 
 //    /**
 //     * 偏离距离 单位：米
@@ -215,62 +215,56 @@ class NaviEngine(
             )
 
             route.pointList = GeometryTools.getGeoPoints(link.geometry)
+            var time = System.currentTimeMillis()
+            val res = realm.where(RenderEntity::class.java)
+                .equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).equalTo("linkPid", link.linkPid)
+                .findFirst()
 
-            val res = realm.where(RenderEntity::class.java).`in`("table", QUERY_KEY_LINK_INFO_LIST)
-                .equalTo("properties['linkPid']", link.linkPid).findAll()
-            var bHasNode = false
-            var bHasDir = false
-            var bHasName = false
-            if (res != null) {
-                for (entity in res) {
-                    when (entity.code) {
-                        DataCodeEnum.OMDB_RD_LINK.code -> {
-                            bHasNode = true
-                            val snodePid = entity.properties["snodePid"]
-                            if (snodePid != null) {
-                                route.sNode = snodePid
-                            } else {
-                                bHasNode = false
-                            }
-                            val enodePid = entity.properties["enodePid"]
-                            if (enodePid != null) {
-                                route.eNode = enodePid
-                            } else {
-                                bHasNode = false
-                            }
-                        }
-                        DataCodeEnum.OMDB_LINK_DIRECT.code -> {
-                            val direct = entity.properties["direct"]
-                            if (direct != null) {
-                                bHasDir = true
-                                route.direct = direct.toInt()
-                            }
-                        }
-                        DataCodeEnum.OMDB_LINK_NAME.code -> {
-                            bHasName = true
-                            route.name = realm.copyFromRealm(entity)
-                        }
-                    }
+            Log.e("jingo","查询link时间 ${System.currentTimeMillis() - time}")
+
+            if (res?.linkRelation != null) {
+                if (res.linkRelation!!.sNodeId == null) {
+                    callback.planningPathStatus(
+                        NaviStatus.NAVI_STATUS_PATH_ERROR_NODE
+                    )
+                    return
+                } else {
+                    route.sNode = res.linkRelation!!.sNodeId!!
                 }
-            }
-            if (!bHasNode) {
+                if (res.linkRelation!!.eNodeId == null) {
+                    callback.planningPathStatus(
+                        NaviStatus.NAVI_STATUS_PATH_ERROR_NODE
+                    )
+                    return
+                } else {
+                    route.eNode = res.linkRelation!!.eNodeId!!
+                }
+
+                route.direct = res.linkRelation!!.direct
+//                route.name = res.linkRelation!!.linkName
+                time = System.currentTimeMillis()
+                val otherLinks = realm.where(RenderEntity::class.java)
+                    .equalTo("table", DataCodeEnum.OMDB_RD_LINK.name)
+                    .notEqualTo("linkPid", route.linkId).beginGroup()
+                    .`in`("linkRelation.sNodeId", arrayOf(route.sNode, route.eNode)).or()
+                    .`in`("linkRelation.eNodeId", arrayOf(route.sNode, route.eNode)).endGroup()
+                    .findAll()
+                Log.e("jingo","拓扑道路时间 ${System.currentTimeMillis() - time}  共${otherLinks.size}条")
+            } else {
                 callback.planningPathStatus(
                     NaviStatus.NAVI_STATUS_PATH_ERROR_NODE
                 )
                 return
             }
-            if (!bHasDir) {
-                callback.planningPathStatus(
-                    NaviStatus.NAVI_STATUS_PATH_ERROR_DIRECTION
-                )
-                return
-            }
             pathList.add(route)
         }
+
         //用来存储最终的导航路径
         val newRouteList = mutableListOf<NaviRoute>()
+
         //比对路径排序用的
         val tempRouteList = pathList.toMutableList()
+
         //先找到一根有方向的link，确定起终点
         var routeStart: NaviRoute? = null
         for (i in tempRouteList.indices) {
@@ -290,7 +284,7 @@ class NaviEngine(
 
         var sNode = ""
         var eNode = ""
-        //如果sNode，eNode是顺方向，geometry 不动，否则反转
+//如果sNode，eNode是顺方向，geometry 不动，否则反转
         if (routeStart.direct == 3) {
             routeStart.pointList.reverse()
             sNode = routeStart.eNode
@@ -355,15 +349,14 @@ class NaviEngine(
         }
 
         val itemMap: MutableMap<GeoPoint, MutableList<RenderEntity>> = mutableMapOf()
-        //查询每根link上的关联要素
+//查询每根link上的关联要素
         for (route in newRouteList) {
             itemMap.clear()
             //常规点限速
-            val res = realm.where(RenderEntity::class.java)
-                .equalTo("properties['linkPid']", route.linkId).and().`in`(
-                    "table",
-                    QUERY_KEY_ITEM_LIST
-                ).findAll()
+            val res =
+                realm.where(RenderEntity::class.java).equalTo("linkPid", route.linkId).and().`in`(
+                        "table", QUERY_KEY_ITEM_LIST
+                    ).findAll()
             if (res.isNotEmpty()) {
 //                Log.e("jingo", "道路查询预警要素 ${route.linkId} ${res.size}条数据")
                 for (r in res) {
@@ -541,8 +534,7 @@ class NaviEngine(
 //                if (route.itemList != null) {
 //                    Log.e("jingo", "${route.linkId}我有${route.itemList!!.size}个要素 ")
 //                }
-                if (route.indexInPath < routeIndex)
-                    continue
+                if (route.indexInPath < routeIndex) continue
                 if (route.indexInPath == routeIndex) {
                     currentRoute = route
                 }
