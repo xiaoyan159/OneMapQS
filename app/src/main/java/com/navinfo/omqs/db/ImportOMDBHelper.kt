@@ -11,6 +11,7 @@ import com.blankj.utilcode.util.ZipUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
+import com.navinfo.collect.library.data.entity.LinkRelation
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.enums.DataCodeEnum
@@ -36,7 +37,9 @@ import org.locationtech.jts.geom.LineString
 import org.locationtech.jts.geom.MultiLineString
 import org.spatialite.database.SQLiteDatabase
 import java.io.File
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.HashMap
 import kotlin.streams.toList
 
 /**
@@ -180,28 +183,27 @@ class ImportOMDBHelper @AssistedInject constructor(
                 var tableImportTime = System.currentTimeMillis()
                 //总表要素统计时间
                 var dataImportTime = System.currentTimeMillis()
-
-                Realm.getInstance(currentInstallTaskConfig).beginTransaction()
-
+                val realm = Realm.getInstance(currentInstallTaskConfig)
+                realm.beginTransaction()
                 for (importConfig in importConfigList) {
                     tableNum += importConfig.tableMap.size
                 }
                 //缓存任务link信息，便于下面与数据进行任务link匹配
                 val hashMap: HashMap<Long, HadLinkDvoBean> = HashMap<Long, HadLinkDvoBean>()
 
-                val lineList = arrayOfNulls<LineString>(task.hadLinkDvoList.size)
-                var index = 0
+//                val lineList = arrayOfNulls<LineString>(task.hadLinkDvoList.size)
+//                var index = 0
                 task.hadLinkDvoList.forEach {
                     hashMap[it.linkPid.toLong()] = it
-                    lineList[index] = GeometryTools.createGeometry(it.geometry) as LineString
-                    index++
+//                    lineList[index] = GeometryTools.createGeometry(it.geometry) as LineString
+//                    index++
                 }
 
                 val resHashMap: HashMap<String, RenderEntity> =
                     HashMap<String, RenderEntity>() //define empty hashmap
                 try {
 
-                    var multipLine = MultiLineString(lineList, GeometryFactory())
+//                    var multipLine = MultiLineString(lineList, GeometryFactory())
 
 
                     // 遍历解压后的文件，读取该数据返回
@@ -257,6 +259,26 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         renderEntity.taskId = task.id
                                         renderEntity.zoomMin = map["qi_zoomMin"].toString().toInt()
                                         renderEntity.zoomMax = map["qi_zoomMax"].toString().toInt()
+                                        // 在外层记录当前数据的linkPid
+                                        if (map.containsKey("linkPid")) {
+                                            renderEntity.linkPid =
+                                                map["linkPid"].toString().split(",")
+                                                    ?.get(0)
+                                                    .toString()
+                                        } else if (map.containsKey("linkList")) {
+                                            val linkList =
+                                                map["linkList"].toString()
+                                            if (!linkList.isNullOrEmpty() && linkList != "null") {
+                                                val list: List<LinkList> = gson.fromJson(
+                                                    linkList,
+                                                    object :
+                                                        TypeToken<List<LinkList>>() {}.type
+                                                )
+                                                if (list != null) {
+                                                    renderEntity.linkPid = list[0].linkPid
+                                                }
+                                            }
+                                        }
 
                                         renderEntity.geometry = map["geometry"].toString()
                                         Log.d("ImportOMDBHelper", "解析===1处理3D")
@@ -748,9 +770,24 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             if (renderEntity.properties.containsKey("geometry")) {
                                                 renderEntity.properties.remove("geometry")
                                             }
+
+                                            // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
+                                            if (currentConfig.code == DataCodeEnum.OMDB_RD_LINK.code.toInt()) {
+                                                if (renderEntity.linkRelation == null) {
+                                                    renderEntity.linkRelation = LinkRelation()
+                                                }
+                                                renderEntity.linkRelation!!.sNodeId =
+                                                    renderEntity.properties["snodePid"]
+                                                renderEntity.linkRelation!!.eNodeId =
+                                                    renderEntity.properties["enodePid"]
+                                                // 同时尝试更新RD_link的relation记录中的名称字段
+                                                renderEntity.linkRelation!!.linkPid =
+                                                    renderEntity.properties["linkPid"]
+                                                        ?: UUID.randomUUID().toString()
+                                            }
+
                                             Log.d("ImportOMDBHelper", "解析===1insert")
-                                            Realm.getInstance(currentInstallTaskConfig)
-                                                .insert(renderEntity)
+                                            realm.insert(renderEntity)
                                             Log.d("ImportOMDBHelper", "解析===2insert")
                                         }
                                         if (currentConfig.code == DataCodeEnum.OMDB_RD_LINK.code.toInt()) {
@@ -762,8 +799,9 @@ class ImportOMDBHelper @AssistedInject constructor(
 
                             // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
                             if (currentConfig.code == DataCodeEnum.OMDB_RD_LINK.code.toInt()) {
-                                importConfig.preProcess.cacheRdLink =
-                                    listResult.associateBy { it.properties["linkPid"] }
+//                                importConfig.preProcess.cacheRdLink =
+//                                    listResult.associateBy { it.properties["linkPid"] }
+                                // 将sNodeId和eNodeId放在外层关联对象中，优化查询效率
                             }
                             // 1个文件发送一次flow流
                             emit("${processIndex}/${tableNum}")
@@ -774,30 +812,33 @@ class ImportOMDBHelper @AssistedInject constructor(
                             )
                             elementIndex = 0
                             tableImportTime = System.currentTimeMillis()
-                            if (insertIndex % 20000 == 0) {
+                            if (insertIndex % 20000 == 0 || currentEntry.value.table == DataCodeEnum.OMDB_RD_LINK.name) {
                                 Log.d(
                                     "ImportOMDBHelper",
                                     "表解析===结束用时时间===事物开始"
                                 )
-                                Realm.getInstance(currentInstallTaskConfig).commitTransaction()
-                                Realm.getInstance(currentInstallTaskConfig).beginTransaction()
+                                realm.commitTransaction()
+                                realm.refresh()
+                                realm.beginTransaction()
                                 Log.d(
                                     "ImportOMDBHelper",
                                     "表解析===结束用时时间===事物结束"
                                 )
                             }
+
                         }
                     }
-                    Realm.getInstance(currentInstallTaskConfig).commitTransaction()
-                    Realm.getInstance(currentInstallTaskConfig).close()
+                    realm.commitTransaction()
+                    realm.close()
                     Log.d(
                         "ImportOMDBHelper",
                         "表解析===结束用时时间${(System.currentTimeMillis() - dataImportTime)}===$dataIndex===插入$insertIndex"
                     )
                     Log.e("qj", "安装结束")
                 } catch (e: Exception) {
-                    if (Realm.getInstance(currentInstallTaskConfig).isInTransaction) {
-                        Realm.getInstance(currentInstallTaskConfig).cancelTransaction()
+                    if (realm.isInTransaction) {
+                        realm.cancelTransaction()
+                        realm.close()
                     }
                     throw e
                 }

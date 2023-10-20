@@ -852,8 +852,12 @@ class MainViewModel @Inject constructor(
 
                         val newLineString = GeometryTools.createLineString(linePoints)
                         linkId?.let {
+                            val time = System.currentTimeMillis()
                             val elementList = realmOperateHelper.queryLinkByLinkPid(realm, it)
-                            Log.e("jingo", "捕捉到数据 ${elementList.size} 个")
+                            Log.e(
+                                "jingo",
+                                "捕捉到数据 ${elementList.size} 个 ${System.currentTimeMillis() - time}"
+                            )
                             for (element in elementList) {
                                 if (element.code == DataCodeEnum.OMDB_LINK_NAME.code) {
                                     hisRoadName = true

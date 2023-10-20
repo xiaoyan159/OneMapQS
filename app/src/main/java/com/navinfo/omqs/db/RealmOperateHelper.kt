@@ -178,7 +178,8 @@ class RealmOperateHelper() {
         )
         val realm = getRealmDefaultInstance()
         try {
-            val realmList = realm.where(HadLinkDvoBean::class.java).equalTo("taskId", taskId).findAll()
+            val realmList =
+                realm.where(HadLinkDvoBean::class.java).equalTo("taskId", taskId).findAll()
             var linkBean: HadLinkDvoBean? = null
             var nearLast: Double = 99999.99
             for (link in realmList) {
@@ -333,7 +334,7 @@ class RealmOperateHelper() {
         val result = mutableListOf<RenderEntity>()
         val realmList = getSelectTaskRealmTools(realm, RenderEntity::class.java, false)
             .notEqualTo("table", DataCodeEnum.OMDB_RD_LINK.name)
-            .equalTo("properties['${LinkTable.linkPid}']", linkPid)
+            .equalTo("linkPid", linkPid)
             .findAll()
         result.addAll(realm.copyFromRealm(realmList))
         return result
