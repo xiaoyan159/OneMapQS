@@ -425,12 +425,20 @@ class TaskViewModel @Inject constructor(
                 //删除已下载的数据
                 val fileTemp = File("${Constant.DOWNLOAD_PATH}${taskBean.evaluationTaskName}_${taskBean.dataVersion}.zip")
                 if(fileTemp.exists()){
-                    fileTemp.deleteOnExit()
+                    fileTemp.delete()
                 }
                 val taskFileTemp = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
                 //重命名
                 if(taskFileTemp.exists()){
-                    taskFileTemp.renameTo(File(Constant.USER_DATA_PATH + "/${taskBean.id}-back-${DateTimeUtil.getNowDate().time}"))
+                    var currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
+                    var currentSelectTaskConfig =
+                        RealmConfiguration.Builder().directory(currentSelectTaskFolder)
+                            .name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true)
+                            .schemaVersion(2).build()
+                    //删除已有所有数据
+                    Realm.getInstance(currentSelectTaskConfig).deleteAll()
+                    Realm.getInstance(currentSelectTaskConfig).refresh()
+                    Realm.getInstance(currentSelectTaskConfig).close()
                 }
                 //将下载状态修改已下载
                 val realm = realmOperateHelper.getRealmDefaultInstance()
@@ -453,7 +461,11 @@ class TaskViewModel @Inject constructor(
                 liveDataTaskList.postValue(taskList)
                 realm.close()
                 withContext(Dispatchers.Main) {
-                    setSelectTaskBean(taskBean)
+                    if(taskBean.id== currentSelectTaskBean?.id ?: 0){
+                        mapController.layerManagerHandler.updateOMDBVectorTileLayer()
+                    }else{
+                        setSelectTaskBean(taskBean)
+                    }
                 }
             }
         }

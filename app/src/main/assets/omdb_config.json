@@ -125,11 +125,6 @@
 				"zoomMin": 15,
 				"zoomMax": 17
 			},
-			"2041":{
-				"table": "OMDB_LANE_NUM",
-				"code": 2041,
-				"name": "车道数"
-			},
 			"2097":{
 				"table": "OMDB_PHY_LANENUM",
 				"code": 2097,
@@ -533,12 +528,6 @@
 				"zoomMin": 15,
 				"zoomMax": 17,
 				"transformer": [
-					{
-						"k": "geometry",
-						"v": "~",
-						"klib": "geometry",
-						"vlib": "translateRight(direct=3)"
-					},
 					{
 						"k": "geometry",
 						"v": "~",

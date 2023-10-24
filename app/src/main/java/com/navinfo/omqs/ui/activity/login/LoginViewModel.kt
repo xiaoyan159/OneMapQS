@@ -418,12 +418,15 @@ class LoginViewModel @Inject constructor(
         Constant.VERSION_ID = userId
         Constant.USER_DATA_PATH = Constant.DATA_PATH + Constant.USER_ID + "/" + Constant.VERSION_ID
         Constant.USER_DATA_ATTACHEMNT_PATH = Constant.USER_DATA_PATH + "/attachment/"
+        Constant.USER_DATA_LOG_PATH = Constant.USER_DATA_PATH + "/log/"
         // 在SD卡创建用户目录，解压资源等
         val userFolder = File(Constant.USER_DATA_PATH)
         if (!userFolder.exists()) userFolder.mkdirs()
         //创建附件目录
         val userAttachmentFolder = File(Constant.USER_DATA_ATTACHEMNT_PATH)
         if (!userAttachmentFolder.exists()) userAttachmentFolder.mkdirs()
+        val userLogFolder = File(Constant.USER_DATA_LOG_PATH)
+        if (!userLogFolder.exists()) userLogFolder.mkdirs()
         // 初始化Realm
         Realm.init(context.applicationContext)
         // 656e6372797000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000

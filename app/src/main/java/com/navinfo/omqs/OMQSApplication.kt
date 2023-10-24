@@ -8,6 +8,7 @@ import android.view.Surface
 import android.view.WindowManager
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.ui.manager.TakePhotoManager
+import com.navinfo.omqs.util.CMLog
 import com.navinfo.omqs.util.NetUtils
 import com.umeng.commonsdk.UMConfigure
 import dagger.hilt.android.HiltAndroidApp
@@ -20,6 +21,7 @@ class OMQSApplication : Application() {
         super.onCreate()
         FileManager.initRootDir(this)
         Util.getInstance().init(applicationContext)
+        CMLog.getInstance().init(applicationContext)
         NetUtils.getInstance().init(this)
         TakePhotoManager.getInstance().init(this, 1)
         // 初始化友盟统计

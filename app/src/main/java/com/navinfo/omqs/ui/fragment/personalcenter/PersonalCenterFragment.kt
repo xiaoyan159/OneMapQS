@@ -151,7 +151,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         val mapPosition: MapPosition =
                             niMapController.mMapView.vtmMap.getMapPosition()
                         mapPosition.setBearing(0f) // 锁定角度，自动将地图旋转到正北方向
-                        niMapController.mMapView.vtmMap.setMapPosition(mapPosition)
+                        niMapController.mMapView.vtmMap.mapPosition = mapPosition
                         it.title = "开启地图旋转及视角"
                     } else {
                         it.title = "锁定地图旋转及视角"
@@ -166,6 +166,17 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         it.title = "显示Marker"
                     } else {
                         it.title = "隐藏Marker"
+                    }
+                }
+                R.id.personal_center_menu_trace -> {
+                    Constant.MapTraceCloseEnable = !Constant.MapTraceCloseEnable
+                    //增加开关控制
+                    niMapController.markerHandle.setTraceMarkEnable(!Constant.MapTraceCloseEnable)
+                    //增加开关控制
+                    if (Constant.MapTraceCloseEnable) {
+                        it.title = "显示轨迹"
+                    } else {
+                        it.title = "隐藏轨迹"
                     }
                 }
                 R.id.personal_center_menu_catch_all -> {
@@ -256,6 +267,13 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         it.title = "显示Marker"
                     } else {
                         it.title = "隐藏Marker"
+                    }
+                }
+                R.id.personal_center_menu_trace -> {
+                    if (Constant.MapTraceCloseEnable) {
+                        it.title = "显示轨迹"
+                    } else {
+                        it.title = "隐藏轨迹"
                     }
                 }
             }

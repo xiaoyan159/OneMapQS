@@ -485,10 +485,12 @@ class ImportPreProcess {
                                         renderEntityTemp.catchEnable = renderEntity.catchEnable
                                         var dis = -lateralOffset.toDouble() / 100000000
                                         //最小值取10厘米，否正渲染太近无法显示
-                                        if (dis > 0 && dis < 0.0000028) {
-                                            dis = 0.0000028
-                                        } else if (dis > -0.0000028 && dis < 0) {
-                                            dis = -0.0000028
+                                        if (dis > 0 && dis < 0.000005) {
+                                            dis = 0.000005
+                                            Log.d("lateralOffset", "$dis")
+                                        } else if (dis > -0.000005 && dis < 0) {
+                                            dis = -0.000005
+                                            Log.d("lateralOffset", "$dis")
                                         }
                                         renderEntityTemp.geometry = GeometryTools.computeLine(
                                             dis,

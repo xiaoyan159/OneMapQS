@@ -37,6 +37,8 @@ class SignAdapter(private var listener: OnSignAdapterClickListener?) :
     override fun getItemViewType(position: Int): Int {
         if (data.isNotEmpty() && data[position].renderEntity.code == DataCodeEnum.OMDB_LANEINFO.code) {
             return 4601
+        }else if (data.isNotEmpty() && data[position].renderEntity.code == DataCodeEnum.OMDB_CLM_LANEINFO.code) {
+            return 4602
         } else if (data.isNotEmpty() && data[position].renderEntity.code == DataCodeEnum.OMDB_TOLLGATE.code) {
             return 4023
         }

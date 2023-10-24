@@ -73,6 +73,7 @@ class NaviEngine(
         DataCodeEnum.OMDB_TRAFFICLIGHT.name,
 //        DataCodeEnum.OMDB_RESTRICTION.name,
         DataCodeEnum.OMDB_LANEINFO.name,
+        DataCodeEnum.OMDB_CLM_LANEINFO.name,
         DataCodeEnum.OMDB_TRAFFIC_SIGN.name,
         DataCodeEnum.OMDB_WARNINGSIGN.name,
         DataCodeEnum.OMDB_TOLLGATE.name

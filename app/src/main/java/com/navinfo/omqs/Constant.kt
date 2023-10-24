@@ -80,6 +80,11 @@ class Constant {
         lateinit var DOWNLOAD_PATH: String
 
         /**
+         * 日志目录
+         */
+        lateinit var USER_DATA_LOG_PATH: String
+
+        /**
          * 图层管理对应的配置
          * */
         var LAYER_CONFIG_LIST: List<ImportConfig>? = null
@@ -106,6 +111,11 @@ class Constant {
          * Marker显隐
          */
         var MapMarkerCloseEnable = false
+
+        /**
+         * 轨迹显隐
+         */
+        var MapTraceCloseEnable = false
 
         /**
          * 是否开启线捕捉

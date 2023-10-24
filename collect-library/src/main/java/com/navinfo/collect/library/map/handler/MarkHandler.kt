@@ -43,7 +43,15 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
      */
     private val mDefaultTextColor = "#4E55AF"
 
+    /**
+     * 默认Marker可用状态
+     */
     private var markerEnable = true
+
+    /**
+     * 默认轨迹可用状态
+     */
+    private var traceMarkerEnable = true
 
     /**
      * 文字画笔
@@ -277,13 +285,16 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         // 设置矢量图层均在12级以上才显示
         mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
             if (e == Map.SCALE_EVENT) {
-                if(markerEnable){
+                if (markerEnable) {
                     qsRecordItemizedLayer.isEnabled = mapPosition.getZoomLevel() >= 12
-                }else{
+                } else {
                     qsRecordItemizedLayer.isEnabled = false
                 }
-
-                niLocationItemizedLayer.isEnabled = mapPosition.getZoomLevel() >= 12
+                if (traceMarkerEnable) {
+                    niLocationItemizedLayer.isEnabled = mapPosition.getZoomLevel() >= 12
+                } else {
+                    niLocationItemizedLayer.isEnabled = false
+                }
             }
         })
     }
@@ -379,10 +390,23 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         mMapView.updateMap(true)
     }
 
-    fun setQsRecordMarkEnable(enable:Boolean){
+    /**
+     * Marker是否显示
+     */
+    fun setQsRecordMarkEnable(enable: Boolean) {
         qsRecordItemizedLayer.isEnabled = enable
         markerEnable = enable
         qsRecordItemizedLayer.populate()
+        mMapView.updateMap(true)
+    }
+
+    /**
+     * 轨迹是否显示
+     */
+    fun setTraceMarkEnable(enable: Boolean) {
+        niLocationItemizedLayer.isEnabled = enable
+        traceMarkerEnable = enable
+        niLocationItemizedLayer.populate()
         mMapView.updateMap(true)
     }
 
@@ -520,11 +544,9 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
      * 添加质检数据marker
      */
     fun addNiLocationMarkerItem(niLocation: NiLocation) {
-        synchronized(this) {
-            var geoMarkerItem = createNILocationBitmap(niLocation)
-            niLocationItemizedLayer.addItem(geoMarkerItem)
-            niLocationItemizedLayer.update()
-        }
+        var geoMarkerItem = createNILocationBitmap(niLocation)
+        niLocationItemizedLayer.addItem(geoMarkerItem)
+        niLocationItemizedLayer.update()
     }
 
     private fun createNILocationBitmap(niLocation: NiLocation): MarkerItem {
