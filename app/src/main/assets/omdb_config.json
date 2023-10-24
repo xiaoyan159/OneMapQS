@@ -149,6 +149,22 @@
 				"zoomMin": 18,
 				"zoomMax": 20
 			},
+			"2092":{
+				"table": "OMDB_LANE_TYPE_ACCESS",
+				"code": 2092,
+				"name": "车道类型",
+				"catch":true,
+				"zoomMin": 18,
+				"zoomMax": 20,
+				"transformer": [
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "generateLaneTypeAccessS2ERefPoint()"
+					}
+				]
+			},
 			"2201":{
 				"table": "OMDB_BRIDGE",
 				"code": 2201,
@@ -405,6 +421,23 @@
 						"v": "3",
 						"klib": "ref",
 						"vlib": "上"
+					}
+				]
+			},
+			"4005": {
+				"table": "OMDB_LANE_SPEEDLIMIT",
+				"code": 4005,
+				"name": "车道点限速",
+				"zoomMin": 18,
+				"zoomMax": 20,
+				"filterData": true,
+				"catch": true,
+				"transformer": [
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "obtainLaneSpeedLimitName()"
 					}
 				]
 			},
