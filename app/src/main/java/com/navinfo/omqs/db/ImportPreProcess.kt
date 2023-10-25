@@ -22,6 +22,7 @@ class ImportPreProcess {
     lateinit var cacheRdLink: Map<String?, RenderEntity>
     val defaultTranslateDistance = 3.0
     val testFlag: Boolean = false
+    var realm:Realm? = null
     fun checkCircleRoad(renderEntity: RenderEntity): Boolean {
         val linkInId = renderEntity.properties["linkIn"]
         val linkOutId = renderEntity.properties["linkOut"]
@@ -223,6 +224,59 @@ class ImportPreProcess {
         val listResult = mutableListOf<ReferenceEntity>()
         listResult.add(startEndReference)
         insertData(listResult)
+    }
+
+    /**
+     * 生成车道类型起终点参考数据
+     * */
+    fun generateLaneTypeAccessS2ERefPoint(renderEntity: RenderEntity) {
+        // 如果车道类型非常规车道(第0bit的数据)，则需要生成辅助数据
+        if (renderEntity.properties["laneType"]!!.toInt()>0) {
+            val geometry = GeometryTools.createGeometry(renderEntity.properties["geometry"])
+
+            val pointEnd = geometry!!.coordinates[geometry.numPoints - 1] // 获取这个geometry对应的结束点坐标
+            val pointStart = geometry!!.coordinates[0] // 获取这个geometry对应的起点
+            val listResult = mutableListOf<ReferenceEntity>()
+
+            // 将这个起终点的线记录在数据中
+            val startReference = ReferenceEntity()
+            startReference.renderEntityId = renderEntity.id
+            startReference.name = "${renderEntity.name}参考点"
+            startReference.code = renderEntity.code
+            startReference.table = renderEntity.table
+            startReference.zoomMin = renderEntity.zoomMin
+            startReference.zoomMax = renderEntity.zoomMax
+            startReference.taskId = renderEntity.taskId
+            startReference.enable = renderEntity.enable
+
+            // 起点坐标
+            startReference.geometry =
+                GeometryTools.createGeometry(GeoPoint(pointStart.y, pointStart.x)).toString()
+            startReference.properties["qi_table"] = renderEntity.table
+            startReference.properties["type"] = "s_2_p"
+            startReference.properties["geometry"] = startReference.geometry
+            listResult.add(startReference)
+
+            val endReference = ReferenceEntity()
+            endReference.renderEntityId = renderEntity.id
+            endReference.name = "${renderEntity.name}参考点"
+            endReference.code = renderEntity.code
+            endReference.table = renderEntity.table
+            endReference.zoomMin = renderEntity.zoomMin
+            endReference.zoomMax = renderEntity.zoomMax
+            endReference.taskId = renderEntity.taskId
+            endReference.enable = renderEntity.enable
+
+            // 终点坐标
+            endReference.geometry =
+                GeometryTools.createGeometry(GeoPoint(pointEnd.y, pointEnd.x)).toString()
+            endReference.properties["qi_table"] = renderEntity.table
+            endReference.properties["type"] = "e_2_p"
+            endReference.properties["geometry"] = endReference.geometry
+
+            listResult.add(endReference)
+            insertData(listResult)
+        }
     }
 
     fun generateS2EReferencePoint(
@@ -626,7 +680,7 @@ class ImportPreProcess {
         }
         // 获取最小的shape值，将其记录增加记录在properties的name属性下
         if (shape != null) {
-            renderEntity.properties["name"] = shape["name"].toString()
+            renderEntity.properties["name"] = shape.optString("name", "")
         } else {
             renderEntity.properties["name"] = ""
         }
@@ -962,6 +1016,52 @@ class ImportPreProcess {
         } else {
             renderEntity.geometry =
                 GeometryTools.createGeometry(GeoPoint(centerPoint!!.y, centerPoint.x)).toString()
+        }
+    }
+
+    /**
+     * 生成通行车辆类型Lane的渲染名称字段
+     * */
+    fun generateLaneAccessType(renderEntity: RenderEntity): Boolean {
+        if (renderEntity.properties.containsKey("accessCharacteristic")) {
+            // 解析accessCharacteristic，判断是否存在指定属性
+            val accessCharacteristic = renderEntity.properties["accessCharacteristic"].toString().toInt()
+            var str = ""
+            if (accessCharacteristic.and(4)>0) {
+                str += "公"
+            }
+            if (accessCharacteristic.and(8)>0) {
+                if (str.isNotEmpty()) {
+                    str += "|"
+                }
+                str += "多"
+            }
+            if (accessCharacteristic.and(64)>0) {
+                if (str.isNotEmpty()) {
+                    str += "|"
+                }
+                str += "行"
+            }
+            if (accessCharacteristic.and(128)>0) {
+                if (str.isNotEmpty()) {
+                    str += "|"
+                }
+                str += "自"
+            }
+            if (str.isNotEmpty()) {
+                renderEntity.properties["name"] = str
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * 生成车道点限速的名称
+     * */
+    fun obtainLaneSpeedLimitName(renderEntity: RenderEntity) {
+        if (renderEntity.properties.containsKey("maxSpeed")&&renderEntity.properties.containsKey("minSpeed")) {
+            renderEntity.properties["ref"] = "${renderEntity.properties["maxSpeed"]}|${renderEntity.properties["minSpeed"]}"
         }
     }
 }

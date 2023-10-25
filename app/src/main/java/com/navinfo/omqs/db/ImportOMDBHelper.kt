@@ -236,7 +236,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         }
                                         elementIndex += 1
                                         dataIndex += 1
-                                        Log.d("ImportOMDBHelper", "解析第：${index + 1}行")
+                                        Log.d("ImportOMDBHelper", "解析第：${index + 1}行---${txtFile?.name}")
                                         val map = gson.fromJson<Map<String, Any>>(
                                             line,
                                             object : TypeToken<Map<String, Any>>() {}.getType()
@@ -754,9 +754,9 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             Realm.getInstance(currentInstallTaskConfig)
                                                 .insert(renderEntity)
                                             Log.d("ImportOMDBHelper", "解析===2insert")
-                                        }
-                                        if (currentConfig.code == DataCodeEnum.OMDB_RD_LINK.code.toInt()) {
-                                            listResult.add(renderEntity)
+                                            if (currentConfig.code == DataCodeEnum.OMDB_RD_LINK.code.toInt()) {
+                                                listResult.add(renderEntity)
+                                            }
                                         }
                                     }
                                 }
@@ -801,6 +801,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                     if (Realm.getInstance(currentInstallTaskConfig).isInTransaction) {
                         Realm.getInstance(currentInstallTaskConfig).cancelTransaction()
                     }
+                    Log.e("ImportOMDBHelper", "安装失败", e)
                     throw e
                 }
                 emit("finish")
