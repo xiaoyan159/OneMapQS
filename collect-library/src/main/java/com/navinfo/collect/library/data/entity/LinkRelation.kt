@@ -21,16 +21,7 @@ import java.util.*
  * */
 @Parcelize
 open class LinkRelation() : RealmObject(), Parcelable {
-    @PrimaryKey
-    var linkPid:String = UUID.randomUUID().toString()
-    @Index
+    var linkPid:String = ""
     var sNodeId: String? = null
-    @Index
     var eNodeId: String? = null
-  
-    var direct: Int = 0
-
-    constructor(direct: Int) : this() {
-        this.direct = direct
-    }
 }

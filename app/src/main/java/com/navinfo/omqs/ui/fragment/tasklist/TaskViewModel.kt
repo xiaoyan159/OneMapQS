@@ -107,7 +107,8 @@ class TaskViewModel @Inject constructor(
                             if (currentSelectTaskBean == null) {
                                 liveDataToastMessage.postValue("还没有开启任何任务")
                             } else {
-                                val links = realmOperateHelper.queryLink(realm,
+                                val links = realmOperateHelper.queryLink(
+                                    realm,
                                     point = point,
                                 )
                                 if (links.isNotEmpty()) {
@@ -184,7 +185,7 @@ class TaskViewModel @Inject constructor(
                                         if (task.syncStatus != FileManager.Companion.FileUploadStatus.DONE) {
                                             //赋值时间，用于查询过滤
                                             task.operationTime = DateTimeUtil.getNowDate().time
-                                        }else{//已上传数据不做更新
+                                        } else {//已上传数据不做更新
                                             continue
                                         }
                                     } else {
@@ -194,7 +195,7 @@ class TaskViewModel @Inject constructor(
                                         //赋值时间，用于查询过滤
                                         task.operationTime = DateTimeUtil.getNowDate().time
                                     }
-                                    realm.copyToRealmOrUpdate(task)
+                                    it.copyToRealmOrUpdate(task)
                                 }
                             }
 
@@ -273,10 +274,15 @@ class TaskViewModel @Inject constructor(
         liveDataTaskLinks.value = taskBean.hadLinkDvoList
         showTaskLinks(taskBean)
         MapParamUtils.setTaskId(taskBean.id)
-        Constant.currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
+//        Constant.currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
+        Constant.currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/237")
         Constant.currentSelectTaskConfig =
-            RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder)
-                .name("OMQS.realm").encryptionKey(Constant.PASSWORD)
+            RealmConfiguration.Builder()
+                .directory(Constant.currentSelectTaskFolder)
+                .name("OMQS.realm")
+                .encryptionKey(Constant.PASSWORD)
+//                .assetFile("${Constant.currentSelectTaskFolder}/OMQS.realm")
+//                .readOnly()
                 //.allowQueriesOnUiThread(true)
                 .schemaVersion(2).build()
         MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
@@ -574,7 +580,7 @@ class TaskViewModel @Inject constructor(
                 }
                 //根据Link数据查询对应数据上要素，对要素进行显示重置
                 data.properties["linkPid"]?.let {
-                    realmOperateHelper.queryLinkToMutableRenderEntityList(realm,it)
+                    realmOperateHelper.queryLinkToMutableRenderEntityList(realm, it)
                         ?.forEach { renderEntity ->
                             if (renderEntity.enable != 1) {
                                 renderEntity.enable = 1
@@ -629,7 +635,10 @@ class TaskViewModel @Inject constructor(
 
                     //重置数据为隐藏
                     if (hadLinkDvoBean.linkStatus == 2) {
-                        realmOperateHelper.queryLinkToMutableRenderEntityList(realm,hadLinkDvoBean.linkPid)
+                        realmOperateHelper.queryLinkToMutableRenderEntityList(
+                            realm,
+                            hadLinkDvoBean.linkPid
+                        )
                             ?.forEach { renderEntity ->
                                 if (renderEntity.enable == 1) {
                                     renderEntity.enable = 0

@@ -35,27 +35,28 @@ public class RealmDBTileDataSource implements ITileDataSource {
     public void query(MapTile tile, ITileDataSink mapDataSink) {
         // 获取tile对应的坐标范围
         if (tile.zoomLevel>=15&&tile.zoomLevel<=Constant.OVER_ZOOM) {
-            int m = Constant.OVER_ZOOM-tile.zoomLevel;
-            int xStart = (int)tile.tileX<<m;
-            int xEnd = (int)((tile.tileX+1)<<m);
-            int yStart = (int)tile.tileY<<m;
-            int yEnd = (int)((tile.tileY+1)<<m);
-
-            RealmQuery<GeometryFeatureEntity> realmQuery = Realm.getDefaultInstance().where(GeometryFeatureEntity.class)
-                    .rawPredicate("tileX>="+xStart+" and tileX<="+xEnd+" and tileY>="+yStart+" and tileY<="+yEnd);
-            // 筛选不显示的数据
-            if (Constant.HAD_LAYER_INVISIABLE_ARRAY!=null&&Constant.HAD_LAYER_INVISIABLE_ARRAY.length>0) {
-                realmQuery.beginGroup();
-                for (String type: Constant.HAD_LAYER_INVISIABLE_ARRAY) {
-                    realmQuery.notEqualTo("name", type);
-                }
-                realmQuery.endGroup();
-            }
-            List<GeometryFeatureEntity> listResult = realmQuery.distinct("id").findAll();
-            mThreadLocalDecoders.get().decode(tile, mapDataSink, listResult);
-            mapDataSink.completed(QueryResult.SUCCESS);
-            Realm.getDefaultInstance().close();
+//            int m = Constant.OVER_ZOOM-tile.zoomLevel;
+//            int xStart = (int)tile.tileX<<m;
+//            int xEnd = (int)((tile.tileX+1)<<m);
+//            int yStart = (int)tile.tileY<<m;
+//            int yEnd = (int)((tile.tileY+1)<<m);
+//
+//            RealmQuery<GeometryFeatureEntity> realmQuery = Realm.getDefaultInstance().where(GeometryFeatureEntity.class)
+//                    .rawPredicate("tileX>="+xStart+" and tileX<="+xEnd+" and tileY>="+yStart+" and tileY<="+yEnd);
+//            // 筛选不显示的数据
+//            if (Constant.HAD_LAYER_INVISIABLE_ARRAY!=null&&Constant.HAD_LAYER_INVISIABLE_ARRAY.length>0) {
+//                realmQuery.beginGroup();
+//                for (String type: Constant.HAD_LAYER_INVISIABLE_ARRAY) {
+//                    realmQuery.notEqualTo("name", type);
+//                }
+//                realmQuery.endGroup();
+//            }
+//            List<GeometryFeatureEntity> listResult = realmQuery.distinct("id").findAll();
+//            mThreadLocalDecoders.get().decode(tile, mapDataSink, listResult);
+//            mapDataSink.completed(QueryResult.SUCCESS);
+//            Realm.getDefaultInstance().close();
 //            Log.d("RealmDBTileDataSource", "tile:"+tile.getBoundingBox().toString());
+            mapDataSink.completed(QueryResult.SUCCESS);
         } else {
             mapDataSink.completed(QueryResult.SUCCESS);
         }
@@ -68,8 +69,8 @@ public class RealmDBTileDataSource implements ITileDataSource {
 
     @Override
     public void cancel() {
-        if (Realm.getInstance(RealmUtils.getInstance().getRealmConfiguration()).isInTransaction()) {
-            Realm.getInstance(RealmUtils.getInstance().getRealmConfiguration()).cancelTransaction();
-        }
+//        if (Realm.getInstance(RealmUtils.getInstance().getRealmConfiguration()).isInTransaction()) {
+//            Realm.getInstance(RealmUtils.getInstance().getRealmConfiguration()).cancelTransaction();
+//        }
     }
 }

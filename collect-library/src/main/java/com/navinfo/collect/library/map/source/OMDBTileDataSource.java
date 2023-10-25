@@ -207,13 +207,12 @@ public class OMDBTileDataSource implements ITileDataSource {
 
     @Override
     public void cancel() {
-        if (Realm.getDefaultInstance().isInTransaction()) {
-            Realm.getDefaultInstance().cancelTransaction();
-        }
+//        if (Realm.getDefaultInstance().isInTransaction()) {
+//            Realm.getDefaultInstance().cancelTransaction();
+//        }
     }
 
     public void update() {
         isUpdate = true;
-        Log.e("qj", Thread.currentThread().getName());
     }
 }

@@ -65,13 +65,12 @@ class RealmOperateHelper() {
         val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
         // 查询realm中对应tile号的数据
 //        val realm = getSelectTaskRealmInstance()
+        val sql =
+            " ((tileXMin <= $xStart and tileXMax >= $xStart) or (tileXMin <=$xEnd and tileXMax >=$xStart)) and ((tileYMin <= $yStart and tileYMax >= $yStart) or (tileYMin <=$yEnd and tileYMin >=$yStart))"
         val realmList =
             getSelectTaskRealmTools(realm, RenderEntity::class.java, false)
                 .equalTo("table", DataCodeEnum.OMDB_LINK_DIRECT.name)
-                .greaterThanOrEqualTo("tileX", xStart)
-                .lessThanOrEqualTo("tileX", xEnd)
-                .greaterThanOrEqualTo("tileY", yStart)
-                .lessThanOrEqualTo("tileY", yEnd)
+                .rawPredicate(sql)
                 .findAll()
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
         val dataList = realm.copyFromRealm(realmList)
@@ -285,11 +284,11 @@ class RealmOperateHelper() {
         val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
         val realm = getSelectTaskRealmInstance()
         var realmList = mutableListOf<RenderEntity>()
+        val sql =
+            " ((tileXMin <= $xStart and tileXMax >= $xStart) or (tileXMin <=$xEnd and tileXMax >=$xStart)) and ((tileYMin <= $yStart and tileYMax >= $yStart) or (tileYMin <=$yEnd and tileYMin >=$yStart))"
+
         val realmQuery = getSelectTaskRealmTools(realm, RenderEntity::class.java, false)
-            .greaterThanOrEqualTo("tileX", xStart)
-            .lessThanOrEqualTo("tileX", xEnd)
-            .greaterThanOrEqualTo("tileY", yStart)
-            .lessThanOrEqualTo("tileY", yEnd)
+            .rawPredicate(sql)
         // 筛选不显示的数据
         if (catchAll) {
             // 查询realm中对应tile号的数据

@@ -342,6 +342,8 @@ class MainViewModel @Inject constructor(
         Constant.currentSelectTaskConfig =
             RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder)
                 .name("OMQS.realm").encryptionKey(Constant.PASSWORD)
+//                .assetFile("${Constant.currentSelectTaskFolder}/OMQS.realm")
+//                .readOnly()
 //                .allowQueriesOnUiThread(true)
                 .schemaVersion(2).build()
         MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
@@ -353,8 +355,7 @@ class MainViewModel @Inject constructor(
                 if (naviEngineStatus == 1) {
                     naviEngineNew.let {
 //                        naviMutex.lock()
-                        Log.e("jingo","${Thread.currentThread().name} ${Thread.currentThread().hashCode()}")
-                        if (testRealm == null)
+                           if (testRealm == null)
                             testRealm = realmOperateHelper.getSelectTaskRealmInstance()
                         if (currentTaskBean != null) {
                             naviEngineNew.bindingRoute(
