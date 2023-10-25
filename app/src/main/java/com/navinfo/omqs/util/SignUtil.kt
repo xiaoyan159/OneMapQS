@@ -104,14 +104,15 @@ class SignUtil {
                         else -> ""
                     }
                 }
-                //车道数
-                DataCodeEnum.OMDB_LANE_NUM.code -> {
+                //物理车道数OMDB_PHY_LANENUM
+                DataCodeEnum.OMDB_LANE_NUM.code,
+                DataCodeEnum.OMDB_PHY_LANENUM.code -> {
                     "${data.properties["laneNum"]}|${data.properties["laneS2e"]}|${data.properties["laneE2s"]}"
                 }
+
                 //常规点限速,条件点限速
-                DataCodeEnum.OMDB_SPEEDLIMIT.code, DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> getSpeedLimitMaxText(
-                    data
-                )
+                DataCodeEnum.OMDB_SPEEDLIMIT.code, DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> getSpeedLimitMaxText(data)
+
                 //上下线分离
                 DataCodeEnum.OMDB_MULTI_DIGITIZED.code -> {
                     if (data.properties["multiDigitized"] == "1") "上下线" else " "
@@ -282,7 +283,8 @@ class SignUtil {
                 DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code -> {
                     list.addAll(getLinkSpeedLimitMoreInfo(data))
                 }
-                //车道数
+                //车道数//增加物理车道数DataCodeEnum.OMDB_PHY_LANENUM.code
+                DataCodeEnum.OMDB_PHY_LANENUM.code,
                 DataCodeEnum.OMDB_LANE_NUM.code -> {
                     list.add(
                         TwoItemAdapterItem(
@@ -1424,6 +1426,7 @@ class SignUtil {
                     )
                     DataCodeEnum.OMDB_RD_LINK_KIND.code -> stringBuffer.append("种别${item.iconText},")
                     DataCodeEnum.OMDB_LINK_DIRECT.code -> stringBuffer.append("${item.iconText},")
+                    DataCodeEnum.OMDB_PHY_LANENUM.code,//物理车道数
                     DataCodeEnum.OMDB_LANE_NUM.code -> stringBuffer.append(
                         "${
                             item.iconText.substringBefore(
@@ -1751,6 +1754,7 @@ class SignUtil {
          */
         fun getRoadInfoIndex(element: RenderEntity): Int {
             return when (element.code) {
+                DataCodeEnum.OMDB_PHY_LANENUM.code,//物理车道数
                 DataCodeEnum.OMDB_LANE_NUM.code -> 0
                 DataCodeEnum.OMDB_RD_LINK_KIND.code -> 1
                 DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code -> 2

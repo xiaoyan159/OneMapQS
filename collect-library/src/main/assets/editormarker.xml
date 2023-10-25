@@ -1561,7 +1561,6 @@
 
         <!-- 杆状物 -->
         <m v="OMDB_POLE">
-<!--            <line stroke="#000000" width="2" cap="butt"></line>-->
             <symbol src="assets:omdb/icon_pole_3006.svg" symbol-height="56" symbol-width="56"></symbol>
         </m>
 
@@ -1653,6 +1652,10 @@
             </m>
 
             <m k="boundaryType" v="2">
+                <!--标线-->
+                <m k="markType" v="0">
+                    <line stroke="#eccc68" use="boundaryType" />
+                </m>
                 <!--标线-->
                 <m k="markType" v="1">
                     <m k="markColor" v="1">

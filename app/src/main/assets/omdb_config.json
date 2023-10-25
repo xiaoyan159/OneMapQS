@@ -130,6 +130,11 @@
 				"code": 2041,
 				"name": "车道数"
 			},
+			"2097":{
+				"table": "OMDB_PHY_LANENUM",
+				"code": 2097,
+				"name": "物理车道数"
+			},
 			"2083":{
 				"table": "OMDB_RDBOUND_BOUNDARYTYPE",
 				"code": 2083,
@@ -145,6 +150,7 @@
 				"code": 2090,
 				"name": "车道施工",
 				"existSubCode": true,
+				"checkLinkId": false,
 				"catch":true,
 				"zoomMin": 18,
 				"zoomMax": 20

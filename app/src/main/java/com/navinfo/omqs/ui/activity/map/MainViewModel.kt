@@ -635,7 +635,7 @@ class MainViewModel @Inject constructor(
      */
     private suspend fun captureItem(point: GeoPoint) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            var buffer = 3.2
+            var buffer = 8.0
             if (mapController.mMapView.mapLevel >= 18) {
                 buffer = 2.0
             }
@@ -696,7 +696,7 @@ class MainViewModel @Inject constructor(
                                     )
                                 }
                             }
-
+                            DataCodeEnum.OMDB_PHY_LANENUM.code,//物理车道数
                             DataCodeEnum.OMDB_LANE_NUM.code, //车道数
                             DataCodeEnum.OMDB_RD_LINK_KIND.code,//种别，
                             DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code, // 功能等级,
@@ -848,7 +848,7 @@ class MainViewModel @Inject constructor(
                                             )
                                         }
                                     }
-
+                                    DataCodeEnum.OMDB_PHY_LANENUM.code,//物理车道数
                                     DataCodeEnum.OMDB_LANE_NUM.code, //车道数
                                     DataCodeEnum.OMDB_RD_LINK_KIND.code,//种别，
                                     DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code, // 功能等级,
