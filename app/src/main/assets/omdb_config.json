@@ -550,6 +550,24 @@
 					}
 				]
 			},
+			"4016": {
+				"table": "OMDB_ZLEVEL",
+				"code": 4016,
+				"name": "立交",
+				"zoomMin": 15,
+				"zoomMax": 17,
+				"filterData": true,
+				"catch": true,
+				"checkLinkId": false,
+				"transformer": [
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
+						"vlib": "obtainZLevelReference()"
+					}
+				]
+			},
 			"4022": {
 				"table": "OMDB_TRAFFICLIGHT",
 				"code": 4022,

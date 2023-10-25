@@ -995,4 +995,31 @@ class ImportPreProcess {
             renderEntity.properties["ref"] = "${renderEntity.properties["maxSpeed"]}|${renderEntity.properties["minSpeed"]}"
         }
     }
+
+    /**
+     * 生成立交的辅助图层数据
+     * */
+    fun obtainZLevelReference(renderEntity: RenderEntity) {
+        if(renderEntity!=null) {
+            // 判断当前数据的startEnd，如果是0则向前和向后都绘制线，如果是1（起点）则只绘制前两个点组成的线，如果是2（终点）则只绘制后两个点组成的线
+            val zLevelReference = ReferenceEntity()
+            zLevelReference.renderEntityId = renderEntity.id
+            zLevelReference.name = "${renderEntity.name}参考点"
+            zLevelReference.code = renderEntity.code
+            zLevelReference.table = renderEntity.table
+            zLevelReference.zoomMin = renderEntity.zoomMin
+            zLevelReference.zoomMax = renderEntity.zoomMax
+            zLevelReference.taskId = renderEntity.taskId
+            zLevelReference.enable = renderEntity.enable
+            // 辅助图层的geometry是指定点和相邻点计算方向，延伸
+            if (renderEntity.wkt!=null) {
+                renderEntity.wkt?.coordinates[renderEntity.properties]
+            }
+            zLevelReference.geometry =
+                GeometryTools.createGeometry(renderEntity.geometry).toString()
+            zLevelReference.properties["qi_table"] = renderEntity.table
+            zLevelReference.properties["type"] = "zlevel"
+            zLevelReference.properties["ZLevel"] = renderEntity.properties["zLevel"]
+        }
+    }
 }
