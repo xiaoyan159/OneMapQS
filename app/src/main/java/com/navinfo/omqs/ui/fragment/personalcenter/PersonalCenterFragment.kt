@@ -78,30 +78,30 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                 R.id.personal_center_menu_offline_map ->
                     findNavController().navigate(R.id.OfflineMapFragment)
 
-                R.id.personal_center_menu_obtain_data -> { // 生成数据，根据sqlite文件生成对应的zip文件
-                    fileChooser.openChooseFileDialog(object : FileChooserCallback() {
-                        override fun onCancel(reason: String) {
-                        }
-
-                        @RequiresApi(Build.VERSION_CODES.N)
-                        override fun onResult(uri: Uri) {
-                            val file = UriUtils.uri2File(uri)
-                            // 开始导入数据
-                            // 656e6372797000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-                            CoroutineUtils.launchWithLoading(
-                                requireContext(),
-                                loadingMessage = "生成数据..."
-                            ) {
-                                val importOMDBHelper: ImportOMDBHelper =
-                                    importOMDBHiltFactory.obtainImportOMDBHelper(
-                                        requireContext(),
-                                        file
-                                    )
-                                viewModel.obtainOMDBZipData(importOMDBHelper)
-                            }
-                        }
-                    })
-                }
+//                R.id.personal_center_menu_obtain_data -> { // 生成数据，根据sqlite文件生成对应的zip文件
+//                    fileChooser.openChooseFileDialog(object : FileChooserCallback() {
+//                        override fun onCancel(reason: String) {
+//                        }
+//
+//                        @RequiresApi(Build.VERSION_CODES.N)
+//                        override fun onResult(uri: Uri) {
+//                            val file = UriUtils.uri2File(uri)
+//                            // 开始导入数据
+//                            // 656e6372797000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+//                            CoroutineUtils.launchWithLoading(
+//                                requireContext(),
+//                                loadingMessage = "生成数据..."
+//                            ) {
+//                                val importOMDBHelper: ImportOMDBHelper =
+//                                    importOMDBHiltFactory.obtainImportOMDBHelper(
+//                                        requireContext(),
+//                                        file
+//                                    )
+//                                viewModel.obtainOMDBZipData(importOMDBHelper)
+//                            }
+//                        }
+//                    })
+//                }
 
                 R.id.personal_center_menu_import_data -> { // 导入zip数据
                     fileChooser.openChooseFileDialog(object : FileChooserCallback() {

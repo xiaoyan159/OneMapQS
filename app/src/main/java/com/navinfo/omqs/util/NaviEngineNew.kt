@@ -38,7 +38,6 @@ class NaviEngineNew(
         geoPoint: GeoPoint,
         realm:Realm
     ) {
-//        val geoPoint = GeoPoint(niLocation.latitude, niLocation.longitude)
         var latestRoute: HadLinkDvoBean? = null
         var lastDis = -1.0
 

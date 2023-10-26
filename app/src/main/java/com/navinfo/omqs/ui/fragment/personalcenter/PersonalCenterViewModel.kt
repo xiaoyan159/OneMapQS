@@ -37,119 +37,119 @@ class PersonalCenterViewModel @Inject constructor(
 
     val liveDataMessage = MutableLiveData<String>()
 
-    /**
-     * 导入OMDB数据
-     * */
-    @RequiresApi(Build.VERSION_CODES.N)
-    suspend fun obtainOMDBZipData(importOMDBHelper: ImportOMDBHelper) {
-        Log.d("OMQSApplication", "开始生成数据")
-        val gson = Gson()
-        val hadLinkFile = File(importOMDBHelper.omdbFile.parentFile, "HAD_LINK.txt")
-        val hadLinkKindFile = File(importOMDBHelper.omdbFile.parentFile, "HAD_LINK_KIND.txt")
-        val hadLinkDirectFile = File(importOMDBHelper.omdbFile.parentFile, "HAD_LINK_DIRECT.txt")
-        val hadSpeedLimitFile = File(importOMDBHelper.omdbFile.parentFile, "HAD_SPEEDLIMIT.txt")
-        val hadSpeedLimitCondFile =
-            File(importOMDBHelper.omdbFile.parentFile, "HAD_SPEEDLIMIT_COND.txt")
-        val hadSpeedLimitVarFile =
-            File(importOMDBHelper.omdbFile.parentFile, "HAD_SPEEDLIMIT_VAR.txt")
-
-        for (tableName in listOf<String>(
-            "HAD_LINK", "HAD_SPEEDLIMIT", "HAD_SPEEDLIMIT_COND", "HAD_SPEEDLIMIT_VAR"
-        )/*listOf<String>("HAD_LINK")*/) {
-            importOMDBHelper.getOMDBTableData(tableName).collect {
-                for (map in it) {
-                    if ("HAD_LINK" == tableName) {
-                        // 根据HAD_Link生成json文件
-                        val hadLink = HAD_LINK()
-                        hadLink.LINK_PID = map["LINK_PID"].toString()
-                        hadLink.MESH = map["MESH"].toString()
-                        hadLink.S_NODE_PID = map["S_NODE_PID"].toString()
-                        hadLink.E_NODE_PID = map["E_NODE_PID"].toString()
-                        hadLink.GEOMETRY = map["GEOMETRY"].toString()
-                        // 将该数据写入到对应的txt文件
-                        FileIOUtils.writeFileFromString(
-                            hadLinkFile, gson.toJson(hadLink) + "\r", true
-                        )
-
-                        val hadLinkDirect = HAD_LINK_DIRECT()
-                        hadLinkDirect.LINK_PID = map["LINK_PID"].toString()
-                        hadLinkDirect.MESH = map["MESH"].toString()
-                        hadLinkDirect.DIRECT = map["DIRECT"].toString().toInt()
-                        hadLinkDirect.GEOMETRY = map["GEOMETRY"].toString()
-                        // 将该数据写入到对应的txt文件
-                        FileIOUtils.writeFileFromString(
-                            hadLinkDirectFile, gson.toJson(hadLinkDirect) + "\r", true
-                        )
-
-                        val hadLinkKind = HAD_LINK_KIND()
-                        hadLinkKind.LINK_PID = map["LINK_PID"].toString()
-                        hadLinkKind.MESH = map["MESH"].toString()
-                        hadLinkKind.KIND = map["KIND"].toString().toInt()
-                        hadLinkKind.GEOMETRY = map["GEOMETRY"].toString()
-                        // 将该数据写入到对应的txt文件
-                        FileIOUtils.writeFileFromString(
-                            hadLinkKindFile, gson.toJson(hadLinkKind) + "\r", true
-                        )
-                    } else if ("HAD_SPEEDLIMIT" == tableName) {
-                        val hadSpeedlimit = HAD_SPEEDLIMIT()
-                        hadSpeedlimit.SPEED_ID = map["SPEED_ID"].toString()
-                        hadSpeedlimit.MESH = map["MESH"].toString()
-                        hadSpeedlimit.LINK_PID = map["LINK_PID"].toString()
-                        hadSpeedlimit.GEOMETRY = map["GEOMETRY"].toString()
-                        hadSpeedlimit.DIRECT = map["DIRECT"].toString().toInt()
-                        hadSpeedlimit.SPEED_FLAG = map["SPEED_FLAG"].toString().toInt()
-                        hadSpeedlimit.MAX_SPEED = map["MAX_SPEED"].toString().toInt()
-                        hadSpeedlimit.MIN_SPEED = map["MIN_SPEED"].toString().toInt()
-                        // 将该数据写入到对应的txt文件
-                        FileIOUtils.writeFileFromString(
-                            hadSpeedLimitFile, gson.toJson(hadSpeedlimit) + "\r", true
-                        )
-                    } else if ("HAD_SPEEDLIMIT_COND" == tableName) {
-                        val hadSpeedlimitCond = HAD_SPEEDLIMIT_COND()
-                        hadSpeedlimitCond.SPEED_COND_ID = map["SPEED_COND_ID"].toString()
-                        hadSpeedlimitCond.MESH = map["MESH"].toString()
-                        hadSpeedlimitCond.LINK_PID = map["LINK_PID"].toString()
-                        hadSpeedlimitCond.GEOMETRY = map["GEOMETRY"].toString()
-                        hadSpeedlimitCond.DIRECT = map["DIRECT"].toString().toInt()
-                        hadSpeedlimitCond.SPEED_FLAG = map["SPEED_FLAG"].toString().toInt()
-                        hadSpeedlimitCond.MAX_SPEED = map["MAX_SPEED"].toString().toInt()
-                        hadSpeedlimitCond.SPEED_DEPENDENT =
-                            map["SPEED_DEPENDENT"].toString().toInt()
-                        hadSpeedlimitCond.VEHICLE_TYPE = map["VEHICLE_TYPE"].toString().toInt()
-                        hadSpeedlimitCond.VALID_PERIOD = map["VALID_PERIOD"].toString()
-                        // 将该数据写入到对应的txt文件
-                        FileIOUtils.writeFileFromString(
-                            hadSpeedLimitCondFile, gson.toJson(hadSpeedlimitCond) + "\r", true
-                        )
-                    } else if ("HAD_SPEEDLIMIT_VAR" == tableName) {
-                        val hadSpeedlimitVar = HAD_SPEEDLIMIT_VAR()
-                        hadSpeedlimitVar.SPEED_VAR_ID = map["SPEED_ID"].toString()
-                        hadSpeedlimitVar.MESH = map["MESH"].toString()
-                        hadSpeedlimitVar.LINK_PID = map["LINK_PID"].toString()
-                        hadSpeedlimitVar.GEOMETRY = map["GEOMETRY"].toString()
-                        hadSpeedlimitVar.DIRECT = map["DIRECT"].toString().toInt()
-                        hadSpeedlimitVar.LOCATION = map["LOCATION"].toString()
-                        // 将该数据写入到对应的txt文件
-                        FileIOUtils.writeFileFromString(
-                            hadSpeedLimitVarFile, gson.toJson(hadSpeedlimitVar) + "\r", true
-                        )
-                    }
-                }
-            }
-        }
-        ZipUtils.zipFiles(
-            mutableListOf(
-                hadLinkFile,
-                hadLinkKindFile,
-                hadLinkDirectFile,
-                hadSpeedLimitFile,
-                hadSpeedLimitCondFile,
-                hadSpeedLimitVarFile
-            ), File(importOMDBHelper.omdbFile.parentFile, "output.zip")
-        )
-
-        Log.d("OMQSApplication", "生成数据完成")
-    }
+//    /**
+//     * 导入OMDB数据
+//     * */
+//    @RequiresApi(Build.VERSION_CODES.N)
+//    suspend fun obtainOMDBZipData(importOMDBHelper: ImportOMDBHelper) {
+//        Log.d("OMQSApplication", "开始生成数据")
+//        val gson = Gson()
+//        val hadLinkFile = File(importOMDBHelper.omdbFile.parentFile, "HAD_LINK.txt")
+//        val hadLinkKindFile = File(importOMDBHelper.omdbFile.parentFile, "HAD_LINK_KIND.txt")
+//        val hadLinkDirectFile = File(importOMDBHelper.omdbFile.parentFile, "HAD_LINK_DIRECT.txt")
+//        val hadSpeedLimitFile = File(importOMDBHelper.omdbFile.parentFile, "HAD_SPEEDLIMIT.txt")
+//        val hadSpeedLimitCondFile =
+//            File(importOMDBHelper.omdbFile.parentFile, "HAD_SPEEDLIMIT_COND.txt")
+//        val hadSpeedLimitVarFile =
+//            File(importOMDBHelper.omdbFile.parentFile, "HAD_SPEEDLIMIT_VAR.txt")
+//
+//        for (tableName in listOf<String>(
+//            "HAD_LINK", "HAD_SPEEDLIMIT", "HAD_SPEEDLIMIT_COND", "HAD_SPEEDLIMIT_VAR"
+//        )/*listOf<String>("HAD_LINK")*/) {
+//            importOMDBHelper.getOMDBTableData(tableName).collect {
+//                for (map in it) {
+//                    if ("HAD_LINK" == tableName) {
+//                        // 根据HAD_Link生成json文件
+//                        val hadLink = HAD_LINK()
+//                        hadLink.LINK_PID = map["LINK_PID"].toString()
+//                        hadLink.MESH = map["MESH"].toString()
+//                        hadLink.S_NODE_PID = map["S_NODE_PID"].toString()
+//                        hadLink.E_NODE_PID = map["E_NODE_PID"].toString()
+//                        hadLink.GEOMETRY = map["GEOMETRY"].toString()
+//                        // 将该数据写入到对应的txt文件
+//                        FileIOUtils.writeFileFromString(
+//                            hadLinkFile, gson.toJson(hadLink) + "\r", true
+//                        )
+//
+//                        val hadLinkDirect = HAD_LINK_DIRECT()
+//                        hadLinkDirect.LINK_PID = map["LINK_PID"].toString()
+//                        hadLinkDirect.MESH = map["MESH"].toString()
+//                        hadLinkDirect.DIRECT = map["DIRECT"].toString().toInt()
+//                        hadLinkDirect.GEOMETRY = map["GEOMETRY"].toString()
+//                        // 将该数据写入到对应的txt文件
+//                        FileIOUtils.writeFileFromString(
+//                            hadLinkDirectFile, gson.toJson(hadLinkDirect) + "\r", true
+//                        )
+//
+//                        val hadLinkKind = HAD_LINK_KIND()
+//                        hadLinkKind.LINK_PID = map["LINK_PID"].toString()
+//                        hadLinkKind.MESH = map["MESH"].toString()
+//                        hadLinkKind.KIND = map["KIND"].toString().toInt()
+//                        hadLinkKind.GEOMETRY = map["GEOMETRY"].toString()
+//                        // 将该数据写入到对应的txt文件
+//                        FileIOUtils.writeFileFromString(
+//                            hadLinkKindFile, gson.toJson(hadLinkKind) + "\r", true
+//                        )
+//                    } else if ("HAD_SPEEDLIMIT" == tableName) {
+//                        val hadSpeedlimit = HAD_SPEEDLIMIT()
+//                        hadSpeedlimit.SPEED_ID = map["SPEED_ID"].toString()
+//                        hadSpeedlimit.MESH = map["MESH"].toString()
+//                        hadSpeedlimit.LINK_PID = map["LINK_PID"].toString()
+//                        hadSpeedlimit.GEOMETRY = map["GEOMETRY"].toString()
+//                        hadSpeedlimit.DIRECT = map["DIRECT"].toString().toInt()
+//                        hadSpeedlimit.SPEED_FLAG = map["SPEED_FLAG"].toString().toInt()
+//                        hadSpeedlimit.MAX_SPEED = map["MAX_SPEED"].toString().toInt()
+//                        hadSpeedlimit.MIN_SPEED = map["MIN_SPEED"].toString().toInt()
+//                        // 将该数据写入到对应的txt文件
+//                        FileIOUtils.writeFileFromString(
+//                            hadSpeedLimitFile, gson.toJson(hadSpeedlimit) + "\r", true
+//                        )
+//                    } else if ("HAD_SPEEDLIMIT_COND" == tableName) {
+//                        val hadSpeedlimitCond = HAD_SPEEDLIMIT_COND()
+//                        hadSpeedlimitCond.SPEED_COND_ID = map["SPEED_COND_ID"].toString()
+//                        hadSpeedlimitCond.MESH = map["MESH"].toString()
+//                        hadSpeedlimitCond.LINK_PID = map["LINK_PID"].toString()
+//                        hadSpeedlimitCond.GEOMETRY = map["GEOMETRY"].toString()
+//                        hadSpeedlimitCond.DIRECT = map["DIRECT"].toString().toInt()
+//                        hadSpeedlimitCond.SPEED_FLAG = map["SPEED_FLAG"].toString().toInt()
+//                        hadSpeedlimitCond.MAX_SPEED = map["MAX_SPEED"].toString().toInt()
+//                        hadSpeedlimitCond.SPEED_DEPENDENT =
+//                            map["SPEED_DEPENDENT"].toString().toInt()
+//                        hadSpeedlimitCond.VEHICLE_TYPE = map["VEHICLE_TYPE"].toString().toInt()
+//                        hadSpeedlimitCond.VALID_PERIOD = map["VALID_PERIOD"].toString()
+//                        // 将该数据写入到对应的txt文件
+//                        FileIOUtils.writeFileFromString(
+//                            hadSpeedLimitCondFile, gson.toJson(hadSpeedlimitCond) + "\r", true
+//                        )
+//                    } else if ("HAD_SPEEDLIMIT_VAR" == tableName) {
+//                        val hadSpeedlimitVar = HAD_SPEEDLIMIT_VAR()
+//                        hadSpeedlimitVar.SPEED_VAR_ID = map["SPEED_ID"].toString()
+//                        hadSpeedlimitVar.MESH = map["MESH"].toString()
+//                        hadSpeedlimitVar.LINK_PID = map["LINK_PID"].toString()
+//                        hadSpeedlimitVar.GEOMETRY = map["GEOMETRY"].toString()
+//                        hadSpeedlimitVar.DIRECT = map["DIRECT"].toString().toInt()
+//                        hadSpeedlimitVar.LOCATION = map["LOCATION"].toString()
+//                        // 将该数据写入到对应的txt文件
+//                        FileIOUtils.writeFileFromString(
+//                            hadSpeedLimitVarFile, gson.toJson(hadSpeedlimitVar) + "\r", true
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//        ZipUtils.zipFiles(
+//            mutableListOf(
+//                hadLinkFile,
+//                hadLinkKindFile,
+//                hadLinkDirectFile,
+//                hadSpeedLimitFile,
+//                hadSpeedLimitCondFile,
+//                hadSpeedLimitVarFile
+//            ), File(importOMDBHelper.omdbFile.parentFile, "output.zip")
+//        )
+//
+//        Log.d("OMQSApplication", "生成数据完成")
+//    }
 
     /**
      * 导入OMDB数据
@@ -158,15 +158,16 @@ class PersonalCenterViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("OMQSApplication", "开始导入数据")
             if (task != null) {
-                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, task).collect {
+                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, task, this).collect {
                     Log.d("importOMDBData", it)
                 }
             } else {
                 val newTask = TaskBean()
                 newTask.id = -1
-                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, newTask).collect {
-                    Log.d("importOMDBData", it)
-                }
+                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, newTask, this)
+                    .collect {
+                        Log.d("importOMDBData", it)
+                    }
             }
             Log.d("OMQSApplication", "导入数据完成")
         }

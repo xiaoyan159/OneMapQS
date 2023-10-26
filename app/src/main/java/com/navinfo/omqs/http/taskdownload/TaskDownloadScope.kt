@@ -155,7 +155,7 @@ class TaskDownloadScope(
                     fileNew
                 )
             if (task != null) {
-                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, task).collect {
+                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, task, this).collect {
                     Log.e("jingo", "数据安装 $it")
                     if (it == "finish") {
                         change(FileDownloadStatus.DONE)
