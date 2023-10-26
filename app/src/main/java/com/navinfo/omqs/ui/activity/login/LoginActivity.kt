@@ -1,7 +1,5 @@
 package com.navinfo.omqs.ui.activity.login
 
-import android.app.Activity
-import android.app.ActivityManager
 import android.content.Intent
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -11,7 +9,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.ActivityLoginBinding
@@ -19,8 +16,6 @@ import com.navinfo.omqs.ui.activity.CheckPermissionsActivity
 import com.navinfo.omqs.ui.activity.map.MainActivity
 import com.umeng.commonsdk.UMConfigure
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /**
  * 登陆页面

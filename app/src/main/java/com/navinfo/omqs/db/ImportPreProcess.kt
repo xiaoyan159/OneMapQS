@@ -1,10 +1,13 @@
 package com.navinfo.omqs.db
 
 import android.util.Log
+import com.google.gson.Gson
+import com.navinfo.collect.library.data.entity.LinkRelation
 import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.utils.GeometryTools
+import com.navinfo.collect.library.utils.StrZipUtil
 import com.navinfo.omqs.Constant
 import io.realm.Realm
 import io.realm.RealmModel
@@ -15,30 +18,44 @@ import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.io.WKTWriter
 import org.oscim.core.GeoPoint
+import java.util.*
 
 
 class ImportPreProcess {
     val code2NameMap = Code2NameMap()
-    lateinit var cacheRdLink: Map<String?, RenderEntity>
+
+    //    lateinit var cacheRdLink: Map<String?, RenderEntity>
     val defaultTranslateDistance = 3.0
     val testFlag: Boolean = false
-    var realm:Realm? = null
+    var realm: Realm? = null
+    val gson = Gson()
     fun checkCircleRoad(renderEntity: RenderEntity): Boolean {
         val linkInId = renderEntity.properties["linkIn"]
         val linkOutId = renderEntity.properties["linkOut"]
-        // 根据linkIn和linkOut获取对应的link数据
-        val linkInEntity = cacheRdLink[linkInId]
-        val linkOutEntity = cacheRdLink[linkOutId]
-        Log.d(
-            "checkCircleRoad",
-            "LinkInEntity: ${linkInId}- ${linkInEntity?.properties?.get("snodePid")}，LinkOutEntity: ${linkOutId}- ${
-                linkOutEntity?.properties?.get("enodePid")
-            }"
-        )
-        // 查询linkIn的sNode和linkOut的eNode是否相同，如果相同，认为数据是环形路口，返回false
-        if (linkInEntity != null && linkOutEntity != null) {
-            if (linkInEntity.properties["snodePid"] == linkOutEntity.properties["enodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["snodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["enodePid"]) {
-                return false
+//        // 根据linkIn和linkOut获取对应的link数据
+//        val linkInEntity = cacheRdLink[linkInId]
+//        val linkOutEntity = cacheRdLink[linkOutId]
+        realm?.let {
+            val linkInEntity = it.where(RenderEntity::class.java)
+                .equalTo("code", DataCodeEnum.OMDB_RD_LINK.code)
+                .and().equalTo("linkPid", linkInId)
+                .findFirst()
+            val linkOutEntity = it.where(RenderEntity::class.java)
+                .equalTo("code", DataCodeEnum.OMDB_RD_LINK.code)
+                .and().equalTo("linkPid", linkOutId)
+                .findFirst()
+
+            Log.d(
+                "checkCircleRoad",
+                "LinkInEntity: ${linkInId}- ${linkInEntity?.properties?.get("snodePid")}，LinkOutEntity: ${linkOutId}- ${
+                    linkOutEntity?.properties?.get("enodePid")
+                }"
+            )
+            // 查询linkIn的sNode和linkOut的eNode是否相同，如果相同，认为数据是环形路口，返回false
+            if (linkInEntity != null && linkOutEntity != null) {
+                if (linkInEntity.properties["snodePid"] == linkOutEntity.properties["enodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["snodePid"] == linkOutEntity.properties["snodePid"] || linkInEntity.properties["enodePid"] == linkOutEntity.properties["enodePid"]) {
+                    return false
+                }
             }
         }
         return true
@@ -200,16 +217,16 @@ class ImportPreProcess {
             startGeometry!!.coordinates[startGeometry.numPoints - 1] // 获取这个geometry对应的结束点坐标
         if (translateGeometry.geometryType == Geometry.TYPENAME_LINESTRING) { // 如果是线数据，则取倒数第二个点作为偏移的起止点
             pointEnd =
-                translateGeometry!!.coordinates[translateGeometry.numPoints - 2] // 获取这个geometry对应的结束点坐标
+                translateGeometry.coordinates[translateGeometry.numPoints - 2] // 获取这个geometry对应的结束点坐标
         }
         if (startGeometry.geometryType == Geometry.TYPENAME_LINESTRING) { // 如果是线数据，则取倒数第二个点作为偏移的起止点
             pointStart =
-                startGeometry!!.coordinates[startGeometry.numPoints - 2] // 获取这个geometry对应的结束点坐标
+                startGeometry.coordinates[startGeometry.numPoints - 2] // 获取这个geometry对应的结束点坐标
         }
 
         // 将这个起终点的线记录在数据中
         val startEndReference = ReferenceEntity()
-        startEndReference.renderEntityId = renderEntity.id
+//        startEndReference.renderEntityId = renderEntity.id
         startEndReference.name = "${renderEntity.name}参考线"
         startEndReference.table = renderEntity.table
         startEndReference.zoomMin = renderEntity.zoomMin
@@ -222,6 +239,9 @@ class ImportPreProcess {
         startEndReference.properties["qi_table"] = renderEntity.table
         startEndReference.properties["type"] = "s_2_e"
         val listResult = mutableListOf<ReferenceEntity>()
+        startEndReference.propertiesDb = StrZipUtil.compress(
+            gson.toJson(startEndReference.properties).toString()
+        )
         listResult.add(startEndReference)
         insertData(listResult)
     }
@@ -240,7 +260,7 @@ class ImportPreProcess {
 
             // 将这个起终点的线记录在数据中
             val startReference = ReferenceEntity()
-            startReference.renderEntityId = renderEntity.id
+//            startReference.renderEntityId = renderEntity.id
             startReference.name = "${renderEntity.name}参考点"
             startReference.code = renderEntity.code
             startReference.table = renderEntity.table
@@ -258,7 +278,7 @@ class ImportPreProcess {
             listResult.add(startReference)
 
             val endReference = ReferenceEntity()
-            endReference.renderEntityId = renderEntity.id
+//            endReference.renderEntityId = renderEntity.id
             endReference.name = "${renderEntity.name}参考点"
             endReference.code = renderEntity.code
             endReference.table = renderEntity.table
@@ -292,7 +312,7 @@ class ImportPreProcess {
 
         // 将这个起终点的线记录在数据中
         val startReference = ReferenceEntity()
-        startReference.renderEntityId = renderEntity.id
+//        startReference.renderEntityId = renderEntity.id
         startReference.name = "${renderEntity.name}参考点"
         startReference.code = renderEntity.code
         startReference.table = renderEntity.table
@@ -324,12 +344,15 @@ class ImportPreProcess {
         Log.e("qj", "generateS2EReferencePoint===${startReference.geometry}")
 
         startReference.properties["geometry"] = startReference.geometry
+        startReference.propertiesDb = StrZipUtil.compress(
+            gson.toJson(startReference.properties).toString()
+        )
         listResult.add(startReference)
 
         Log.e("qj", "generateS2EReferencePoint===1")
 
         val endReference = ReferenceEntity()
-        endReference.renderEntityId = renderEntity.id
+//        endReference.renderEntityId = renderEntity.id
         endReference.name = "${renderEntity.name}参考点"
         endReference.code = renderEntity.code
         endReference.table = renderEntity.table
@@ -358,7 +381,9 @@ class ImportPreProcess {
             Log.e("qj", "generateS2EReferencePoint===e_2_p${renderEntity.name}")
         }
         endReference.properties["geometry"] = endReference.geometry
-
+        endReference.propertiesDb = StrZipUtil.compress(
+            gson.toJson(endReference.properties).toString()
+        )
         listResult.add(endReference)
         Log.e("qj", "generateS2EReferencePoint===4")
         insertData(listResult)
@@ -444,7 +469,7 @@ class ImportPreProcess {
             val coorEnd = Coordinate(pointStart.getX() + dx, pointStart.getY() + dy, pointStart.z)
 
             val angleReference = ReferenceEntity()
-            angleReference.renderEntityId = renderEntity.id
+//            angleReference.renderEntityId = renderEntity.id
             angleReference.name = "${renderEntity.name}参考方向"
             angleReference.table = renderEntity.table
             angleReference.zoomMin = renderEntity.zoomMin
@@ -456,6 +481,9 @@ class ImportPreProcess {
                 WKTWriter(3).write(GeometryTools.createLineString(arrayOf(pointStart, coorEnd)))
             angleReference.properties["qi_table"] = renderEntity.table
             angleReference.properties["type"] = "angle"
+            angleReference.propertiesDb = StrZipUtil.compress(
+                gson.toJson(angleReference.properties).toString()
+            )
             listResult.add(angleReference)
         }
         insertData(listResult)
@@ -593,7 +621,7 @@ class ImportPreProcess {
                 for (i in 0 until laneInfoDirectArray.length()) {
                     // 根据后续的数据生成辅助表数据
                     val referenceEntity = ReferenceEntity()
-                    referenceEntity.renderEntityId = renderEntity.id
+//                    referenceEntity.renderEntityId = renderEntity.id
                     referenceEntity.name = "${renderEntity.name}参考方向"
                     referenceEntity.table = renderEntity.table
                     referenceEntity.enable = renderEntity.enable
@@ -601,7 +629,7 @@ class ImportPreProcess {
                     referenceEntity.zoomMin = renderEntity.zoomMin
                     referenceEntity.zoomMax = renderEntity.zoomMax
                     // 与原数据使用相同的geometry
-                    referenceEntity.geometry = renderEntity.geometry.toString()
+                    referenceEntity.geometry = renderEntity.geometry
                     referenceEntity.properties["qi_table"] = renderEntity.table
                     referenceEntity.properties["currentDirect"] =
                         laneInfoDirectArray[i].toString().split(",").distinct().joinToString("_")
@@ -612,6 +640,9 @@ class ImportPreProcess {
                     referenceEntity.properties["symbol"] =
                         "assets:omdb/4601/${type}/1301_${referenceEntity.properties["currentDirect"]}.svg"
                     Log.d("unpackingLaneInfo", referenceEntity.properties["symbol"].toString())
+                    referenceEntity.propertiesDb = StrZipUtil.compress(
+                        gson.toJson(referenceEntity.properties).toString()
+                    )
                     listResult.add(referenceEntity)
                 }
                 insertData(listResult)
@@ -706,7 +737,7 @@ class ImportPreProcess {
     fun generateAddWidthLine(renderEntity: RenderEntity) {
         // 添加车道中心面渲染原则，根据车道宽度进行渲染
         val angleReference = ReferenceEntity()
-        angleReference.renderEntityId = renderEntity.id
+       // angleReference.renderEntityId = renderEntity.id
         angleReference.name = "${renderEntity.name}车道中线面"
         angleReference.table = renderEntity.table
         angleReference.geometry =
@@ -719,6 +750,9 @@ class ImportPreProcess {
         angleReference.taskId = renderEntity.taskId
         angleReference.enable = renderEntity.enable
         val listResult = mutableListOf<ReferenceEntity>()
+        angleReference.propertiesDb = StrZipUtil.compress(
+            gson.toJson(angleReference.properties).toString()
+        )
         listResult.add(angleReference)
         insertData(listResult)
     }
@@ -736,7 +770,7 @@ class ImportPreProcess {
             for (i in 0 until nodeListJsonArray.length()) {
                 val nodeJSONObject = nodeListJsonArray.getJSONObject(i)
                 val intersectionReference = ReferenceEntity()
-                intersectionReference.renderEntityId = renderEntity.id
+//                intersectionReference.renderEntityId = renderEntity.id
                 intersectionReference.name = "${renderEntity.name}参考点"
                 intersectionReference.code = renderEntity.code
                 intersectionReference.table = renderEntity.table
@@ -749,6 +783,9 @@ class ImportPreProcess {
                     GeometryTools.createGeometry(nodeJSONObject["geometry"].toString()).toString()
                 intersectionReference.properties["qi_table"] = renderEntity.table
                 intersectionReference.properties["type"] = "node"
+                intersectionReference.propertiesDb = StrZipUtil.compress(
+                    gson.toJson(intersectionReference.properties).toString()
+                )
                 listResult.add(intersectionReference)
             }
             insertData(listResult)
@@ -903,7 +940,7 @@ class ImportPreProcess {
             val coorEnd = Coordinate(pointStart.getX() + dx, pointStart.getY() + dy, pointStart.z)
 
             val dynamicSrcReference = ReferenceEntity()
-            dynamicSrcReference.renderEntityId = renderEntity.id
+//            dynamicSrcReference.renderEntityId = renderEntity.id
             dynamicSrcReference.name = "${renderEntity.name}动态icon"
             dynamicSrcReference.table = renderEntity.table
             dynamicSrcReference.zoomMin = renderEntity.zoomMin
@@ -917,17 +954,22 @@ class ImportPreProcess {
             dynamicSrcReference.properties["type"] = "dynamicSrc"
             val code = renderEntity.properties[codeName]
             dynamicSrcReference.properties["src"] = "${prefix}${code}${suffix}"
+            dynamicSrcReference.propertiesDb = StrZipUtil.compress(
+                gson.toJson(dynamicSrcReference.properties).toString()
+            )
             listResult.add(dynamicSrcReference)
         }
         insertData(listResult)
     }
 
     private fun insertData(list: List<RealmModel>) {
-        Log.e("qj", "子表插入==")
-        if (list != null && list.isNotEmpty()) {
-            Log.e("qj", "子表插入开始==")
-            Realm.getInstance(Constant.currentInstallTaskConfig).insert(list)
-            Log.e("qj", "子表插入结束==")
+        realm?.let {
+            Log.e("qj", "子表插入==")
+            if (list != null && list.isNotEmpty()) {
+                Log.e("qj", "子表插入开始==")
+                it.copyToRealm(list)
+                Log.e("qj", "子表插入结束==")
+            }
         }
     }
 

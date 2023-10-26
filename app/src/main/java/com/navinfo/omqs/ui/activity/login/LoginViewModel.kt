@@ -8,10 +8,13 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.ResourceUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.navinfo.collect.library.data.entity.LinkRelation
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.utils.GeometryTools
@@ -27,6 +30,8 @@ import com.navinfo.omqs.util.DateTimeUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import io.realm.RealmMigration
+import io.realm.RealmSchema
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.IOException
@@ -442,8 +447,9 @@ class LoginViewModel @Inject constructor(
             .directory(userFolder)
             .name("OMQS.realm")
             .encryptionKey(Constant.PASSWORD)
-            .allowQueriesOnUiThread(true)
-            .schemaVersion(2)
+//            .allowQueriesOnUiThread(true)
+            .schemaVersion(3)
+            //            .migration(migration)
             .build()
         Realm.setDefaultConfiguration(config)
         // 拷贝配置文件到用户目录下
@@ -468,5 +474,18 @@ class LoginViewModel @Inject constructor(
 
     private fun byteArrayToHexString(byteArray: ByteArray): String {
         return byteArray.joinToString("") { "%02x".format(it) }
+    }
+
+    val migration : RealmMigration = RealmMigration {
+            realm, oldVersion, newVersion -> {
+                if (oldVersion == 2L && newVersion == 3L) {
+                    // DynamicRealm exposes an editable schema
+                    val schema: RealmSchema = realm.schema
+                    if (!schema.get("RenderEntity")!!.hasField("linkPid")) {
+                        schema.get("RenderEntity")
+                            ?.addField("linkPid", String::class.java)
+                    }
+                }
+            }
     }
 }

@@ -583,6 +583,12 @@
 						"k": "geometry",
 						"v": "~",
 						"klib": "geometry",
+						"vlib": "translateRight(direct=3)"
+					},
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
 						"vlib": "unpackingLaneInfo()"
 					},
 					{

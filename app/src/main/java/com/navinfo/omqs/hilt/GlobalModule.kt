@@ -154,20 +154,6 @@ class GlobalModule {
         )
     }
 
-//    /**
-//     * realm 注册
-//     */
-//    @Provides
-//    @Singleton
-//    fun provideRealmService(context: Application): RealmCoroutineScope {
-//        return RealmCoroutineScope(context)
-//    }
-
-//    @Singleton
-//    @Provides
-//    fun provideRealmDefaultInstance(): Realm {
-//        return Realm.getDefaultInstance()
-//    }
 
     @Singleton
     @Provides

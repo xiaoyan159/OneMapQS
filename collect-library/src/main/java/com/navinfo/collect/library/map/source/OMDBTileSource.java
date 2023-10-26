@@ -27,7 +27,7 @@ public class OMDBTileSource extends RealmDBTileSource {
 
     @Override
     public OpenResult open() {
-        Log.d("qj", Realm.getDefaultInstance().where(RenderEntity.class).findAll().size()+"open安装数量");
+//        Log.d("qj", Realm.getDefaultInstance().where(RenderEntity.class).findAll().size()+"open安装数量");
         return OpenResult.SUCCESS;
     }
 

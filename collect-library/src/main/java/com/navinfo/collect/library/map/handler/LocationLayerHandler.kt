@@ -224,7 +224,6 @@ private class MyLocationListener(callback: (BDLocation) -> Unit) : BDAbstractLoc
     val call = callback;
     override fun onReceiveLocation(location: BDLocation) {
         call(location)
-        Log.e("jingo", "定位结果：速度=" + location.speed + " 方向=" + location.direction)
     }
 }
 

@@ -51,7 +51,9 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmSet
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Mutex
 import org.locationtech.jts.geom.Geometry
 import org.oscim.core.GeoPoint
@@ -240,11 +242,14 @@ class MainViewModel @Inject constructor(
     //导航信息
     private var naviEngine: NaviEngine? = null
 
+    private var naviEngineNew: NaviEngineNew = NaviEngineNew(realmOperateHelper)
+
     // 0:不导航 1：导航 2：暂停
     private var naviEngineStatus = 0
 
     // 定义一个互斥锁
     private val naviMutex = Mutex()
+    private var testRealm: Realm? = null;
 
     private var traceCount = 0
 
@@ -339,32 +344,45 @@ class MainViewModel @Inject constructor(
             File(Constant.USER_DATA_PATH + "/${MapParamUtils.getTaskId()}")
         Constant.currentSelectTaskConfig =
             RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder)
-                .name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true)
+                .name("OMQS.realm").encryptionKey(Constant.PASSWORD)
+//                .assetFile("${Constant.currentSelectTaskFolder}/OMQS.realm")
+//                .readOnly()
+//                .allowQueriesOnUiThread(true)
                 .schemaVersion(2).build()
         MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
         socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
 
-//        viewModelScope.launch(Dispatchers.Default) {
-//            naviTestFlow().collect { point ->
-//                if (naviEngineStatus == 1) {
-//                    naviEngine?.let {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            naviTestFlow().collect { point ->
+                if (naviEngineStatus == 1) {
+                    naviEngineNew.let {
 //                        naviMutex.lock()
+                           if (testRealm == null)
+                            testRealm = realmOperateHelper.getSelectTaskRealmInstance()
+                        if (currentTaskBean != null) {
+                            naviEngineNew.bindingRoute(
+                                taskBean = currentTaskBean!!,
+                                geoPoint = point,
+                                realm = testRealm!!
+                            )
+                        }
 //                        it.bindingRoute(null, point)
 //                        naviMutex.unlock()
-//                    }
-//                }
-//            }
-//        }
+                    }
+                }
+            }
+        }
     }
 
 
-//    fun naviTestFlow(): Flow<GeoPoint> = flow {
-//
-//        while (true) {
-//            emit(mapController.mMapView.vtmMap.mapPosition.geoPoint)
-//            delay(1000)
-//        }
-//    }
+    fun naviTestFlow(): Flow<GeoPoint> = flow {
+
+        while (true) {
+            emit(mapController.mMapView.vtmMap.mapPosition.geoPoint)
+            delay(5000)
+        }
+    }
 
     /**
      * 获取当前任务
@@ -406,7 +424,10 @@ class MainViewModel @Inject constructor(
                     naviOption = naviOption,
                     callback = object : OnNaviEngineCallbackListener {
 
-                        override fun planningPathStatus(status: NaviStatus) {
+                        override fun planningPathStatus(
+                            status: NaviStatus, linkdId: String?,
+                            geometry: String?
+                        ) {
                             when (status) {
                                 NaviStatus.NAVI_STATUS_PATH_PLANNING -> naviEngineStatus = 0
                                 NaviStatus.NAVI_STATUS_PATH_ERROR_NODE -> naviEngineStatus = 0
@@ -418,7 +439,23 @@ class MainViewModel @Inject constructor(
                                 NaviStatus.NAVI_STATUS_DIRECTION_OFF -> {}
                             }
                             liveDataNaviStatus.postValue(status)
+                            if (geometry != null) {
+                                viewModelScope.launch(Dispatchers.Main) {
+
+                                    val lineString = GeometryTools.createGeometry(geometry)
+                                    val envelope = lineString.envelopeInternal
+                                    mapController.animationHandler.animateToBox(
+                                        envelope.maxX,
+                                        envelope.maxY,
+                                        envelope.minX,
+                                        envelope.minY
+                                    )
+
+                                    mapController.lineHandler.showLine(geometry)
+                                }
+                            }
                         }
+
 
                         override suspend fun bindingResults(
                             route: NaviRoute?,
@@ -805,7 +842,7 @@ class MainViewModel @Inject constructor(
                 if (linkList.isNotEmpty()) {
                     val link = linkList[0]
 
-                    val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
+                    val linkId = link.linkPid
                     //看板数据
                     val signList = mutableListOf<SignBean>()
                     val topSignList = mutableListOf<SignBean>()
@@ -835,8 +872,12 @@ class MainViewModel @Inject constructor(
 
                         val newLineString = GeometryTools.createLineString(linePoints)
                         linkId?.let {
+                            val time = System.currentTimeMillis()
                             val elementList = realmOperateHelper.queryLinkByLinkPid(realm, it)
-                            Log.e("jingo", "捕捉到数据 ${elementList.size} 个")
+                            Log.e(
+                                "jingo",
+                                "捕捉到数据 ${elementList.size} 个 ${System.currentTimeMillis() - time}"
+                            )
                             for (element in elementList) {
                                 if (element.code == DataCodeEnum.OMDB_LINK_NAME.code) {
                                     hisRoadName = true
@@ -949,7 +990,7 @@ class MainViewModel @Inject constructor(
                                             .equalTo("table", DataCodeEnum.OMDB_RD_LINK_KIND.name)
                                             .and()
                                             .equalTo(
-                                                "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
+                                                "linkPid",
                                                 outLink
                                             ).findFirst()
                                     if (linkOutEntity != null) {
@@ -983,6 +1024,7 @@ class MainViewModel @Inject constructor(
                 if (!hisRoadName) {
                     liveDataRoadName.postValue(null)
                 }
+                Log.e("jingo", "另一个地方查询数据库")
                 realm.close()
             }
         } catch (e: Exception) {
@@ -1001,6 +1043,7 @@ class MainViewModel @Inject constructor(
         mapPosition.setBearing(0f) // 锁定角度，自动将地图旋转到正北方向
         mapController.mMapView.vtmMap.mapPosition = mapPosition
         mapController.locationLayerHandler.animateToCurrentPosition()
+        naviEngineStatus = 1
     }
 
     /**
@@ -1677,7 +1720,7 @@ class MainViewModel @Inject constructor(
                         val tempTime = nowTime - lastTime
                         if (tempTime > 10000) {
                             liveDataMessage.postValue("下个定位点与当前定位点时间间隔超过10秒(${tempTime})，将直接跳转到下个点")
-                            delay(5000)
+                            delay(2000)
                         } else {
                             delay(tempTime)
                         }
