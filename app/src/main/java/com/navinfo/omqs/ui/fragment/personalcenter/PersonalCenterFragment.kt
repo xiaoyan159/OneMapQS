@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TimePicker
@@ -21,6 +22,7 @@ import com.blankj.utilcode.util.UriUtils
 import com.github.k1rakishou.fsaf.FileChooser
 import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
 import com.github.k1rakishou.fsaf.callback.FileChooserCallback
+import com.google.android.material.internal.NavigationMenuItemView
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.navinfo.collect.library.enums.DataLayerEnum
 import com.navinfo.collect.library.map.NIMapController
@@ -40,6 +42,7 @@ import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
+import org.oscim.utils.MinHeap.Item
 import javax.inject.Inject
 
 /**
@@ -73,7 +76,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.root.setNavigationItemSelectedListener {
+        binding.root.setNavigationItemSelectedListener { it ->
             when (it.itemId) {
                 R.id.personal_center_menu_offline_map ->
                     findNavController().navigate(R.id.OfflineMapFragment)

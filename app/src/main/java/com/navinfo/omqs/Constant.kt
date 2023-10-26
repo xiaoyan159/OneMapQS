@@ -41,6 +41,13 @@ class Constant {
         lateinit var USER_DATA_PATH: String
 
         /**
+         * 轨迹渲染个数统计
+         */
+        var TRACE_COUNT : Int = 0
+
+        var TRACE_COUNT_TIME : Int = 10
+
+        /**
          * 当前安装任务
          */
         lateinit var installTaskid: String

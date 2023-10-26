@@ -318,6 +318,23 @@ class TaskViewModel @Inject constructor(
 
         liveDataTaskLinks.value = taskBean.hadLinkDvoList
         showTaskLinks(taskBean)
+        //重新加载轨迹
+        viewModelScope.launch(Dispatchers.IO) {
+            Constant.TRACE_COUNT = 0
+            val list: List<NiLocation>? = TraceDataBase.getDatabase(
+                mapController.mMapView.context, Constant.USER_DATA_PATH
+            ).niLocationDao.findToTaskIdAll(taskBean.id.toString())
+            list!!.forEach {
+
+                Constant.TRACE_COUNT ++
+
+                mapController.markerHandle.addNiLocationMarkerItem(it)
+
+                if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_TIME==0){
+                    mapController.markerHandle.addNiLocationMarkerItemSimple(it)
+                }
+            }
+        }
         MapParamUtils.setTaskId(taskBean.id)
         Constant.currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
         Constant.currentSelectTaskConfig =
@@ -363,16 +380,6 @@ class TaskViewModel @Inject constructor(
                 mapController.animationHandler.animateToBox(
                     maxX = maxX, maxY = maxY, minX = minX, minY = minY
                 )
-            }
-        }
-
-        //重新加载轨迹
-        viewModelScope.launch(Dispatchers.IO) {
-            val list: List<NiLocation>? = TraceDataBase.getDatabase(
-                mapController.mMapView.context, Constant.USER_DATA_PATH
-            ).niLocationDao.findToTaskIdAll(taskBean.id.toString())
-            list!!.forEach {
-                mapController.markerHandle.addNiLocationMarkerItem(it)
             }
         }
     }
