@@ -260,7 +260,7 @@ class ImportPreProcess {
 
             // 将这个起终点的线记录在数据中
             val startReference = ReferenceEntity()
-            startReference.renderEntityId = renderEntity.id
+//            startReference.renderEntityId = renderEntity.id
             startReference.name = "${renderEntity.name}参考点"
             startReference.code = renderEntity.code
             startReference.table = renderEntity.table
@@ -278,7 +278,7 @@ class ImportPreProcess {
             listResult.add(startReference)
 
             val endReference = ReferenceEntity()
-            endReference.renderEntityId = renderEntity.id
+//            endReference.renderEntityId = renderEntity.id
             endReference.name = "${renderEntity.name}参考点"
             endReference.code = renderEntity.code
             endReference.table = renderEntity.table
@@ -960,7 +960,7 @@ class ImportPreProcess {
         insertData(listResult)
     }
 
-    private fun insertData(list: List<ReferenceEntity>) {
+    private fun insertData(list: List<RealmModel>) {
         realm?.let {
             Log.e("qj", "子表插入==")
             if (list != null && list.isNotEmpty()) {
@@ -969,7 +969,6 @@ class ImportPreProcess {
                 Log.e("qj", "子表插入结束==")
             }
         }
-
     }
 
     /**

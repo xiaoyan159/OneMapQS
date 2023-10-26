@@ -131,12 +131,11 @@ class RealmOperateHelper() {
         val yEnd = tileYSet.stream().max(Comparator.naturalOrder()).orElse(null)
         // 查询realm中对应tile号的数据
         val realm = getSelectTaskRealmInstance()
+        val sql =
+            " ((tileXMin <= $xStart and tileXMax >= $xStart) or (tileXMin <=$xEnd and tileXMax >=$xStart)) and ((tileYMin <= $yStart and tileYMax >= $yStart) or (tileYMin <=$yEnd and tileYMin >=$yStart))"
         val realmList = getSelectTaskRealmTools(realm, RenderEntity::class.java, true)
             .equalTo("table", table)
-            .greaterThanOrEqualTo("tileX", xStart)
-            .lessThanOrEqualTo("tileX", xEnd)
-            .greaterThanOrEqualTo("tileY", yStart)
-            .lessThanOrEqualTo("tileY", yEnd)
+            .rawPredicate(sql)
             .findAll()
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
         val dataList = realm.copyFromRealm(realmList)
