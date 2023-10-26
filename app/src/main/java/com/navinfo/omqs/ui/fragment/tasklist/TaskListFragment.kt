@@ -145,6 +145,28 @@ class TaskListFragment : BaseFragment() {
             binding.taskListRecyclerview.smoothScrollToPosition(position)
         }
 
+        viewModel.liveDataCloseTask.observe(viewLifecycleOwner){
+            when(it){
+                TaskDelStatus.TASK_DEL_STATUS_BEGIN->{
+                    showLoadingDialog("正在重置...")
+                }
+                TaskDelStatus.TASK_DEL_STATUS_LOADING->{
+                    showLoadingDialog("正在重置...")
+                }
+                TaskDelStatus.TASK_DEL_STATUS_SUCCESS->{
+                    hideLoadingDialog()
+                    Toast.makeText(context,"成功重置",Toast.LENGTH_LONG).show()
+
+                }
+                TaskDelStatus.TASK_DEL_STATUS_FAILED->{
+                    hideLoadingDialog()
+                }
+                TaskDelStatus.TASK_DEL_STATUS_CANCEL->{
+
+                }
+            }
+        }
+
         //监听并调用上传
         viewModel.liveDataTaskUpload.observe(viewLifecycleOwner) {
             for ((key, value) in it) {

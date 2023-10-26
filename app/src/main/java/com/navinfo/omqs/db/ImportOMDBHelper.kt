@@ -327,10 +327,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                 }
 
                                                 DataCodeEnum.OMDB_LANE_MARK_BOUNDARYTYPE.code.toInt() -> {
-                                                    var featurePid = renderEntity.properties["featurePid"]
-                                                    if(featurePid!="135340259623248665"){
-                                                        continue
-                                                    }
                                                     var boundaryType = renderEntity.properties["boundaryType"]
                                                     if (boundaryType != null) {
                                                         when (boundaryType.toInt()) {

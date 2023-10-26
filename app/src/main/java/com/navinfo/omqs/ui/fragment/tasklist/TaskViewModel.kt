@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Build
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -31,6 +32,32 @@ import org.oscim.core.GeoPoint
 import java.io.File
 import javax.inject.Inject
 
+enum class TaskDelStatus {
+    /**
+     * 删除开始
+     */
+    TASK_DEL_STATUS_BEGIN,
+
+    /**
+     * 删除中
+     */
+    TASK_DEL_STATUS_LOADING,
+
+    /**
+     * 删除成功
+     */
+    TASK_DEL_STATUS_SUCCESS,
+
+    /**
+     * 删除失败
+     */
+    TASK_DEL_STATUS_FAILED,
+
+    /**
+     * 取消删除
+     */
+    TASK_DEL_STATUS_CANCEL,
+}
 
 @HiltViewModel
 class TaskViewModel @Inject constructor(
@@ -61,7 +88,12 @@ class TaskViewModel @Inject constructor(
     /**
      * 用来确定是否关闭
      */
-    val liveDataCloseTask = MutableLiveData<Boolean>()
+    val liveDataCloseTask = MutableLiveData<TaskDelStatus>()
+
+    /**
+     * 用来更新任务
+     */
+    val liveDataUpdateTask = MutableLiveData<TaskBean>()
 
     /**
      * 提示信息
@@ -107,7 +139,8 @@ class TaskViewModel @Inject constructor(
                             if (currentSelectTaskBean == null) {
                                 liveDataToastMessage.postValue("还没有开启任何任务")
                             } else {
-                                val links = realmOperateHelper.queryLink(realm,
+                                val links = realmOperateHelper.queryLink(
+                                    realm,
                                     point = point,
                                 )
                                 if (links.isNotEmpty()) {
@@ -125,7 +158,8 @@ class TaskViewModel @Inject constructor(
                     } else {
                         viewModelScope.launch(Dispatchers.IO) {
                             val realm = realmOperateHelper.getSelectTaskRealmInstance()
-                            val links = realmOperateHelper.queryLink(realm,
+                            val links = realmOperateHelper.queryLink(
+                                realm,
                                 point = point,
                             )
                             if (links.isNotEmpty()) {
@@ -178,22 +212,34 @@ class TaskViewModel @Inject constructor(
                                         task.fileSize = item.fileSize
                                         task.status = item.status
                                         task.currentSize = item.currentSize
+                                        //增加mesh==null兼容性处理
+                                        for (hadLink in item.hadLinkDvoList) {
+                                            if (hadLink.mesh == null) {
+                                                hadLink.mesh = ""
+                                                Log.e("qj", "${task.id}==null")
+                                            }
+                                        }
                                         task.hadLinkDvoList = item.hadLinkDvoList
                                         task.syncStatus = item.syncStatus
                                         //已上传后不在更新操作时间
                                         if (task.syncStatus != FileManager.Companion.FileUploadStatus.DONE) {
                                             //赋值时间，用于查询过滤
                                             task.operationTime = DateTimeUtil.getNowDate().time
-                                        }else{//已上传数据不做更新
+                                        } else {//已上传数据不做更新
                                             continue
                                         }
                                     } else {
                                         for (hadLink in task.hadLinkDvoList) {
                                             hadLink.taskId = task.id
+                                            if (hadLink.mesh == null) {
+                                                hadLink.mesh = ""
+                                                Log.e("qj", "${task.id}==新增==null")
+                                            }
                                         }
                                         //赋值时间，用于查询过滤
                                         task.operationTime = DateTimeUtil.getNowDate().time
                                     }
+                                    Log.e("qj", "${task.id}")
                                     realm.copyToRealmOrUpdate(task)
                                 }
                             }
@@ -413,7 +459,7 @@ class TaskViewModel @Inject constructor(
     /**
      * 重新下载数据任务
      */
-    fun resetDownload(context: Context, taskBean: TaskBean){
+    fun resetDownload(context: Context, taskBean: TaskBean) {
         val mDialog = FirstDialog(context)
         mDialog.setTitle("提示？")
         mDialog.setMessage("是否重置下载状态，请确认！")
@@ -421,58 +467,55 @@ class TaskViewModel @Inject constructor(
             "确定"
         ) { dialog, _ ->
             dialog.dismiss()
+            liveDataCloseTask.postValue(TaskDelStatus.TASK_DEL_STATUS_BEGIN)
             viewModelScope.launch(Dispatchers.IO) {
                 //删除已下载的数据
-                val fileTemp = File("${Constant.DOWNLOAD_PATH}${taskBean.evaluationTaskName}_${taskBean.dataVersion}.zip")
-                if(fileTemp.exists()){
+                val fileTemp =
+                    File("${Constant.DOWNLOAD_PATH}${taskBean.evaluationTaskName}_${taskBean.dataVersion}.zip")
+                if (fileTemp.exists()) {
                     fileTemp.delete()
                 }
                 val taskFileTemp = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
                 //重命名
-                if(taskFileTemp.exists()){
-                    var currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
+                if (taskFileTemp.exists()) {
+/*                    var currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
                     var currentSelectTaskConfig =
                         RealmConfiguration.Builder().directory(currentSelectTaskFolder)
-                            .name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true)
+                            .name("OMQS.realm").encryptionKey(Constant.PASSWORD)
+                            .allowQueriesOnUiThread(true)
                             .schemaVersion(2).build()
-                    //删除已有所有数据
-                    Realm.getInstance(currentSelectTaskConfig).deleteAll()
-                    Realm.getInstance(currentSelectTaskConfig).refresh()
-                    Realm.getInstance(currentSelectTaskConfig).close()
+                    Realm.getInstance(currentSelectTaskConfig).executeTransaction { r ->
+                        //删除已有所有数据
+                        r.delete(RenderEntity::class.java)
+                        r.delete(ReferenceEntity::class.java)
+                    }
+                    Realm.getInstance(currentSelectTaskConfig).close()*/
                 }
                 //将下载状态修改已下载
                 val realm = realmOperateHelper.getRealmDefaultInstance()
                 taskBean.syncStatus = FileManager.Companion.FileUploadStatus.NONE
                 taskBean.status = FileManager.Companion.FileDownloadStatus.NONE
-                realm.executeTransaction { r ->
-                    r.copyToRealmOrUpdate(taskBean)
-                }
-                val nowTime: Long = DateTimeUtil.getNowDate().time
-                val beginNowTime: Long = nowTime - 90 * 3600 * 24 * 1000L
-                val syncUpload: Int = FileManager.Companion.FileUploadStatus.DONE
-                val objects =
-                    realm.where(TaskBean::class.java).notEqualTo("syncStatus", syncUpload).or()
-                        .between("operationTime", beginNowTime, nowTime)
-                        .equalTo("syncStatus", syncUpload).findAll()
-                val taskList = realm.copyFromRealm(objects)
-                for (item in taskList) {
-                    FileManager.checkOMDBFileInfo(item)
-                }
-                liveDataTaskList.postValue(taskList)
+                realm.beginTransaction()
+                realm.copyToRealmOrUpdate(taskBean)
+                realm.commitTransaction()
                 realm.close()
+                liveDataCloseTask.postValue(TaskDelStatus.TASK_DEL_STATUS_SUCCESS)
                 withContext(Dispatchers.Main) {
-                    if(taskBean.id== currentSelectTaskBean?.id ?: 0){
+                    if (taskBean.id == currentSelectTaskBean?.id ?: 0) {
                         mapController.layerManagerHandler.updateOMDBVectorTileLayer()
-                    }else{
+                    } else {
                         setSelectTaskBean(taskBean)
                     }
+                    realmOperateHelper.getRealmDefaultInstance().refresh()
+                    //重新加载数据
+                    getLocalTaskList()
                 }
             }
         }
         mDialog.setNegativeButton(
             "取消"
         ) { _, _ ->
-            liveDataCloseTask.postValue(false)
+            liveDataCloseTask.postValue(TaskDelStatus.TASK_DEL_STATUS_CANCEL)
             mDialog.dismiss()
         }
         mDialog.show()
@@ -489,7 +532,9 @@ class TaskViewModel @Inject constructor(
             "确定"
         ) { dialog, _ ->
             dialog.dismiss()
+            liveDataCloseTask.postValue(TaskDelStatus.TASK_DEL_STATUS_BEGIN)
             viewModelScope.launch(Dispatchers.IO) {
+                liveDataCloseTask.postValue(TaskDelStatus.TASK_DEL_STATUS_LOADING)
                 val realm = realmOperateHelper.getRealmDefaultInstance()
                 realm.executeTransaction {
                     val objects =
@@ -523,14 +568,14 @@ class TaskViewModel @Inject constructor(
                     FileManager.checkOMDBFileInfo(item)
                 }
                 liveDataTaskList.postValue(taskList)
-                liveDataCloseTask.postValue(true)
+                liveDataCloseTask.postValue(TaskDelStatus.TASK_DEL_STATUS_SUCCESS)
                 realm.close()
             }
         }
         mDialog.setNegativeButton(
             "取消"
         ) { _, _ ->
-            liveDataCloseTask.postValue(false)
+            liveDataCloseTask.postValue(TaskDelStatus.TASK_DEL_STATUS_CANCEL)
             mDialog.dismiss()
         }
         mDialog.show()
@@ -641,7 +686,7 @@ class TaskViewModel @Inject constructor(
                 }
                 //根据Link数据查询对应数据上要素，对要素进行显示重置
                 data.properties["linkPid"]?.let {
-                    realmOperateHelper.queryLinkToMutableRenderEntityList(realm,it)
+                    realmOperateHelper.queryLinkToMutableRenderEntityList(realm, it)
                         ?.forEach { renderEntity ->
                             if (renderEntity.enable != 1) {
                                 renderEntity.enable = 1
@@ -696,7 +741,10 @@ class TaskViewModel @Inject constructor(
 
                     //重置数据为隐藏
                     if (hadLinkDvoBean.linkStatus == 2) {
-                        realmOperateHelper.queryLinkToMutableRenderEntityList(realm,hadLinkDvoBean.linkPid)
+                        realmOperateHelper.queryLinkToMutableRenderEntityList(
+                            realm,
+                            hadLinkDvoBean.linkPid
+                        )
                             ?.forEach { renderEntity ->
                                 if (renderEntity.enable == 1) {
                                     renderEntity.enable = 0

@@ -282,6 +282,12 @@ class LoginViewModel @Inject constructor(
                                     task.fileSize = item.fileSize
                                     task.status = item.status
                                     task.currentSize = item.currentSize
+                                    //增加mesh==null兼容性处理
+                                    for (hadLink in item.hadLinkDvoList) {
+                                        if(hadLink.mesh==null){
+                                            hadLink.mesh = ""
+                                        }
+                                    }
                                     task.hadLinkDvoList = item.hadLinkDvoList
                                     task.syncStatus = item.syncStatus
                                     //已上传后不在更新操作时间
@@ -293,8 +299,10 @@ class LoginViewModel @Inject constructor(
                                     }
                                 } else {
                                     for (hadLink in task.hadLinkDvoList) {
-                                        if(hadLink.geometry==null||hadLink.mesh==null){
+                                        if(hadLink.geometry==null){
                                             inSertData = false
+                                        }else if(hadLink.mesh==null){
+                                            hadLink.mesh = ""
                                         }else{
                                             hadLink.taskId = task.id
                                         }
