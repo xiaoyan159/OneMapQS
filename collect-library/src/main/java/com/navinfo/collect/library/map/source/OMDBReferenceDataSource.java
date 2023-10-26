@@ -43,6 +43,8 @@ public class OMDBReferenceDataSource implements ITileDataSource {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void query(MapTile tile, ITileDataSink mapDataSink) {
+        if(MapParamUtils.getTaskConfig() == null)
+            return;
         // 获取tile对应的坐标范围
         if (tile.zoomLevel >= Constant.OMDB_MIN_ZOOM && tile.zoomLevel <= Constant.DATA_ZOOM) {
             Realm realm = Realm.getInstance(MapParamUtils.getTaskConfig());

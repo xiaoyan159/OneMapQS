@@ -35,7 +35,7 @@ class SignUtil {
             return SignBean(
                 iconId = getSignIcon(element),
                 iconText = getSignIconText(element),
-                linkId = element.properties[RenderEntity.Companion.LinkTable.linkPid]
+                linkId = element.linkPid
                     ?: "",
                 name = getSignNameText(element),
                 bottomRightText = getSignBottomRightText(
@@ -207,7 +207,7 @@ class SignUtil {
                 DataCodeEnum.OMDB_RD_LINK.code -> {
                     list.add(
                         TwoItemAdapterItem(
-                            title = "linkPid", text = "${data.properties["linkPid"]}"
+                            title = "linkPid", text = "${data.linkPid}"
                         )
                     )
                     list.add(
@@ -225,7 +225,7 @@ class SignUtil {
                 DataCodeEnum.OMDB_RD_LINK_KIND.code -> {
                     list.add(
                         TwoItemAdapterItem(
-                            title = "linkPid", text = "${data.properties["linkPid"]}"
+                            title = "linkPid", text = "${data.linkPid}"
                         )
                     )
                     try {
@@ -243,7 +243,7 @@ class SignUtil {
                 DataCodeEnum.OMDB_LINK_DIRECT.code -> {
                     list.add(
                         TwoItemAdapterItem(
-                            title = "linkPid", text = "${data.properties["linkPid"]}"
+                            title = "linkPid", text = "${data.linkPid}"
                         )
                     )
                     try {
@@ -331,7 +331,7 @@ class SignUtil {
                 DataCodeEnum.OMDB_LINK_CONSTRUCTION.code -> {
                     list.add(
                         TwoItemAdapterItem(
-                            title = "linkPid", text = "${data.properties["linkPid"]}"
+                            title = "linkPid", text = "${data.linkPid}"
                         )
                     )
 
@@ -384,7 +384,7 @@ class SignUtil {
                 DataCodeEnum.OMDB_WARNINGSIGN.code -> {
                     list.add(
                         TwoItemAdapterItem(
-                            title = "linkPid", text = "${data.properties["linkPid"]}"
+                            title = "linkPid", text = "${data.linkPid}"
                         )
                     )
                     list.add(
@@ -749,7 +749,7 @@ class SignUtil {
         fun getTollgateInfo(renderEntity: RenderEntity): List<LaneBoundaryItem> {
             val list = mutableListOf<LaneBoundaryItem>()
             list.add(
-                LaneBoundaryItem("linkPid", "${renderEntity.properties["linkPid"]}", null)
+                LaneBoundaryItem("linkPid", "${renderEntity.linkPid}", null)
             )
             list.add(
                 LaneBoundaryItem("收费站号码", "${renderEntity.properties["tollgatePid"]}", null)

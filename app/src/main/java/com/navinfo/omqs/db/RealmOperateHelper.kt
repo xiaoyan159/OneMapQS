@@ -6,7 +6,6 @@ import androidx.annotation.RequiresApi
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.data.entity.RenderEntity
-import com.navinfo.collect.library.data.entity.RenderEntity.Companion.LinkTable
 import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.utils.GeometryTools
@@ -206,7 +205,7 @@ class RealmOperateHelper() {
         val realm = getSelectTaskRealmInstance()
         val realmR =
             realm.where(RenderEntity::class.java).equalTo("table", "OMDB_RD_LINK_KIND")
-                .equalTo("properties['${LinkTable.linkPid}']", linkPid).findFirst()
+                .equalTo("linkPid", linkPid).findFirst()
         if (realmR != null) {
             link = realm.copyFromRealm(realmR)
         }
@@ -238,7 +237,7 @@ class RealmOperateHelper() {
 //        val realm = getSelectTaskRealmInstance()
 
         val realmR = getSelectTaskRealmTools(realm, RenderEntity::class.java, true)
-            .equalTo("properties['${LinkTable.linkPid}']", linkPid).findAll()
+            .equalTo("linkPid", linkPid).findAll()
 
         val dataList = realm.copyFromRealm(realmR)
 

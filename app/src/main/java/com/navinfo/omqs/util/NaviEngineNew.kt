@@ -54,16 +54,10 @@ class NaviEngineNew(
 
 
         latestRoute?.let {
-            var lastTime = System.currentTimeMillis()
 
-            var nowTime = System.currentTimeMillis()
-            Log.e("jingo","打开数据库 ${nowTime - lastTime}")
-            lastTime = nowTime
             val res2 =
                 realm.where(RenderEntity::class.java).`in`("table", QUERY_KEY_LINK_INFO_LIST)
-                    .equalTo("properties['linkPid']", it.linkPid).findAll()
-            nowTime = System.currentTimeMillis()
-            Log.e("jingo", "第一种 耗时 ${nowTime - lastTime}")
+                    .equalTo("linkPid", it.linkPid).findAll()
             if (res2 != null) {
                 for (entity in res2) {
                     when (entity.code) {

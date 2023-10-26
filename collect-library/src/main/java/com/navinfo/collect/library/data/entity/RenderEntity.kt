@@ -1,6 +1,7 @@
 package com.navinfo.collect.library.data.entity
 
 import android.os.Parcelable
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.system.Constant
@@ -30,8 +31,7 @@ open class RenderEntity() : RealmObject(), Parcelable {
     lateinit var name: String //要素名
     lateinit var table: String //要素表名
     var code: String = "0" // 要素编码
-//    var geometryDb: String = ""
-
+    var propertiesDb: String = ""
     var geometry: String =
         "" // 要素渲染参考的geometry，该数据可能会在导入预处理环节被修改，原始geometry会保存在properties的geometry字段下
         get() {
@@ -73,7 +73,7 @@ open class RenderEntity() : RealmObject(), Parcelable {
                 try {
                     field = GeometryTools.createGeometry(geometry)
                 } catch (e: Exception) {
-
+                    Log.e("jingo","RenderEntity 转 wkt失败 $e")
                 }
             }
             return field
@@ -85,16 +85,15 @@ open class RenderEntity() : RealmObject(), Parcelable {
             if (propertiesDb != null && propertiesDb.isNotEmpty() && field.isEmpty()) {
                 try {
                     val gson = Gson()
-                    val type = object : TypeToken<List<RealmDictionary<String>>>() {}.type
+                    val type = object : TypeToken<RealmDictionary<String>>() {}.type
                     field = gson.fromJson(StrZipUtil.uncompress(propertiesDb), type)
                 } catch (e: Exception) {
-
+                    Log.e("jingo","RenderEntity 转 properties $e")
                 }
             }
             return field
         }
 
-    var propertiesDb: String = ""
 
     @Ignore
     var tileX: RealmSet<Int> = RealmSet() // x方向的tile编码
@@ -116,20 +115,5 @@ open class RenderEntity() : RealmObject(), Parcelable {
 
     constructor(name: String) : this() {
         this.name = name
-    }
-
-    companion object {
-        object LinkTable {
-            //道路linkId
-            const val linkPid = "linkPid"
-        }
-
-        object LimitTable {
-            const val linkPid = "linkPid"
-        }
-
-        object KindCodeTable {
-            const val linkPid = "linkPid"
-        }
     }
 }

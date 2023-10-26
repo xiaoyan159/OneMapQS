@@ -154,17 +154,13 @@ class ImportOMDBHelper @AssistedInject constructor(
     suspend fun importOmdbZipFile(omdbZipFile: File, task: TaskBean): Flow<String> =
         withContext(Dispatchers.IO) {
             installTaskid = task.id.toString()
-//            currentInstallTaskFolder = File(Constant.USER_DATA_PATH + "/$installTaskid")
-            currentInstallTaskFolder = File(Constant.USER_DATA_PATH + "/237")
+            currentInstallTaskFolder = File(Constant.USER_DATA_PATH + "/$installTaskid")
             if (!currentInstallTaskFolder.exists()) currentInstallTaskFolder.mkdirs()
             currentInstallTaskConfig =
-                RealmConfiguration.Builder()
-                    .directory(currentInstallTaskFolder)
-                    .name("OMQS.realm")
+                RealmConfiguration.Builder().directory(currentInstallTaskFolder).name("OMQS.realm")
                     .encryptionKey(Constant.PASSWORD)
 //                .allowQueriesOnUiThread(true)
-                    .schemaVersion(2)
-                    .build()
+                    .schemaVersion(2).build()
             val unZipFolder = File(omdbZipFile.parentFile, "result")
 
             flow {
@@ -207,7 +203,6 @@ class ImportOMDBHelper @AssistedInject constructor(
 
                 val resHashMap: HashMap<String, RenderEntity> = HashMap() //define empty hashmap
                 val listRenderEntity = mutableListOf<RenderEntity>()
-                val listRenderEntity1 = mutableListOf<RenderEntity1>()
                 try {
 
 //                    var multipLine = MultiLineString(lineList, GeometryFactory())
@@ -320,8 +315,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             is Double -> renderEntity.properties[key] =
                                                 value.toDouble().toString()
 
-                                            else -> renderEntity.properties[key] =
-                                                value.toString()
+                                            else -> renderEntity.properties[key] = value.toString()
                                         }
                                     }
 //                                        Log.d("ImportOMDBHelper", "解析===2处理属性")
@@ -336,79 +330,76 @@ class ImportOMDBHelper @AssistedInject constructor(
                                     if (currentConfig.filterData) {
                                         when (renderEntity.code.toInt()) {
 
-//                                            DataCodeEnum.OMDB_POLE.code.toInt() -> {
-//                                                //过滤树类型的杆状物，无需导入到数据库中
-//                                                val poleType =
-//                                                    renderEntity.properties["poleType"]
-//                                                if (poleType != null && poleType.toInt() == 2) {
-//                                                    line = bufferedReader.readLine()
-//                                                    continue
-//                                                }
-//                                            }
+                                            DataCodeEnum.OMDB_POLE.code.toInt() -> {
+                                                //过滤树类型的杆状物，无需导入到数据库中
+                                                val poleType = renderEntity.properties["poleType"]
+                                                if (poleType != null && poleType.toInt() == 2) {
+                                                    line = bufferedReader.readLine()
+                                                    continue
+                                                }
+                                            }
 
-//                                            DataCodeEnum.OMDB_LANE_MARK_BOUNDARYTYPE.code.toInt() -> {
-//                                                val boundaryType =
-//                                                    renderEntity.properties["boundaryType"]
-//                                                if (boundaryType != null) {
-//                                                    when (boundaryType.toInt()) {
-//                                                        0, 1, 6, 8, 9 -> {
-//                                                            renderEntity.enable = 0
-////                                                                Log.e(
-////                                                                    "qj",
-////                                                                    "过滤不显示数据${renderEntity.table}"
-////                                                                )
-//                                                            line = bufferedReader.readLine()
-//                                                            continue
-//                                                        }
-//                                                    }
-//                                                }
-//                                            }
+                                            DataCodeEnum.OMDB_LANE_MARK_BOUNDARYTYPE.code.toInt() -> {
+                                                val boundaryType =
+                                                    renderEntity.properties["boundaryType"]
+                                                if (boundaryType != null) {
+                                                    when (boundaryType.toInt()) {
+                                                        0, 1, 6, 8, 9 -> {
+                                                            renderEntity.enable = 0
+//                                                                Log.e(
+//                                                                    "qj",
+//                                                                    "过滤不显示数据${renderEntity.table}"
+//                                                                )
+                                                            line = bufferedReader.readLine()
+                                                            continue
+                                                        }
+                                                    }
+                                                }
+                                            }
 
-//                                            DataCodeEnum.OMDB_RDBOUND_BOUNDARYTYPE.code.toInt() -> {
-//                                                val boundaryType =
-//                                                    renderEntity.properties["boundaryType"]
-//                                                if (boundaryType != null) {
-//                                                    when (boundaryType.toInt()) {
-//                                                        0, 1, 3, 4, 5, 7, 9 -> {
-//                                                            renderEntity.enable = 0
-////                                                                Log.e(
-////                                                                    "qj",
-////                                                                    "过滤不显示数据${renderEntity.table}"
-////                                                                )
-//                                                            line = bufferedReader.readLine()
-//                                                            continue
-//                                                        }
-//                                                    }
-//                                                }
-//                                            }
+                                            DataCodeEnum.OMDB_RDBOUND_BOUNDARYTYPE.code.toInt() -> {
+                                                val boundaryType =
+                                                    renderEntity.properties["boundaryType"]
+                                                if (boundaryType != null) {
+                                                    when (boundaryType.toInt()) {
+                                                        0, 1, 3, 4, 5, 7, 9 -> {
+                                                            renderEntity.enable = 0
+//                                                                Log.e(
+//                                                                    "qj",
+//                                                                    "过滤不显示数据${renderEntity.table}"
+//                                                                )
+                                                            line = bufferedReader.readLine()
+                                                            continue
+                                                        }
+                                                    }
+                                                }
+                                            }
 
-//                                            DataCodeEnum.OMDB_OBJECT_STOPLOCATION.code.toInt() -> {
-//                                                val locationType =
-//                                                    renderEntity.properties["locationType"]
-//                                                if (locationType != null) {
-//                                                    when (locationType.toInt()) {
-//                                                        3, 4 -> {
-//                                                            renderEntity.enable = 0
-////                                                                Log.e(
-////                                                                    "qj",
-////                                                                    "过滤不显示数据${renderEntity.table}"
-////                                                                )
-//                                                            line = bufferedReader.readLine()
-//                                                            continue
-//                                                        }
-//                                                    }
-//                                                }
-//                                            }
+                                            DataCodeEnum.OMDB_OBJECT_STOPLOCATION.code.toInt() -> {
+                                                val locationType =
+                                                    renderEntity.properties["locationType"]
+                                                if (locationType != null) {
+                                                    when (locationType.toInt()) {
+                                                        3, 4 -> {
+                                                            renderEntity.enable = 0
+//                                                                Log.e(
+//                                                                    "qj",
+//                                                                    "过滤不显示数据${renderEntity.table}"
+//                                                                )
+                                                            line = bufferedReader.readLine()
+                                                            continue
+                                                        }
+                                                    }
+                                                }
+                                            }
 
                                             DataCodeEnum.OMDB_RESTRICTION.code.toInt() -> {
                                                 if (renderEntity.properties.containsKey("linkIn") && renderEntity.properties.containsKey(
                                                         "linkOut"
                                                     )
                                                 ) {
-                                                    val linkIn =
-                                                        renderEntity.properties["linkIn"]
-                                                    val linkOut =
-                                                        renderEntity.properties["linkOut"]
+                                                    val linkIn = renderEntity.properties["linkIn"]
+                                                    val linkOut = renderEntity.properties["linkOut"]
                                                     if (linkIn != null && linkOut != null) {
                                                         val checkMsg = "$linkIn$linkOut"
                                                         if (resHashMap.containsKey(checkMsg)) {
@@ -479,8 +470,7 @@ class ImportOMDBHelper @AssistedInject constructor(
 //                                                        "linkList==开始${renderEntity.name}==${renderEntity.properties["linkList"]}}"
 //                                                    )
 
-                                                val linkList =
-                                                    renderEntity.properties["linkList"]
+                                                val linkList = renderEntity.properties["linkList"]
 
                                                 if (!linkList.isNullOrEmpty() && linkList != "null") {
 
@@ -491,8 +481,7 @@ class ImportOMDBHelper @AssistedInject constructor(
 
                                                     val list: List<LinkList> = gson.fromJson(
                                                         linkList,
-                                                        object :
-                                                            TypeToken<List<LinkList>>() {}.type
+                                                        object : TypeToken<List<LinkList>>() {}.type
                                                     )
 
                                                     m@ for (link in list) {
@@ -507,21 +496,20 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                     }
                                                 }
                                             }
+                                        } else {
+                                            //不包括linkPid直接过滤
+                                            line = bufferedReader.readLine()
+                                            continue
                                         }
-//                                        else {
-//                                            //不包括linkPid直接过滤
-//                                            line = bufferedReader.readLine()
-//                                            continue
-//                                        }
-//                                        //过滤掉非任务路线上的数据
-//                                        if (renderEntity.enable != 1) {
-////                                                Log.e(
-////                                                    "qj",
-////                                                    "${renderEntity.name}==过滤不包括任务路线上的数据"
-////                                                )
-//                                            line = bufferedReader.readLine()
-//                                            continue
-//                                        }
+                                        //过滤掉非任务路线上的数据
+                                        if (renderEntity.enable != 1) {
+//                                                Log.e(
+//                                                    "qj",
+//                                                    "${renderEntity.name}==过滤不包括任务路线上的数据"
+//                                                )
+                                            line = bufferedReader.readLine()
+                                            continue
+                                        }
 
                                     } else {
                                         renderEntity.enable = 1
@@ -593,19 +581,18 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                                     renderEntity.zoomMin = 15
                                                                     renderEntity.zoomMax = 17
 //                                                                        Log.e("qj", "道路属性===4")
+                                                                } else {
+                                                                    renderEntity.enable = 0
+                                                                    renderEntity.zoomMin = 15
+                                                                    renderEntity.zoomMax = 17
+//                                                                        Log.e(
+//                                                                            "qj",
+//                                                                            "过滤不显示数据${renderEntity.table}"
+//                                                                        )
+//                                                                        Log.e("qj", "道路属性===5")
+                                                                    line = bufferedReader.readLine()
+                                                                    continue
                                                                 }
-//                                                                else {
-//                                                                    renderEntity.enable = 0
-//                                                                    renderEntity.zoomMin = 15
-//                                                                    renderEntity.zoomMax = 17
-////                                                                        Log.e(
-////                                                                            "qj",
-////                                                                            "过滤不显示数据${renderEntity.table}"
-////                                                                        )
-////                                                                        Log.e("qj", "道路属性===5")
-//                                                                    line = bufferedReader.readLine()
-//                                                                    continue
-//                                                                }
                                                             }
                                                         }
                                                     }
@@ -733,39 +720,38 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                 }
                                             }
 
-//                                            if (renderEntity.table == DataCodeEnum.OMDB_NODE_FORM.name) {//特殊处理，因为code相同，使用表名判断
-//                                                //过滤不需要渲染的要素
-//                                                val formOfWay =
-//                                                    renderEntity.properties["formOfWay"]
-//                                                if (formOfWay != null && formOfWay.toInt() == 30) {
-//                                                    renderEntity.enable = 2
-//                                                    renderEntity.code =
-//                                                        DataCodeEnum.OMDB_NODE_FORM.code
-//                                                } else {
-////                                                        Log.e(
-////                                                            "qj",
-////                                                            "过滤不显示数据${renderEntity.table}"
-////                                                        )
-//                                                    line = bufferedReader.readLine()
-//                                                    continue
-//                                                }
-//                                            } else if (renderEntity.table == DataCodeEnum.OMDB_NODE_PA.name) {//特殊处理，因为code相同，使用表名判断
-//                                                //过滤不需要渲染的要素
-//                                                val attributeType =
-//                                                    renderEntity.properties["attributeType"]
-//                                                if (attributeType != null && attributeType.toInt() == 30) {
-//                                                    renderEntity.enable = 2
-//                                                    renderEntity.code =
-//                                                        DataCodeEnum.OMDB_NODE_PA.code
-//                                                } else {
-////                                                        Log.e(
-////                                                            "qj",
-////                                                            "过滤不显示数据${renderEntity.table}"
-////                                                        )
-//                                                    line = bufferedReader.readLine()
-//                                                    continue
-//                                                }
-//                                            }
+                                            if (renderEntity.table == DataCodeEnum.OMDB_NODE_FORM.name) {//特殊处理，因为code相同，使用表名判断
+                                                //过滤不需要渲染的要素
+                                                val formOfWay = renderEntity.properties["formOfWay"]
+                                                if (formOfWay != null && formOfWay.toInt() == 30) {
+                                                    renderEntity.enable = 2
+                                                    renderEntity.code =
+                                                        DataCodeEnum.OMDB_NODE_FORM.code
+                                                } else {
+//                                                        Log.e(
+//                                                            "qj",
+//                                                            "过滤不显示数据${renderEntity.table}"
+//                                                        )
+                                                    line = bufferedReader.readLine()
+                                                    continue
+                                                }
+                                            } else if (renderEntity.table == DataCodeEnum.OMDB_NODE_PA.name) {//特殊处理，因为code相同，使用表名判断
+                                                //过滤不需要渲染的要素
+                                                val attributeType =
+                                                    renderEntity.properties["attributeType"]
+                                                if (attributeType != null && attributeType.toInt() == 30) {
+                                                    renderEntity.enable = 2
+                                                    renderEntity.code =
+                                                        DataCodeEnum.OMDB_NODE_PA.code
+                                                } else {
+//                                                        Log.e(
+//                                                            "qj",
+//                                                            "过滤不显示数据${renderEntity.table}"
+//                                                        )
+                                                    line = bufferedReader.readLine()
+                                                    continue
+                                                }
+                                            }
                                         }
 
 //                                            Log.d("ImportOMDBHelper", "解析===2子code处理")
@@ -798,92 +784,26 @@ class ImportOMDBHelper @AssistedInject constructor(
                                             gson.toJson(renderEntity.properties).toString()
                                         )
 
-                                        when (renderEntity.code) {
-                                            DataCodeEnum.OMDB_LANE_LINK_LG.code,
-                                            DataCodeEnum.OMDB_LINK_SPEEDLIMIT.code,
-                                            DataCodeEnum.OMDB_POLE.code,
-                                            DataCodeEnum.OMDB_LINK_DIRECT.code,
-                                            DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code,
-                                            DataCodeEnum.OMDB_LINK_NAME.code,
-                                            DataCodeEnum.OMDB_OBJECT_ARROW.code,
-                                            DataCodeEnum.OMDB_TRAFFICLIGHT.code -> {
-                                                val renderEntity1 = RenderEntity1()
-                                                renderEntity1.code = resultEntity.code
-                                                renderEntity1.linkPid = renderEntity.linkPid
-                                                renderEntity1.table = renderEntity.table
-                                                renderEntity1.name = renderEntity.name
-                                                renderEntity1.linkRelation =
-                                                    renderEntity.linkRelation
-                                                renderEntity1.catchEnable = renderEntity.catchEnable
-                                                renderEntity1.enable = renderEntity.enable
-                                                renderEntity1.geometry = renderEntity.geometry
-                                                renderEntity1.taskId = renderEntity.taskId
-//                                                renderEntity1.tileX = renderEntity.tileX
-//                                                renderEntity1.tileY = renderEntity.tileY
-                                                renderEntity1.tileXMin = renderEntity.tileXMin
-                                                renderEntity1.tileXMax = renderEntity.tileXMax
-                                                renderEntity1.tileYMin = renderEntity.tileYMin
-                                                renderEntity1.tileYMax = renderEntity.tileYMax
-//                                                renderEntity1.wkt = renderEntity.wkt
-                                                renderEntity1.zoomMin = renderEntity.zoomMin
-                                                renderEntity1.zoomMax = renderEntity.zoomMax
-                                                renderEntity1.propertiesDb =
-                                                    renderEntity.propertiesDb
-                                                listRenderEntity1.add(renderEntity1)
-
-                                            }
-
-
-                                            else -> listRenderEntity.add(renderEntity)
-                                        }
-//                                            Log.d("ImportOMDBHelper", "解析===1insert")
-//                                        realm.insert(renderEntity)
-
-//                                            Log.d("ImportOMDBHelper", "解析===2insert")
+                                        listRenderEntity.add(renderEntity)
                                     }
-//                                        if (currentConfig.code == DataCodeEnum.OMDB_RD_LINK.code.toInt()) {
-//                                            listResult.add(renderEntity)
-//                                        }
 
 
                                     if (listRenderEntity.size > 10000) {
                                         Log.e(
-                                            "jingo", "20000刷新"
+                                            "jingo", "10000刷新"
                                         )
                                         realm.copyToRealm(listRenderEntity)
                                         realm.commitTransaction()
                                         realm.close()
                                         listRenderEntity.clear()
                                         insertIndex = 0
-                                        delay(100)
-//                                        Realm.compactRealm(currentInstallTaskConfig)
-                                        realm = Realm.getInstance(currentInstallTaskConfig)
-
-                                        realm.beginTransaction()
-                                    }
-                                    if (listRenderEntity1.size > 10000) {
-                                        Log.e(
-                                            "jingo", "20000刷新"
-                                        )
-                                        realm.copyToRealm(listRenderEntity1)
-                                        realm.commitTransaction()
-                                        realm.close()
-                                        listRenderEntity1.clear()
-                                        insertIndex = 0
-                                        delay(100)
 //                                        Realm.compactRealm(currentInstallTaskConfig)
                                         realm = Realm.getInstance(currentInstallTaskConfig)
                                         realm.beginTransaction()
-
-//                                Log.d(
-//                                    "ImportOMDBHelper",
-//                                    "表解析===结束用时时间===事物结束"
-//                                )
                                     }
                                     line = bufferedReader.readLine()
                                 }
                                 bufferedReader.close()
-
                             }
 
 

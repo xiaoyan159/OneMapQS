@@ -114,7 +114,7 @@ class TaskViewModel @Inject constructor(
                                 if (links.isNotEmpty()) {
                                     val l = links[0]
                                     for (link in currentSelectTaskBean!!.hadLinkDvoList) {
-                                        if (link.linkPid == l.properties["linkPid"]) {
+                                        if (link.linkPid == l.linkPid) {
                                             return@launch
                                         }
                                     }
@@ -132,7 +132,7 @@ class TaskViewModel @Inject constructor(
                             if (links.isNotEmpty()) {
                                 val l = links[0]
                                 for (link in currentSelectTaskBean!!.hadLinkDvoList) {
-                                    if (link.linkPid == l.properties["linkPid"]) {
+                                    if (link.linkPid == l.linkPid) {
                                         liveDataSelectLink.postValue(link.linkPid)
                                         mapController.lineHandler.showLine(link.geometry)
                                         break
@@ -274,8 +274,7 @@ class TaskViewModel @Inject constructor(
         liveDataTaskLinks.value = taskBean.hadLinkDvoList
         showTaskLinks(taskBean)
         MapParamUtils.setTaskId(taskBean.id)
-//        Constant.currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
-        Constant.currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/237")
+        Constant.currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
         Constant.currentSelectTaskConfig =
             RealmConfiguration.Builder()
                 .directory(Constant.currentSelectTaskFolder)
@@ -566,7 +565,7 @@ class TaskViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 val hadLinkDvoBean = HadLinkDvoBean(
                     taskId = currentSelectTaskBean!!.id,
-                    linkPid = data.properties["linkPid"]!!,
+                    linkPid = data.linkPid,
                     geometry = data.geometry,
                     linkStatus = 2
                 )
@@ -579,7 +578,7 @@ class TaskViewModel @Inject constructor(
                     r.copyToRealmOrUpdate(currentSelectTaskBean!!)
                 }
                 //根据Link数据查询对应数据上要素，对要素进行显示重置
-                data.properties["linkPid"]?.let {
+                data.linkPid.let {
                     realmOperateHelper.queryLinkToMutableRenderEntityList(realm, it)
                         ?.forEach { renderEntity ->
                             if (renderEntity.enable != 1) {

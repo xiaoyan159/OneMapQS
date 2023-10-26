@@ -222,7 +222,7 @@ class NaviEngine(
             route.pointList = GeometryTools.getGeoPoints(link.geometry)
 
             val res = realm.where(RenderEntity::class.java).`in`("table", QUERY_KEY_LINK_INFO_LIST)
-                .equalTo("properties['linkPid']", link.linkPid).findAll()
+                .equalTo("linkPid", link.linkPid).findAll()
             var bHasNode = false
             var bHasDir = false
             var bHasName = false
@@ -373,7 +373,7 @@ class NaviEngine(
             itemMap.clear()
             //常规点限速
             val res = realm.where(RenderEntity::class.java)
-                .equalTo("properties['linkPid']", route.linkId).and().`in`(
+                .equalTo("linkPid", route.linkId).and().`in`(
                     "table",
                     QUERY_KEY_ITEM_LIST
                 ).findAll()

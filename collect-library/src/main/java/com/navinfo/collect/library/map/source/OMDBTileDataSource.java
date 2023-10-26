@@ -64,16 +64,12 @@ public class OMDBTileDataSource implements ITileDataSource {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void query(MapTile tile, ITileDataSink mapDataSink) {
+        if(MapParamUtils.getTaskConfig() == null)
+            return;
         // 获取tile对应的坐标范围
         if (tile.zoomLevel >= Constant.OMDB_MIN_ZOOM && tile.zoomLevel <= Constant.DATA_ZOOM) {
             Realm realm = null;
             int threadCode = Thread.currentThread().hashCode();
-//            MapPosition pos = new MapPosition();
-//            viewport.getMapPosition(pos);
-//            DataObject newDataObject = new DataObject();
-//            newDataObject.zoom = tile.zoomLevel;
-//            newDataObject.threadCode = threadCode;
-//            newDataObject.lonLat = pos.getX() + "," + pos.getY();
             synchronized (realmObjectList) {
                 int configCode = MapParamUtils.getTaskConfig().hashCode();
                 for (RealmObject object : realmObjectList) {
@@ -96,7 +92,6 @@ public class OMDBTileDataSource implements ITileDataSource {
                     realmObjectList.add(o);
                 }
             }
-//            Log.e("jingo", " " + Realm.getDefaultInstance().hashCode() + " " + Realm.getInstance(MapParamUtils.getTaskConfig()).hashCode());
 
 //            Realm realm = Realm.getInstance(MapParamUtils.getTaskConfig());
             RealmQuery<RenderEntity> realmQuery = realm.where(RenderEntity.class);
@@ -112,7 +107,6 @@ public class OMDBTileDataSource implements ITileDataSource {
                 yEnd = (int) (yEnd << m);
             }
 
-            final int currentTileX = xStart;
             if (isUpdate) {
                 realm.refresh();
                 isUpdate = false;
@@ -124,18 +118,9 @@ public class OMDBTileDataSource implements ITileDataSource {
             } else {
                 sql += " and enable>=0";
             }
-
             realmQuery.rawPredicate(sql);
-            if (MapParamUtils.getDataLayerEnum() != null) {
-                MapParamUtils.getDataLayerEnum().getSql();
-            }
 
-//            realmQuery.greaterThanOrEqualTo("tileXMin", xStart);
-//            realmQuery.lessThanOrEqualTo("tileXMax", xEnd);
-//            realmQuery.greaterThanOrEqualTo("tileYMin", yStart);
-//            realmQuery.lessThanOrEqualTo("tileYMax", yEnd);
-//            realmQuery.like("geometry","116.31509664888955 39.83318797612014 0");
-            // 筛选不显示的数据
+//             筛选不显示的数据
             if (Constant.HAD_LAYER_INVISIABLE_ARRAY != null && Constant.HAD_LAYER_INVISIABLE_ARRAY.length > 0) {
                 realmQuery.beginGroup();
                 for (String type : Constant.HAD_LAYER_INVISIABLE_ARRAY) {
@@ -144,43 +129,13 @@ public class OMDBTileDataSource implements ITileDataSource {
                 realmQuery.endGroup();
             }
             long time = System.currentTimeMillis();
-            List<RenderEntity> listResult = realmQuery/*.distinct("id")*/.findAll();
+            List<RenderEntity> listResult = realmQuery.findAll();
             long newTime = System.currentTimeMillis() - time;
 
-            Log.e("jingo", "当前OMDBTileDataSource " + Thread.currentThread().hashCode() + " 当前realm " + realm.hashCode() + " 查询耗时" + newTime );
+            Log.e("jingo", "当前OMDBTileDataSource " + Thread.currentThread().hashCode() + " 当前realm " + realm.hashCode() + " 查询耗时" + newTime + " 条数" + listResult.size());
             // 数据记录的tile号是以正外接tile号列表，此处过滤并未与当前tile相交的数据
             if (!listResult.isEmpty()) {
                 Polygon tilePolygon = GeometryTools.getTilePolygon(tile);
-//                System.out.println("第一条数据的最小x值:" + listResult.get(0).getTileX().stream().min(Integer::compare).get());
-//                System.out.println("当前tile的:" + listResult.get(0).getTileX().stream().min(Integer::compare).get());
-//                synchronized (dataObjectList) {
-//                    int index = -1;
-//                    for (int i = 0; i < dataObjectList.size(); i++) {
-//                        DataObject dataObject = dataObjectList.get(i);
-//                        if (dataObject.threadCode == newDataObject.threadCode) {
-//                            index = i;
-//                        } else if (dataObject.zoom == tile.zoomLevel && dataObject.lonLat.equals(newDataObject.lonLat)) {
-//                            listResult = listResult.stream().filter((RenderEntity renderEntity) -> {
-//                                        for (String id : dataObject.listIds) {
-//                                            if (id.equals(renderEntity.getId())) {
-//                                                return false;
-//                                            }
-//                                        }
-//                                        return renderEntity.getWkt().intersects(tilePolygon);
-//                                    })
-//                                    /*过滤数据，只有最小x（屏幕的最小x或数据的最小x会被渲染，跨Tile的其他数据不再重复渲染）*/
-////                        .filter((RenderEntity renderEntity) -> MercatorProjection.longitudeToTileX(viewport.fromScreenPoint(0,0).getLongitude(), (byte) Constant.DATA_ZOOM) == currentTileX || renderEntity.getTileX().stream().min(Integer::compare).get() == currentTileX)
-//                                    .collect(Collectors.toList());
-//                        }
-//                    }
-//                    if (index > -1) {
-//                        dataObjectList.remove(index);
-//                    }
-//                    for (RenderEntity renderEntity : listResult) {
-//                        newDataObject.listIds.add(renderEntity.getId());
-//                    }
-//                    dataObjectList.add(newDataObject);
-//                }
                 listResult = listResult.stream().filter((RenderEntity renderEntity) ->
                                 renderEntity.getWkt().intersects(tilePolygon)
                         )
@@ -192,12 +147,10 @@ public class OMDBTileDataSource implements ITileDataSource {
             } else {
                 mapDataSink.completed(QueryResult.SUCCESS);
             }
-
 //            realm.close();
         } else {
             mapDataSink.completed(QueryResult.SUCCESS);
         }
-
     }
 
     @Override

@@ -35,6 +35,7 @@ public class RealmDBTileDataSource implements ITileDataSource {
     public void query(MapTile tile, ITileDataSink mapDataSink) {
         // 获取tile对应的坐标范围
         if (tile.zoomLevel>=15&&tile.zoomLevel<=Constant.OVER_ZOOM) {
+            Log.e("jingo","RealmDBTileDataSource RealmDBTileDataSource RealmDBTileDataSource");
 //            int m = Constant.OVER_ZOOM-tile.zoomLevel;
 //            int xStart = (int)tile.tileX<<m;
 //            int xEnd = (int)((tile.tileX+1)<<m);

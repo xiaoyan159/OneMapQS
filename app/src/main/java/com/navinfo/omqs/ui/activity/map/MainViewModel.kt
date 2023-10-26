@@ -577,62 +577,62 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Default) {
             //用于定位点捕捉道路
             mapController.locationLayerHandler.niLocationFlow.collect { location ->
-//
-//                //过滤掉无效点
-//                if (!naviLocationTest && !GeometryTools.isCheckError(
-//                        location.longitude,
-//                        location.latitude
-//                    )
-//                ) {
-//                    val geometry = GeometryTools.createGeometry(
-//                        GeoPoint(
-//                            location.latitude, location.longitude
-//                        )
-//                    )
-//                    val tileX = RealmSet<Int>()
-//                    GeometryToolsKt.getTileXByGeometry(geometry.toString(), tileX)
-//                    val tileY = RealmSet<Int>()
-//                    GeometryToolsKt.getTileYByGeometry(geometry.toString(), tileY)
-//
-//                    //遍历存储tile对应的x与y的值
-//                    tileX.forEach { x ->
-//                        tileY.forEach { y ->
-//                            location.tilex = x
-//                            location.tiley = y
-//                        }
-//                    }
-//                    location.groupId = uuid
-//                    try {
-//                        location.timeStamp = DateTimeUtil.getTime(location.time).toString()
-//                    } catch (e: Exception) {
-//
-//                    }
-//
-//                    location.taskId =
-//                        sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1).toString()
-//
-//                    //判断如果是连接状态并处于录像模式，标记为有效点
-//                    if (shareUtil?.connectstate == true && shareUtil?.takeCameraMode == 0) {
-//                        location.media = 1
-//                    }
-//                    var disance = 0.0
-//                    //增加间距判断
-//                    if (lastNiLocaion != null) {
-//                        disance = GeometryTools.getDistance(
-//                            location.latitude,
-//                            location.longitude,
-//                            lastNiLocaion!!.latitude,
-//                            lastNiLocaion!!.longitude
-//                        )
-//                    }
-//                    //室内整理工具时不能进行轨迹存储，判断轨迹间隔要超过2.5并小于60米
-//                    if (Constant.INDOOR_IP.isEmpty() && (disance == 0.0 || (disance > 2.5 && disance < 60))) {
-//                        traceDataBase.niLocationDao.insert(location)
-//                        mapController.markerHandle.addNiLocationMarkerItem(location)
-//                        mapController.mMapView.vtmMap.updateMap(true)
-//                        lastNiLocaion = location
-//                    }
-//                }
+
+                //过滤掉无效点
+                if (!naviLocationTest && !GeometryTools.isCheckError(
+                        location.longitude,
+                        location.latitude
+                    )
+                ) {
+                    val geometry = GeometryTools.createGeometry(
+                        GeoPoint(
+                            location.latitude, location.longitude
+                        )
+                    )
+                    val tileX = RealmSet<Int>()
+                    GeometryToolsKt.getTileXByGeometry(geometry.toString(), tileX)
+                    val tileY = RealmSet<Int>()
+                    GeometryToolsKt.getTileYByGeometry(geometry.toString(), tileY)
+
+                    //遍历存储tile对应的x与y的值
+                    tileX.forEach { x ->
+                        tileY.forEach { y ->
+                            location.tilex = x
+                            location.tiley = y
+                        }
+                    }
+                    location.groupId = uuid
+                    try {
+                        location.timeStamp = DateTimeUtil.getTime(location.time).toString()
+                    } catch (e: Exception) {
+
+                    }
+
+                    location.taskId =
+                        sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1).toString()
+
+                    //判断如果是连接状态并处于录像模式，标记为有效点
+                    if (shareUtil?.connectstate == true && shareUtil?.takeCameraMode == 0) {
+                        location.media = 1
+                    }
+                    var disance = 0.0
+                    //增加间距判断
+                    if (lastNiLocaion != null) {
+                        disance = GeometryTools.getDistance(
+                            location.latitude,
+                            location.longitude,
+                            lastNiLocaion!!.latitude,
+                            lastNiLocaion!!.longitude
+                        )
+                    }
+                    //室内整理工具时不能进行轨迹存储，判断轨迹间隔要超过2.5并小于60米
+                    if (Constant.INDOOR_IP.isEmpty() && (disance == 0.0 || (disance > 2.5 && disance < 60))) {
+                        traceDataBase.niLocationDao.insert(location)
+                        mapController.markerHandle.addNiLocationMarkerItem(location)
+                        mapController.mMapView.vtmMap.updateMap(true)
+                        lastNiLocaion = location
+                    }
+                }
             }
 
         }
@@ -654,11 +654,11 @@ class MainViewModel @Inject constructor(
                         naviEngine!!.bindingRoute(location, point)
                         naviMutex.unlock()
                     } else {
-//                        captureLink(
-//                            GeoPoint(
-//                                location.latitude, location.longitude
-//                            )
-//                        )
+                        captureLink(
+                            GeoPoint(
+                                location.latitude, location.longitude
+                            )
+                        )
                     }
                 }
             }
@@ -823,7 +823,7 @@ class MainViewModel @Inject constructor(
                 if (linkList.isNotEmpty()) {
                     val link = linkList[0]
 
-                    val linkId = link.properties[RenderEntity.Companion.LinkTable.linkPid]
+                    val linkId = link.linkPid
                     //看板数据
                     val signList = mutableListOf<SignBean>()
                     val topSignList = mutableListOf<SignBean>()
@@ -971,7 +971,7 @@ class MainViewModel @Inject constructor(
                                             .equalTo("table", DataCodeEnum.OMDB_RD_LINK_KIND.name)
                                             .and()
                                             .equalTo(
-                                                "properties['${RenderEntity.Companion.LinkTable.linkPid}']",
+                                                "linkPid",
                                                 outLink
                                             ).findFirst()
                                     if (linkOutEntity != null) {
