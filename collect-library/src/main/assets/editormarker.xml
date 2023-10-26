@@ -1561,7 +1561,6 @@
 
         <!-- 杆状物 -->
         <m v="OMDB_POLE">
-<!--            <line stroke="#000000" width="2" cap="butt"></line>-->
             <symbol src="assets:omdb/icon_pole_3006.svg" symbol-height="56" symbol-width="56"></symbol>
         </m>
 
@@ -1653,6 +1652,10 @@
             </m>
 
             <m k="boundaryType" v="2">
+                <!--标线-->
+                <m k="markType" v="0">
+                    <line stroke="#eccc68" use="boundaryType" />
+                </m>
                 <!--标线-->
                 <m k="markType" v="1">
                     <m k="markColor" v="1">
@@ -2029,6 +2032,11 @@
             <symbol repeat="true" repeat-start="0"  src="assets:omdb/icon_2017_1.svg"></symbol>
         </m>
 
+        <!-- 通行车辆类型Lane -->
+        <m v="OMDB_LANE_ACCESS">
+            <text use="road" size="14" stroke="#ffffff" fill="#e7a32d"></text>
+        </m>
+
         <!-- 车道施工 -->
         <m v="OMDB_LANE_CONSTRUCTION">
             <line stroke="#eccc68" width="0.1" />
@@ -2049,6 +2057,28 @@
             <m k="type" v="s_2_e">
                 <line use="s2e" />
             </m>
+        </m>
+
+        <!-- 车道类型 -->
+        <m v="OMDB_LANE_TYPE_ACCESS">
+            <m k="laneLinkPid">
+                <line width="0.1" stroke="#cccccc" stipple-width="0.1" stipple-stroke="#cccccc"></line>
+            </m>
+            <m k="type" v="s_2_p">
+                <symbol src="assets:omdb/icon_2092_s.svg" symbol-height="32"
+                    symbol-width="32" gland="true"></symbol>
+            </m>
+            <m k="type" v="e_2_p">
+                <symbol src="assets:omdb/icon_2092_e.svg" symbol-height="32"
+                    symbol-width="32" gland="true"></symbol>
+            </m>
+        </m>
+
+        <!-- 车道点限速 -->
+        <m v="OMDB_LANE_SPEEDLIMIT">
+            <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
+                src="assets:omdb/icon_4005.svg" symbol-height="24" symbol-width="24"></symbol>
+            <caption k="ref" priority="0" size="12" fill="#ff0000" stroke="#ffffff" stroke-width="1" dy="-13"></caption>
         </m>
 
     </m>

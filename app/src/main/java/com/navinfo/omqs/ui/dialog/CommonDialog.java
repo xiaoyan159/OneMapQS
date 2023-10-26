@@ -710,10 +710,10 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
      * 更新相机状态资源
      */
     public void updateCameraResources(int statusType, int indexClentCamera) {
-        int resId = R.id.main_activity_camera;
+        int resId = R.id.main_activity_status_camera;
 
         if (indexClentCamera == 2)
-            resId = R.id.main_activity_camera2;
+            resId = R.id.main_activity_status_camera;
 
         Drawable drawable = context.getResources().getDrawable(R.drawable.icon_page_video_a0);
 
@@ -770,10 +770,10 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
     }
 
     public void updateCameraBackgroundResources(int drawable, int indexClentCamera) {
-        int resId = R.id.main_activity_camera;
+        int resId = R.id.main_activity_status_camera;
 
         if (indexClentCamera == 2)
-            resId = R.id.main_activity_camera2;
+            resId = R.id.main_activity_status_camera;
 
         ImageView ivStatus = (ImageView) findViewById(resId);
 
@@ -1547,9 +1547,9 @@ public class CommonDialog extends Dialog implements SurfaceHolder.Callback, IVid
     private int getResId() {
 
         if (getmDeviceNum() == 2)
-            return R.id.main_activity_camera2;
+            return R.id.main_activity_status_camera;
 
-        return R.id.main_activity_camera;
+        return R.id.main_activity_status_camera;
     }
 
     public ShareUtil getmShareUtil() {

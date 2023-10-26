@@ -33,6 +33,7 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
     OMDB_RAMP_7("高速直连出口匝道高速出入口匝道", "2037-7"),
     OMDB_MULTI_DIGITIZED("上下线分离", "2040"),
     OMDB_LANE_NUM("车道数", "2041"),
+    OMDB_PHY_LANENUM("物理车道数", "2097"),
     OMDB_VIADUCT("高架", "2043"),
     OMDB_RDBOUND_BOUNDARYTYPE("道路边界类型", "2083"),
     OMDB_LANE_CONSTRUCTION("车道施工", "2090"),

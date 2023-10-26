@@ -10,6 +10,7 @@ import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.StrZipUtil
 import com.navinfo.omqs.Constant
 import io.realm.Realm
+import io.realm.RealmModel
 import org.json.JSONArray
 import org.json.JSONObject
 import org.locationtech.jts.algorithm.Angle
@@ -57,9 +58,6 @@ class ImportPreProcess {
                 }
             }
         }
-//        // 根据linkIn和linkOut从数据库获取对应的link数据
-//        Realm.getInstance(Constant.currentInstallTaskConfig)
-
         return true
     }
 
@@ -246,6 +244,59 @@ class ImportPreProcess {
         )
         listResult.add(startEndReference)
         insertData(listResult)
+    }
+
+    /**
+     * 生成车道类型起终点参考数据
+     * */
+    fun generateLaneTypeAccessS2ERefPoint(renderEntity: RenderEntity) {
+        // 如果车道类型非常规车道(第0bit的数据)，则需要生成辅助数据
+        if (renderEntity.properties["laneType"]!!.toInt()>0) {
+            val geometry = GeometryTools.createGeometry(renderEntity.properties["geometry"])
+
+            val pointEnd = geometry!!.coordinates[geometry.numPoints - 1] // 获取这个geometry对应的结束点坐标
+            val pointStart = geometry!!.coordinates[0] // 获取这个geometry对应的起点
+            val listResult = mutableListOf<ReferenceEntity>()
+
+            // 将这个起终点的线记录在数据中
+            val startReference = ReferenceEntity()
+            startReference.renderEntityId = renderEntity.id
+            startReference.name = "${renderEntity.name}参考点"
+            startReference.code = renderEntity.code
+            startReference.table = renderEntity.table
+            startReference.zoomMin = renderEntity.zoomMin
+            startReference.zoomMax = renderEntity.zoomMax
+            startReference.taskId = renderEntity.taskId
+            startReference.enable = renderEntity.enable
+
+            // 起点坐标
+            startReference.geometry =
+                GeometryTools.createGeometry(GeoPoint(pointStart.y, pointStart.x)).toString()
+            startReference.properties["qi_table"] = renderEntity.table
+            startReference.properties["type"] = "s_2_p"
+            startReference.properties["geometry"] = startReference.geometry
+            listResult.add(startReference)
+
+            val endReference = ReferenceEntity()
+            endReference.renderEntityId = renderEntity.id
+            endReference.name = "${renderEntity.name}参考点"
+            endReference.code = renderEntity.code
+            endReference.table = renderEntity.table
+            endReference.zoomMin = renderEntity.zoomMin
+            endReference.zoomMax = renderEntity.zoomMax
+            endReference.taskId = renderEntity.taskId
+            endReference.enable = renderEntity.enable
+
+            // 终点坐标
+            endReference.geometry =
+                GeometryTools.createGeometry(GeoPoint(pointEnd.y, pointEnd.x)).toString()
+            endReference.properties["qi_table"] = renderEntity.table
+            endReference.properties["type"] = "e_2_p"
+            endReference.properties["geometry"] = endReference.geometry
+
+            listResult.add(endReference)
+            insertData(listResult)
+        }
     }
 
     fun generateS2EReferencePoint(
@@ -463,29 +514,89 @@ class ImportPreProcess {
      * 解析车道边线数据二级属性
      * */
     fun unpackingLaneBoundary(renderEntity: RenderEntity) {
-        var shape: JSONObject = JSONObject(
-            mapOf(
-                "lateralOffset" to 0,
-                "markType" to 1,
-                "markColor" to 0,
-                "markMaterial" to 1,
-                "markSeqNum" to 1,
-                "markWidth" to 10,
-                "markingCount" to 1
-            )
-        )
-        if (renderEntity.code == "2013" && !renderEntity.properties["shapeList"].isNullOrEmpty() && renderEntity.properties["shapeList"] != "null") {
+
+        if (renderEntity.code == DataCodeEnum.OMDB_LANE_MARK_BOUNDARYTYPE.code && !renderEntity.properties["shapeList"].isNullOrEmpty() && renderEntity.properties["shapeList"] != "null") {
             // 解析shapeList，将数组中的属性放会properties
             val shapeList = JSONArray(renderEntity.properties["shapeList"])
-            for (i in 0 until shapeList.length()) {
-                shape = shapeList.getJSONObject(i)
-                if (shape.optInt("lateralOffset", 0) == 0) {
-                    break
+            val boundaryType = renderEntity.properties["boundaryType"]
+            val listResult = mutableListOf<RenderEntity>()
+            if (boundaryType != null) {
+                var isExistOffSet0 = false
+                //只处理标线类型,App要求值渲染1、2、6、8
+                if (boundaryType.toInt() == 2) {
+                    for (i in 0 until shapeList.length()) {
+                        var shape = shapeList.getJSONObject(i)
+                        val lateralOffset = shape.optInt("lateralOffset", 0)
+                        //999999时不应用也不渲染
+                        if (lateralOffset != 999999) {
+                            //需要做偏移处理
+                            if (lateralOffset != 0) {
+
+                                when (shape.optInt("markType", 0)) {
+                                    1, 2, 6, 8 -> {
+                                        val renderEntityTemp = RenderEntity()
+                                        for (key in shape.keys()) {
+                                            renderEntityTemp.properties[key] = shape[key].toString()
+                                        }
+                                        renderEntityTemp.properties["qi_table"] =
+                                            renderEntity.properties["qi_table"]
+                                        renderEntityTemp.properties["qi_code"] =
+                                            renderEntity.properties["qi_code"]
+                                        renderEntityTemp.properties["qi_zoomMin"] =
+                                            renderEntity.properties["qi_zoomMin"]
+                                        renderEntityTemp.properties["qi_zoomMax"] =
+                                            renderEntity.properties["qi_zoomMax"]
+                                        renderEntityTemp.properties["name"] =
+                                            renderEntity.properties["name"]
+                                        renderEntityTemp.properties["qi_name"] =
+                                            renderEntity.properties["qi_name"]
+                                        renderEntityTemp.properties["boundaryType"] =
+                                            renderEntity.properties["boundaryType"]
+                                        renderEntityTemp.properties["featureClass"] =
+                                            renderEntity.properties["featureClass"]
+                                        renderEntityTemp.properties["featurePid"] =
+                                            renderEntity.properties["featurePid"]
+
+                                        renderEntityTemp.code = renderEntity.code
+                                        renderEntityTemp.table = renderEntity.table
+                                        renderEntityTemp.name = renderEntity.name
+                                        renderEntityTemp.zoomMin = renderEntity.zoomMin
+                                        renderEntityTemp.zoomMax = renderEntity.zoomMax
+                                        renderEntityTemp.enable = renderEntity.enable
+                                        renderEntityTemp.taskId = renderEntity.taskId
+                                        renderEntityTemp.catchEnable = renderEntity.catchEnable
+                                        var dis = -lateralOffset.toDouble() / 100000000
+                                        //最小值取10厘米，否正渲染太近无法显示
+                                        if (dis > 0 && dis < 0.0000028) {
+                                            dis = 0.0000028
+                                        } else if (dis > -0.0000028 && dis < 0) {
+                                            dis = -0.0000028
+                                        }
+                                        renderEntityTemp.geometry = GeometryTools.computeLine(
+                                            dis,
+                                            renderEntity.geometry
+                                        )
+                                        listResult.add(renderEntityTemp)
+                                    }
+                                }
+                            } else {
+                                isExistOffSet0 = true
+                                //遍历赋值
+                                for (key in shape.keys()) {
+                                    renderEntity.properties[key] = shape[key].toString()
+                                }
+                            }
+                        }
+                    }
+                    //如果不存在偏移的数据时，数据本身不渲染同时也不进行捕捉
+                    if (!isExistOffSet0) {
+                        renderEntity.catchEnable = 0
+                    }
+                    if (listResult.size > 0) {
+                        insertData(listResult)
+                    }
                 }
             }
-        }
-        for (key in shape.keys()) {
-            renderEntity.properties[key] = shape[key].toString()
         }
     }
 
@@ -605,29 +716,6 @@ class ImportPreProcess {
     }
 
     /**
-     * 通过rdDirect对象向rdLink的relation字段
-     * */
-//    fun addRdLinkDirect(renderEntity: RenderEntity) {
-//        // 尝试更新RD_link的relation记录中的方向字段
-//        val rdLinkEntity = queryRdLink(renderEntity.properties["linkPid"]!!)
-//        if (rdLinkEntity?.linkRelation == null) {
-//            rdLinkEntity?.linkRelation = LinkRelation()
-//        }
-//        rdLinkEntity?.linkRelation?.direct = renderEntity.properties["direct"]!!.toInt()
-//        Realm.getInstance(Constant.currentInstallTaskConfig).insertOrUpdate(rdLinkEntity)
-//    }
-
-    /**
-     * 查询指定的Rdlink数据
-     * */
-//    fun queryRdLink(rdLinkId: String): RenderEntity? {
-// ////////       return Realm.getInstance(Constant.currentInstallTaskConfig).where(RenderEntity::class.java)
-//            .equalTo("code", DataCodeEnum.OMDB_RD_LINK.code)
-//            .and().equalTo("linkPid", rdLinkId)
-//            .findFirst()
-//    }
-
-    /**
      * 生成电子眼对应的渲染名称
      * */
     fun generateElectronName(renderEntity: RenderEntity) {
@@ -645,31 +733,26 @@ class ImportPreProcess {
      * 生成车道中心线面宽度
      * */
     fun generateAddWidthLine(renderEntity: RenderEntity) {
-        try {
-            // 添加车道中心面渲染原则，根据车道宽度进行渲染
-            val angleReference = ReferenceEntity()
-//            angleReference.renderEntityId = renderEntity.id
-            angleReference.name = "${renderEntity.name}车道中线面"
-            angleReference.table = renderEntity.table
-            angleReference.geometry =
-                GeometryTools.createGeometry(renderEntity.geometry).buffer(0.000035)
-                    .toString()//GeometryTools.computeLine(0.000035,0.000035,renderEntity.geometry)
-            angleReference.properties["qi_table"] = renderEntity.table
-            angleReference.properties["widthProperties"] = "3"
-            angleReference.zoomMin = renderEntity.zoomMin
-            angleReference.zoomMax = renderEntity.zoomMax
-            angleReference.taskId = renderEntity.taskId
-            angleReference.enable = renderEntity.enable
-            val listResult = mutableListOf<ReferenceEntity>()
-            angleReference.propertiesDb = StrZipUtil.compress(
-                gson.toJson(angleReference.properties).toString()
-            )
-            listResult.add(angleReference)
-            insertData(listResult)
-        } catch (e: Exception) {
-            Log.e("jingo", "车道中心线 generateAddWidthLine ${e.message}")
-        }
-
+        // 添加车道中心面渲染原则，根据车道宽度进行渲染
+        val angleReference = ReferenceEntity()
+       // angleReference.renderEntityId = renderEntity.id
+        angleReference.name = "${renderEntity.name}车道中线面"
+        angleReference.table = renderEntity.table
+        angleReference.geometry =
+            GeometryTools.createGeometry(renderEntity.geometry).buffer(0.000035)
+                .toString()//GeometryTools.computeLine(0.000035,0.000035,renderEntity.geometry)
+        angleReference.properties["qi_table"] = renderEntity.table
+        angleReference.properties["widthProperties"] = "3"
+        angleReference.zoomMin = renderEntity.zoomMin
+        angleReference.zoomMax = renderEntity.zoomMax
+        angleReference.taskId = renderEntity.taskId
+        angleReference.enable = renderEntity.enable
+        val listResult = mutableListOf<ReferenceEntity>()
+        angleReference.propertiesDb = StrZipUtil.compress(
+            gson.toJson(angleReference.properties).toString()
+        )
+        listResult.add(angleReference)
+        insertData(listResult)
     }
 
 
@@ -974,6 +1057,52 @@ class ImportPreProcess {
         } else {
             renderEntity.geometry =
                 GeometryTools.createGeometry(GeoPoint(centerPoint!!.y, centerPoint.x)).toString()
+        }
+    }
+
+    /**
+     * 生成通行车辆类型Lane的渲染名称字段
+     * */
+    fun generateLaneAccessType(renderEntity: RenderEntity): Boolean {
+        if (renderEntity.properties.containsKey("accessCharacteristic")) {
+            // 解析accessCharacteristic，判断是否存在指定属性
+            val accessCharacteristic = renderEntity.properties["accessCharacteristic"].toString().toInt()
+            var str = ""
+            if (accessCharacteristic.and(4)>0) {
+                str += "公"
+            }
+            if (accessCharacteristic.and(8)>0) {
+                if (str.isNotEmpty()) {
+                    str += "|"
+                }
+                str += "多"
+            }
+            if (accessCharacteristic.and(64)>0) {
+                if (str.isNotEmpty()) {
+                    str += "|"
+                }
+                str += "行"
+            }
+            if (accessCharacteristic.and(128)>0) {
+                if (str.isNotEmpty()) {
+                    str += "|"
+                }
+                str += "自"
+            }
+            if (str.isNotEmpty()) {
+                renderEntity.properties["name"] = str
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * 生成车道点限速的名称
+     * */
+    fun obtainLaneSpeedLimitName(renderEntity: RenderEntity) {
+        if (renderEntity.properties.containsKey("maxSpeed")&&renderEntity.properties.containsKey("minSpeed")) {
+            renderEntity.properties["ref"] = "${renderEntity.properties["maxSpeed"]}|${renderEntity.properties["minSpeed"]}"
         }
     }
 }

@@ -458,10 +458,10 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                 }
                                             }
 
-                                        } else if (renderEntity.code.toInt() == DataCodeEnum.OMDB_INTERSECTION.code.toInt() && renderEntity.properties.containsKey(
-                                                "linkList"
-                                            )
-                                        ) {
+                                            } else if (renderEntity.code.toInt() == DataCodeEnum.OMDB_INTERSECTION.code.toInt()||renderEntity.code.toInt() == DataCodeEnum.OMDB_LANE_CONSTRUCTION.code.toInt() && renderEntity.properties.containsKey(
+                                                    "linkList"
+                                                )
+                                            ) {
 
                                             if (renderEntity.properties["linkList"] != null) {
 
@@ -805,26 +805,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 }
                                 bufferedReader.close()
                             }
-
-
-//                            // 将listResult数据插入到Realm数据库中
-//                            currentConfig.let {
-//                                val list = FileIOUtils.readFile2List(txtFile, "UTF-8")
-////                                Log.d("ImportOMDBHelper", "开始解析：${txtFile?.name}")
-//                                if (list != null) {
-//                                    // 将list数据转换为map
-//                                    for ((index, line) in list.withIndex()) {
-//
-//                                    }
-//
-//                                }
-//                            }
-//                            // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
-//                            if (currentConfig.code == DataCodeEnum.OMDB_RD_LINK.code.toInt()) {
-////                                importConfig.preProcess.cacheRdLink =
-////                                    listResult.associateBy { it.properties["linkPid"] }
-//                                // 将sNodeId和eNodeId放在外层关联对象中，优化查询效率
-//                            }
                             // 1个文件发送一次flow流
                             emit("${processIndex}/${tableNum}")
 //                            Log.d("ImportOMDBHelper", "表解析===2${currentConfig.table}")
