@@ -344,7 +344,7 @@ class MainActivity : BaseActivity() {
             }
         }
         viewModel.liveDataAutoLocation.observe(this) {
-            if (it == true) {
+            if (it == true&&Constant.INDOOR_IP==null|| Constant.INDOOR_IP == "") {
                 onClickLocation()
             }
         }
@@ -844,6 +844,7 @@ class MainActivity : BaseActivity() {
      */
     fun setTopMenuButtonVisibility(visibility: Int) {
         binding.mainActivityMenu.visibility = visibility
+        binding.mainActivityStatusCamera.visibility = visibility
         if (visibility != View.VISIBLE) {
             binding.mainActivityMenuGroup.visibility = View.INVISIBLE
             binding.mainActivityMenu.isSelected = false

@@ -567,10 +567,12 @@ class ImportPreProcess {
                                         renderEntityTemp.catchEnable = renderEntity.catchEnable
                                         var dis = -lateralOffset.toDouble() / 100000000
                                         //最小值取10厘米，否正渲染太近无法显示
-                                        if (dis > 0 && dis < 0.0000028) {
-                                            dis = 0.0000028
-                                        } else if (dis > -0.0000028 && dis < 0) {
-                                            dis = -0.0000028
+                                        if (dis > 0 && dis < 0.000005) {
+                                            dis = 0.000005
+                                            Log.d("lateralOffset", "$dis")
+                                        } else if (dis > -0.000005 && dis < 0) {
+                                            dis = -0.000005
+                                            Log.d("lateralOffset", "$dis")
                                         }
                                         renderEntityTemp.geometry = GeometryTools.computeLine(
                                             dis,
@@ -739,10 +741,11 @@ class ImportPreProcess {
        // angleReference.renderEntityId = renderEntity.id
         angleReference.name = "${renderEntity.name}车道中线面"
         angleReference.table = renderEntity.table
+        Log.e("jingo", "几何转换开始")
         angleReference.geometry =
-            GeometryTools.createGeometry(renderEntity.geometry).buffer(0.000035)
+            GeometryTools.createGeometry(renderEntity.geometry).buffer(0.000010)
                 .toString()//GeometryTools.computeLine(0.000035,0.000035,renderEntity.geometry)
-
+        Log.e("jingo", "几何转换结束")
         angleReference.properties["qi_table"] = renderEntity.table
         angleReference.properties["widthProperties"] = "3"
         angleReference.zoomMin = renderEntity.zoomMin

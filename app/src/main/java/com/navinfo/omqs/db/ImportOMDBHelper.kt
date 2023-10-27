@@ -17,6 +17,7 @@ import com.navinfo.omqs.bean.ImportConfig
 import com.navinfo.omqs.bean.TableInfo
 import com.navinfo.omqs.db.deep.LinkList
 import com.navinfo.omqs.hilt.OMDBDataBaseHiltFactory
+import com.navinfo.omqs.util.CMLog
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.realm.Realm
@@ -324,31 +325,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                     }
 
                     renderEntity.geometry = map["geometry"].toString()
-//                                        Log.d("ImportOMDBHelper", "解析===1处理3D")
-                    // 其他数据插入到Properties中
-                    /*                                        if (!currentConfig.is3D) { // 如果是非3d要素，则自动将Z轴坐标全部置为0
-                                                            val coordinates =
-                                                                renderEntity.wkt?.coordinates?.map { coordinate ->
-                                                                    coordinate.z = 0.0
-                                                                    coordinate
-                                                                }?.toTypedArray()
-                                                            var newGeometry: Geometry? = null
-                                                            if (renderEntity.wkt?.geometryType == Geometry.TYPENAME_POINT) {
-                                                                newGeometry = GeometryTools.createPoint(
-                                                                    coordinates!![0].x,
-                                                                    coordinates!![0].y
-                                                                )
-                                                            } else if (renderEntity.wkt?.geometryType == Geometry.TYPENAME_LINESTRING) {
-                                                                newGeometry =
-                                                                    GeometryTools.createLineString(coordinates)
-                                                            } else if (renderEntity.wkt?.geometryType == Geometry.TYPENAME_POLYGON) {
-                                                                newGeometry =
-                                                                    GeometryTools.createLineString(coordinates)
-                                                            }
-                                                            if (newGeometry != null) {
-                                                                renderEntity.geometry = newGeometry.toString()
-                                                            }
-                                                        }*/
                     for ((key, value) in map) {
                         when (value) {
                             is String -> renderEntity.properties[key] = value
@@ -435,7 +411,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 }
                             }
                         }
-
                     }
 
                     //遍历判断只显示与任务Link相关的任务数据
@@ -495,19 +470,6 @@ class ImportOMDBHelper @AssistedInject constructor(
 
                     } else {
                         renderEntity.enable = 1
-
-                        /*                                            var geometry = GeometryTools.createGeometry(renderEntity.geometry)
-                                                                                        if(multipLine.intersects(geometry)){
-                                                                                            renderEntity.enable = 1
-                                                                                        }else{
-                                                                                            val dis = multipLine.distance(GeometryTools.createGeometry(renderEntity.geometry))
-                                                                                            if(dis>36){
-                                                                                                continue
-                                                                                            }else{
-                                                                                                renderEntity.enable = 1
-                                                                                            }
-                                                                                        }*/
-//                                            Log.e("qj", "${renderEntity.name}==不包括任务linkPid")
                     }
 
                     if (currentConfig.catch) {
@@ -718,6 +680,12 @@ class ImportOMDBHelper @AssistedInject constructor(
                             renderEntity.linkRelation!!.eNodeId =
                                 renderEntity.properties["enodePid"]
                         }
+
+                        //去掉暂用控件较大的字段多余属性字段
+                        if (renderEntity.properties.containsKey("shapeList")) {
+                            renderEntity.properties.remove("shapeList")
+                        }
+
                         renderEntity.propertiesDb = StrZipUtil.compress(
                             gson.toJson(renderEntity.properties).toString()
                         )

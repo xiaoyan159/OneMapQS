@@ -107,7 +107,7 @@ class SignUtil {
                 //物理车道数OMDB_PHY_LANENUM
                 DataCodeEnum.OMDB_LANE_NUM.code,
                 DataCodeEnum.OMDB_PHY_LANENUM.code -> {
-                    "${data.properties["laneNum"]}|${data.properties["laneS2e"]}|${data.properties["laneE2s"]}"
+                    "${data.properties["laneS2e"]}|${data.properties["laneE2s"]}"
                 }
 
                 //常规点限速,条件点限速
@@ -286,11 +286,11 @@ class SignUtil {
                 //车道数//增加物理车道数DataCodeEnum.OMDB_PHY_LANENUM.code
                 DataCodeEnum.OMDB_PHY_LANENUM.code,
                 DataCodeEnum.OMDB_LANE_NUM.code -> {
-                    list.add(
+/*                    list.add(
                         TwoItemAdapterItem(
                             title = "车道总数", text = "${data.properties["laneNum"]}"
                         )
-                    )
+                    )*/
                     list.add(
                         TwoItemAdapterItem(
                             title = "顺方向车道数", text = "${data.properties["laneS2e"]}"
@@ -1426,14 +1426,14 @@ class SignUtil {
                     )
                     DataCodeEnum.OMDB_RD_LINK_KIND.code -> stringBuffer.append("种别${item.iconText},")
                     DataCodeEnum.OMDB_LINK_DIRECT.code -> stringBuffer.append("${item.iconText},")
-                    DataCodeEnum.OMDB_PHY_LANENUM.code,//物理车道数
+/*                    DataCodeEnum.OMDB_PHY_LANENUM.code,//物理车道数
                     DataCodeEnum.OMDB_LANE_NUM.code -> stringBuffer.append(
                         "${
                             item.iconText.substringBefore(
                                 "|"
                             )
                         }车道"
-                    )
+                    )*/
                 }
             }
             return stringBuffer.toString()

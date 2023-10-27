@@ -126,11 +126,6 @@
         "zoomMin": 15,
         "zoomMax": 17
       },
-      "2041": {
-        "table": "OMDB_LANE_NUM",
-        "code": 2041,
-        "name": "车道数"
-      },
       "2083": {
         "table": "OMDB_RDBOUND_BOUNDARYTYPE",
         "code": 2083,

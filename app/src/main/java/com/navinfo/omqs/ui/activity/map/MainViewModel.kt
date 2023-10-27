@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.blankj.utilcode.util.ToastUtils
+import com.google.gson.Gson
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.*
 import com.navinfo.collect.library.enums.DataCodeEnum
@@ -249,6 +250,8 @@ class MainViewModel @Inject constructor(
     // 定义一个互斥锁
     private val naviMutex = Mutex()
     private var testRealm: Realm? = null;
+
+    private var traceCount = 0
 
     init {
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
@@ -563,7 +566,14 @@ class MainViewModel @Inject constructor(
         ).niLocationDao.findToTaskIdAll(id.toString())
         if (list != null) {
             for (location in list) {
+                Constant.TRACE_COUNT++
+
                 mapController.markerHandle.addNiLocationMarkerItem(location)
+
+                if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_TIME==0){
+                    mapController.markerHandle.addNiLocationMarkerItemSimple(location)
+                    Log.e("qj","$traceCount===轨迹")
+                }
             }
         }
     }
@@ -572,6 +582,7 @@ class MainViewModel @Inject constructor(
      * 初始化定位信息
      */
     private fun initLocation() {
+        var gson = Gson();
 
         //用于定位点存储到数据库
         viewModelScope.launch(Dispatchers.Default) {
@@ -627,10 +638,18 @@ class MainViewModel @Inject constructor(
                     }
                     //室内整理工具时不能进行轨迹存储，判断轨迹间隔要超过2.5并小于60米
                     if (Constant.INDOOR_IP.isEmpty() && (disance == 0.0 || (disance > 2.5 && disance < 60))) {
+                        traceCount ++
+                        Log.e("jingo", "轨迹插入开始")
+                        CMLog.writeLogtoFile(MainViewModel::class.java.name,"insertTrace","开始")
                         traceDataBase.niLocationDao.insert(location)
                         mapController.markerHandle.addNiLocationMarkerItem(location)
+                        if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_TIME==0){
+                            mapController.markerHandle.addNiLocationMarkerItemSimple(location)
+                        }
                         mapController.mMapView.vtmMap.updateMap(true)
                         lastNiLocaion = location
+                        CMLog.writeLogtoFile(MainViewModel::class.java.name,"insertTrace",gson.toJson(location))
+                        Log.e("jingo", "轨迹插入结束")
                     }
                 }
             }
@@ -1022,7 +1041,7 @@ class MainViewModel @Inject constructor(
     fun onClickLocationButton() {
         val mapPosition: MapPosition = mapController.mMapView.vtmMap.getMapPosition()
         mapPosition.setBearing(0f) // 锁定角度，自动将地图旋转到正北方向
-        mapController.mMapView.vtmMap.setMapPosition(mapPosition)
+        mapController.mMapView.vtmMap.mapPosition = mapPosition
         mapController.locationLayerHandler.animateToCurrentPosition()
         naviEngineStatus = 1
     }

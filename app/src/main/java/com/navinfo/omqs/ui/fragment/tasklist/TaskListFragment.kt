@@ -89,8 +89,15 @@ class TaskListFragment : BaseFragment() {
             deleteItem.background = requireContext().getDrawable(R.color.red)
             deleteItem.setTextColor(requireContext().resources.getColor(R.color.white))
             rightMenu.addMenuItem(deleteItem)
-        }
 
+            val resetDownLoad = SwipeMenuItem(context)
+            resetDownLoad.height = Util.convertDpToPx(requireContext(), 60)
+            resetDownLoad.width = Util.convertDpToPx(requireContext(), 80)
+            resetDownLoad.text = "重新下载"
+            resetDownLoad.background = requireContext().getDrawable(R.color.btn_bg_blue)
+            resetDownLoad.setTextColor(requireContext().resources.getColor(R.color.white))
+            rightMenu.addMenuItem(resetDownLoad)
+        }
 
         val layoutManager = LinearLayoutManager(context)
         //// 设置 RecyclerView 的固定大小，避免在滚动时重新计算视图大小和布局，提高性能
@@ -104,11 +111,15 @@ class TaskListFragment : BaseFragment() {
         binding.taskListRecyclerview.setOnItemMenuClickListener { menuBridge, position ->
             menuBridge.closeMenu()
             val taskBean = adapter.data[position]
-            if (taskBean.syncStatus != FileManager.Companion.FileUploadStatus.DONE) {
-                Toast.makeText(context, "数据未上传，不允许关闭！", Toast.LENGTH_SHORT)
-                    .show()
-            } else {
-                viewModel.removeTask(requireContext(), taskBean)
+            if(menuBridge.position==0){
+                if (taskBean.syncStatus != FileManager.Companion.FileUploadStatus.DONE) {
+                    Toast.makeText(context, "数据未上传，不允许关闭！", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    viewModel.removeTask(requireContext(), taskBean)
+                }
+            }else{
+                viewModel.resetDownload(requireContext(), taskBean)
             }
         }
 
@@ -132,6 +143,28 @@ class TaskListFragment : BaseFragment() {
             }
             //定位到被选中的任务
             binding.taskListRecyclerview.smoothScrollToPosition(position)
+        }
+
+        viewModel.liveDataCloseTask.observe(viewLifecycleOwner){
+            when(it){
+                TaskDelStatus.TASK_DEL_STATUS_BEGIN->{
+                    showLoadingDialog("正在重置...")
+                }
+                TaskDelStatus.TASK_DEL_STATUS_LOADING->{
+                    showLoadingDialog("正在重置...")
+                }
+                TaskDelStatus.TASK_DEL_STATUS_SUCCESS->{
+                    hideLoadingDialog()
+                    Toast.makeText(context,"成功重置",Toast.LENGTH_LONG).show()
+
+                }
+                TaskDelStatus.TASK_DEL_STATUS_FAILED->{
+                    hideLoadingDialog()
+                }
+                TaskDelStatus.TASK_DEL_STATUS_CANCEL->{
+
+                }
+            }
         }
 
         //监听并调用上传
