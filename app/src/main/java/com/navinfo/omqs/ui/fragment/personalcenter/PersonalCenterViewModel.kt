@@ -1,17 +1,12 @@
 package com.navinfo.omqs.ui.fragment.personalcenter
 
 import android.net.Uri
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.UriUtils
-import com.blankj.utilcode.util.ZipUtils
-import com.google.gson.Gson
-import com.navinfo.collect.library.data.entity.*
+import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.omqs.bean.ScProblemTypeBean
 import com.navinfo.omqs.bean.ScRootCauseAnalysisBean
 import com.navinfo.omqs.bean.ScWarningCodeBean
@@ -24,7 +19,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.io.input.BOMInputStream
 import java.io.*
-import java.util.*
 import javax.inject.Inject
 
 
@@ -158,16 +152,12 @@ class PersonalCenterViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("OMQSApplication", "开始导入数据")
             if (task != null) {
-                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, task, this).collect {
-                    Log.d("importOMDBData", it)
-                }
+                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, task, this)
             } else {
                 val newTask = TaskBean()
                 newTask.id = -1
                 importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, newTask, this)
-                    .collect {
-                        Log.d("importOMDBData", it)
-                    }
+
             }
             Log.d("OMQSApplication", "导入数据完成")
         }

@@ -20,14 +20,12 @@ class ImportConfig {
     @Expose
     var checked: Boolean = true
     val preProcess: ImportPreProcess = ImportPreProcess()
-    fun transformProperties(renderEntity: RenderEntity, realm: Realm): RenderEntity? {
+    fun transformProperties(renderEntity: RenderEntity, realm: Realm?): RenderEntity? {
         preProcess.realm = realm
         val transformList = tableMap[renderEntity.code.toString()]?.transformer
         if (transformList.isNullOrEmpty()) {
-            Log.e("qj", "子表转换为空===${renderEntity.code}")
             return renderEntity
         }
-        Log.e("qj", "子表转换不为空===${renderEntity.code}")
         for (transform in transformList) {
             // 开始执行转换
             val key: String = transform.k
