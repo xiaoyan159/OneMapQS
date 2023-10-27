@@ -216,7 +216,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                     val next = iterator.next()
                     val realm = Realm.getInstance(currentInstallTaskConfig)
                     realm.executeTransaction {
-                        Log.e("jingo", "安装数据 Realm数据插入")
                         it.copyToRealm(next)
                     }
                     realm.close()
@@ -241,19 +240,9 @@ class ImportOMDBHelper @AssistedInject constructor(
             }
             Log.e("jingo", "安装结束")
         } catch (e: Exception) {
-            Log.e("jingo", "安装报错 ${e.message}")
+            Log.e("jingo", "安装报错1 ${e.message}")
             return false
         }
-
-
-//        }.collect() { list ->
-//            if (list == null) {
-//                realm.close()
-//            } else {
-//                realm.executeTransaction {
-//                    it.copyToRealm(list)
-//                }
-//            }
         return true
     }
 
@@ -271,7 +260,11 @@ class ImportOMDBHelper @AssistedInject constructor(
         //单个表要素统计
         var elementIndex = 0
         val currentConfig = currentEntry.value
-
+//        CMLog.writeLogtoFile(
+//            ImportOMDBHelper::class.java.name,
+//            "importOmdbZipFile",
+//            "${currentConfig.table}开始"
+//        )
         try {
             var realm: Realm? = null
             if (!isEmit) {
@@ -281,16 +274,23 @@ class ImportOMDBHelper @AssistedInject constructor(
             val txtFile = unZipFiles.find {
                 it.name == currentConfig.table
             }
-            if (txtFile != null) {
+            if (txtFile != null && txtFile.exists()) {
                 val fileReader = FileReader(txtFile)
                 val bufferedReader = BufferedReader(fileReader)
                 var line: String? = bufferedReader.readLine()
-
+                var time = System.currentTimeMillis()
+                var newTime = 0L
                 while (line != null) {
                     if (line == null || line.trim() == "") {
                         line = bufferedReader.readLine()
                         continue
                     }
+                    newTime = System.currentTimeMillis()
+                    Log.e(
+                        "jingo",
+                        "安装数据 ${currentConfig.table}  $elementIndex ${listRenderEntity.size} ${newTime - time}"
+                    )
+                    time = newTime
                     elementIndex += 1
                     val map = gson.fromJson<Map<String, Any>>(
                         line, object : TypeToken<Map<String, Any>>() {}.type
@@ -699,7 +699,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                         )
                         if (isEmit) {
                             f.send(listRenderEntity)
-                            delay(100)
+                            delay(20)
                         } else {
                             realm!!.copyToRealm(listRenderEntity)
                             realm!!.commitTransaction()
@@ -712,13 +712,15 @@ class ImportOMDBHelper @AssistedInject constructor(
                     }
                     line = bufferedReader.readLine()
                 }
-                Log.e(
-                    "jingo",
-                    "安装数据 ${currentConfig.table}  $elementIndex ${listRenderEntity.size}"
-                )
+//                CMLog.writeLogtoFile(
+//                    ImportOMDBHelper::class.java.name,
+//                    "importOmdbZipFile",
+//                    "结束===总量$elementIndex"
+//                )
+
                 if (isEmit) {
                     f.send(listRenderEntity)
-                    delay(100)
+                    delay(20)
 
                 } else {
                     bufferedReader.close()
@@ -733,7 +735,7 @@ class ImportOMDBHelper @AssistedInject constructor(
             Log.e("jingo", "安装报错 ${currentConfig.table} ${elementIndex} ${e.message}")
             throw e
         }
-        Log.e("jingo", "安装完成 ${currentConfig.table}")
+        Log.e("jingo", "完成 ${currentConfig.table}")
     }
 
 

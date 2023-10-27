@@ -214,7 +214,7 @@ public class CMLog {
         if (!flag&&MYLOG_WRITE_TO_FILE) {
             flag = true;
             try {
-                Log.e("jingo", "日志写入0");
+                Log.e("qj", "日志写入0");
                 // 新建或打开日志文件
                 Date nowtime = new Date();
                 String needWriteFiel = logfile.format(nowtime);
@@ -232,11 +232,11 @@ public class CMLog {
                     new File(Constant.USER_DATA_LOG_PATH).mkdirs();
                 }
                 File file = new File(Constant.USER_DATA_LOG_PATH, needWriteFiel + MYLOGFILEName);
-                Log.e("jingo", "日志写入1");
+                Log.e("qj", "日志写入1");
 
                 if (!file.exists())
                     file.createNewFile();
-                Log.e("jingo", "日志写入2");
+                Log.e("qj", "日志写入2");
 
                 FileWriter filerWriter = new FileWriter(file, true);//后面这个参数代表是不是要接上文件中原来的数据，不进行覆盖
                 BufferedWriter bufWriter = new BufferedWriter(filerWriter);
@@ -244,7 +244,7 @@ public class CMLog {
                 bufWriter.newLine();
                 bufWriter.close();
                 filerWriter.close();
-                Log.e("jingo", "日志写入结束");
+                Log.e("qj", "日志写入结束");
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
