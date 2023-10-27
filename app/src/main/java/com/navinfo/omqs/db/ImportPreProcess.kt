@@ -740,9 +740,11 @@ class ImportPreProcess {
        // angleReference.renderEntityId = renderEntity.id
         angleReference.name = "${renderEntity.name}车道中线面"
         angleReference.table = renderEntity.table
+        Log.e("jingo", "几何转换开始")
         angleReference.geometry =
-            GeometryTools.createGeometry(renderEntity.geometry).buffer(0.000035)
+            GeometryTools.createGeometry(renderEntity.geometry).buffer(0.000010)
                 .toString()//GeometryTools.computeLine(0.000035,0.000035,renderEntity.geometry)
+        Log.e("jingo", "几何转换结束")
         angleReference.properties["qi_table"] = renderEntity.table
         angleReference.properties["widthProperties"] = "3"
         angleReference.zoomMin = renderEntity.zoomMin
@@ -750,9 +752,6 @@ class ImportPreProcess {
         angleReference.taskId = renderEntity.taskId
         angleReference.enable = renderEntity.enable
         val listResult = mutableListOf<ReferenceEntity>()
-        angleReference.propertiesDb = StrZipUtil.compress(
-            gson.toJson(angleReference.properties).toString()
-        )
         listResult.add(angleReference)
         insertData(listResult)
     }
