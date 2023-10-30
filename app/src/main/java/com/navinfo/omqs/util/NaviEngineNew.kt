@@ -1,20 +1,14 @@
 package com.navinfo.omqs.util
 
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.collect.library.data.entity.NiLocation
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.enums.DataCodeEnum
-import com.navinfo.collect.library.utils.FootAndDistance
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.db.RealmOperateHelper
 import io.realm.Realm
 import org.oscim.core.GeoPoint
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 class NaviEngineNew(
     private val realmOperateHelper: RealmOperateHelper,
@@ -38,7 +32,6 @@ class NaviEngineNew(
         geoPoint: GeoPoint,
         realm:Realm
     ) {
-//        val geoPoint = GeoPoint(niLocation.latitude, niLocation.longitude)
         var latestRoute: HadLinkDvoBean? = null
         var lastDis = -1.0
 

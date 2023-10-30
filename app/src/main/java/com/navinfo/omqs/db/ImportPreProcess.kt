@@ -728,6 +728,7 @@ class ImportPreProcess {
      * 生成车道中心线面宽度
      * */
     fun generateAddWidthLine(renderEntity: RenderEntity) {
+        var newTime = 0L
         // 添加车道中心面渲染原则，根据车道宽度进行渲染
         val angleReference = ReferenceEntity()
        // angleReference.renderEntityId = renderEntity.id
@@ -952,11 +953,8 @@ class ImportPreProcess {
 
     private fun insertData(list: List<RealmModel>) {
         realm?.let {
-            Log.e("qj", "子表插入==")
             if (list != null && list.isNotEmpty()) {
-                Log.e("qj", "子表插入开始==")
                 it.copyToRealm(list)
-                Log.e("qj", "子表插入结束==")
             }
         }
     }

@@ -49,7 +49,6 @@ class GeometryToolsKt {
                     }
                 }
             }
-            println("YGeometry-time:" + (System.currentTimeMillis() - startTime))
         }
 
         /**
@@ -93,7 +92,6 @@ class GeometryToolsKt {
                     }
                 }
             }
-            println("XGeometry-time:" + (System.currentTimeMillis() - startTime))
         }
 
         fun getMasterPoint(wkt: String): String {
