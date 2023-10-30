@@ -25,7 +25,7 @@ open class ReferenceEntity() : RealmObject() {
     @Ignore
     lateinit var name: String //要素名
     lateinit var table: String //要素表名
-    var propertiesDb: ByteArray? = null
+    var propertiesDb: String = ""
     var code: String = "0" // 要素编码
 
     @Ignore
@@ -80,11 +80,11 @@ open class ReferenceEntity() : RealmObject() {
     @Ignore
     var properties: RealmDictionary<String> = RealmDictionary()
         get() {
-            if (propertiesDb!=null && field.isEmpty()) {
+            if (propertiesDb != null && propertiesDb!!.isNotEmpty() && field.isEmpty()) {
                 try {
                     val gson = Gson()
                     val type = object : TypeToken<RealmDictionary<String>>() {}.type
-                    field = gson.fromJson(DeflaterUtil.decompress(propertiesDb).toString(), type)
+                    field = gson.fromJson(DeflaterUtil.unzipString(propertiesDb), type)
                 } catch (e: Exception) {
                     Log.e("jingo","ReferenceEntity 转 properties $e")
                 }

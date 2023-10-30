@@ -104,7 +104,7 @@ public class OMDBReferenceDecoder extends TileDecoder {
             }
         } else if (geometry instanceof LineString) {
             //将车道中心进行转化面渲染
-            if(layerName== DataCodeEnum.OMDB_LANE_LINK_LG.name()){
+            if(layerName!=null&&layerName.equals(DataCodeEnum.OMDB_LANE_LINK_LG.name())){
                 Log.e("qj","车道中心线转化开始");
                 processPolygon((Polygon)GeometryTools.createGeometry(GeometryTools.computeLine(0.000035,0.000035,geometry.toString())));
                 Log.e("qj","车道中心线转化结束");

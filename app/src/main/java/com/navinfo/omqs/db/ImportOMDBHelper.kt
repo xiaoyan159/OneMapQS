@@ -3,6 +3,7 @@ package com.navinfo.omqs.db
 import android.content.Context
 import android.database.Cursor.*
 import android.util.Log
+import com.alibaba.fastjson.JSON
 import com.blankj.utilcode.util.ZipUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Mutex
 import org.spatialite.database.SQLiteDatabase
+import sun.misc.BASE64Encoder
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -192,6 +194,8 @@ class ImportOMDBHelper @AssistedInject constructor(
         //协程池
         val listJob = mutableListOf<Job>()
         try {
+            CMLog.writeLogtoFile(ImportOMDBHelper::class.java.name, "数据安装", "开始安装数据")
+            Constant.INSTALL_DATA = true
             for (importConfig in importConfigList) {
                 for ((index, currentEntry) in importConfig.tableMap.entries.withIndex()) {
                     if (currentEntry.value.isDependOnOtherTable) {
@@ -240,9 +244,14 @@ class ImportOMDBHelper @AssistedInject constructor(
                 )
             }
             Log.e("jingo", "安装结束")
+
+            CMLog.writeLogtoFile(ImportOMDBHelper::class.java.name, "数据安装", "安装结束")
+
         } catch (e: Exception) {
             Log.e("jingo", "安装报错1 ${e.message}")
             return false
+        }finally {
+            Constant.INSTALL_DATA = false
         }
         return true
     }
@@ -261,11 +270,9 @@ class ImportOMDBHelper @AssistedInject constructor(
         //单个表要素统计
         var elementIndex = 0
         val currentConfig = currentEntry.value
-//        CMLog.writeLogtoFile(
-//            ImportOMDBHelper::class.java.name,
-//            "importOmdbZipFile",
-//            "${currentConfig.table}开始"
-//        )
+
+        CMLog.writeLogtoFile(ImportOMDBHelper::class.java.name, "importOmdbZipFile", "${currentConfig.table}开始")
+
         try {
             var realm: Realm? = null
             if (!isEmit) {
@@ -687,7 +694,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                             renderEntity.properties.remove("shapeList")
                         }
 
-                        renderEntity.propertiesDb = DeflaterUtil.compress(gson.toJson(renderEntity.properties).toByteArray())
+                        renderEntity.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(renderEntity.properties))
 
                         listRenderEntity.add(renderEntity)
                     }
@@ -712,11 +719,8 @@ class ImportOMDBHelper @AssistedInject constructor(
                     }
                     line = bufferedReader.readLine()
                 }
-//                CMLog.writeLogtoFile(
-//                    ImportOMDBHelper::class.java.name,
-//                    "importOmdbZipFile",
-//                    "结束===总量$elementIndex"
-//                )
+
+                CMLog.writeLogtoFile(ImportOMDBHelper::class.java.name, "importOmdbZipFile", "${currentConfig.table}结束===总量$elementIndex")
 
                 if (isEmit) {
                     f.send(listRenderEntity)

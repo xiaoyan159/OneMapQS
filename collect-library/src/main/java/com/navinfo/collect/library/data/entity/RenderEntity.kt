@@ -2,9 +2,9 @@ package com.navinfo.collect.library.data.entity
 
 import android.os.Parcelable
 import android.util.Log
+import com.alibaba.fastjson.JSON
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.navinfo.collect.library.system.Constant
 import com.navinfo.collect.library.utils.DeflaterUtil
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
@@ -14,13 +14,8 @@ import io.realm.RealmObject
 import io.realm.RealmSet
 import io.realm.annotations.Ignore
 import io.realm.annotations.Index
-import io.realm.annotations.PrimaryKey
 import kotlinx.parcelize.Parcelize
-import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.Geometry
-import org.oscim.core.MercatorProjection
-import java.util.*
-import java.util.zip.GZIPInputStream
 
 /**
  * 渲染要素对应的实体
@@ -32,7 +27,7 @@ open class RenderEntity() : RealmObject(), Parcelable {
     lateinit var name: String //要素名
     lateinit var table: String //要素表名
     var code: String = "0" // 要素编码
-    var propertiesDb: ByteArray? = null
+    var propertiesDb: String = ""
     var geometry: String =
         "" // 要素渲染参考的geometry，该数据可能会在导入预处理环节被修改，原始geometry会保存在properties的geometry字段下
         get() {
@@ -83,11 +78,11 @@ open class RenderEntity() : RealmObject(), Parcelable {
     @Ignore
     var properties: RealmDictionary<String> = RealmDictionary()
         get() {
-            if (propertiesDb != null && field.isEmpty()) {
+            if (propertiesDb != null && propertiesDb!!.isNotEmpty()&& field.isEmpty()) {
                 try {
                     val gson = Gson()
                     val type = object : TypeToken<RealmDictionary<String>>() {}.type
-                    field = gson.fromJson(DeflaterUtil.decompress(propertiesDb).toString(), type)
+                    field = gson.fromJson(DeflaterUtil.unzipString(propertiesDb), type)
                 } catch (e: Exception) {
                     Log.e("jingo","RenderEntity 转 properties $e")
                 }

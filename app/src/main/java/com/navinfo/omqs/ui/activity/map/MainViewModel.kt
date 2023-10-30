@@ -292,6 +292,10 @@ class MainViewModel @Inject constructor(
             object : OnGeoPointClickListener {
                 override fun onMapClick(tag: String, point: GeoPoint) {
                     if (tag == TAG) {
+                        //数据安装时不允许操作数据
+                        if(Constant.INSTALL_DATA){
+                            return
+                        }
                         if (bMeasuringTool) {
                             mapController.measureLayerHandler.addPoint(measuringType, point)
                         } else {
