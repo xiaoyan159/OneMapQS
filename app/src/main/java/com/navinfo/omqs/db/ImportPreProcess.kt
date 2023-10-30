@@ -6,6 +6,7 @@ import com.navinfo.collect.library.data.entity.LinkRelation
 import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.enums.DataCodeEnum
+import com.navinfo.collect.library.utils.DeflaterUtil
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.StrZipUtil
 import com.navinfo.omqs.Constant
@@ -239,9 +240,7 @@ class ImportPreProcess {
         startEndReference.properties["qi_table"] = renderEntity.table
         startEndReference.properties["type"] = "s_2_e"
         val listResult = mutableListOf<ReferenceEntity>()
-        startEndReference.propertiesDb = StrZipUtil.compress(
-            gson.toJson(startEndReference.properties).toString()
-        )
+        startEndReference.propertiesDb = DeflaterUtil.compress(gson.toJson(startEndReference.properties).toByteArray())
         listResult.add(startEndReference)
         insertData(listResult)
     }
@@ -344,9 +343,7 @@ class ImportPreProcess {
         Log.e("qj", "generateS2EReferencePoint===${startReference.geometry}")
 
         startReference.properties["geometry"] = startReference.geometry
-        startReference.propertiesDb = StrZipUtil.compress(
-            gson.toJson(startReference.properties).toString()
-        )
+        startReference.propertiesDb = DeflaterUtil.compress(gson.toJson(startReference.properties).toByteArray())
         listResult.add(startReference)
 
         Log.e("qj", "generateS2EReferencePoint===1")
@@ -381,9 +378,7 @@ class ImportPreProcess {
             Log.e("qj", "generateS2EReferencePoint===e_2_p${renderEntity.name}")
         }
         endReference.properties["geometry"] = endReference.geometry
-        endReference.propertiesDb = StrZipUtil.compress(
-            gson.toJson(endReference.properties).toString()
-        )
+        endReference.propertiesDb = DeflaterUtil.compress(gson.toJson(endReference.properties).toByteArray())
         listResult.add(endReference)
         Log.e("qj", "generateS2EReferencePoint===4")
         insertData(listResult)
@@ -481,8 +476,8 @@ class ImportPreProcess {
                 WKTWriter(3).write(GeometryTools.createLineString(arrayOf(pointStart, coorEnd)))
             angleReference.properties["qi_table"] = renderEntity.table
             angleReference.properties["type"] = "angle"
-            angleReference.propertiesDb = StrZipUtil.compress(
-                gson.toJson(angleReference.properties).toString()
+            angleReference.propertiesDb = DeflaterUtil.compress(
+                gson.toJson(angleReference.properties).toByteArray()
             )
             listResult.add(angleReference)
         }
@@ -640,9 +635,7 @@ class ImportPreProcess {
                     referenceEntity.properties["symbol"] =
                         "assets:omdb/4601/${type}/1301_${referenceEntity.properties["currentDirect"]}.svg"
                     Log.d("unpackingLaneInfo", referenceEntity.properties["symbol"].toString())
-                    referenceEntity.propertiesDb = StrZipUtil.compress(
-                        gson.toJson(referenceEntity.properties).toString()
-                    )
+                    referenceEntity.propertiesDb = DeflaterUtil.compress(gson.toJson(referenceEntity.properties).toByteArray())
                     listResult.add(referenceEntity)
                 }
                 insertData(listResult)
@@ -741,9 +734,8 @@ class ImportPreProcess {
         angleReference.name = "${renderEntity.name}车道中线面"
         angleReference.table = renderEntity.table
         Log.e("jingo", "几何转换开始")
-        angleReference.geometry =
-            GeometryTools.createGeometry(renderEntity.geometry).buffer(0.000010)
-                .toString()//GeometryTools.computeLine(0.000035,0.000035,renderEntity.geometry)
+        angleReference.geometry = renderEntity.geometry
+        //GeometryTools.createGeometry(renderEntity.geometry).buffer(0.000035).toString()//GeometryTools.computeLine(0.000035,0.000035,renderEntity.geometry)
         Log.e("jingo", "几何转换结束")
         angleReference.properties["qi_table"] = renderEntity.table
         angleReference.properties["widthProperties"] = "3"
@@ -752,6 +744,7 @@ class ImportPreProcess {
         angleReference.taskId = renderEntity.taskId
         angleReference.enable = renderEntity.enable
         val listResult = mutableListOf<ReferenceEntity>()
+        angleReference.propertiesDb = DeflaterUtil.compress(gson.toJson(angleReference.properties).toByteArray())
         listResult.add(angleReference)
         insertData(listResult)
     }
@@ -782,9 +775,7 @@ class ImportPreProcess {
                     GeometryTools.createGeometry(nodeJSONObject["geometry"].toString()).toString()
                 intersectionReference.properties["qi_table"] = renderEntity.table
                 intersectionReference.properties["type"] = "node"
-                intersectionReference.propertiesDb = StrZipUtil.compress(
-                    gson.toJson(intersectionReference.properties).toString()
-                )
+                intersectionReference.propertiesDb = DeflaterUtil.compress(gson.toJson(intersectionReference.properties).toByteArray())
                 listResult.add(intersectionReference)
             }
             insertData(listResult)
@@ -953,9 +944,7 @@ class ImportPreProcess {
             dynamicSrcReference.properties["type"] = "dynamicSrc"
             val code = renderEntity.properties[codeName]
             dynamicSrcReference.properties["src"] = "${prefix}${code}${suffix}"
-            dynamicSrcReference.propertiesDb = StrZipUtil.compress(
-                gson.toJson(dynamicSrcReference.properties).toString()
-            )
+            dynamicSrcReference.propertiesDb = DeflaterUtil.compress(gson.toJson(dynamicSrcReference.properties).toByteArray())
             listResult.add(dynamicSrcReference)
         }
         insertData(listResult)

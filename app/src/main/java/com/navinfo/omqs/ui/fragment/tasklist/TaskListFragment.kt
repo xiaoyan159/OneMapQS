@@ -145,6 +145,17 @@ class TaskListFragment : BaseFragment() {
             binding.taskListRecyclerview.smoothScrollToPosition(position)
         }
 
+        viewModel.liveDataLoadTask.observe(viewLifecycleOwner){
+            when(it){
+                TaskLoadStatus.TASK_LOAD_STATUS_BEGIN->{
+                    showLoadingDialog("正在切换任务")
+                }
+                TaskLoadStatus.TASK_LOAD_STATUS_FISISH->{
+                    hideLoadingDialog()
+                }
+            }
+        }
+
         viewModel.liveDataCloseTask.observe(viewLifecycleOwner){
             when(it){
                 TaskDelStatus.TASK_DEL_STATUS_BEGIN->{

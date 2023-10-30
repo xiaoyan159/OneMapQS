@@ -3,6 +3,7 @@ package com.navinfo.collect.library.data.entity
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.navinfo.collect.library.utils.DeflaterUtil
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.collect.library.utils.StrZipUtil
@@ -24,7 +25,7 @@ open class ReferenceEntity() : RealmObject() {
     @Ignore
     lateinit var name: String //要素名
     lateinit var table: String //要素表名
-    var propertiesDb: String = ""
+    var propertiesDb: ByteArray? = null
     var code: String = "0" // 要素编码
 
     @Ignore
@@ -79,11 +80,11 @@ open class ReferenceEntity() : RealmObject() {
     @Ignore
     var properties: RealmDictionary<String> = RealmDictionary()
         get() {
-            if (propertiesDb.isNotEmpty() && field.isEmpty()) {
+            if (propertiesDb!=null && field.isEmpty()) {
                 try {
                     val gson = Gson()
                     val type = object : TypeToken<RealmDictionary<String>>() {}.type
-                    field = gson.fromJson(StrZipUtil.uncompress(propertiesDb), type)
+                    field = gson.fromJson(DeflaterUtil.decompress(propertiesDb).toString(), type)
                 } catch (e: Exception) {
                     Log.e("jingo","ReferenceEntity 转 properties $e")
                 }

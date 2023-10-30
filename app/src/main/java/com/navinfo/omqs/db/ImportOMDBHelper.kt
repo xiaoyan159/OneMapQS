@@ -12,6 +12,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.data.entity.*
 import com.navinfo.collect.library.enums.DataCodeEnum
+import com.navinfo.collect.library.utils.DeflaterUtil
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.StrZipUtil
 import com.navinfo.omqs.Constant
@@ -266,6 +267,21 @@ class ImportOMDBHelper @AssistedInject constructor(
                                         renderEntity.taskId = task.id
                                         renderEntity.zoomMin = map["qi_zoomMin"].toString().toInt()
                                         renderEntity.zoomMax = map["qi_zoomMax"].toString().toInt()
+
+                                        // 在外层记录当前数据的linkPid
+                                        if (map.containsKey("linkPid")) {
+                                            renderEntity.linkPid =
+                                                map["linkPid"].toString().split(",")[0]
+                                        } else if (map.containsKey("linkList")) {
+                                            val linkList = map["linkList"].toString()
+                                            if (!linkList.isNullOrEmpty() && linkList != "null") {
+                                                val list: List<LinkList> = gson.fromJson(
+                                                    linkList,
+                                                    object : TypeToken<List<LinkList>>() {}.type
+                                                )
+                                                renderEntity.linkPid = list[0].linkPid
+                                            }
+                                        }
 
                                         Log.e(
                                             "jingo",
@@ -665,8 +681,9 @@ class ImportOMDBHelper @AssistedInject constructor(
                                                 renderEntity.properties.remove("shapeList")
                                             }
 
-                                            var gsonStr = gson.toJson(renderEntity.properties).toString()
-                                            renderEntity.propertiesDb = StrZipUtil.compress(gsonStr)
+                                            var gsonStr = gson.toJson(renderEntity.properties).toByteArray()
+
+                                            renderEntity.propertiesDb = DeflaterUtil.compress(gsonStr)//StrZipUtil.compress(gsonStr)
 
                                             listRenderEntity.add(renderEntity)
                                         }

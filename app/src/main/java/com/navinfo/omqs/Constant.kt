@@ -45,7 +45,9 @@ class Constant {
          */
         var TRACE_COUNT : Int = 0
 
-        var TRACE_COUNT_TIME : Int = 10
+        var TRACE_COUNT_TIME : Int = 9
+
+        var TRACE_COUNT_MORE_TIME : Int = 24
 
         /**
          * 当前安装任务

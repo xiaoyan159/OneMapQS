@@ -193,6 +193,37 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     /**
      * 评测精简数据marker 图层
      */
+    private val niLocationItemizedLayerRough: ItemizedLayer by lazy {
+
+        val symbol = MarkerSymbol(niLocationBitmap, MarkerSymbol.HotspotPlace.CENTER)
+        val layerRough = ItemizedLayer(
+            mapView.vtmMap,
+            symbol,
+        )
+        layerRough.setOnItemGestureListener(object : OnItemGestureListener<MarkerInterface> {
+            override fun onItemSingleTapUp(index: Int, item: MarkerInterface?): Boolean {
+                val tag = mMapView.listenerTagList.last()
+                val listenerList = mMapView.listenerList[tag]
+                if (listenerList != null) {
+                    for (listener in listenerList) {
+                    }
+                }
+                return true
+            }
+
+            override fun onItemLongPress(index: Int, item: MarkerInterface?): Boolean {
+                return true
+            }
+
+        })
+        layerRough.isEnabled = false
+        addLayer(layerRough, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
+        layerRough
+    }
+
+    /**
+     * 评测精简数据marker 图层
+     */
     private val niLocationItemizedLayerSimple: ItemizedLayer by lazy {
 
         val symbol = MarkerSymbol(niLocationBitmap, MarkerSymbol.HotspotPlace.CENTER)
@@ -206,14 +237,6 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                 val listenerList = mMapView.listenerList[tag]
                 if (listenerList != null) {
                     for (listener in listenerList) {
-/*                        if (listener is OnNiLocationItemListener) {
-                            listener.onNiLocation(
-                                tag,
-                                index,
-                                (niLocationItemizedLayerSimple.itemList[index] as MarkerItem).uid as NiLocation
-                            )
-                            break
-                        }*/
                     }
                 }
                 return true
@@ -333,11 +356,13 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
                     qsRecordItemizedLayer.isEnabled = false
                 }
                 if (traceMarkerEnable) {
-                    niLocationItemizedLayer.isEnabled = mapPosition.getZoomLevel() in 17..20
-                    niLocationItemizedLayerSimple.isEnabled = mapPosition.getZoomLevel() in 12..16
+                    niLocationItemizedLayer.isEnabled = mapPosition.getZoomLevel() in 18..20
+                    niLocationItemizedLayerSimple.isEnabled = mapPosition.getZoomLevel() in 14..17
+                    niLocationItemizedLayerRough.isEnabled = mapPosition.getZoomLevel() in 12..13
                 } else {
                     niLocationItemizedLayer.isEnabled = false
                     niLocationItemizedLayerSimple.isEnabled = false
+                    niLocationItemizedLayerRough.isEnabled = false
                 }
             }
         })
@@ -450,9 +475,11 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     fun setTraceMarkEnable(enable: Boolean) {
         niLocationItemizedLayer.isEnabled = enable
         niLocationItemizedLayerSimple.isEnabled = enable
+        niLocationItemizedLayerRough.isEnabled = enable
         traceMarkerEnable = enable
         niLocationItemizedLayer.populate()
         niLocationItemizedLayerSimple.populate()
+        niLocationItemizedLayerRough.populate()
         mMapView.updateMap(true)
     }
 
@@ -602,6 +629,15 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         var geoMarkerItem = createNILocationBitmap(niLocation)
         niLocationItemizedLayerSimple.addItem(geoMarkerItem)
         niLocationItemizedLayerSimple.update()
+    }
+
+    /**
+     * 添加质检数据marker
+     */
+    fun addNiLocationMarkerItemRough(niLocation: NiLocation) {
+        var geoMarkerItem = createNILocationBitmap(niLocation)
+        niLocationItemizedLayerRough.addItem(geoMarkerItem)
+        niLocationItemizedLayerRough.update()
     }
 
     private fun createNILocationBitmap(niLocation: NiLocation): MarkerItem {
@@ -870,6 +906,8 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         niLocationItemizedLayer.update()
         niLocationItemizedLayerSimple.removeAllItems()
         niLocationItemizedLayerSimple.update()
+        niLocationItemizedLayerRough.removeAllItems()
+        niLocationItemizedLayerRough.update()
     }
 
     /**
@@ -891,6 +929,18 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
     fun getNILocationSimple(index: Int): NiLocation? {
         return if (index > -1 && index < getNILocationItemizedLayerSimpleSize()) {
             ((niLocationItemizedLayerSimple.itemList[index]) as MarkerItem).uid as NiLocation
+        } else {
+            null
+        }
+    }
+
+    fun getNILocationItemizedLayerRoughSize(): Int {
+        return niLocationItemizedLayerRough.itemList.size
+    }
+
+    fun getNILocationRough(index: Int): NiLocation? {
+        return if (index > -1 && index < getNILocationItemizedLayerRoughSize()) {
+            ((niLocationItemizedLayerRough.itemList[index]) as MarkerItem).uid as NiLocation
         } else {
             null
         }
