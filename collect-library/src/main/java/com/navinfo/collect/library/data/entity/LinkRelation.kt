@@ -21,7 +21,10 @@ import java.util.*
  * */
 @Parcelize
 open class LinkRelation() : RealmObject(), Parcelable {
+    @Index
     var linkPid:String = ""
+    @Index
     var sNodeId: String? = null
+    @Index
     var eNodeId: String? = null
 }

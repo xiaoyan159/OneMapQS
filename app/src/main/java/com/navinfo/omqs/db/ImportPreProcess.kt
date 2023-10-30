@@ -267,7 +267,6 @@ class ImportPreProcess {
             startReference.zoomMax = renderEntity.zoomMax
             startReference.taskId = renderEntity.taskId
             startReference.enable = renderEntity.enable
-
             // 起点坐标
             startReference.geometry =
                 GeometryTools.createGeometry(GeoPoint(pointStart.y, pointStart.x)).toString()
