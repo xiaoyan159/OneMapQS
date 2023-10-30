@@ -8,6 +8,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.data.entity.*
 import com.navinfo.collect.library.enums.DataCodeEnum
+import com.navinfo.collect.library.utils.DeflaterUtil
 import com.navinfo.collect.library.utils.StrZipUtil
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.Constant.Companion.currentInstallTaskConfig
@@ -686,9 +687,8 @@ class ImportOMDBHelper @AssistedInject constructor(
                             renderEntity.properties.remove("shapeList")
                         }
 
-                        renderEntity.propertiesDb = StrZipUtil.compress(
-                            gson.toJson(renderEntity.properties).toString()
-                        )
+                        renderEntity.propertiesDb = DeflaterUtil.compress(gson.toJson(renderEntity.properties).toByteArray())
+
                         listRenderEntity.add(renderEntity)
                     }
 
