@@ -247,11 +247,11 @@ class ImportOMDBHelper @AssistedInject constructor(
 
             CMLog.writeLogtoFile(ImportOMDBHelper::class.java.name, "数据安装", "安装结束")
 
+            Constant.INSTALL_DATA = false
+
         } catch (e: Exception) {
             Log.e("jingo", "安装报错1 ${e.message}")
             return false
-        }finally {
-            Constant.INSTALL_DATA = false
         }
         return true
     }
@@ -294,12 +294,15 @@ class ImportOMDBHelper @AssistedInject constructor(
                         continue
                     }
                     newTime = System.currentTimeMillis()
-                    Log.e(
-                        "jingo",
-                        "安装数据 ${currentConfig.table}  $elementIndex ${listRenderEntity.size} ${newTime - time}"
-                    )
+
+                    if(elementIndex%50==0){
+                        Log.e("jingo", "安装数据 ${currentConfig.table}  $elementIndex ${listRenderEntity.size} ${newTime - time}")
+                    }
+
                     time = newTime
+
                     elementIndex += 1
+
                     val map = gson.fromJson<Map<String, Any>>(
                         line, object : TypeToken<Map<String, Any>>() {}.type
                     ).toMutableMap()
@@ -488,6 +491,8 @@ class ImportOMDBHelper @AssistedInject constructor(
 
                     // 对renderEntity做预处理后再保存
                     val resultEntity = importConfig.transformProperties(renderEntity, realm)
+
+                    //车道中心线不在主表写入
                     if (resultEntity != null) {
 
                         //对code编码需要特殊处理 存在多个属性值时，渲染优先级：SA>PA,存在多个属性值时，渲染优先级：FRONTAGE>MAIN_SIDE_A CCESS
@@ -697,6 +702,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                         renderEntity.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(renderEntity.properties))
 
                         listRenderEntity.add(renderEntity)
+
                     }
 
                     if (listRenderEntity.size > 20000) {

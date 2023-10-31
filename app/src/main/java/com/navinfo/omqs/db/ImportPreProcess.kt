@@ -242,8 +242,9 @@ class ImportPreProcess {
         startEndReference.properties["type"] = "s_2_e"
         val listResult = mutableListOf<ReferenceEntity>()
         startEndReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(startEndReference.properties))
-        listResult.add(startEndReference)
-        insertData(listResult)
+        renderEntity.referenceEntitys?.add(startEndReference)
+        //listResult.add(startEndReference)
+        //insertData(listResult)
     }
 
     /**
@@ -292,9 +293,9 @@ class ImportPreProcess {
             endReference.properties["qi_table"] = renderEntity.table
             endReference.properties["type"] = "e_2_p"
             endReference.properties["geometry"] = endReference.geometry
-
-            listResult.add(endReference)
-            insertData(listResult)
+            renderEntity.referenceEntitys?.add(endReference)
+            //listResult.add(endReference)
+            //insertData(listResult)
         }
     }
 
@@ -379,9 +380,10 @@ class ImportPreProcess {
         }
         endReference.properties["geometry"] = endReference.geometry
         endReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(endReference.properties))
-        listResult.add(endReference)
+        renderEntity.referenceEntitys?.add(endReference)
+        //listResult.add(endReference)
         Log.e("qj", "generateS2EReferencePoint===4")
-        insertData(listResult)
+        //insertData(listResult)
     }
 
     /**
@@ -477,9 +479,10 @@ class ImportPreProcess {
             angleReference.properties["qi_table"] = renderEntity.table
             angleReference.properties["type"] = "angle"
             angleReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(angleReference.properties))
-            listResult.add(angleReference)
+            renderEntity.referenceEntitys?.add(angleReference)
+            //listResult.add(angleReference)
         }
-        insertData(listResult)
+        //insertData(listResult)
     }
 
     fun addAngleFromGeometry(renderEntity: RenderEntity): String {
@@ -634,9 +637,10 @@ class ImportPreProcess {
                         "assets:omdb/4601/${type}/1301_${referenceEntity.properties["currentDirect"]}.svg"
                     Log.d("unpackingLaneInfo", referenceEntity.properties["symbol"].toString())
                     referenceEntity.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(referenceEntity.properties))
-                    listResult.add(referenceEntity)
+                    renderEntity.referenceEntitys?.add(referenceEntity)
+                   //listResult.add(referenceEntity)
                 }
-                insertData(listResult)
+                //insertData(listResult)
             }
         }
     }
@@ -744,8 +748,9 @@ class ImportPreProcess {
         angleReference.enable = renderEntity.enable
         val listResult = mutableListOf<ReferenceEntity>()
         angleReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(angleReference.properties))
-        listResult.add(angleReference)
-        insertData(listResult)
+        renderEntity.referenceEntitys?.add(angleReference)
+        //listResult.add(angleReference)
+        //insertData(listResult)
     }
 
 
@@ -775,9 +780,10 @@ class ImportPreProcess {
                 intersectionReference.properties["qi_table"] = renderEntity.table
                 intersectionReference.properties["type"] = "node"
                 intersectionReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(intersectionReference.properties))
-                listResult.add(intersectionReference)
+                renderEntity.referenceEntitys?.add(intersectionReference)
+                //listResult.add(intersectionReference)
             }
-            insertData(listResult)
+            //insertData(listResult)
         }
     }
 
@@ -944,9 +950,10 @@ class ImportPreProcess {
             val code = renderEntity.properties[codeName]
             dynamicSrcReference.properties["src"] = "${prefix}${code}${suffix}"
             dynamicSrcReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(dynamicSrcReference.properties))
-            listResult.add(dynamicSrcReference)
+            renderEntity.referenceEntitys?.add(dynamicSrcReference)
+            //listResult.add(dynamicSrcReference)
         }
-        insertData(listResult)
+        //insertData(listResult)
     }
 
     private fun insertData(list: List<RealmModel>) {

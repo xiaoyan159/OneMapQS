@@ -854,7 +854,7 @@ class MainViewModel @Inject constructor(
      */
     private suspend fun captureLink(point: GeoPoint) {
 
-        if (captureLinkState) {
+        if (captureLinkState||Constant.INSTALL_DATA) {
             return
         }
 

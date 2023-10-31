@@ -71,25 +71,35 @@ public class DeflaterUtil{
 
         deflater.finish();
 
-        final byte[] bytes = new byte[256];
+        final byte[] bytes = new byte[512];
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(256);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(512);
 
-        while (!deflater.finished()) {
+        try {
 
-            //压缩输入数据并用压缩数据填充指定的缓冲区。
+            while (!deflater.finished()) {
 
-            int length = deflater.deflate(bytes);
+                //压缩输入数据并用压缩数据填充指定的缓冲区。
 
-            outputStream.write(bytes, 0, length);
+                int length = deflater.deflate(bytes);
 
+                outputStream.write(bytes, 0, length);
+
+            }
+
+            deflater.end();
+
+            return Base64.encodeBase64String(outputStream.toByteArray());
+
+        }catch (Exception e){
+            return null;
+        }finally {
+            try {
+                outputStream.close();
+            }catch (Exception e){
+
+            }
         }
-
-        deflater.end();
-
-        return Base64.encodeBase64String(outputStream.toByteArray());
-
-
     }
 
     /**
@@ -108,9 +118,9 @@ public class DeflaterUtil{
 
         inflater.setInput(decode);
 
-        final byte[] bytes = new byte[256];
+        final byte[] bytes = new byte[512];
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(256);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(512);
 
         try {
 
@@ -150,6 +160,12 @@ public class DeflaterUtil{
 
             return null;
 
+        }finally {
+            try {
+                outputStream.close();
+            }catch (Exception e){
+
+            }
         }
 
     }
