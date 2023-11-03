@@ -167,6 +167,12 @@
 						"k": "geometry",
 						"v": "~",
 						"klib": "geometry",
+						"vlib": "filterLaneTypeAccess()"
+					},
+					{
+						"k": "geometry",
+						"v": "~",
+						"klib": "geometry",
 						"vlib": "generateLaneTypeAccessS2ERefPoint()"
 					}
 				]
@@ -561,7 +567,7 @@
 				"code": 4016,
 				"name": "立交",
 				"zoomMin": 15,
-				"zoomMax": 17,
+				"zoomMax": 20,
 				"filterData": true,
 				"catch": true,
 				"checkLinkId": false,
