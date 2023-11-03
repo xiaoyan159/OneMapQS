@@ -231,6 +231,7 @@ class ImportPreProcess {
 //        startEndReference.renderEntityId = renderEntity.id
         startEndReference.name = "${renderEntity.name}参考线"
         startEndReference.table = renderEntity.table
+        startEndReference.code = renderEntity.code
         startEndReference.zoomMin = renderEntity.zoomMin
         startEndReference.zoomMax = renderEntity.zoomMax
         startEndReference.taskId = renderEntity.taskId
@@ -469,6 +470,7 @@ class ImportPreProcess {
 //            angleReference.renderEntityId = renderEntity.id
             angleReference.name = "${renderEntity.name}参考方向"
             angleReference.table = renderEntity.table
+            angleReference.code = renderEntity.code
             angleReference.zoomMin = renderEntity.zoomMin
             angleReference.zoomMax = renderEntity.zoomMax
             angleReference.taskId = renderEntity.taskId
@@ -736,9 +738,10 @@ class ImportPreProcess {
        // angleReference.renderEntityId = renderEntity.id
         angleReference.name = "${renderEntity.name}车道中线面"
         angleReference.table = renderEntity.table
+        angleReference.code = renderEntity.code
         Log.e("jingo", "几何转换开始")
-        angleReference.geometry = renderEntity.geometry
-        //GeometryTools.createGeometry(renderEntity.geometry).buffer(0.000035).toString()//GeometryTools.computeLine(0.000035,0.000035,renderEntity.geometry)
+        //angleReference.geometry = renderEntity.geometry
+        angleReference.geometry = GeometryTools.computeLine(0.000035,0.000035,renderEntity.geometry)
         Log.e("jingo", "几何转换结束")
         angleReference.properties["qi_table"] = renderEntity.table
         angleReference.properties["widthProperties"] = "3"
@@ -938,6 +941,7 @@ class ImportPreProcess {
 //            dynamicSrcReference.renderEntityId = renderEntity.id
             dynamicSrcReference.name = "${renderEntity.name}动态icon"
             dynamicSrcReference.table = renderEntity.table
+            dynamicSrcReference.code = renderEntity.code
             dynamicSrcReference.zoomMin = renderEntity.zoomMin
             dynamicSrcReference.zoomMax = renderEntity.zoomMax
             dynamicSrcReference.taskId = renderEntity.taskId

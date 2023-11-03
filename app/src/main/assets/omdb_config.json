@@ -452,7 +452,7 @@
         "zoomMin": 15,
         "zoomMax": 17,
         "filterData": true,
-        "isDependOnOtherTable": false,
+        "isDependOnOtherTable": true,
         "catch": true,
         "transformer": [
           {
@@ -609,7 +609,7 @@
         "table": "OMDB_LANE_LINK_LG",
         "code": 5001,
         "name": "车道中心线",
-        "catch": false,
+        "catch": true,
         "isDependOnOtherTable": false,
         "checkLinkId": false,
         "zoomMin": 18,

@@ -11,6 +11,7 @@ import com.navinfo.omqs.bean.ScProblemTypeBean
 import com.navinfo.omqs.bean.ScRootCauseAnalysisBean
 import com.navinfo.omqs.bean.ScWarningCodeBean
 import com.navinfo.omqs.db.ImportOMDBHelper
+import com.navinfo.omqs.db.MultiPathsCallback
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.db.RoomAppDatabase
 import com.navinfo.omqs.tools.MetadataUtils
@@ -152,11 +153,36 @@ class PersonalCenterViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("OMQSApplication", "开始导入数据")
             if (task != null) {
-                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, task, this)
+                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, task, this,object :MultiPathsCallback<String>{
+                    override fun onProgress(value: Int) {
+                    }
+
+                    override fun onResult(value: String) {
+                    }
+
+                    override fun onError(t: Throwable) {
+                    }
+
+                    override fun onComplete() {
+                    }
+                })
             } else {
                 val newTask = TaskBean()
                 newTask.id = -1
-                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, newTask, this)
+                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, newTask, this,object :MultiPathsCallback<String>{
+                    override fun onProgress(value: Int) {
+
+                    }
+
+                    override fun onResult(value: String) {
+                    }
+
+                    override fun onError(t: Throwable) {
+                    }
+
+                    override fun onComplete() {
+                    }
+                })
 
             }
             Log.d("OMQSApplication", "导入数据完成")
