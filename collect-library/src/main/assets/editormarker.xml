@@ -2077,20 +2077,20 @@
                 <line fix="true" width="3" stroke="#cccccc"></line>
             </m>
             <m k="type" v="s_acc">
-                <symbol src="assets:omdb/icon_2092_acc_s.svg" symbol-height="32"
-                    symbol-width="32" gland="true"></symbol>
+                <symbol src="assets:omdb/icon_2092_acc_s.svg" symbol-height="26"
+                    symbol-width="26" gland="true"></symbol>
             </m>
             <m k="type" v="e_acc">
-                <symbol src="assets:omdb/icon_2092_acc_e.svg" symbol-height="32"
-                    symbol-width="32" gland="true"></symbol>
+                <symbol src="assets:omdb/icon_2092_acc_e.svg" symbol-height="26"
+                    symbol-width="26" gland="true"></symbol>
             </m>
             <m k="type" v="s_dec">
-                <symbol src="assets:omdb/icon_2092_dec_s.svg" symbol-height="32"
-                    symbol-width="32" gland="true"></symbol>
+                <symbol src="assets:omdb/icon_2092_dec_s.svg" symbol-height="26"
+                    symbol-width="26" gland="true"></symbol>
             </m>
             <m k="type" v="e_dec">
-                <symbol src="assets:omdb/icon_2092_dec_e.svg" symbol-height="32"
-                    symbol-width="32" gland="true"></symbol>
+                <symbol src="assets:omdb/icon_2092_dec_e.svg" symbol-height="26"
+                    symbol-width="26" gland="true"></symbol>
             </m>
         </m>
 

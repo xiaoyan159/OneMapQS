@@ -1206,7 +1206,7 @@ class ImportPreProcess {
 
     private fun createZLevelReference(renderEntity: RenderEntity): ReferenceEntity {
         val zLevelReference = ReferenceEntity()
-        zLevelReference.renderEntityId = renderEntity.id
+//        zLevelReference.renderEntityId = renderEntity.id
         zLevelReference.name = "${renderEntity.name}参考点"
         zLevelReference.code = renderEntity.code
         zLevelReference.table = renderEntity.table
