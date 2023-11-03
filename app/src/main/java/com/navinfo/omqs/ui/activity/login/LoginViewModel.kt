@@ -8,10 +8,13 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.ResourceUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.navinfo.collect.library.data.entity.LinkRelation
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.utils.GeometryTools
@@ -27,6 +30,8 @@ import com.navinfo.omqs.util.DateTimeUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import io.realm.RealmMigration
+import io.realm.RealmSchema
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.IOException
@@ -282,6 +287,12 @@ class LoginViewModel @Inject constructor(
                                     task.fileSize = item.fileSize
                                     task.status = item.status
                                     task.currentSize = item.currentSize
+                                    //增加mesh==null兼容性处理
+                                    for (hadLink in item.hadLinkDvoList) {
+                                        if(hadLink.mesh==null){
+                                            hadLink.mesh = ""
+                                        }
+                                    }
                                     task.hadLinkDvoList = item.hadLinkDvoList
                                     task.syncStatus = item.syncStatus
                                     //已上传后不在更新操作时间
@@ -293,8 +304,10 @@ class LoginViewModel @Inject constructor(
                                     }
                                 } else {
                                     for (hadLink in task.hadLinkDvoList) {
-                                        if(hadLink.geometry==null||hadLink.mesh==null){
+                                        if(hadLink.geometry==null){
                                             inSertData = false
+                                        }else if(hadLink.mesh==null){
+                                            hadLink.mesh = ""
                                         }else{
                                             hadLink.taskId = task.id
                                         }
@@ -418,12 +431,15 @@ class LoginViewModel @Inject constructor(
         Constant.VERSION_ID = userId
         Constant.USER_DATA_PATH = Constant.DATA_PATH + Constant.USER_ID + "/" + Constant.VERSION_ID
         Constant.USER_DATA_ATTACHEMNT_PATH = Constant.USER_DATA_PATH + "/attachment/"
+        Constant.USER_DATA_LOG_PATH = Constant.USER_DATA_PATH + "/log/"
         // 在SD卡创建用户目录，解压资源等
         val userFolder = File(Constant.USER_DATA_PATH)
         if (!userFolder.exists()) userFolder.mkdirs()
         //创建附件目录
         val userAttachmentFolder = File(Constant.USER_DATA_ATTACHEMNT_PATH)
         if (!userAttachmentFolder.exists()) userAttachmentFolder.mkdirs()
+        val userLogFolder = File(Constant.USER_DATA_LOG_PATH)
+        if (!userLogFolder.exists()) userLogFolder.mkdirs()
         // 初始化Realm
         Realm.init(context.applicationContext)
         // 656e6372797000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -431,8 +447,9 @@ class LoginViewModel @Inject constructor(
             .directory(userFolder)
             .name("OMQS.realm")
             .encryptionKey(Constant.PASSWORD)
-            .allowQueriesOnUiThread(true)
-            .schemaVersion(2)
+//            .allowQueriesOnUiThread(true)
+            .schemaVersion(3)
+            //            .migration(migration)
             .build()
         Realm.setDefaultConfiguration(config)
         // 拷贝配置文件到用户目录下
@@ -457,5 +474,18 @@ class LoginViewModel @Inject constructor(
 
     private fun byteArrayToHexString(byteArray: ByteArray): String {
         return byteArray.joinToString("") { "%02x".format(it) }
+    }
+
+    val migration : RealmMigration = RealmMigration {
+            realm, oldVersion, newVersion -> {
+                if (oldVersion == 2L && newVersion == 3L) {
+                    // DynamicRealm exposes an editable schema
+                    val schema: RealmSchema = realm.schema
+                    if (!schema.get("RenderEntity")!!.hasField("linkPid")) {
+                        schema.get("RenderEntity")
+                            ?.addField("linkPid", String::class.java)
+                    }
+                }
+            }
     }
 }

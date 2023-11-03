@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TimePicker
@@ -21,6 +22,7 @@ import com.blankj.utilcode.util.UriUtils
 import com.github.k1rakishou.fsaf.FileChooser
 import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
 import com.github.k1rakishou.fsaf.callback.FileChooserCallback
+import com.google.android.material.internal.NavigationMenuItemView
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.navinfo.collect.library.enums.DataLayerEnum
 import com.navinfo.collect.library.map.NIMapController
@@ -40,6 +42,7 @@ import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 import org.oscim.core.GeoPoint
 import org.oscim.core.MapPosition
+import org.oscim.utils.MinHeap.Item
 import javax.inject.Inject
 
 /**
@@ -73,35 +76,35 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.root.setNavigationItemSelectedListener {
+        binding.root.setNavigationItemSelectedListener { it ->
             when (it.itemId) {
                 R.id.personal_center_menu_offline_map ->
                     findNavController().navigate(R.id.OfflineMapFragment)
 
-                R.id.personal_center_menu_obtain_data -> { // 生成数据，根据sqlite文件生成对应的zip文件
-                    fileChooser.openChooseFileDialog(object : FileChooserCallback() {
-                        override fun onCancel(reason: String) {
-                        }
-
-                        @RequiresApi(Build.VERSION_CODES.N)
-                        override fun onResult(uri: Uri) {
-                            val file = UriUtils.uri2File(uri)
-                            // 开始导入数据
-                            // 656e6372797000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-                            CoroutineUtils.launchWithLoading(
-                                requireContext(),
-                                loadingMessage = "生成数据..."
-                            ) {
-                                val importOMDBHelper: ImportOMDBHelper =
-                                    importOMDBHiltFactory.obtainImportOMDBHelper(
-                                        requireContext(),
-                                        file
-                                    )
-                                viewModel.obtainOMDBZipData(importOMDBHelper)
-                            }
-                        }
-                    })
-                }
+//                R.id.personal_center_menu_obtain_data -> { // 生成数据，根据sqlite文件生成对应的zip文件
+//                    fileChooser.openChooseFileDialog(object : FileChooserCallback() {
+//                        override fun onCancel(reason: String) {
+//                        }
+//
+//                        @RequiresApi(Build.VERSION_CODES.N)
+//                        override fun onResult(uri: Uri) {
+//                            val file = UriUtils.uri2File(uri)
+//                            // 开始导入数据
+//                            // 656e6372797000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+//                            CoroutineUtils.launchWithLoading(
+//                                requireContext(),
+//                                loadingMessage = "生成数据..."
+//                            ) {
+//                                val importOMDBHelper: ImportOMDBHelper =
+//                                    importOMDBHiltFactory.obtainImportOMDBHelper(
+//                                        requireContext(),
+//                                        file
+//                                    )
+//                                viewModel.obtainOMDBZipData(importOMDBHelper)
+//                            }
+//                        }
+//                    })
+//                }
 
                 R.id.personal_center_menu_import_data -> { // 导入zip数据
                     fileChooser.openChooseFileDialog(object : FileChooserCallback() {
@@ -151,7 +154,7 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         val mapPosition: MapPosition =
                             niMapController.mMapView.vtmMap.getMapPosition()
                         mapPosition.setBearing(0f) // 锁定角度，自动将地图旋转到正北方向
-                        niMapController.mMapView.vtmMap.setMapPosition(mapPosition)
+                        niMapController.mMapView.vtmMap.mapPosition = mapPosition
                         it.title = "开启地图旋转及视角"
                     } else {
                         it.title = "锁定地图旋转及视角"
@@ -166,6 +169,17 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         it.title = "显示Marker"
                     } else {
                         it.title = "隐藏Marker"
+                    }
+                }
+                R.id.personal_center_menu_trace -> {
+                    Constant.MapTraceCloseEnable = !Constant.MapTraceCloseEnable
+                    //增加开关控制
+                    niMapController.markerHandle.setTraceMarkEnable(!Constant.MapTraceCloseEnable)
+                    //增加开关控制
+                    if (Constant.MapTraceCloseEnable) {
+                        it.title = "显示轨迹"
+                    } else {
+                        it.title = "隐藏轨迹"
                     }
                 }
                 R.id.personal_center_menu_catch_all -> {
@@ -256,6 +270,13 @@ class PersonalCenterFragment(private var indoorDataListener: ((Boolean) -> Unit?
                         it.title = "显示Marker"
                     } else {
                         it.title = "隐藏Marker"
+                    }
+                }
+                R.id.personal_center_menu_trace -> {
+                    if (Constant.MapTraceCloseEnable) {
+                        it.title = "显示轨迹"
+                    } else {
+                        it.title = "隐藏轨迹"
                     }
                 }
             }

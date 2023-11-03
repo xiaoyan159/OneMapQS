@@ -155,21 +155,20 @@ class TaskDownloadScope(
                     fileNew
                 )
             if (task != null) {
-                importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, task).collect {
-                    Log.e("jingo", "数据安装 $it")
-                    if (it == "finish") {
-                        change(FileDownloadStatus.DONE)
-                        Log.e("jingo", "数据安装结束")
-                        withContext(Dispatchers.Main) {
-                            //任务与当前一致，需要更新渲染图层
-                            if (MapParamUtils.getTaskId() == taskBean.id) {
-                                downloadManager.mapController.layerManagerHandler.updateOMDBVectorTileLayer()
-                            }
+                if (importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, task, this)) {
+//                    if (it == "finish") {
+                    change(FileDownloadStatus.DONE)
+                    Log.e("jingo", "数据安装结束")
+                    withContext(Dispatchers.Main) {
+                        //任务与当前一致，需要更新渲染图层
+                        if (MapParamUtils.getTaskId() == taskBean.id) {
+                            downloadManager.mapController.layerManagerHandler.updateOMDBVectorTileLayer()
                         }
-                    } else {
-                        change(FileDownloadStatus.IMPORTING, it)
                     }
+                } else {
+                    change(FileDownloadStatus.IMPORTING, "anzhuang")
                 }
+//                }
             }
         } catch (e: Exception) {
             Log.e("jingo", "数据安装失败 ${e.toString()}")

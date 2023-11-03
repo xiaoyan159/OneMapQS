@@ -608,6 +608,7 @@ public final class NIMapView extends RelativeLayout {
         LABEL(4)/*图标，文字图层*/,
         OPERATE_LINE(5)/*操作图层组*/,
         OPERATE_MARKER(6)/*操作图层组*/;
+
         int groupIndex;
 
         LAYER_GROUPS(int groupIndex) {

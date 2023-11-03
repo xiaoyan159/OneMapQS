@@ -23,7 +23,6 @@ import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.entity.AttachmentBean
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.collect.library.data.entity.QsRecordBean
-import com.navinfo.collect.library.data.entity.RenderEntity.Companion.LinkTable
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.OnGeoPointClickListener
@@ -236,7 +235,7 @@ class EvaluationResultViewModel @Inject constructor(
                 } else {
                     val linkList = realmOperateHelper.queryLink(realm, point = point)
                     if (linkList.isNotEmpty()) {
-                        it.linkId = linkList[0].properties[LinkTable.linkPid] ?: ""
+                        it.linkId = linkList[0].linkPid
                         mapController.lineHandler.showLine(linkList[0].geometry)
                         Log.e("jingo", "捕捉道路EEE 2")
                         return

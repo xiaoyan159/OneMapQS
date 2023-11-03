@@ -81,6 +81,7 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
     OMDB_TRAFFICLIGHT("交通灯", "4022"),
     OMDB_TOLLGATE("收费站", "4023"),
     OMDB_LANEINFO("车信", "4601"),
+    OMDB_CLM_LANEINFO("车信CLM", "4602"),
     OMDB_LANE_LINK_LG("车道中心线", "5001");
 
     companion object {

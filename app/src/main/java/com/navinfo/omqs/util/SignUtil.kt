@@ -35,7 +35,7 @@ class SignUtil {
             return SignBean(
                 iconId = getSignIcon(element),
                 iconText = getSignIconText(element),
-                linkId = element.properties[RenderEntity.Companion.LinkTable.linkPid]
+                linkId = element.linkPid
                     ?: "",
                 name = getSignNameText(element),
                 bottomRightText = getSignBottomRightText(
@@ -107,7 +107,7 @@ class SignUtil {
                 //物理车道数OMDB_PHY_LANENUM
                 DataCodeEnum.OMDB_LANE_NUM.code,
                 DataCodeEnum.OMDB_PHY_LANENUM.code -> {
-                    "${data.properties["laneNum"]}|${data.properties["laneS2e"]}|${data.properties["laneE2s"]}"
+                    "${data.properties["laneS2e"]}|${data.properties["laneE2s"]}"
                 }
 
                 //常规点限速,条件点限速
@@ -208,7 +208,7 @@ class SignUtil {
                 DataCodeEnum.OMDB_RD_LINK.code -> {
                     list.add(
                         TwoItemAdapterItem(
-                            title = "linkPid", text = "${data.properties["linkPid"]}"
+                            title = "linkPid", text = "${data.linkPid}"
                         )
                     )
                     list.add(
@@ -226,7 +226,7 @@ class SignUtil {
                 DataCodeEnum.OMDB_RD_LINK_KIND.code -> {
                     list.add(
                         TwoItemAdapterItem(
-                            title = "linkPid", text = "${data.properties["linkPid"]}"
+                            title = "linkPid", text = "${data.linkPid}"
                         )
                     )
                     try {
@@ -244,7 +244,7 @@ class SignUtil {
                 DataCodeEnum.OMDB_LINK_DIRECT.code -> {
                     list.add(
                         TwoItemAdapterItem(
-                            title = "linkPid", text = "${data.properties["linkPid"]}"
+                            title = "linkPid", text = "${data.linkPid}"
                         )
                     )
                     try {
@@ -286,11 +286,11 @@ class SignUtil {
                 //车道数//增加物理车道数DataCodeEnum.OMDB_PHY_LANENUM.code
                 DataCodeEnum.OMDB_PHY_LANENUM.code,
                 DataCodeEnum.OMDB_LANE_NUM.code -> {
-                    list.add(
+/*                    list.add(
                         TwoItemAdapterItem(
                             title = "车道总数", text = "${data.properties["laneNum"]}"
                         )
-                    )
+                    )*/
                     list.add(
                         TwoItemAdapterItem(
                             title = "顺方向车道数", text = "${data.properties["laneS2e"]}"
@@ -333,7 +333,7 @@ class SignUtil {
                 DataCodeEnum.OMDB_LINK_CONSTRUCTION.code -> {
                     list.add(
                         TwoItemAdapterItem(
-                            title = "linkPid", text = "${data.properties["linkPid"]}"
+                            title = "linkPid", text = "${data.linkPid}"
                         )
                     )
 
@@ -386,7 +386,7 @@ class SignUtil {
                 DataCodeEnum.OMDB_WARNINGSIGN.code -> {
                     list.add(
                         TwoItemAdapterItem(
-                            title = "linkPid", text = "${data.properties["linkPid"]}"
+                            title = "linkPid", text = "${data.linkPid}"
                         )
                     )
                     list.add(
@@ -751,7 +751,7 @@ class SignUtil {
         fun getTollgateInfo(renderEntity: RenderEntity): List<LaneBoundaryItem> {
             val list = mutableListOf<LaneBoundaryItem>()
             list.add(
-                LaneBoundaryItem("linkPid", "${renderEntity.properties["linkPid"]}", null)
+                LaneBoundaryItem("linkPid", "${renderEntity.linkPid}", null)
             )
             list.add(
                 LaneBoundaryItem("收费站号码", "${renderEntity.properties["tollgatePid"]}", null)
@@ -1426,14 +1426,14 @@ class SignUtil {
                     )
                     DataCodeEnum.OMDB_RD_LINK_KIND.code -> stringBuffer.append("种别${item.iconText},")
                     DataCodeEnum.OMDB_LINK_DIRECT.code -> stringBuffer.append("${item.iconText},")
-                    DataCodeEnum.OMDB_PHY_LANENUM.code,//物理车道数
+/*                    DataCodeEnum.OMDB_PHY_LANENUM.code,//物理车道数
                     DataCodeEnum.OMDB_LANE_NUM.code -> stringBuffer.append(
                         "${
                             item.iconText.substringBefore(
                                 "|"
                             )
                         }车道"
-                    )
+                    )*/
                 }
             }
             return stringBuffer.toString()

@@ -11,15 +11,17 @@ import com.navinfo.omqs.bean.NaviRoute
 import com.navinfo.omqs.bean.NaviRouteItem
 import com.navinfo.omqs.db.RealmOperateHelper
 import io.realm.Realm
+import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.LineString
 import org.locationtech.jts.geom.Point
 import org.oscim.core.GeoPoint
 
 interface OnNaviEngineCallbackListener {
-    fun planningPathStatus(code: NaviStatus)
+    fun planningPathStatus(code: NaviStatus, linkdId: String? = null, geometry: String? = null)
 
     //    fun planningPathError(errorCode: NaviStatus, errorMessage: String)
     suspend fun bindingResults(route: NaviRoute?, list: List<NaviRouteItem>)
+
 }
 
 enum class NaviStatus {
@@ -73,6 +75,7 @@ class NaviEngine(
         DataCodeEnum.OMDB_TRAFFICLIGHT.name,
 //        DataCodeEnum.OMDB_RESTRICTION.name,
         DataCodeEnum.OMDB_LANEINFO.name,
+        DataCodeEnum.OMDB_CLM_LANEINFO.name,
         DataCodeEnum.OMDB_TRAFFIC_SIGN.name,
         DataCodeEnum.OMDB_WARNINGSIGN.name,
         DataCodeEnum.OMDB_TOLLGATE.name
@@ -205,9 +208,12 @@ class NaviEngine(
         callback.planningPathStatus(NaviStatus.NAVI_STATUS_PATH_PLANNING)
         val pathList = mutableListOf<NaviRoute>()
         val realm = realmOperateHelper.getSelectTaskRealmInstance()
-        for (link in taskBean.hadLinkDvoList) {
+        Log.e("jingo", "路径计算 条数 ${taskBean.hadLinkDvoList.size}")
+        for (i in 0 until taskBean.hadLinkDvoList.size) {
+            val link = taskBean.hadLinkDvoList[i]
+            Log.e("jingo","获取 S E $i 总共 ${taskBean.hadLinkDvoList.size}")
             //测线不参与导航
-            if (link.linkStatus == 3) {
+            if (link!!.linkStatus == 3) {
                 continue
             }
             val route = NaviRoute(
@@ -217,7 +223,7 @@ class NaviEngine(
             route.pointList = GeometryTools.getGeoPoints(link.geometry)
 
             val res = realm.where(RenderEntity::class.java).`in`("table", QUERY_KEY_LINK_INFO_LIST)
-                .equalTo("properties['linkPid']", link.linkPid).findAll()
+                .equalTo("linkPid", link.linkPid).findAll()
             var bHasNode = false
             var bHasDir = false
             var bHasName = false
@@ -255,13 +261,17 @@ class NaviEngine(
             }
             if (!bHasNode) {
                 callback.planningPathStatus(
-                    NaviStatus.NAVI_STATUS_PATH_ERROR_NODE
+                    NaviStatus.NAVI_STATUS_PATH_ERROR_NODE,
+                    link.linkPid,
+                    link.geometry
                 )
                 return
             }
             if (!bHasDir) {
                 callback.planningPathStatus(
-                    NaviStatus.NAVI_STATUS_PATH_ERROR_DIRECTION
+                    NaviStatus.NAVI_STATUS_PATH_ERROR_DIRECTION,
+                    link!!.linkPid,
+                    link.geometry
                 )
                 return
             }
@@ -346,7 +356,9 @@ class NaviEngine(
                 if (!bHasLast && !bHasNext) {
                     bBreak = false
                     callback.planningPathStatus(
-                        NaviStatus.NAVI_STATUS_PATH_ERROR_BLOCKED
+                        NaviStatus.NAVI_STATUS_PATH_ERROR_BLOCKED,
+                        tempRouteList[0].linkId,
+                        GeometryTools.getLineString(tempRouteList[0].pointList)
                     )
                     realm.close()
                     return
@@ -356,11 +368,13 @@ class NaviEngine(
 
         val itemMap: MutableMap<GeoPoint, MutableList<RenderEntity>> = mutableMapOf()
         //查询每根link上的关联要素
-        for (route in newRouteList) {
+        for (i in newRouteList.indices) {
+            val route = newRouteList[i]
+            Log.e("jingo","获取 插入要素 $i 总共 ${newRouteList.size}")
             itemMap.clear()
             //常规点限速
             val res = realm.where(RenderEntity::class.java)
-                .equalTo("properties['linkPid']", route.linkId).and().`in`(
+                .equalTo("linkPid", route.linkId).and().`in`(
                     "table",
                     QUERY_KEY_ITEM_LIST
                 ).findAll()

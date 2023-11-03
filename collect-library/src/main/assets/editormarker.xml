@@ -1558,7 +1558,6 @@
             <symbol repeat="false" repeat-start="0" repeat-gap="2000"
                 src="@symbol" symbol-height="24" degree="90"></symbol>
         </m>
-
         <!-- 杆状物 -->
         <m v="OMDB_POLE">
             <symbol src="assets:omdb/icon_pole_3006.svg" symbol-height="56" symbol-width="56"></symbol>
@@ -1720,22 +1719,22 @@
                 <m k="markType" v="6">
                     <!--其他|实线-->
                     <m k="markColor" v="1">
-                        <symbol repeat="true" repeat-start="0" repeat-gap="24" src="assets:omdb/icon_2013_1.svg"/>
+                        <symbol repeat="true" repeat-start="0" repeat-gap="32" symbol-height="8" symbol-width="8" src="assets:omdb/icon_2013_1.svg"/>
                     </m>
                     <m k="markColor" v="2">
-                        <symbol repeat="true" repeat-start="0" repeat-gap="24" src="assets:omdb/icon_2013_2.svg"></symbol>
+                        <symbol repeat="true" repeat-start="0" repeat-gap="32" symbol-height="8" symbol-width="8" src="assets:omdb/icon_2013_2.svg"></symbol>
                     </m>
 
                     <m k="markColor" v="6">
-                        <symbol repeat="true" repeat-start="0" repeat-gap="24" src="assets:omdb/icon_2013_6.svg"></symbol>
+                        <symbol repeat="true" repeat-start="0" repeat-gap="32" symbol-height="8" symbol-width="8" src="assets:omdb/icon_2013_6.svg"></symbol>
                     </m>
 
                     <m k="markColor" v="7">
-                        <symbol repeat="true" repeat-start="0" repeat-gap="24" src="assets:omdb/icon_2013_7.svg"></symbol>
+                        <symbol repeat="true" repeat-start="0" repeat-gap="32" symbol-height="8" symbol-width="8" src="assets:omdb/icon_2013_7.svg"></symbol>
                     </m>
 
                     <m k="markColor" v="0|9">
-                        <symbol repeat="true" repeat-start="0" repeat-gap="24" src="assets:omdb/icon_2013_0.svg"></symbol>
+                        <symbol repeat="true" repeat-start="0" repeat-gap="32" symbol-height="8" symbol-width="8" src="assets:omdb/icon_2013_0.svg"></symbol>
                     </m>
                 </m>
             </m>

@@ -171,7 +171,7 @@ class LocationLayerHandler(context: AppCompatActivity, mapView: NIMapView) :
         mCurrentLocation?.run {
             val mapPosition = mMapView.vtmMap.mapPosition
             mapPosition.setPosition(this.latitude, this.longitude)
-            mMapView.vtmMap.animator().animateTo(300, mapPosition)
+            mMapView.vtmMap.animator().animateTo(800, mapPosition)
         }
     }
 
@@ -224,7 +224,6 @@ private class MyLocationListener(callback: (BDLocation) -> Unit) : BDAbstractLoc
     val call = callback;
     override fun onReceiveLocation(location: BDLocation) {
         call(location)
-        Log.e("jingo", "定位结果：速度=" + location.speed + " 方向=" + location.direction)
     }
 }
 

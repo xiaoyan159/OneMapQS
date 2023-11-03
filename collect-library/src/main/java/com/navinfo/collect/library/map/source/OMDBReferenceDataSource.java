@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 
 import com.navinfo.collect.library.data.entity.ReferenceEntity;
+import com.navinfo.collect.library.data.entity.RenderEntity;
 import com.navinfo.collect.library.system.Constant;
 import com.navinfo.collect.library.utils.GeometryTools;
 import com.navinfo.collect.library.utils.MapParamUtils;
@@ -17,6 +18,7 @@ import org.oscim.tiling.ITileDataSink;
 import org.oscim.tiling.ITileDataSource;
 import org.oscim.tiling.QueryResult;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,14 +43,18 @@ public class OMDBReferenceDataSource implements ITileDataSource {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void query(MapTile tile, ITileDataSink mapDataSink) {
+        if(MapParamUtils.getTaskConfig() == null)
+            return;
         // 获取tile对应的坐标范围
         if (tile.zoomLevel >= Constant.OMDB_MIN_ZOOM && tile.zoomLevel <= Constant.DATA_ZOOM) {
+            Realm realm = Realm.getInstance(MapParamUtils.getTaskConfig());
+            RealmQuery<ReferenceEntity> realmQuery = realm.where(ReferenceEntity.class);
             int m = Constant.DATA_ZOOM - tile.zoomLevel;
             int xStart = tile.tileX;
             int xEnd = tile.tileX + 1;
             int yStart = tile.tileY;
             int yEnd = tile.tileY + 1;
-            if (m>0) {
+            if (m > 0) {
                 xStart = (int) (xStart << m);
                 xEnd = (int) (xEnd << m);
                 yStart = (int) (yStart << m);
@@ -56,21 +62,22 @@ public class OMDBReferenceDataSource implements ITileDataSource {
             }
             final int currentTileX = xStart;
 
-            if(isUpdate){
-                Realm.getInstance(MapParamUtils.getTaskConfig()).refresh();
+            if (isUpdate) {
+                realm.refresh();
                 isUpdate = false;
             }
 
-            String sql = " tileX>=" + xStart + " and tileX<=" + xEnd + " and tileY>=" + yStart + " and tileY<=" + yEnd + "";
+            String sql = " ((tileXMin <= " + xStart + " and tileXMax >= " + xStart + ") or (tileXMin <=" + xEnd + " and tileXMax >=" + xStart + ")) and ((tileYMin <= " + yStart + " and tileYMax >= " + yStart + ") or (tileYMin <=" + yEnd + " and tileYMin >=" + yStart + "))";
 
-            if(MapParamUtils.getDataLayerEnum()!=null){
+//            String sql = " tileX>=" + xStart + " and tileX<=" + xEnd + " and tileY>=" + yStart + " and tileY<=" + yEnd + "";
+
+            if (MapParamUtils.getDataLayerEnum() != null) {
                 sql += " and enable" + MapParamUtils.getDataLayerEnum().getSql();
-            }else{
+            } else {
                 sql += " and enable>=0";
             }
 
-            RealmQuery<ReferenceEntity> realmQuery = Realm.getInstance(MapParamUtils.getTaskConfig()).where(ReferenceEntity.class)
-                    .rawPredicate(sql);
+            realmQuery.rawPredicate(sql);
             // 筛选不显示的数据
             if (Constant.HAD_LAYER_INVISIABLE_ARRAY != null && Constant.HAD_LAYER_INVISIABLE_ARRAY.length > 0) {
                 realmQuery.beginGroup();
@@ -91,10 +98,11 @@ public class OMDBReferenceDataSource implements ITileDataSource {
             } else {
                 mapDataSink.completed(QueryResult.SUCCESS);
             }
-            Realm.getInstance(MapParamUtils.getTaskConfig()).close();
+            realm.close();
         } else {
             mapDataSink.completed(QueryResult.SUCCESS);
         }
+
     }
 
     @Override
@@ -104,13 +112,12 @@ public class OMDBReferenceDataSource implements ITileDataSource {
 
     @Override
     public void cancel() {
-        if (Realm.getDefaultInstance().isInTransaction()) {
-            Realm.getDefaultInstance().cancelTransaction();
-        }
+//        if (Realm.getDefaultInstance().isInTransaction()) {
+//            Realm.getDefaultInstance().cancelTransaction();
+//        }
     }
 
-    public void update(){
+    public void update() {
         isUpdate = true;
-        Log.e("qj",Thread.currentThread().getName());
     }
 }
