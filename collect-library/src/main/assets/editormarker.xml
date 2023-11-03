@@ -2058,17 +2058,38 @@
             </m>
         </m>
 
+        <!-- zLevel -->
+        <m v="OMDB_ZLEVEL">
+            <m k="type" v="zlevelLine">
+                <line stroke="#59feb8" width="0.2" />
+            </m>
+            <m k="type" v="zlevelName">
+                <caption k="name" fill="#000000" stroke="#f1fe59" size="12" priority="0" ></caption>
+            </m>
+            <m k="linkPid">
+                <circle radius="3" stroke="#000000" fill="#ffffff"></circle>
+            </m>
+        </m>
+
         <!-- 车道类型 -->
         <m v="OMDB_LANE_TYPE_ACCESS">
-            <m k="laneLinkPid">
-                <line width="0.1" stroke="#cccccc" stipple-width="0.1" stipple-stroke="#cccccc"></line>
+            <m k="bike">
+                <line fix="true" width="3" stroke="#cccccc"></line>
             </m>
-            <m k="type" v="s_2_p">
-                <symbol src="assets:omdb/icon_2092_s.svg" symbol-height="32"
+            <m k="type" v="s_acc">
+                <symbol src="assets:omdb/icon_2092_acc_s.svg" symbol-height="32"
                     symbol-width="32" gland="true"></symbol>
             </m>
-            <m k="type" v="e_2_p">
-                <symbol src="assets:omdb/icon_2092_e.svg" symbol-height="32"
+            <m k="type" v="e_acc">
+                <symbol src="assets:omdb/icon_2092_acc_e.svg" symbol-height="32"
+                    symbol-width="32" gland="true"></symbol>
+            </m>
+            <m k="type" v="s_dec">
+                <symbol src="assets:omdb/icon_2092_dec_s.svg" symbol-height="32"
+                    symbol-width="32" gland="true"></symbol>
+            </m>
+            <m k="type" v="e_dec">
+                <symbol src="assets:omdb/icon_2092_dec_e.svg" symbol-height="32"
                     symbol-width="32" gland="true"></symbol>
             </m>
         </m>

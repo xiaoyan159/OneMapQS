@@ -153,14 +153,20 @@
         "isDependOnOtherTable": false,
         "zoomMin": 18,
         "zoomMax": 20,
-        "transformer": [
-          {
-            "k": "geometry",
-            "v": "~",
-            "klib": "geometry",
-            "vlib": "generateLaneTypeAccessS2ERefPoint()"
-          }
-        ]
+		  "transformer": [
+			  {
+				  "k": "geometry",
+				  "v": "~",
+				  "klib": "geometry",
+				  "vlib": "filterLaneTypeAccess()"
+			  },
+			  {
+				  "k": "geometry",
+				  "v": "~",
+				  "klib": "geometry",
+				  "vlib": "generateLaneTypeAccessS2ERefPoint()"
+			  }
+		  ]
       },
       "2097": {
         "table": "OMDB_PHY_LANENUM",
