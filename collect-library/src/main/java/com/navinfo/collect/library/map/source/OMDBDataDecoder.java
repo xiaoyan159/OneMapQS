@@ -4,10 +4,13 @@ import static org.oscim.core.MercatorProjection.latitudeToY;
 import static org.oscim.core.MercatorProjection.longitudeToX;
 
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
 import com.navinfo.collect.library.data.entity.RenderEntity;
+import com.navinfo.collect.library.enums.DataCodeEnum;
+import com.navinfo.collect.library.utils.GeometryTools;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -103,7 +106,14 @@ public class OMDBDataDecoder extends TileDecoder {
                 processCoordinateArray(multiPoint.getGeometryN(i).getCoordinates(), false);
             }
         } else if (geometry instanceof LineString) {
-            processLineString((LineString) geometry);
+            //将车道中心进行转化面渲染
+            if(layerName!=null&&layerName.equals(DataCodeEnum.OMDB_LANE_LINK_LG.name())){
+                Log.e("qj","车道中心线转化开始");
+                processPolygon((Polygon) GeometryTools.createGeometry(GeometryTools.computeLine(0.000035,0.000035,geometry.toString())));
+                Log.e("qj","车道中心线转化结束");
+            }else{
+                processLineString((LineString) geometry);
+            }
         } else if (geometry instanceof MultiLineString) {
             MultiLineString multiLineString = (MultiLineString) geometry;
             for (int i = 0; i < multiLineString.getNumGeometries(); i++) {

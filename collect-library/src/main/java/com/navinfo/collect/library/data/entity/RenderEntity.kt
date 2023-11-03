@@ -108,6 +108,7 @@ open class RenderEntity() : RealmObject(), Parcelable {
     @Index
     var linkPid: String = "" // RenderEntity关联的linkPid集合(可能会关联多个)
     var linkRelation: LinkRelation? = null
+    var referenceEntitys: RealmSet<ReferenceEntity>? = RealmSet()//
 
     constructor(name: String) : this() {
         this.name = name

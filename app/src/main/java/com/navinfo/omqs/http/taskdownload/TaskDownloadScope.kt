@@ -1,14 +1,18 @@
 package com.navinfo.omqs.http.taskdownload
 
+import android.os.Handler
+import android.os.Message
 import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.blankj.utilcode.util.MapUtils
 import com.navinfo.collect.library.data.entity.TaskBean
 import com.navinfo.collect.library.utils.MapParamUtils
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.db.ImportOMDBHelper
+import com.navinfo.omqs.db.MultiPathsCallback
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.tools.FileManager
 import com.navinfo.omqs.tools.FileManager.Companion.FileDownloadStatus
@@ -155,20 +159,50 @@ class TaskDownloadScope(
                     fileNew
                 )
             if (task != null) {
-                if (importOMDBHelper.importOmdbZipFile(importOMDBHelper.omdbFile, task, this)) {
-//                    if (it == "finish") {
-                    change(FileDownloadStatus.DONE)
-                    Log.e("jingo", "数据安装结束")
-                    withContext(Dispatchers.Main) {
-                        //任务与当前一致，需要更新渲染图层
-                        if (MapParamUtils.getTaskId() == taskBean.id) {
-                            downloadManager.mapController.layerManagerHandler.updateOMDBVectorTileLayer()
+                importOMDBHelper.importOmdbZipFile(
+                    importOMDBHelper.omdbFile,
+                    task,
+                    this,
+                    object : MultiPathsCallback<String> {
+                        override fun onProgress(value: Int) {
+                            Log.e("jingo", "安装====$value")
                         }
-                    }
-                } else {
-                    change(FileDownloadStatus.IMPORTING, "anzhuang")
-                }
-//                }
+
+                        override fun onError(t: Throwable) {
+                        }
+
+                        override fun onComplete() {
+                            taskBean.status = FileDownloadStatus.DONE
+                            downloadData.postValue(taskBean)
+                            //任务与当前一致，需要更新渲染图层
+                            if (MapParamUtils.getTaskId() == taskBean.id) {
+                                downloadManager.mapController.layerManagerHandler.updateOMDBVectorTileLayer()
+                            }
+                            val realm = realmOperateHelper.getRealmDefaultInstance()
+                            realm.executeTransaction { r ->
+                                val newTask =
+                                    realm.where(TaskBean::class.java).equalTo("id", taskBean.id)
+                                        .findFirst()
+                                newTask?.let {
+                                    it.syncStatus = taskBean.syncStatus
+                                    it.status = taskBean.status
+                                    it.errMsg = taskBean.errMsg
+                                    //赋值时间，用于查询过滤
+                                    it.operationTime = taskBean.operationTime
+                                    r.copyToRealmOrUpdate(it)
+                                    taskBean = realm.copyFromRealm(it)
+                                }
+                            }
+                            realm.close()
+                        }
+
+                        override fun onResult(value: String) {
+                            taskBean.status = FileDownloadStatus.IMPORTING
+                            taskBean.message = value
+                            downloadData.postValue(taskBean)
+                        }
+
+                    })
             }
         } catch (e: Exception) {
             Log.e("jingo", "数据安装失败 ${e.toString()}")

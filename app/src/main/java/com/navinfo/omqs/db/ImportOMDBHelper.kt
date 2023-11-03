@@ -10,7 +10,6 @@ import com.google.gson.reflect.TypeToken
 import com.navinfo.collect.library.data.entity.*
 import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.utils.DeflaterUtil
-import com.navinfo.collect.library.utils.StrZipUtil
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.Constant.Companion.currentInstallTaskConfig
 import com.navinfo.omqs.Constant.Companion.currentInstallTaskFolder
@@ -26,18 +25,33 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.sync.Mutex
-import org.spatialite.database.SQLiteDatabase
-import sun.misc.BASE64Encoder
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.conflate
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 import java.util.*
 import javax.inject.Inject
+
+
+//定义一个接口
+sealed interface Event
+class OnProgress(val value:Int):Event
+class OnError(val t:Throwable):Event
+class OnResult<T>(val value:T):Event
+object OnComplete:Event
+
+interface MultiPathsCallback<T>{
+    fun onProgress(value: Int)
+
+    fun onResult(value: T)
+
+    fun onError(t:Throwable)
+
+    fun onComplete()
+}
 
 /**
  * 导入omdb数据的帮助类
@@ -150,8 +164,9 @@ class ImportOMDBHelper @AssistedInject constructor(
      * @param configFile 对应的配置文件
      * */
     suspend fun importOmdbZipFile(
-        omdbZipFile: File, task: TaskBean, scope: CoroutineScope
-    ): Boolean {
+        omdbZipFile: File, task: TaskBean, scope: CoroutineScope,callback: MultiPathsCallback<String>
+    ) {
+
         val channel = Channel<List<RenderEntity>>(Channel.RENDEZVOUS)
 
         installTaskid = task.id.toString()
@@ -193,9 +208,11 @@ class ImportOMDBHelper @AssistedInject constructor(
             mutableMapOf<MutableMap.MutableEntry<String, TableInfo>, ImportConfig>()
         //协程池
         val listJob = mutableListOf<Job>()
+
         try {
             CMLog.writeLogtoFile(ImportOMDBHelper::class.java.name, "数据安装", "开始安装数据")
             Constant.INSTALL_DATA = true
+
             for (importConfig in importConfigList) {
                 for ((index, currentEntry) in importConfig.tableMap.entries.withIndex()) {
                     if (currentEntry.value.isDependOnOtherTable) {
@@ -203,14 +220,64 @@ class ImportOMDBHelper @AssistedInject constructor(
                         continue
                     }
                     val job = scope.launch(Dispatchers.IO) {
-                        importData(
+                        startTaskAsFlow(
                             channel,
                             unZipFiles,
                             currentEntry,
                             task,
                             importConfig,
-                            hashMap
-                        )
+                            hashMap,
+                            true).collect{
+                                when(it){
+                                    OnComplete->{
+                                        processIndex ++
+                                        callback.onResult("$processIndex|$tableNum")
+                                        Log.e("jingo", "安装==$processIndex===$tableNum")
+                                        if(tableNum-processIndex==listDependOnEntry.size){
+                                            for ((currentEntry, importConfig) in listDependOnEntry) {
+                                                processIndex++
+                                                if(processIndex==tableNum){
+                                                    importData(
+                                                        channel,
+                                                        unZipFiles,
+                                                        currentEntry,
+                                                        task,
+                                                        importConfig,
+                                                        hashMap,
+                                                        false, callback
+                                                    )
+                                                }else{
+                                                    callback.onResult("$processIndex|$tableNum")
+                                                    importData(
+                                                        channel,
+                                                        unZipFiles,
+                                                        currentEntry,
+                                                        task,
+                                                        importConfig,
+                                                        hashMap,
+                                                        false, null)
+                                                }
+                                            }
+                                            Log.e("jingo", "安装结束")
+
+                                            CMLog.writeLogtoFile(ImportOMDBHelper::class.java.name, "数据安装", "安装结束")
+
+                                            Constant.INSTALL_DATA = false
+                                        }
+                                    }
+                                    is OnProgress->{
+                                        callback.onProgress(it.value)
+                                        Log.e("qj","progress==${it.value}")
+                                    }
+                                    is OnResult<*>->{
+                                        callback.onResult(it.value.toString())
+                                    }
+                                    is OnError->{
+                                        callback.onError(it.t)
+                                    }
+
+                                }
+                        }
                     }
                     listJob.add(job)
                 }
@@ -225,36 +292,49 @@ class ImportOMDBHelper @AssistedInject constructor(
                     }
                     realm.close()
                 }
-
             }
-
             listJob.joinAll()
             channel.close()
             channelJob.join()
-            Log.e("jingo", "channel close 等待结束")
-            for ((currentEntry, importConfig) in listDependOnEntry) {
-                importData(
-                    channel,
-                    unZipFiles,
-                    currentEntry,
-                    task,
-                    importConfig,
-                    hashMap,
-                    false
-                )
-            }
-            Log.e("jingo", "安装结束")
-
-            CMLog.writeLogtoFile(ImportOMDBHelper::class.java.name, "数据安装", "安装结束")
-
         } catch (e: Exception) {
             Log.e("jingo", "安装报错1 ${e.message}")
-            return false
-        }finally {
+
+            callback.onError(e)
+
             Constant.INSTALL_DATA = false
         }
-        return true
     }
+    private fun startTaskAsFlow(
+        f: Channel<List<RenderEntity>>,
+        unZipFiles: List<File>,
+        currentEntry: MutableMap.MutableEntry<String, TableInfo>,
+        task: TaskBean,
+        importConfig: ImportConfig,
+        hashMap: HashMap<Long, HadLinkDvoBean>,
+        isEmit: Boolean = true) = callbackFlow <Event>{
+        val cancellable= importData(f,unZipFiles,currentEntry,task,importConfig,hashMap,isEmit,object :MultiPathsCallback<String>{
+            override fun onProgress(value: Int) {
+                trySendBlocking(OnProgress(value))
+                Log.e("jingo","=====$value")
+            }
+
+            override fun onError(t: Throwable) {
+                trySendBlocking(OnError(t))
+            }
+
+            override fun onComplete() {
+                trySendBlocking(OnComplete)
+            }
+
+            override fun onResult(value: String) {
+                trySendBlocking(OnResult(value))
+            }
+        })
+
+        awaitClose {
+
+        }
+    }.conflate()
 
     private suspend fun importData(
         f: Channel<List<RenderEntity>>,
@@ -263,15 +343,19 @@ class ImportOMDBHelper @AssistedInject constructor(
         task: TaskBean,
         importConfig: ImportConfig,
         hashMap: HashMap<Long, HadLinkDvoBean>,
-        isEmit: Boolean = true
-    ) {
+        isEmit: Boolean = true, callback: MultiPathsCallback<String>?
+    ):NonCancellable {
         val resHashMap: HashMap<String, RenderEntity> = HashMap() //define empty hashmap
         var listRenderEntity = mutableListOf<RenderEntity>()
         //单个表要素统计
         var elementIndex = 0
         val currentConfig = currentEntry.value
 
-        CMLog.writeLogtoFile(ImportOMDBHelper::class.java.name, "importOmdbZipFile", "${currentConfig.table}开始")
+        CMLog.writeLogtoFile(
+            ImportOMDBHelper::class.java.name,
+            "importOmdbZipFile",
+            "${currentConfig.table}开始"
+        )
 
         try {
             var realm: Realm? = null
@@ -294,12 +378,18 @@ class ImportOMDBHelper @AssistedInject constructor(
                         continue
                     }
                     newTime = System.currentTimeMillis()
-                    Log.e(
-                        "jingo",
-                        "安装数据 ${currentConfig.table}  $elementIndex ${listRenderEntity.size} ${newTime - time}"
-                    )
+
+                    if (elementIndex % 50 == 0) {
+                        Log.e(
+                            "jingo",
+                            "安装数据 ${currentConfig.table}  $elementIndex ${listRenderEntity.size} ${newTime - time}"
+                        )
+                    }
+
                     time = newTime
+
                     elementIndex += 1
+
                     val map = gson.fromJson<Map<String, Any>>(
                         line, object : TypeToken<Map<String, Any>>() {}.type
                     ).toMutableMap()
@@ -488,6 +578,8 @@ class ImportOMDBHelper @AssistedInject constructor(
 
                     // 对renderEntity做预处理后再保存
                     val resultEntity = importConfig.transformProperties(renderEntity, realm)
+
+                    //车道中心线不在主表写入
                     if (resultEntity != null) {
 
                         //对code编码需要特殊处理 存在多个属性值时，渲染优先级：SA>PA,存在多个属性值时，渲染优先级：FRONTAGE>MAIN_SIDE_A CCESS
@@ -534,6 +626,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                     when (renderEntity.properties["bridgeType"]) {
                                         "1" -> renderEntity.code =
                                             DataCodeEnum.OMDB_BRIDGE_1.code
+
                                         "2" -> renderEntity.code =
                                             DataCodeEnum.OMDB_BRIDGE_2.code
                                         // "3" -> renderEntity.code = DataCodeEnum.OMDB_BRIDGE_3.code
@@ -677,6 +770,21 @@ class ImportOMDBHelper @AssistedInject constructor(
                             renderEntity.properties.remove("linkPid")
                         }
 
+                        //去掉暂用控件较大的字段多余属性字段
+                        if (renderEntity.properties.containsKey("shapeList")) {
+                            renderEntity.properties.remove("shapeList")
+                        }
+
+                        //只保留link表相关的pid
+                        if (currentConfig.code != DataCodeEnum.OMDB_RD_LINK.code.toInt() && currentConfig.code != DataCodeEnum.OMDB_RD_LINK_KIND.code.toInt() && renderEntity.properties.containsKey(
+                                "linkPid"
+                            )
+                        ) {
+                            if (renderEntity.properties.containsKey("mesh")) {
+                                renderEntity.properties.remove("mesh")
+                            }
+                        }
+
                         // 如果当前解析的是OMDB_RD_LINK数据，将其缓存在预处理类中，以便后续处理其他要素时使用
                         if (currentConfig.code == DataCodeEnum.OMDB_RD_LINK.code.toInt()) {
                             if (renderEntity.linkRelation == null) {
@@ -689,14 +797,11 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 renderEntity.properties["enodePid"]
                         }
 
-                        //去掉暂用控件较大的字段多余属性字段
-                        if (renderEntity.properties.containsKey("shapeList")) {
-                            renderEntity.properties.remove("shapeList")
-                        }
-
-                        renderEntity.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(renderEntity.properties))
+                        renderEntity.propertiesDb =
+                            DeflaterUtil.zipString(JSON.toJSONString(renderEntity.properties))
 
                         listRenderEntity.add(renderEntity)
+
                     }
 
                     if (listRenderEntity.size > 20000) {
@@ -707,12 +812,14 @@ class ImportOMDBHelper @AssistedInject constructor(
                         if (isEmit) {
                             f.send(listRenderEntity)
                             delay(20)
+                            callback?.onProgress(elementIndex)
                         } else {
                             realm!!.copyToRealm(listRenderEntity)
                             realm!!.commitTransaction()
                             realm!!.close()
                             realm = Realm.getInstance(currentInstallTaskConfig)
                             realm.beginTransaction()
+                            callback?.onProgress(elementIndex)
                         }
                         listRenderEntity = mutableListOf()
 //
@@ -720,16 +827,21 @@ class ImportOMDBHelper @AssistedInject constructor(
                     line = bufferedReader.readLine()
                 }
 
-                CMLog.writeLogtoFile(ImportOMDBHelper::class.java.name, "importOmdbZipFile", "${currentConfig.table}结束===总量$elementIndex")
+                CMLog.writeLogtoFile(
+                    ImportOMDBHelper::class.java.name,
+                    "importOmdbZipFile",
+                    "${currentConfig.table}结束===总量$elementIndex"
+                )
 
                 if (isEmit) {
                     f.send(listRenderEntity)
                     delay(20)
-
+                    callback?.onProgress(elementIndex)
                 } else {
                     bufferedReader.close()
                     realm!!.copyToRealm(listRenderEntity)
                     realm!!.commitTransaction()
+                    callback?.onProgress(elementIndex)
                 }
             }
             if (!isEmit) {
@@ -739,7 +851,12 @@ class ImportOMDBHelper @AssistedInject constructor(
             Log.e("jingo", "安装报错 ${currentConfig.table} ${elementIndex} ${e.message}")
             throw e
         }
+
         Log.e("jingo", "完成 ${currentConfig.table}")
+
+        callback?.onComplete()
+
+        return NonCancellable
     }
 
 
