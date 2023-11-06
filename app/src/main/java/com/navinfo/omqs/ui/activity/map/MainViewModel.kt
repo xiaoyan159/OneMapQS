@@ -358,7 +358,7 @@ class MainViewModel @Inject constructor(
                 if (naviEngineStatus == 1) {
                     naviEngineNew.let {
 //                        naviMutex.lock()
-                           if (testRealm == null)
+                        if (testRealm == null)
                             testRealm = realmOperateHelper.getSelectTaskRealmInstance()
                         if (currentTaskBean != null) {
                             naviEngineNew.bindingRoute(
@@ -570,9 +570,9 @@ class MainViewModel @Inject constructor(
 
                 mapController.markerHandle.addNiLocationMarkerItem(location)
 
-                if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_TIME==0){
+                if (Constant.TRACE_COUNT % Constant.TRACE_COUNT_TIME == 0) {
                     mapController.markerHandle.addNiLocationMarkerItemSimple(location)
-                    Log.e("qj","$traceCount===轨迹")
+                    Log.e("qj", "$traceCount===轨迹")
                 }
             }
         }
@@ -638,17 +638,21 @@ class MainViewModel @Inject constructor(
                     }
                     //室内整理工具时不能进行轨迹存储，判断轨迹间隔要超过2.5并小于60米
                     if (Constant.INDOOR_IP.isEmpty() && (disance == 0.0 || (disance > 2.5 && disance < 60))) {
-                        traceCount ++
+                        traceCount++
                         Log.e("jingo", "轨迹插入开始")
-                        CMLog.writeLogtoFile(MainViewModel::class.java.name,"insertTrace","开始")
+                        CMLog.writeLogtoFile(MainViewModel::class.java.name, "insertTrace", "开始")
                         traceDataBase.niLocationDao.insert(location)
                         mapController.markerHandle.addNiLocationMarkerItem(location)
-                        if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_TIME==0){
+                        if (Constant.TRACE_COUNT % Constant.TRACE_COUNT_TIME == 0) {
                             mapController.markerHandle.addNiLocationMarkerItemSimple(location)
                         }
                         mapController.mMapView.vtmMap.updateMap(true)
                         lastNiLocaion = location
-                        CMLog.writeLogtoFile(MainViewModel::class.java.name,"insertTrace",gson.toJson(location))
+                        CMLog.writeLogtoFile(
+                            MainViewModel::class.java.name,
+                            "insertTrace",
+                            gson.toJson(location)
+                        )
                         Log.e("jingo", "轨迹插入结束")
                     }
                 }
@@ -871,12 +875,12 @@ class MainViewModel @Inject constructor(
                         )
 
                         val newLineString = GeometryTools.createLineString(linePoints)
-                        linkId?.let {
+                        if (linkId.isNotEmpty()) {
                             val time = System.currentTimeMillis()
-                            val elementList = realmOperateHelper.queryLinkByLinkPid(realm, it)
+                            val elementList = realmOperateHelper.queryLinkByLinkPid(realm, linkId)
                             Log.e(
                                 "jingo",
-                                "捕捉到数据 ${elementList.size} 个 ${System.currentTimeMillis() - time}"
+                                "捕捉到数据 $linkId ${elementList.size} 个 ${System.currentTimeMillis() - time}"
                             )
                             for (element in elementList) {
                                 if (element.code == DataCodeEnum.OMDB_LINK_NAME.code) {
@@ -896,7 +900,7 @@ class MainViewModel @Inject constructor(
                                 )
                                 Log.e(
                                     "jingo",
-                                    "捕捉到的数据code ${DataCodeEnum.findTableNameByCode(element.code)}"
+                                    "捕捉到的数据code $linkId ${DataCodeEnum.findTableNameByCode(element.code)}"
                                 )
                                 when (element.code) {
                                     DataCodeEnum.OMDB_MULTI_DIGITIZED.code,//上下线分离
@@ -974,9 +978,9 @@ class MainViewModel @Inject constructor(
 
                             val entityList = realmOperateHelper.getSelectTaskRealmTools(
                                 realm, RenderEntity::class.java, true
-                            ).and().equalTo("table", DataCodeEnum.OMDB_RESTRICTION.name).and()
+                            ).equalTo("table", DataCodeEnum.OMDB_RESTRICTION.name)
                                 .equalTo(
-                                    "properties['linkIn']", it
+                                    "linkPid", linkId
                                 ).findAll()
                             if (entityList.isNotEmpty()) {
                                 val outList = entityList.distinct()
@@ -988,7 +992,6 @@ class MainViewModel @Inject constructor(
                                             true
                                         )
                                             .equalTo("table", DataCodeEnum.OMDB_RD_LINK_KIND.name)
-                                            .and()
                                             .equalTo(
                                                 "linkPid",
                                                 outLink
@@ -1024,7 +1027,6 @@ class MainViewModel @Inject constructor(
                 if (!hisRoadName) {
                     liveDataRoadName.postValue(null)
                 }
-                Log.e("jingo", "另一个地方查询数据库")
                 realm.close()
             }
         } catch (e: Exception) {

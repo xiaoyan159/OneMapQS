@@ -18,6 +18,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.R
 import com.navinfo.omqs.bean.SignBean
@@ -28,7 +29,9 @@ import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
 import dagger.hilt.android.AndroidEntryPoint
 
-
+/**
+ * 评测结果页面
+ */
 @AndroidEntryPoint
 class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentEvaluationResultBinding
@@ -191,6 +194,13 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             viewModel.initData(id)
         }
 
+        /**
+         * 车信编辑备注
+         */
+        viewModel.liveDataLanInfoChange.observe(viewLifecycleOwner) {
+            binding.evaluationDescription.setText(it)
+        }
+
         viewModel.listDataChatMsgEntityList.observe(viewLifecycleOwner) {
             adapter.refreshData(it)
         }
@@ -205,6 +215,17 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         }
         viewModel.liveDataQsRecordBean.observe(viewLifecycleOwner) {
             binding.evaluationId.text = it.id
+            binding.evaluationProblemType.text = it.problemType
+
+            if(it.classCode == DataCodeEnum.OMDB_LANEINFO.code) {
+                when (it.problemType) {
+                    "遗漏", "错误" -> {
+                        activity?.run {
+                            findNavController(R.id.main_activity_middle_fragment).navigate(R.id.LineInfoEditFragment)
+                        }
+                    }
+                }
+            }
         }
 
     }

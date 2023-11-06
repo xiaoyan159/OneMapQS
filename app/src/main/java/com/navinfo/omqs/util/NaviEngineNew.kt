@@ -22,6 +22,8 @@ class NaviEngineNew(
         DataCodeEnum.OMDB_LINK_NAME.name,
     )
 
+//    private latestRoute
+//    private
 
     private val locationList = mutableListOf<NiLocation>()
 
@@ -44,8 +46,6 @@ class NaviEngineNew(
                 lastDis = meterD
             }
         }
-
-
 
         latestRoute?.let {
 
