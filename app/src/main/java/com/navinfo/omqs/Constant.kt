@@ -41,11 +41,18 @@ class Constant {
         lateinit var USER_DATA_PATH: String
 
         /**
+         * 用户数据安装标识
+         */
+        var INSTALL_DATA: Boolean = false
+
+        /**
          * 轨迹渲染个数统计
          */
         var TRACE_COUNT : Int = 0
 
-        var TRACE_COUNT_TIME : Int = 10
+        var TRACE_COUNT_TIME : Int = 9
+
+        var TRACE_COUNT_MORE_TIME : Int = 24
 
         /**
          * 当前安装任务

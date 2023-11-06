@@ -2,9 +2,10 @@ package com.navinfo.collect.library.data.entity
 
 import android.os.Parcelable
 import android.util.Log
+import com.alibaba.fastjson.JSON
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.navinfo.collect.library.system.Constant
+import com.navinfo.collect.library.utils.DeflaterUtil
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.collect.library.utils.StrZipUtil
@@ -13,13 +14,8 @@ import io.realm.RealmObject
 import io.realm.RealmSet
 import io.realm.annotations.Ignore
 import io.realm.annotations.Index
-import io.realm.annotations.PrimaryKey
 import kotlinx.parcelize.Parcelize
-import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.Geometry
-import org.oscim.core.MercatorProjection
-import java.util.*
-import java.util.zip.GZIPInputStream
 
 /**
  * 渲染要素对应的实体
@@ -82,11 +78,11 @@ open class RenderEntity() : RealmObject(), Parcelable {
     @Ignore
     var properties: RealmDictionary<String> = RealmDictionary()
         get() {
-            if (propertiesDb != null && propertiesDb.isNotEmpty() && field.isEmpty()) {
+            if (propertiesDb != null && propertiesDb!!.isNotEmpty()&& field.isEmpty()) {
                 try {
                     val gson = Gson()
                     val type = object : TypeToken<RealmDictionary<String>>() {}.type
-                    field = gson.fromJson(StrZipUtil.uncompress(propertiesDb), type)
+                    field = gson.fromJson(DeflaterUtil.unzipString(propertiesDb), type)
                 } catch (e: Exception) {
                     Log.e("jingo","RenderEntity 转 properties $e")
                 }
@@ -112,6 +108,7 @@ open class RenderEntity() : RealmObject(), Parcelable {
     @Index
     var linkPid: String = "" // RenderEntity关联的linkPid集合(可能会关联多个)
     var linkRelation: LinkRelation? = null
+    var referenceEntitys: RealmSet<ReferenceEntity>? = RealmSet()//
 
     constructor(name: String) : this() {
         this.name = name

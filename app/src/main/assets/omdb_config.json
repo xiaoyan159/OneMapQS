@@ -150,17 +150,23 @@
         "code": 2092,
         "name": "车道类型",
         "catch": true,
-        "isDependOnOtherTable": true,
+        "isDependOnOtherTable": false,
         "zoomMin": 18,
         "zoomMax": 20,
-        "transformer": [
-          {
-            "k": "geometry",
-            "v": "~",
-            "klib": "geometry",
-            "vlib": "generateLaneTypeAccessS2ERefPoint()"
-          }
-        ]
+		  "transformer": [
+			  {
+				  "k": "geometry",
+				  "v": "~",
+				  "klib": "geometry",
+				  "vlib": "filterLaneTypeAccess()"
+			  },
+			  {
+				  "k": "geometry",
+				  "v": "~",
+				  "klib": "geometry",
+				  "vlib": "generateLaneTypeAccessS2ERefPoint()"
+			  }
+		  ]
       },
       "2097": {
         "table": "OMDB_PHY_LANENUM",
@@ -173,7 +179,7 @@
         "name": "桥",
         "catch": true,
         "existSubCode": true,
-        "isDependOnOtherTable": true,
+        "isDependOnOtherTable": false,
         "zoomMin": 15,
         "zoomMax": 20,
         "transformer": [
@@ -350,7 +356,7 @@
         "code": 4001,
         "name": "路口",
         "zoomMin": 15,
-        "isDependOnOtherTable": true,
+        "isDependOnOtherTable": false,
         "zoomMax": 17,
         "catch": true,
         "transformer": [
@@ -492,7 +498,7 @@
         "code": 4009,
         "name": "警示信息",
         "catch": true,
-        "isDependOnOtherTable": true,
+        "isDependOnOtherTable": false,
         "zoomMin": 15,
         "zoomMax": 20,
         "transformer": [
@@ -581,7 +587,7 @@
         "code": 4601,
         "name": "车信",
         "catch": true,
-        "isDependOnOtherTable": true,
+        "isDependOnOtherTable": false,
         "zoomMin": 15,
         "zoomMax": 17,
         "transformer": [
@@ -609,8 +615,8 @@
         "table": "OMDB_LANE_LINK_LG",
         "code": 5001,
         "name": "车道中心线",
-        "catch": false,
-        "isDependOnOtherTable": true,
+        "catch": true,
+        "isDependOnOtherTable": false,
         "checkLinkId": false,
         "zoomMin": 18,
         "zoomMax": 20,

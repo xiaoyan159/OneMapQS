@@ -70,6 +70,18 @@ import kotlin.concurrent.fixedRateTimer
  * 创建Activity全局viewmode
  */
 
+enum class LoadDataStatus {
+    /**
+     * 加载开始
+     */
+    LOAD_DATA_STATUS_BEGIN,
+
+    /**
+     * 加载结束
+     */
+    LOAD_DATA_STATUS_FISISH,
+}
+
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val mapController: NIMapController,
@@ -96,6 +108,9 @@ class MainViewModel @Inject constructor(
 
     //地图点击捕捉到的轨迹列表
     val liveDataNILocationList = MutableLiveData<NiLocation>()
+
+    //加载数据
+    val liveDataLoadData = MutableLiveData<LoadDataStatus>()
 
     //左侧看板数据
     val liveDataSignList = MutableLiveData<List<SignBean>>()
@@ -251,8 +266,6 @@ class MainViewModel @Inject constructor(
     private val naviMutex = Mutex()
     private var testRealm: Realm? = null;
 
-    private var traceCount = 0
-
     init {
         mapController.mMapView.vtmMap.events.bind(Map.UpdateListener { e, mapPosition ->
             when (e) {
@@ -279,6 +292,10 @@ class MainViewModel @Inject constructor(
             object : OnGeoPointClickListener {
                 override fun onMapClick(tag: String, point: GeoPoint) {
                     if (tag == TAG) {
+                        //数据安装时不允许操作数据
+                        if(Constant.INSTALL_DATA){
+                            return
+                        }
                         if (bMeasuringTool) {
                             mapController.measureLayerHandler.addPoint(measuringType, point)
                         } else {
@@ -329,6 +346,7 @@ class MainViewModel @Inject constructor(
             })
 
         viewModelScope.launch(Dispatchers.IO) {
+            liveDataLoadData.postValue(LoadDataStatus.LOAD_DATA_STATUS_BEGIN)
             getTaskBean()
             //初始化选中的任务高亮高亮
             if (currentTaskBean != null) {
@@ -337,6 +355,7 @@ class MainViewModel @Inject constructor(
             initQsRecordData()
             initNoteData()
             initNILocationData()
+            liveDataLoadData.postValue(LoadDataStatus.LOAD_DATA_STATUS_FISISH)
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         MapParamUtils.setTaskId(sharedPreferences.getInt(Constant.SELECT_TASK_ID, -1))
@@ -568,12 +587,18 @@ class MainViewModel @Inject constructor(
             for (location in list) {
                 Constant.TRACE_COUNT++
 
+                if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_MORE_TIME==0){
+                    mapController.markerHandle.addNiLocationMarkerItemRough(location)
+                    Log.e("qj","${Constant.TRACE_COUNT}===轨迹")
+                }
+
+                if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_TIME==0){
+                    mapController.markerHandle.addNiLocationMarkerItemSimple(location)
+                    Log.e("qj","${Constant.TRACE_COUNT}===轨迹")
+                }
+
                 mapController.markerHandle.addNiLocationMarkerItem(location)
 
-                if (Constant.TRACE_COUNT % Constant.TRACE_COUNT_TIME == 0) {
-                    mapController.markerHandle.addNiLocationMarkerItemSimple(location)
-                    Log.e("qj", "$traceCount===轨迹")
-                }
             }
         }
     }
@@ -636,23 +661,22 @@ class MainViewModel @Inject constructor(
                             lastNiLocaion!!.longitude
                         )
                     }
-                    //室内整理工具时不能进行轨迹存储，判断轨迹间隔要超过2.5并小于60米
-                    if (Constant.INDOOR_IP.isEmpty() && (disance == 0.0 || (disance > 2.5 && disance < 60))) {
-                        traceCount++
+                    //室内整理工具时不能进行轨迹存储，判断轨迹间隔要超过6并小于60米
+                    if (Constant.INDOOR_IP.isEmpty() && (disance == 0.0 || (disance > 6.0 && disance < 60))) {
                         Log.e("jingo", "轨迹插入开始")
-                        CMLog.writeLogtoFile(MainViewModel::class.java.name, "insertTrace", "开始")
+                        CMLog.writeLogtoFile(MainViewModel::class.java.name,"insertTrace","开始")
                         traceDataBase.niLocationDao.insert(location)
                         mapController.markerHandle.addNiLocationMarkerItem(location)
-                        if (Constant.TRACE_COUNT % Constant.TRACE_COUNT_TIME == 0) {
+
+                        if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_TIME==0){
                             mapController.markerHandle.addNiLocationMarkerItemSimple(location)
+                        }
+                        if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_MORE_TIME==0){
+                            mapController.markerHandle.addNiLocationMarkerItemRough(location)
                         }
                         mapController.mMapView.vtmMap.updateMap(true)
                         lastNiLocaion = location
-                        CMLog.writeLogtoFile(
-                            MainViewModel::class.java.name,
-                            "insertTrace",
-                            gson.toJson(location)
-                        )
+                        CMLog.writeLogtoFile(MainViewModel::class.java.name,"insertTrace",gson.toJson(location))
                         Log.e("jingo", "轨迹插入结束")
                     }
                 }
@@ -830,7 +854,7 @@ class MainViewModel @Inject constructor(
      */
     private suspend fun captureLink(point: GeoPoint) {
 
-        if (captureLinkState) {
+        if (captureLinkState||Constant.INSTALL_DATA) {
             return
         }
 

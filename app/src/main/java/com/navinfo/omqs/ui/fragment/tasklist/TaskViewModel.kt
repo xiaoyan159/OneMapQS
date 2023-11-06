@@ -59,6 +59,18 @@ enum class TaskDelStatus {
     TASK_DEL_STATUS_CANCEL,
 }
 
+enum class TaskLoadStatus {
+    /**
+     * 加载开始
+     */
+    TASK_LOAD_STATUS_BEGIN,
+
+    /**
+     * 加载结束
+     */
+    TASK_LOAD_STATUS_FISISH,
+}
+
 @HiltViewModel
 class TaskViewModel @Inject constructor(
     private val networkService: NetworkService,
@@ -89,6 +101,11 @@ class TaskViewModel @Inject constructor(
      * 用来确定是否关闭
      */
     val liveDataCloseTask = MutableLiveData<TaskDelStatus>()
+
+    /**
+     * 用来确定是否加载
+     */
+    val liveDataLoadTask = MutableLiveData<TaskLoadStatus>()
 
     /**
      * 用来更新任务
@@ -317,7 +334,11 @@ class TaskViewModel @Inject constructor(
         currentSelectTaskBean = taskBean
 
         liveDataTaskLinks.value = taskBean.hadLinkDvoList
+
+        liveDataLoadTask.postValue(TaskLoadStatus.TASK_LOAD_STATUS_BEGIN)
+
         showTaskLinks(taskBean)
+
         //重新加载轨迹
         viewModelScope.launch(Dispatchers.IO) {
             Constant.TRACE_COUNT = 0
@@ -328,22 +349,30 @@ class TaskViewModel @Inject constructor(
 
                 Constant.TRACE_COUNT ++
 
-                mapController.markerHandle.addNiLocationMarkerItem(it)
+                if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_MORE_TIME==0){
+                    mapController.markerHandle.addNiLocationMarkerItemRough(it)
+                }
 
                 if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_TIME==0){
                     mapController.markerHandle.addNiLocationMarkerItemSimple(it)
                 }
+
+                mapController.markerHandle.addNiLocationMarkerItem(it)
+
+            }
+            liveDataLoadTask.postValue(TaskLoadStatus.TASK_LOAD_STATUS_FISISH)
+            withContext(Dispatchers.Main){
+                MapParamUtils.setTaskId(taskBean.id)
+                Constant.currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
+                Constant.currentSelectTaskConfig =
+                    RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder)
+                        .name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true)
+                        .schemaVersion(2).build()
+                MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
+                mapController.layerManagerHandler.updateOMDBVectorTileLayer()
+                mapController.mMapView.updateMap(true)
             }
         }
-        MapParamUtils.setTaskId(taskBean.id)
-        Constant.currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
-        Constant.currentSelectTaskConfig =
-            RealmConfiguration.Builder().directory(Constant.currentSelectTaskFolder)
-                .name("OMQS.realm").encryptionKey(Constant.PASSWORD).allowQueriesOnUiThread(true)
-                .schemaVersion(2).build()
-        MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
-        mapController.layerManagerHandler.updateOMDBVectorTileLayer()
-        mapController.mMapView.updateMap(true)
     }
 
 

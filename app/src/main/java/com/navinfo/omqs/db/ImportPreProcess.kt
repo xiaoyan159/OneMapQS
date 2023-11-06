@@ -1,11 +1,13 @@
 package com.navinfo.omqs.db
 
 import android.util.Log
+import com.alibaba.fastjson.JSON
 import com.google.gson.Gson
 import com.navinfo.collect.library.data.entity.LinkRelation
 import com.navinfo.collect.library.data.entity.ReferenceEntity
 import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.enums.DataCodeEnum
+import com.navinfo.collect.library.utils.DeflaterUtil
 import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.StrZipUtil
 import com.navinfo.omqs.Constant
@@ -240,19 +242,32 @@ class ImportPreProcess {
         startEndReference.properties["qi_table"] = renderEntity.table
         startEndReference.properties["type"] = "s_2_e"
         val listResult = mutableListOf<ReferenceEntity>()
-        startEndReference.propertiesDb = StrZipUtil.compress(
-            gson.toJson(startEndReference.properties).toString()
-        )
-        listResult.add(startEndReference)
-        insertData(listResult)
+        startEndReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(startEndReference.properties))
+        renderEntity.referenceEntitys?.add(startEndReference)
+        //listResult.add(startEndReference)
+        //insertData(listResult)
+    }
+
+    /**
+     * 过滤车道类型数据，只保留加速车道、减速车道和自行车道
+     * */
+    fun filterLaneTypeAccess(renderEntity: RenderEntity): Boolean {
+        if (renderEntity.properties["laneType"]!!.toInt() and (0b1100) > 0 || renderEntity.properties["laneType"]!!.toInt() and (0b1 shl 19) > 0) { // 是加速车道/减速车道/自行车道
+            // 如果是自行车道，需要在properties中增加新的属性，用于渲染自行车道的特殊线型
+            if (renderEntity.properties["laneType"]!!.toInt() and (0b1 shl 19) > 0) {
+                renderEntity.properties["bike"] = "true"
+            }
+            return true
+        }
+        return false
     }
 
     /**
      * 生成车道类型起终点参考数据
      * */
     fun generateLaneTypeAccessS2ERefPoint(renderEntity: RenderEntity) {
-        // 如果车道类型非常规车道(第0bit的数据)，则需要生成辅助数据
-        if (renderEntity.properties["laneType"]!!.toInt()>0) {
+        // 只需要生成加速车道和减速车道的起终点辅助数据
+        if (renderEntity.properties["laneType"]!!.toInt() and (0b1100) > 0) { // 是加速车道或者减速车道
             val geometry = GeometryTools.createGeometry(renderEntity.properties["geometry"])
 
             val pointEnd = geometry!!.coordinates[geometry.numPoints - 1] // 获取这个geometry对应的结束点坐标
@@ -273,7 +288,7 @@ class ImportPreProcess {
             startReference.geometry =
                 GeometryTools.createGeometry(GeoPoint(pointStart.y, pointStart.x)).toString()
             startReference.properties["qi_table"] = renderEntity.table
-            startReference.properties["type"] = "s_2_p"
+            startReference.properties["type"] = "s${if (renderEntity.properties["laneType"]!!.toInt() and (0b1000)>0) "_dec" else "_acc"}"
             startReference.properties["geometry"] = startReference.geometry
             listResult.add(startReference)
 
@@ -291,11 +306,11 @@ class ImportPreProcess {
             endReference.geometry =
                 GeometryTools.createGeometry(GeoPoint(pointEnd.y, pointEnd.x)).toString()
             endReference.properties["qi_table"] = renderEntity.table
-            endReference.properties["type"] = "e_2_p"
+            endReference.properties["type"] = "e${if (renderEntity.properties["laneType"]!!.toInt() and (0b1000)>0) "_dec" else "_acc"}"
             endReference.properties["geometry"] = endReference.geometry
-
-            listResult.add(endReference)
-            insertData(listResult)
+            renderEntity.referenceEntitys?.add(endReference)
+            //listResult.add(endReference)
+            //insertData(listResult)
         }
     }
 
@@ -344,9 +359,7 @@ class ImportPreProcess {
         Log.e("qj", "generateS2EReferencePoint===${startReference.geometry}")
 
         startReference.properties["geometry"] = startReference.geometry
-        startReference.propertiesDb = StrZipUtil.compress(
-            gson.toJson(startReference.properties).toString()
-        )
+        startReference.propertiesDb =  DeflaterUtil.zipString(JSON.toJSONString(startReference.properties))
         listResult.add(startReference)
 
         Log.e("qj", "generateS2EReferencePoint===1")
@@ -381,12 +394,11 @@ class ImportPreProcess {
             Log.e("qj", "generateS2EReferencePoint===e_2_p${renderEntity.name}")
         }
         endReference.properties["geometry"] = endReference.geometry
-        endReference.propertiesDb = StrZipUtil.compress(
-            gson.toJson(endReference.properties).toString()
-        )
-        listResult.add(endReference)
+        endReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(endReference.properties))
+        renderEntity.referenceEntitys?.add(endReference)
+        //listResult.add(endReference)
         Log.e("qj", "generateS2EReferencePoint===4")
-        insertData(listResult)
+        //insertData(listResult)
     }
 
     /**
@@ -482,12 +494,11 @@ class ImportPreProcess {
                 WKTWriter(3).write(GeometryTools.createLineString(arrayOf(pointStart, coorEnd)))
             angleReference.properties["qi_table"] = renderEntity.table
             angleReference.properties["type"] = "angle"
-            angleReference.propertiesDb = StrZipUtil.compress(
-                gson.toJson(angleReference.properties).toString()
-            )
-            listResult.add(angleReference)
+            angleReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(angleReference.properties))
+            renderEntity.referenceEntitys?.add(angleReference)
+            //listResult.add(angleReference)
         }
-        insertData(listResult)
+        //insertData(listResult)
     }
 
     fun addAngleFromGeometry(renderEntity: RenderEntity): String {
@@ -642,12 +653,11 @@ class ImportPreProcess {
                     referenceEntity.properties["symbol"] =
                         "assets:omdb/4601/${type}/1301_${referenceEntity.properties["currentDirect"]}.svg"
                     Log.d("unpackingLaneInfo", referenceEntity.properties["symbol"].toString())
-                    referenceEntity.propertiesDb = StrZipUtil.compress(
-                        gson.toJson(referenceEntity.properties).toString()
-                    )
-                    listResult.add(referenceEntity)
+                    referenceEntity.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(referenceEntity.properties))
+                    renderEntity.referenceEntitys?.add(referenceEntity)
+                   //listResult.add(referenceEntity)
                 }
-                insertData(listResult)
+                //insertData(listResult)
             }
         }
     }
@@ -745,9 +755,8 @@ class ImportPreProcess {
         angleReference.table = renderEntity.table
         angleReference.code = renderEntity.code
         Log.e("jingo", "几何转换开始")
-        angleReference.geometry =
-            GeometryTools.createGeometry(renderEntity.geometry).buffer(0.000010)
-                .toString()//GeometryTools.computeLine(0.000035,0.000035,renderEntity.geometry)
+        //angleReference.geometry = renderEntity.geometry
+        angleReference.geometry = GeometryTools.computeLine(0.000035,0.000035,renderEntity.geometry)
         Log.e("jingo", "几何转换结束")
         angleReference.properties["qi_table"] = renderEntity.table
         angleReference.properties["widthProperties"] = "3"
@@ -756,12 +765,10 @@ class ImportPreProcess {
         angleReference.taskId = renderEntity.taskId
         angleReference.enable = renderEntity.enable
         val listResult = mutableListOf<ReferenceEntity>()
-        angleReference.propertiesDb = StrZipUtil.compress(
-            gson.toJson(angleReference.properties).toString()
-        )
-        listResult.add(angleReference)
-        insertData(listResult)
-
+        angleReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(angleReference.properties))
+        renderEntity.referenceEntitys?.add(angleReference)
+        //listResult.add(angleReference)
+        //insertData(listResult)
     }
 
 
@@ -790,12 +797,11 @@ class ImportPreProcess {
                     GeometryTools.createGeometry(nodeJSONObject["geometry"].toString()).toString()
                 intersectionReference.properties["qi_table"] = renderEntity.table
                 intersectionReference.properties["type"] = "node"
-                intersectionReference.propertiesDb = StrZipUtil.compress(
-                    gson.toJson(intersectionReference.properties).toString()
-                )
-                listResult.add(intersectionReference)
+                intersectionReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(intersectionReference.properties))
+                renderEntity.referenceEntitys?.add(intersectionReference)
+                //listResult.add(intersectionReference)
             }
-            insertData(listResult)
+            //insertData(listResult)
         }
     }
 
@@ -962,12 +968,11 @@ class ImportPreProcess {
             dynamicSrcReference.properties["type"] = "dynamicSrc"
             val code = renderEntity.properties[codeName]
             dynamicSrcReference.properties["src"] = "${prefix}${code}${suffix}"
-            dynamicSrcReference.propertiesDb = StrZipUtil.compress(
-                gson.toJson(dynamicSrcReference.properties).toString()
-            )
-            listResult.add(dynamicSrcReference)
+            dynamicSrcReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(dynamicSrcReference.properties))
+            renderEntity.referenceEntitys?.add(dynamicSrcReference)
+            //listResult.add(dynamicSrcReference)
         }
-        insertData(listResult)
+        //insertData(listResult)
     }
 
     private fun insertData(list: List<RealmModel>) {
@@ -1110,5 +1115,119 @@ class ImportPreProcess {
         if (renderEntity.properties.containsKey("maxSpeed")&&renderEntity.properties.containsKey("minSpeed")) {
             renderEntity.properties["ref"] = "${renderEntity.properties["maxSpeed"]}|${renderEntity.properties["minSpeed"]}"
         }
+    }
+
+    /**
+     * 生成立交的辅助图层数据
+     * */
+    fun obtainZLevelReference(renderEntity: RenderEntity) {
+        if(renderEntity!=null&&renderEntity.properties.containsKey("zlevelList")) {
+            // 获取ZLevelList数据
+            val zLevelList = JSONArray(renderEntity.properties["zlevelList"])
+            for (i in 0 until zLevelList.length()) {
+                val zLevelObject = zLevelList.getJSONObject(i)
+                // 获取ZLevelObject的startEnd字段值
+                val startEnd = zLevelObject.optInt("startEnd", 0)
+                val zLevel = zLevelObject.optInt("zlevel", 0)
+                val shpSeqNum = zLevelObject.optInt("shpSeqNum", 0)
+                val linkGeometry = GeometryTools.createGeometry(zLevelObject.optString("linkGeometry"))
+                val coordinates = linkGeometry!!.coordinates
+                val referenceEntityList = mutableListOf<ReferenceEntity>()
+                // 判断当前数据的startEnd，如果是0则向前和向后都绘制线，如果是1（起点）则只绘制前两个点组成的线，如果是2（终点）则只绘制后两个点组成的线
+                if (startEnd == 0 || startEnd == 1) { // 处理向后的线
+                    val zLevelReference = createZLevelReference(renderEntity)
+                    zLevelReference.properties["type"] = "zlevelLine"
+//                    zLevelReference.properties["name"] = zLevel.toString()
+                    // 根据shpSeqNum获取对应的点位
+                    if (shpSeqNum < coordinates.size-1) {
+                        val currentCoordinate = coordinates[shpSeqNum]
+                        var nextCoordinate = coordinates[shpSeqNum+1]
+                        // 计算两个点的距离，如果小于指定阈值，程序按照方向计算延长线
+//                        if (GeometryTools.getDistance(currentCoordinate.y, currentCoordinate.x, nextCoordinate.y, nextCoordinate.x) < 3.0) {
+                            // 获取当前点到下一个点的线方向
+                            val angle = Angle.angle(currentCoordinate, nextCoordinate)
+                            // 计算偏移距离
+                            val dx: Double = GeometryTools.convertDistanceToDegree(
+                                3.0,
+                                currentCoordinate.y!!
+                            ) * Math.cos(angle)
+                            val dy: Double = GeometryTools.convertDistanceToDegree(
+                                3.0,
+                                currentCoordinate.y!!
+                            ) * Math.sin(angle)
+
+                            // 计算偏移后的点
+                            nextCoordinate =
+                                Coordinate(currentCoordinate.getX() + dx, currentCoordinate.getY() + dy)
+//                        }
+                        zLevelReference.geometry = GeometryTools.createLineString(arrayListOf(GeoPoint(currentCoordinate.y, currentCoordinate.x), GeoPoint(nextCoordinate.y, nextCoordinate.x))).toString()
+
+                        referenceEntityList.add(zLevelReference)
+
+                        val zLevelNameReference = createZLevelReference(renderEntity)
+                        zLevelNameReference.properties["type"] = "zlevelName"
+                        zLevelNameReference.properties["name"] = zLevel.toString()
+                        zLevelNameReference.geometry = GeometryTools.createGeometry(GeoPoint(nextCoordinate.y, nextCoordinate.x)).toString()
+                        referenceEntityList.add(zLevelNameReference)
+                    }
+                }
+
+                if (startEnd == 0 || startEnd == 2) { // 处理向前的线
+                    val zLevelReference = createZLevelReference(renderEntity)
+                    zLevelReference.properties["type"] = "zlevelLine"
+//                    zLevelReference.properties["name"] = zLevel.toString()
+                    // 根据shpSeqNum获取对应的点位
+                    if (shpSeqNum < coordinates.size&&shpSeqNum>0) {
+                        val currentCoordinate = coordinates[shpSeqNum]
+                        var preCoordinate = coordinates[shpSeqNum-1]
+                        // 计算两个点的距离，如果小于指定阈值，程序按照方向计算延长线
+//                        if (GeometryTools.getDistance(currentCoordinate.y, currentCoordinate.x, preCoordinate.y, preCoordinate.x) < 3.0) {
+                            // 获取当前点到下一个点的线方向
+                            val angle = Angle.angle(currentCoordinate, preCoordinate)
+                            // 计算偏移距离
+                            val dx: Double = GeometryTools.convertDistanceToDegree(
+                                3.0,
+                                currentCoordinate.y!!
+                            ) * Math.cos(angle)
+                            val dy: Double = GeometryTools.convertDistanceToDegree(
+                                3.0,
+                                currentCoordinate.y!!
+                            ) * Math.sin(angle)
+
+                            // 计算偏移后的点
+                            preCoordinate =
+                                Coordinate(currentCoordinate.getX() + dx, currentCoordinate.getY() + dy)
+//                        }
+                        zLevelReference.geometry = GeometryTools.createLineString(arrayListOf(GeoPoint(currentCoordinate.y, currentCoordinate.x), GeoPoint(preCoordinate.y, preCoordinate.x))).toString()
+                        referenceEntityList.add(zLevelReference)
+
+                        val zLevelNameReference = createZLevelReference(renderEntity)
+                        zLevelNameReference.properties["type"] = "zlevelName"
+                        zLevelNameReference.properties["name"] = zLevel.toString()
+                        zLevelNameReference.geometry = GeometryTools.createGeometry(GeoPoint(preCoordinate.y, preCoordinate.x)).toString()
+                        referenceEntityList.add(zLevelNameReference)
+                    }
+                }
+
+                insertData(referenceEntityList)
+                // 移除zlevelList，减小原始数据大小
+                renderEntity.properties.remove("zlevelList")
+            }
+        }
+    }
+
+    private fun createZLevelReference(renderEntity: RenderEntity): ReferenceEntity {
+        val zLevelReference = ReferenceEntity()
+        zLevelReference.renderEntityId = renderEntity.id
+        zLevelReference.name = "${renderEntity.name}参考点"
+        zLevelReference.code = renderEntity.code
+        zLevelReference.table = renderEntity.table
+        zLevelReference.zoomMin = renderEntity.zoomMin
+        zLevelReference.zoomMax = renderEntity.zoomMax
+        zLevelReference.taskId = renderEntity.taskId
+        zLevelReference.enable = renderEntity.enable
+
+        zLevelReference.properties["qi_table"] = renderEntity.table
+        return zLevelReference
     }
 }
