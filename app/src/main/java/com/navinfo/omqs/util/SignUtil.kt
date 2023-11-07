@@ -1702,7 +1702,7 @@ class SignUtil {
         /**
          * 获取车信图标
          */
-        fun getLineInfoIcons(renderEntity: RenderEntity): List<LaneInfoItem> {
+        fun getLineInfoIcons(renderEntity: RenderEntity): MutableList<LaneInfoItem> {
             val list = mutableListOf<LaneInfoItem>()
             try {
                 var laneinfoGroup = renderEntity.properties["laneinfoGroup"]
@@ -1718,7 +1718,7 @@ class SignUtil {
                         for (i in 0 until itemArray.length()) {
                             val itemObject = itemArray[i]
                             val type = typeArray[i]
-                            var laneInfo = "laneinfo_${itemObject.toString().replace(",", "_")}"
+                            val laneInfo = "laneinfo_${itemObject.toString().replace(",", "_")}"
                             list.add(
                                 LaneInfoItem(
                                     id = getResId(
@@ -1739,7 +1739,7 @@ class SignUtil {
         /**
          * 通过字符串名称获取资源id
          */
-        private fun getResId(variableName: String, c: Class<*>): Int {
+        fun getResId(variableName: String, c: Class<*>): Int {
             return try {
                 val idField: Field = c.getDeclaredField(variableName)
                 idField.getInt(idField)

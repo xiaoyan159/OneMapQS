@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
+import android.provider.ContactsContract.Data
 import android.text.TextUtils
 import android.util.Log
 import android.view.Gravity
@@ -20,10 +21,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.ToastUtils
-import com.navinfo.collect.library.data.entity.AttachmentBean
-import com.navinfo.collect.library.data.entity.HadLinkDvoBean
-import com.navinfo.collect.library.data.entity.QsRecordBean
-import com.navinfo.collect.library.data.entity.TaskBean
+import com.navinfo.collect.library.data.entity.*
+import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.OnGeoPointClickListener
 import com.navinfo.collect.library.utils.GeometryTools
@@ -34,8 +33,10 @@ import com.navinfo.omqs.bean.ScProblemTypeBean
 import com.navinfo.omqs.bean.SignBean
 import com.navinfo.omqs.db.RealmOperateHelper
 import com.navinfo.omqs.db.RoomAppDatabase
+import com.navinfo.omqs.ui.activity.map.LaneInfoItem
 import com.navinfo.omqs.ui.dialog.FirstDialog
 import com.navinfo.omqs.util.DateTimeUtil
+import com.navinfo.omqs.util.SignUtil
 import com.navinfo.omqs.util.SoundMeter
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,6 +59,17 @@ class EvaluationResultViewModel @Inject constructor(
     private val sharedPreferences: SharedPreferences
 ) : ViewModel(), SharedPreferences.OnSharedPreferenceChangeListener {
 
+    /**
+     * 关联的数据
+     */
+    var renderEntity: RenderEntity? = null
+
+    /**
+     * 车信列表
+     */
+    var laneInfoList: MutableList<LaneInfoItem>? = null
+
+    var liveDataLanInfoChange = MutableLiveData<String>()
 
     private val TAG = "点选marker"
 
@@ -152,6 +164,13 @@ class EvaluationResultViewModel @Inject constructor(
      * 查询数据库，获取问题分类
      */
     fun initNewData(bean: SignBean?, filePath: String) {
+
+        if (bean != null) {
+            renderEntity = bean.renderEntity
+            if (renderEntity!!.code == DataCodeEnum.OMDB_LANEINFO.code) {
+                laneInfoList = SignUtil.getLineInfoIcons(renderEntity!!)
+            }
+        }
 
         //查询元数据
         viewModelScope.launch(Dispatchers.IO) {
@@ -252,6 +271,13 @@ class EvaluationResultViewModel @Inject constructor(
      *  //获取问题分类列表
      */
     fun getClassTypeList(bean: SignBean? = null) {
+        if (bean != null) {
+            renderEntity = bean.renderEntity
+            if (renderEntity!!.code == DataCodeEnum.OMDB_LANEINFO.code) {
+                laneInfoList = SignUtil.getLineInfoIcons(renderEntity!!)
+            }
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             Log.e("jingo", "获取问题分类列表 SSS")
             val list = roomAppDatabase.getScProblemTypeDao().findClassTypeList()
@@ -307,13 +333,16 @@ class EvaluationResultViewModel @Inject constructor(
                             )
                         )
                     }
+                    val problemLinkB = liveDataQsRecordBean.value!!.problemLink.isEmpty()
+                    val causeB = liveDataQsRecordBean.value!!.cause.isEmpty()
                     if (liveDataQsRecordBean.value!!.problemLink.isEmpty()) {
                         liveDataQsRecordBean.value!!.problemLink = middleList[0]
                     }
                     if (liveDataQsRecordBean.value!!.cause.isEmpty()) {
                         liveDataQsRecordBean.value!!.cause = rightList[0].text
                     }
-                    liveDataQsRecordBean.postValue(liveDataQsRecordBean.value)
+                    if (problemLinkB && causeB)
+                        liveDataQsRecordBean.postValue(liveDataQsRecordBean.value)
 //                    liveDataMiddleTypeList.postValue(middleList)
                     liveDataRightTypeList.postValue(rightList)
                 }
@@ -342,14 +371,17 @@ class EvaluationResultViewModel @Inject constructor(
                         )
                     )
                 }
-                if (liveDataQsRecordBean.value!!.problemType.isEmpty()) {
+                val problemTypeB = liveDataQsRecordBean.value!!.problemType.isEmpty()
+                val phenomenonB = liveDataQsRecordBean.value!!.phenomenon.isEmpty()
+                if (problemTypeB) {
                     liveDataQsRecordBean.value!!.problemType = typeTitleList[0]
                 }
 //                liveDataMiddleTypeList.postValue(typeTitleList)
-                if (liveDataQsRecordBean.value!!.phenomenon.isEmpty()) {
+                if (phenomenonB) {
                     liveDataQsRecordBean.value!!.phenomenon = phenomenonRightList[0].text
                 }
-                liveDataQsRecordBean.postValue(liveDataQsRecordBean.value)
+                if (problemTypeB && phenomenonB)
+                    liveDataQsRecordBean.postValue(liveDataQsRecordBean.value)
                 liveDataRightTypeList.postValue(phenomenonRightList)
             }
         }
@@ -389,7 +421,6 @@ class EvaluationResultViewModel @Inject constructor(
      */
 
     fun saveData() {
-
         viewModelScope.launch(Dispatchers.IO) {
             val taskBean = liveDataQsRecordBean.value!!
             if (liveDataTaskBean.value == null) {
@@ -510,13 +541,28 @@ class EvaluationResultViewModel @Inject constructor(
                         }
                     }
                     liveDataQsRecordBean.value?.attachmentBeanList = it.attachmentBeanList
+                    liveDataLanInfoChange.value = it.description
                     // 显示语音数据到界面
                     getChatMsgEntityList()
+                    realm.close()
+                    if (it.elementId == DataCodeEnum.OMDB_LANEINFO.code) {
+                        val realm2 = realmOperateHelper.getSelectTaskRealmInstance()
+                        val r = realm2.where(RenderEntity::class.java)
+                            .equalTo("table", DataCodeEnum.OMDB_LANEINFO.name)
+                            .equalTo("linkPid", it.linkId).findFirst()
+                        if (r != null) {
+                            renderEntity = realm2.copyFromRealm(r)
+                            laneInfoList = SignUtil.getLineInfoIcons(renderEntity!!)
+                        }
+                        realm2.close()
+                    }
                 }
             } else {
                 liveDataToastMessage.postValue("数据读取失败")
+                realm.close()
             }
-            realm.close()
+
+
         }
     }
 
@@ -603,8 +649,9 @@ class EvaluationResultViewModel @Inject constructor(
         mSoundMeter!!.setmListener(object : SoundMeter.OnSoundMeterListener {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onSuccess(filePath: String?) {
-                if (!TextUtils.isEmpty(filePath) && File(filePath).exists()) {
-                    if (File(filePath) == null || File(filePath).length() < 1600) {
+                filePath?.let {
+                    val file = File(it)
+                    if (file.exists() && file.length() < 1600) {
                         ToastUtils.showLong("语音时间太短，无效！")
                         mSpeakMode!!.speakText("语音时间太短，无效")
                         stopSoundMeter()
@@ -613,7 +660,6 @@ class EvaluationResultViewModel @Inject constructor(
                 }
 
                 mSpeakMode!!.speakText("结束录音")
-
                 addChatMsgEntity(filePath!!)
             }
 
@@ -661,7 +707,7 @@ class EvaluationResultViewModel @Inject constructor(
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
             out.flush()
             out.close()
-            var picList = mutableListOf<String>()
+            val picList = mutableListOf<String>()
             if (liveDataPictureList.value == null) {
                 picList.add(file.absolutePath)
             } else {
@@ -691,6 +737,111 @@ class EvaluationResultViewModel @Inject constructor(
                 }
             } else {
                 liveDataFinish.postValue(true)
+            }
+        }
+    }
+
+    /**
+     * 增加车信
+     */
+    fun updateLaneInfo(index: Int, id: Int, type: Int) {
+        laneInfoList?.let {
+            val laneInfoItem = it[index]
+            if (laneInfoItem.id != id || laneInfoItem.type != type) {
+                laneInfoItem.id = id
+                laneInfoItem.type = type
+                editLaneInfoProblem()
+            }
+        }
+    }
+
+    /**
+     * 增加车信
+     */
+    fun addLaneInfo(id: Int, type: Int): Int {
+        laneInfoList?.let {
+            it.add(LaneInfoItem(id, type))
+            editLaneInfoProblem()
+            return it.size
+        }
+        return 0
+    }
+
+    /**
+     * 删除车信
+     */
+    fun backspaceLaneInfo() {
+        laneInfoList?.let {
+            if (it.isNotEmpty()) {
+                it.removeLast()
+                editLaneInfoProblem()
+            }
+        }
+    }
+
+    /**
+     * 删除车信
+     */
+    fun removeAllLaneInfo() {
+        laneInfoList?.clear()
+    }
+
+    /**
+     * 组织车信备注文字
+     */
+    private fun editLaneInfoProblem() {
+        laneInfoList?.let {
+            liveDataQsRecordBean.value?.let { bean ->
+                var strBuffer = StringBuffer()
+                if (bean.problemType == "遗漏")
+                    strBuffer.append("车信缺失,车道从左到右分别是：")
+                else if (bean.problemType == "错误")
+                    strBuffer.append("车信错误,车道从左到右分别是：")
+                for (item in it) {
+                    when (item.id) {
+                        R.drawable.laneinfo_1 -> strBuffer.append("[直(1)")
+                        R.drawable.laneinfo_2 -> strBuffer.append("[左(2)")
+                        R.drawable.laneinfo_3 -> strBuffer.append("[右(3)")
+                        R.drawable.laneinfo_5 -> strBuffer.append("[左斜前(5)")
+                        R.drawable.laneinfo_6 -> strBuffer.append("[右斜前(6)")
+                        R.drawable.laneinfo_4 -> strBuffer.append("[调(4)")
+                        R.drawable.laneinfo_7 -> strBuffer.append("[反向调(7)")
+                        R.drawable.laneinfo_1_2 -> strBuffer.append("[左直(1,2)")
+                        R.drawable.laneinfo_1_5 -> strBuffer.append("[左斜前直(1,5)")
+                        R.drawable.laneinfo_2_5 -> strBuffer.append("[左左斜前(2,5)")
+                        R.drawable.laneinfo_2_6 -> strBuffer.append("[左右斜前(2,6)")
+                        R.drawable.laneinfo_1_3 -> strBuffer.append("[直右(1,3)")
+                        R.drawable.laneinfo_1_6 -> strBuffer.append("[右斜前直(1,6)")
+                        R.drawable.laneinfo_3_5 -> strBuffer.append("[左斜前右(3,5)")
+                        R.drawable.laneinfo_3_6 -> strBuffer.append("[右斜前右(3,6)")
+                        R.drawable.laneinfo_2_3 -> strBuffer.append("[左右(2,3)")
+                        R.drawable.laneinfo_5_6 -> strBuffer.append("[左斜前右斜前(5,6)")
+                        R.drawable.laneinfo_1_4 -> strBuffer.append("[直调(1,4)")
+                        R.drawable.laneinfo_4_5 -> strBuffer.append("[调左斜前(4,5)")
+                        R.drawable.laneinfo_2_4 -> strBuffer.append("[左调(2,4)")
+                        R.drawable.laneinfo_3_4 -> strBuffer.append("[右调(3,4)")
+                        R.drawable.laneinfo_4_6 -> strBuffer.append("[调右斜前(4,6)")
+                        R.drawable.laneinfo_1_7 -> strBuffer.append("[直反向调(1,7)")
+                        R.drawable.laneinfo_1_2_3 -> strBuffer.append("[左直右(1,2,3)")
+                        R.drawable.laneinfo_1_2_4 -> strBuffer.append("[调左直(1,2,4)")
+                        R.drawable.laneinfo_1_2_5 -> strBuffer.append("[左左斜前直(1,2,5)")
+                        R.drawable.laneinfo_1_2_6 -> strBuffer.append("[左直右斜前(1,2,6)")
+                        R.drawable.laneinfo_1_3_4 -> strBuffer.append("[调直右(1,3,4)")
+                        R.drawable.laneinfo_1_3_5 -> strBuffer.append("[左斜前直右(1,3,5)")
+                        R.drawable.laneinfo_1_3_6 -> strBuffer.append("[直右斜前右(1,3,6)")
+                        R.drawable.laneinfo_2_3_4 -> strBuffer.append("[调左右(2,3,4)")
+                        R.drawable.laneinfo_0 -> strBuffer.append("[不允许存在(0)")
+                    }
+                    if (item.type == 1) {
+                        strBuffer.append("(附加)]")
+                    } else if (item.type == 2) {
+                        strBuffer.append("(公交)]")
+                    } else {
+                        strBuffer.append("]")
+                    }
+                }
+                liveDataQsRecordBean.value!!.description = strBuffer.toString()
+                liveDataLanInfoChange.value = strBuffer.toString()
             }
         }
     }

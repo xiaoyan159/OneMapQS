@@ -25,7 +25,7 @@ interface OnSignAdapterClickListener {
     fun onErrorClick(signBean: SignBean)
 }
 
-data class LaneInfoItem(val id: Int, val type: Int)
+data class LaneInfoItem(var id: Int, var type: Int)
 
 class SignAdapter(private var listener: OnSignAdapterClickListener?) :
     BaseRecyclerViewAdapter<SignBean>() {

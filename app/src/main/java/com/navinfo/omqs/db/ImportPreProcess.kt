@@ -637,6 +637,7 @@ class ImportPreProcess {
                     referenceEntity.name = "${renderEntity.name}参考方向"
                     referenceEntity.table = renderEntity.table
                     referenceEntity.enable = renderEntity.enable
+                    referenceEntity.code = renderEntity.code
                     referenceEntity.taskId = renderEntity.taskId
                     referenceEntity.zoomMin = renderEntity.zoomMin
                     referenceEntity.zoomMax = renderEntity.zoomMax

@@ -51,9 +51,9 @@
             android:layout_marginRight="5dp"
             android:background="@color/transparent"
             android:src="@drawable/icon_delete"
+            app:layout_constraintBottom_toBottomOf="@id/evaluation_bar_save"
             app:layout_constraintRight_toLeftOf="@id/evaluation_bar_save"
-            app:layout_constraintTop_toTopOf="@id/evaluation_bar_save"
-            app:layout_constraintBottom_toBottomOf="@id/evaluation_bar_save" />
+            app:layout_constraintTop_toTopOf="@id/evaluation_bar_save" />
 
 
         <ImageButton
@@ -62,9 +62,9 @@
             android:layout_height="40dp"
             android:background="@color/transparent"
             android:src="@drawable/measuring_tool_distance"
+            app:layout_constraintBottom_toBottomOf="@id/evaluation_bar_save"
             app:layout_constraintRight_toLeftOf="@id/evaluation_bar_delete"
-            app:layout_constraintTop_toTopOf="@id/evaluation_bar_save"
-            app:layout_constraintBottom_toBottomOf="@id/evaluation_bar_save"/>
+            app:layout_constraintTop_toTopOf="@id/evaluation_bar_save" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="0dp"
@@ -84,6 +84,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginBottom="7dp"
                 android:orientation="vertical">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -97,8 +98,7 @@
                     <TextView
                         android:id="@+id/evaluation_id"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        />
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 
@@ -152,7 +152,7 @@
                         android:id="@+id/evaluation_problem_type"
                         style="@style/evaluation_fragment_text_style"
                         android:onClick="@{fragment::onClick}"
-                        android:text="@{viewModel.liveDataQsRecordBean.problemType}" />
+                        android:text="" />
 
                 </LinearLayout>
 
@@ -223,6 +223,7 @@
                         android:text="问题描述" />
 
                     <com.navinfo.omqs.ui.widget.MyEditeText
+                        android:id="@+id/evaluation_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/shape_rect_white_2dp_bg"
@@ -235,7 +236,6 @@
                         android:paddingLeft="12dp"
                         android:paddingTop="2dp"
                         android:paddingBottom="2dp"
-                        android:text="@={viewModel.liveDataQsRecordBean.description}"
                         android:textSize="12sp" />
 
                 </LinearLayout>

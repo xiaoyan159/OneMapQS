@@ -30,5 +30,9 @@
         android:name="com.navinfo.omqs.ui.fragment.tasklink.TaskLinkMiddleFragment"
         android:label="新增评测Link属性选择页面"
         tools:layout="@layout/fragment_task_link_middle"></fragment>
-
+    <fragment
+        android:id="@+id/LineInfoEditFragment"
+        android:name="com.navinfo.omqs.ui.fragment.evaluationresult.LaneInfoEditFragment"
+        android:label="车信问题编辑页面"
+        tools:layout="@layout/fragment_line_info_edit"></fragment>
 </navigation>

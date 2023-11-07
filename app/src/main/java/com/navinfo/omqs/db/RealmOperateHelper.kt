@@ -444,7 +444,7 @@ class RealmOperateHelper() {
         }
         if (clazz.name == RenderEntity::class.jvmName) {
             // 筛选不显示的数据
-            if (com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY != null && com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY.size > 0) {
+            if (com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY != null && com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY.isNotEmpty()) {
                 realmQuery.beginGroup()
                 for (type in com.navinfo.collect.library.system.Constant.HAD_LAYER_INVISIABLE_ARRAY) {
                     realmQuery.notEqualTo("table", type)

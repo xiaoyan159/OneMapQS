@@ -12,6 +12,9 @@ import com.navinfo.omqs.databinding.FragmentProblemLinkBinding
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
 
+/**
+ * 问题环节页面
+ */
 class ProblemLinkFragment : BaseFragment() {
     private var _binding: FragmentProblemLinkBinding? = null
     private val binding get() = _binding!!

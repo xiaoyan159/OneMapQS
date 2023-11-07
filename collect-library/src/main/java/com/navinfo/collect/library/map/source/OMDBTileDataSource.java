@@ -132,7 +132,7 @@ public class OMDBTileDataSource implements ITileDataSource {
             List<RenderEntity> listResult = realmQuery.findAll();
             long newTime = System.currentTimeMillis() - time;
 
-            Log.e("jingo", "当前OMDBTileDataSource " + Thread.currentThread().hashCode() + " 当前realm " + realm.hashCode() + " 查询耗时" + newTime + " 条数" + listResult.size());
+//            Log.e("jingo", "当前OMDBTileDataSource " + Thread.currentThread().hashCode() + " 当前realm " + realm.hashCode() + " 查询耗时" + newTime + " 条数" + listResult.size());
             // 数据记录的tile号是以正外接tile号列表，此处过滤并未与当前tile相交的数据
             if (!listResult.isEmpty()) {
                 Polygon tilePolygon = GeometryTools.getTilePolygon(tile);
