@@ -287,6 +287,7 @@
         "zoomMax": 20,
         "is3D": true,
         "catch": true,
+        "checkLinkId": false,
         "transformer": [
           {
             "k": "geometry",
