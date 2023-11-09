@@ -306,7 +306,8 @@ class RealmOperateHelper() {
                     .equals("LINESTRING") || it.wkt?.geometryType?.uppercase().equals("POLYGON")
             } else {
                 polygon.intersects(it.wkt) && it.wkt?.geometryType?.uppercase()
-                    .equals("POINT") || it.wkt?.geometryType?.uppercase().equals("POLYGON")
+                    .equals("POINT") || it.wkt?.geometryType?.uppercase()
+                    .equals("LINESTRING") || it.wkt?.geometryType?.uppercase().equals("POLYGON")
             }
         }?.toList()
         queryResult?.let {

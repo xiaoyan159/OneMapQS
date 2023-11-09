@@ -3,6 +3,7 @@ package com.navinfo.omqs.bean
 import android.util.Log
 import com.google.gson.annotations.Expose
 import com.navinfo.collect.library.data.entity.RenderEntity
+import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.omqs.db.ImportPreProcess
 import io.realm.Realm
 import kotlin.reflect.KFunction
@@ -26,6 +27,10 @@ class ImportConfig {
         if (transformList.isNullOrEmpty()) {
             return renderEntity
         }
+        if(renderEntity.code==DataCodeEnum.OMDB_LANEINFO.code){
+            Log.e("车信","====车信")
+        }
+
         for (transform in transformList) {
             // 开始执行转换
             val key: String = transform.k

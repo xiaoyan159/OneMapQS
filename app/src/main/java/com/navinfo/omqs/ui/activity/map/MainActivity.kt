@@ -16,8 +16,6 @@ import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -48,17 +46,13 @@ import com.navinfo.omqs.ui.other.BaseToast
 import com.navinfo.omqs.ui.widget.RecyclerViewSpacesItemDecoration
 import com.navinfo.omqs.util.FlowEventBus
 import com.navinfo.omqs.util.NaviStatus
-import com.navinfo.omqs.util.SignUtil
 import com.navinfo.omqs.util.SpeakMode
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.oscim.core.GeoPoint
 import org.oscim.renderer.GLViewport
 import org.videolan.vlc.Util
-import sun.misc.BASE64Decoder
-import sun.misc.BASE64Encoder
 import java.math.BigDecimal
 import java.math.RoundingMode
 import javax.inject.Inject
@@ -824,6 +818,25 @@ class MainActivity : BaseActivity() {
      * zoomOut
      */
     fun zoomOutOnclick(view: View) {
+        val result = mutableListOf<RenderEntity>()
+        for (i in 0 until 10) {
+            var renderEntity: RenderEntity = RenderEntity()
+            renderEntity.geometry = "POINT(116.2694${i}13016946 40.0844${i}5791644373 0)"
+            result.add(renderEntity)
+        }
+        //计算后
+        var index = 0
+        Log.e("qj","====计算开始")
+        var lastRender:RenderEntity = RenderEntity()
+        GeometryTools.groupByDistance(result, 5.0)?.forEach {
+            if(lastRender!=null&&lastRender.geometry!=null&& lastRender.geometry != ""){
+                if(it.geometry!=lastRender.geometry){
+                    Log.e("qj","${index++}====计算后"+it.geometry)
+                }
+            }
+            lastRender = it
+        }
+        Log.e("qj","====计算结束")
         mapController.animationHandler.zoomOut()
     }
 

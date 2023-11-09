@@ -5,6 +5,8 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.navinfo.collect.library.data.entity.RenderEntity;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -1452,6 +1454,7 @@ public class GeometryTools {
 
     /**
      * 距离转米
+     *
      * @param distance
      * @param latitude
      * @return
@@ -1463,10 +1466,12 @@ public class GeometryTools {
         double radianDegree = 2 * Math.asin(Math.sin(radianDistance / 2) / Math.cos(radianLatitude));
         return Math.toDegrees(radianDegree);
     }
+
     /**
      * 获取指定tile对应的polygon面
+     *
      * @param tile vtm中的瓦片
-     * */
+     */
     public static Polygon getTilePolygon(Tile tile) {
         // 获取当前tile的起点坐标
         double startLongitude = MercatorProjection.tileXToLongitude(tile.tileX, tile.zoomLevel);
@@ -1476,6 +1481,7 @@ public class GeometryTools {
         return GeometryTools.createPolygonFromCoords(new Coordinate[]{new Coordinate(startLongitude, startLatitude), new Coordinate(endLongitude, startLatitude),
                 new Coordinate(endLongitude, endLatitude), new Coordinate(startLongitude, endLatitude), new Coordinate(startLongitude, startLatitude)});
     }
+
     /**
      * 经纬度转墨卡托
      */
@@ -1509,13 +1515,13 @@ public class GeometryTools {
 
 
     /**
-     * @param distLeft 0.00001为一米
+     * @param distLeft  0.00001为一米
      * @param distRight 单位km
-     * @param wkt  几何
+     * @param wkt       几何
      * @return
      */
-    public static String computeLine(Double distLeft,Double distRight,String wkt){
-        if(!TextUtils.isEmpty(wkt)){
+    public static String computeLine(Double distLeft, Double distRight, String wkt) {
+        if (!TextUtils.isEmpty(wkt)) {
             Geometry lineString1 = GeometryTools.createGeometry(wkt);
             BufferParameters parameters1 = new BufferParameters();
             parameters1.setJoinStyle(BufferParameters.DEFAULT_QUADRANT_SEGMENTS);
@@ -1525,7 +1531,7 @@ public class GeometryTools {
             Geometry buffer = BufferOp.bufferOp(lineString1, distLeft, parameters1);
             Geometry buffer2 = BufferOp.bufferOp(lineString1, -distRight, parameters1);
             String bufferWkt = buffer.union(buffer2).toString();
-            Log.e("qj",bufferWkt);
+            Log.e("qj", bufferWkt);
             return bufferWkt;
         }
         return "";
@@ -1536,8 +1542,8 @@ public class GeometryTools {
      * @param wkt  几何
      * @return
      */
-    public static String computeLine(Double dist,String wkt){
-        if(!TextUtils.isEmpty(wkt)){
+    public static String computeLine(Double dist, String wkt) {
+        if (!TextUtils.isEmpty(wkt)) {
             Geometry lineString1 = GeometryTools.createGeometry(wkt);
             BufferParameters parameters1 = new BufferParameters();
             parameters1.setJoinStyle(BufferParameters.CAP_FLAT);
@@ -1547,8 +1553,8 @@ public class GeometryTools {
             Geometry buffer = BufferOp.bufferOp(lineString1, dist, parameters1);
             int coorsLength = lineString1.getCoordinates().length;
             List<Coordinate> list = new ArrayList<>();
-            for (int i = coorsLength; i < buffer.getCoordinates().length-1; i++) {
-                 list.add(buffer.getCoordinates()[i]);
+            for (int i = coorsLength; i < buffer.getCoordinates().length - 1; i++) {
+                list.add(buffer.getCoordinates()[i]);
             }
             Coordinate[] coordinates = new Coordinate[list.size()];
             for (int i = 0; i < list.size(); i++) {
@@ -1564,8 +1570,63 @@ public class GeometryTools {
         //定义垂线
         FootAndDistance pointPairDistance = new FootAndDistance(point);
         Coordinate coordinate = new Coordinate(point.getLongitude(), point.getLatitude());
-        pointPairDistance.computeDistance(geometry,coordinate);
+        pointPairDistance.computeDistance(geometry, coordinate);
 
         return pointPairDistance;
+    }
+
+    /**
+     * 按距离分组
+     *
+     * @param list
+     * @return
+     */
+    public static List<RenderEntity> groupByDistance(List<RenderEntity> list, double disance) {
+
+        if (list == null || disance <= 0) {
+            return null;
+        }
+
+        List<RenderEntity> listReslut = new ArrayList<>();
+
+        java.util.Map<String, RenderEntity> calcMap = new HashMap<>();
+
+        int count = 0;
+        //遍历开始
+        for (RenderEntity renderEntity : list) {
+
+            if (!calcMap.containsKey(renderEntity.getId())) {
+
+                //跟要素遍历对比，如果统一个点直接标记计算并记录在内，已经计算过不在二次计算
+                for (RenderEntity renderEntityTemp : list) {
+
+                    if (!calcMap.containsKey(renderEntity.getId())) {
+                        if (renderEntity.getId().equals(renderEntityTemp.getId())) {
+                            listReslut.add(renderEntityTemp);
+                            count++;
+                            calcMap.put(renderEntityTemp.getId(), renderEntityTemp);
+                        } else {
+                            GeoPoint geoPoint = createGeoPoint(renderEntity.getGeometry());
+                            GeoPoint geoPoint1 = createGeoPoint(renderEntityTemp.getGeometry());
+                            double dis = getDistance(geoPoint.getLatitude(), geoPoint.getLongitude(), geoPoint1.getLatitude(), geoPoint1.getLongitude());
+                            Log.e("qj", "====计算间距" + dis);
+                            if (geoPoint != null && geoPoint1 != null && dis <= disance) {
+                                //只取第一个坐标
+                                renderEntityTemp.setGeometry(renderEntity.getGeometry());
+                                //renderEntity.setProperties(renderEntity.getProperties());
+                                calcMap.put(renderEntityTemp.getId(), renderEntityTemp);
+                                listReslut.add(renderEntityTemp);
+                            }
+
+                        }
+                    }
+                }
+
+            }
+        }
+
+        Log.e("qj", "====计算间距====" + count);
+
+        return listReslut;
     }
 }
