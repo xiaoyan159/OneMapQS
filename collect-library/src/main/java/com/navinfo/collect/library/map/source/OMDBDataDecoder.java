@@ -70,7 +70,9 @@ public class OMDBDataDecoder extends TileDecoder {
         mTileY = tile.tileY / mTileScale;
         mTileScale *= Tile.SIZE;
 
-        listResult.stream().iterator().forEachRemaining(new Consumer<RenderEntity>() {
+        List<RenderEntity> list = GeometryTools.groupByDistance(DataCodeEnum.OMDB_TRAFFIC_SIGN.code,listResult,5.0);
+
+        list.stream().iterator().forEachRemaining(new Consumer<RenderEntity>() {
             @Override
             public void accept(RenderEntity renderEntity) {
 

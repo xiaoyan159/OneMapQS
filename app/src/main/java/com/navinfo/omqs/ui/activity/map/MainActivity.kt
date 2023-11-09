@@ -23,6 +23,7 @@ import com.blankj.utilcode.util.ClipboardUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.navinfo.collect.library.data.entity.RenderEntity
+import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.MeasureLayerHandler
 import com.navinfo.collect.library.utils.DeflaterUtil
@@ -828,7 +829,7 @@ class MainActivity : BaseActivity() {
         var index = 0
         Log.e("qj","====计算开始")
         var lastRender:RenderEntity = RenderEntity()
-        GeometryTools.groupByDistance(result, 5.0)?.forEach {
+        GeometryTools.groupByDistance(DataCodeEnum.OMDB_TRAFFIC_SIGN.code,result, 5.0)?.forEach {
             if(lastRender!=null&&lastRender.geometry!=null&& lastRender.geometry != ""){
                 if(it.geometry!=lastRender.geometry){
                     Log.e("qj","${index++}====计算后"+it.geometry)

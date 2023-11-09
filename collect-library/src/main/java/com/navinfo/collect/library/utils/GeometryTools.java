@@ -1581,7 +1581,7 @@ public class GeometryTools {
      * @param list
      * @return
      */
-    public static List<RenderEntity> groupByDistance(List<RenderEntity> list, double disance) {
+    public static List<RenderEntity> groupByDistance(String code,List<RenderEntity> list, double disance) {
 
         if (list == null || disance <= 0) {
             return null;
@@ -1594,6 +1594,12 @@ public class GeometryTools {
         int count = 0;
         //遍历开始
         for (RenderEntity renderEntity : list) {
+
+            if(!TextUtils.isEmpty(code)&&renderEntity.getCode()!=code){
+                listReslut.add(renderEntity);
+                calcMap.put(renderEntity.getId(),renderEntity);
+                continue;
+            }
 
             if (!calcMap.containsKey(renderEntity.getId())) {
 
@@ -1625,7 +1631,7 @@ public class GeometryTools {
             }
         }
 
-        Log.e("qj", "====计算间距====" + count);
+        Log.e("qj", "====计算间距====" + listReslut.size()+"==判断后=="+list.size());
 
         return listReslut;
     }
