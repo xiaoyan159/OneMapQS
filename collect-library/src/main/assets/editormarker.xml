@@ -1565,7 +1565,7 @@
 
         <!-- 交通标牌 -->
         <m v="OMDB_TRAFFIC_SIGN">
-            <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
+            <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true" gland="true"
                 src="@src" symbol-height="24" symbol-width="24" degree="-90" dy="-30"></symbol>
         </m>
 
@@ -1847,12 +1847,12 @@
         <!-- 环岛 -->
         <m v="OMDB_ROUNDABOUT">
             <line stroke="#fcba5a" width="0.5" />
-            <symbol repeat="false" repeat-start="0" gland="false" repeat-gap="0" src="assets:omdb/icon_2204_0.svg"></symbol>
+            <symbol repeat="false" repeat-start="0"  repeat-gap="0" src="assets:omdb/icon_2204_0.svg"></symbol>
         </m>
 
         <!-- 上方障碍物 -->
         <m v="OMDB_OBJECT_OH_STRUCT">
-            <symbol repeat="false" repeat-start="0" gland="false" repeat-gap="32" symbol-width="42" symbol-height="42" src="assets:omdb/icon_3001_0.svg"></symbol>
+            <symbol repeat="false" repeat-start="0"  repeat-gap="32" symbol-width="42" symbol-height="42" src="assets:omdb/icon_3001_0.svg"></symbol>
         </m>
 
         <!-- 路口内交通岛 -->

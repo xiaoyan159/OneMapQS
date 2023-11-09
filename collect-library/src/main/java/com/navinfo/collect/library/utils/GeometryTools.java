@@ -1592,10 +1592,11 @@ public class GeometryTools {
         java.util.Map<String, RenderEntity> calcMap = new HashMap<>();
 
         int count = 0;
+
         //遍历开始
         for (RenderEntity renderEntity : list) {
 
-            if(!TextUtils.isEmpty(code)&&renderEntity.getCode()!=code){
+            if(!TextUtils.isEmpty(code)&&!renderEntity.getCode().equals(code)){
                 listReslut.add(renderEntity);
                 calcMap.put(renderEntity.getId(),renderEntity);
                 continue;
@@ -1610,6 +1611,7 @@ public class GeometryTools {
                         if (renderEntity.getId().equals(renderEntityTemp.getId())) {
                             listReslut.add(renderEntityTemp);
                             count++;
+                            Log.e("qj", "====计算间距" + count);
                             calcMap.put(renderEntityTemp.getId(), renderEntityTemp);
                         } else {
                             GeoPoint geoPoint = createGeoPoint(renderEntity.getGeometry());
@@ -1631,7 +1633,7 @@ public class GeometryTools {
             }
         }
 
-        Log.e("qj", "====计算间距====" + listReslut.size()+"==判断后=="+list.size());
+        Log.e("qj", listReslut.size()+"==判断后=="+list.size()+"==="+calcMap.size());
 
         return listReslut;
     }
