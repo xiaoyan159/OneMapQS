@@ -17,6 +17,9 @@ import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * 问题现象页面
+ */
 @AndroidEntryPoint
 class PhenomenonFragment :
     BaseFragment() {

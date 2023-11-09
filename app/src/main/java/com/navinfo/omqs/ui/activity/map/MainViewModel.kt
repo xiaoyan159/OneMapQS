@@ -377,7 +377,7 @@ class MainViewModel @Inject constructor(
                 if (naviEngineStatus == 1) {
                     naviEngineNew.let {
 //                        naviMutex.lock()
-                           if (testRealm == null)
+                        if (testRealm == null)
                             testRealm = realmOperateHelper.getSelectTaskRealmInstance()
                         if (currentTaskBean != null) {
                             naviEngineNew.bindingRoute(
@@ -899,12 +899,12 @@ class MainViewModel @Inject constructor(
                         )
 
                         val newLineString = GeometryTools.createLineString(linePoints)
-                        linkId?.let {
+                        if (linkId.isNotEmpty()) {
                             val time = System.currentTimeMillis()
-                            val elementList = realmOperateHelper.queryLinkByLinkPid(realm, it)
+                            val elementList = realmOperateHelper.queryLinkByLinkPid(realm, linkId)
                             Log.e(
                                 "jingo",
-                                "捕捉到数据 ${elementList.size} 个 ${System.currentTimeMillis() - time}"
+                                "捕捉到数据 $linkId ${elementList.size} 个 ${System.currentTimeMillis() - time}"
                             )
                             for (element in elementList) {
                                 if (element.code == DataCodeEnum.OMDB_LINK_NAME.code) {
@@ -924,7 +924,7 @@ class MainViewModel @Inject constructor(
                                 )
                                 Log.e(
                                     "jingo",
-                                    "捕捉到的数据code ${DataCodeEnum.findTableNameByCode(element.code)}"
+                                    "捕捉到的数据code $linkId ${DataCodeEnum.findTableNameByCode(element.code)}"
                                 )
                                 when (element.code) {
                                     DataCodeEnum.OMDB_MULTI_DIGITIZED.code,//上下线分离
@@ -1002,9 +1002,9 @@ class MainViewModel @Inject constructor(
 
                             val entityList = realmOperateHelper.getSelectTaskRealmTools(
                                 realm, RenderEntity::class.java, true
-                            ).and().equalTo("table", DataCodeEnum.OMDB_RESTRICTION.name).and()
+                            ).equalTo("table", DataCodeEnum.OMDB_RESTRICTION.name)
                                 .equalTo(
-                                    "properties['linkIn']", it
+                                    "linkPid", linkId
                                 ).findAll()
                             if (entityList.isNotEmpty()) {
                                 val outList = entityList.distinct()
@@ -1016,7 +1016,6 @@ class MainViewModel @Inject constructor(
                                             true
                                         )
                                             .equalTo("table", DataCodeEnum.OMDB_RD_LINK_KIND.name)
-                                            .and()
                                             .equalTo(
                                                 "linkPid",
                                                 outLink
@@ -1052,7 +1051,6 @@ class MainViewModel @Inject constructor(
                 if (!hisRoadName) {
                     liveDataRoadName.postValue(null)
                 }
-                Log.e("jingo", "另一个地方查询数据库")
                 realm.close()
             }
         } catch (e: Exception) {

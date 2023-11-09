@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="55dp"
+    tools:context=".ui.fragment.evaluationresult.LaneInfoEditFragment">
+
+    <LinearLayout
+        android:layout_width="@dimen/fragment_phenomenon_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:background="@drawable/shape_middle_fragment_bg"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <HorizontalScrollView
+            android:id="@+id/lane_info_top_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:requiresFadingEdge="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            >
+
+            <LinearLayout
+                android:id="@+id/lane_info_top_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/gray"
+                android:orientation="horizontal"
+                android:padding="5dp" />
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <RadioGroup
+                android:id="@+id/lane_info_radiogroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/lane_info_radio_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="普通车道"
+                    android:textColor="@color/lane_info_0" />
+
+                <RadioButton
+                    android:id="@+id/lane_info_radio_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="附加车道"
+                    android:textColor="@color/lane_info_1" />
+
+                <RadioButton
+                    android:id="@+id/lane_info_radio_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="公交车道"
+                    android:textColor="@color/lane_info_2" />
+            </RadioGroup>
+
+            <ImageButton
+                android:id="@+id/lane_info_backspace"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_back_n" />
+        </LinearLayout>
+
+        <GridView
+            android:id="@+id/lane_info_gridview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:horizontalSpacing="2dp"
+            android:numColumns="8"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:scrollbars="none"
+            android:verticalSpacing="2dp" />
+
+        <GridView
+            android:id="@+id/lane_info_gridview2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:horizontalSpacing="2dp"
+            android:numColumns="2"
+            android:layout_marginTop="8dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:scrollbars="none"
+            android:verticalSpacing="2dp" />
+
+    </LinearLayout>
+</FrameLayout>
