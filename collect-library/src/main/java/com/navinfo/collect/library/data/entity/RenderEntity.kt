@@ -10,20 +10,23 @@ import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.collect.library.utils.GeometryToolsKt
 import com.navinfo.collect.library.utils.StrZipUtil
 import io.realm.RealmDictionary
+import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.RealmSet
 import io.realm.annotations.Ignore
 import io.realm.annotations.Index
+import io.realm.annotations.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import org.locationtech.jts.geom.Geometry
+import java.util.UUID
 
 /**
  * 渲染要素对应的实体
  * */
 @Parcelize
 open class RenderEntity() : RealmObject(), Parcelable {
-    //    @PrimaryKey
-//    var id: String = UUID.randomUUID().toString() // id
+    @PrimaryKey
+    var id: String = UUID.randomUUID().toString() // id
     lateinit var name: String //要素名
     lateinit var table: String //要素表名
     var code: String = "0" // 要素编码
@@ -108,7 +111,7 @@ open class RenderEntity() : RealmObject(), Parcelable {
     @Index
     var linkPid: String = "" // RenderEntity关联的linkPid集合(可能会关联多个)
     var linkRelation: LinkRelation? = null
-    var referenceEntitys: RealmSet<ReferenceEntity>? = RealmSet()//
+    var referenceEntitys: RealmList<ReferenceEntity> = RealmList()//
 
     constructor(name: String) : this() {
         this.name = name

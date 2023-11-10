@@ -3,7 +3,7 @@ package com.navinfo.collect.library.enums
 /*
 * 要素枚举定义
 * */
-enum class DataCodeEnum(var tableName: String, var code: String) {
+public enum class DataCodeEnum(var tableName: String, var code: String) {
     OMDB_NODE_FORM("点形态", "1007-6"),
     OMDB_NODE_PA("点形态PA", "1007-6"),
     OMDB_CHECKPOINT("检查点", "1012"),
@@ -62,7 +62,8 @@ enum class DataCodeEnum(var tableName: String, var code: String) {
     OMDB_LINK_FORM2_11("风景路线", "2206-11"),
     OMDB_LINK_FORM2_12("车辆测试路段", "2206-12"),
     OMDB_LINK_FORM2_13("驾照考试路段", "2206-13"),
-    OMDB_OBJECT_OH_STRUCT("上方障碍物", "3001"),
+    OMDB_LANE_ACCESS("通行车辆类型Lane", "2638"),
+    OMDB_OBJECT_OH_STRUCT("上方障碍物","3001"),
     OMDB_OBJECT_TEXT("文字", "3002"),
     OMDB_OBJECT_SYMBOL("符号", "3003"),
     OMDB_OBJECT_ARROW("箭头", "3004"),

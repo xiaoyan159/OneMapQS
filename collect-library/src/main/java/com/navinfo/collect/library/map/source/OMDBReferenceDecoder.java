@@ -63,7 +63,7 @@ public class OMDBReferenceDecoder extends TileDecoder {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public boolean decode(int mapLevel,Tile tile, ITileDataSink sink, List<ReferenceEntity> listResult) {
+    public boolean decode(int mapLevel, Tile tile, ITileDataSink sink, List<ReferenceEntity> listResult) {
         mTileDataSink = sink;
         mTileScale = 1 << tile.zoomLevel;
         mTileX = tile.tileX / mTileScale;
@@ -73,8 +73,8 @@ public class OMDBReferenceDecoder extends TileDecoder {
         listResult.stream().iterator().forEachRemaining(new Consumer<ReferenceEntity>() {
             @Override
             public void accept(ReferenceEntity renderEntity) {
-                if(!(mapLevel<renderEntity.getZoomMin()||mapLevel>renderEntity.getZoomMax())){
-                    Map<String, Object> properties= new HashMap<>(renderEntity.getProperties().size());
+                if (!(mapLevel < renderEntity.getZoomMin() || mapLevel > renderEntity.getZoomMax())) {
+                    Map<String, Object> properties = new HashMap<>(renderEntity.getProperties().size());
                     properties.putAll(renderEntity.getProperties());
                     parseGeometry(renderEntity.getTable(), renderEntity.getWkt(), properties);
                 }
@@ -103,14 +103,7 @@ public class OMDBReferenceDecoder extends TileDecoder {
                 processCoordinateArray(multiPoint.getGeometryN(i).getCoordinates(), false);
             }
         } else if (geometry instanceof LineString) {
-            //将车道中心进行转化面渲染
-            if(layerName!=null&&layerName.equals(DataCodeEnum.OMDB_LANE_LINK_LG.name())){
-                Log.e("qj","车道中心线转化开始");
-                processPolygon((Polygon)GeometryTools.createGeometry(GeometryTools.computeLine(0.000035,0.000035,geometry.toString())));
-                Log.e("qj","车道中心线转化结束");
-            }else{
-                processLineString((LineString) geometry);
-            }
+            processLineString((LineString) geometry);
         } else if (geometry instanceof MultiLineString) {
             MultiLineString multiLineString = (MultiLineString) geometry;
             for (int i = 0; i < multiLineString.getNumGeometries(); i++) {

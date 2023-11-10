@@ -1,5 +1,6 @@
 package com.navinfo.collect.library.data.entity
 
+import android.os.Parcelable
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -12,26 +13,25 @@ import io.realm.RealmObject
 import io.realm.RealmSet
 import io.realm.annotations.Ignore
 import io.realm.annotations.PrimaryKey
+import kotlinx.parcelize.Parcelize
 import org.locationtech.jts.geom.Geometry
 import java.util.*
 
 /**
  * 渲染要素对应的实体
  * */
-open class ReferenceEntity() : RealmObject() {
-    //    @PrimaryKey
-//    var id: Int = 0 // id
-//    var renderEntityId: Int = 0 // 参考的renderEntity的Id
+@Parcelize
+open class ReferenceEntity() : RealmObject(), Parcelable {
+    @PrimaryKey
+    var id: String = UUID.randomUUID().toString() // id
     @Ignore
     lateinit var name: String //要素名
     lateinit var table: String //要素表名
     var propertiesDb: String = ""
     var code: String = "0" // 要素编码
 
-    @Ignore
     var zoomMin: Int = 18 //显示最小级别
 
-    @Ignore
     var zoomMax: Int = 23 //显示最大级别
     var taskId: Int = 0 //任务ID
     var enable: Int = 0 // 默认0不是显示 1为渲染显示
