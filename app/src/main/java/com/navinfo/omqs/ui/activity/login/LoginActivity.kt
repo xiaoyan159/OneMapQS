@@ -34,7 +34,7 @@ class LoginActivity : CheckPermissionsActivity() {
         binding.lifecycleOwner = this
         binding.activity = this
         initView()
-        Log.e("jingo", getScreenParams())
+//        Log.e("jingo", getScreenParams())
         UMConfigure.init(
             this,
             "650bece7b2f6fa00ba573c7a",

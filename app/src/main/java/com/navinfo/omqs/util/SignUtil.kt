@@ -627,7 +627,7 @@ class SignUtil {
                     )
                 }
                 //杆状物
-                DataCodeEnum.OMDB_POLE.code ->{
+                DataCodeEnum.OMDB_POLE.code -> {
                     list.add(
                         TwoItemAdapterItem(
                             title = "对象号码",
@@ -672,7 +672,7 @@ class SignUtil {
                     )
                 }
                 //箭头
-                DataCodeEnum.OMDB_OBJECT_ARROW.code ->{
+                DataCodeEnum.OMDB_OBJECT_ARROW.code -> {
                     list.add(
                         TwoItemAdapterItem(
                             title = "对象号码",
@@ -718,7 +718,8 @@ class SignUtil {
                         )
                     )
                 }
-                DataCodeEnum.OMDB_FILL_AREA.code->{
+                //导流区
+                DataCodeEnum.OMDB_FILL_AREA.code -> {
                     list.add(
                         TwoItemAdapterItem(
                             title = "对象号码",
@@ -739,6 +740,61 @@ class SignUtil {
                             title = "关联车道组", text = "${data.properties["lgList"]}"
                         )
                     )
+                }
+                //物理车道数
+                DataCodeEnum.OMDB_PHY_LANENUM.code -> {
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "linkPid", text = "${data.linkPid}"
+                        )
+                    )
+
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "要素类型", text = when (data.properties["featureType"]) {
+                                "1" -> "HAD_LINK"
+                                "2" -> "HAD_LINK_PA"
+                                else -> ""
+                            }
+                        )
+                    )
+                    list.add(
+                        TwoItemAdapterItem(title = "顺方向车道数", text = "${data.properties["laneS2e"]}")
+                    )
+                    list.add(
+                        TwoItemAdapterItem(title = "逆方向车道数", text = "${data.properties["laneE2s"]}")
+                    )
+                }
+                //车道点限速
+                DataCodeEnum.OMDB_LANE_SPEEDLIMIT.code -> {
+                    list.add(TwoItemAdapterItem(title = "限速ID", text = "${data.properties["speedId"]}"))
+                    list.add(TwoItemAdapterItem(title = "NodeId", text = "${data.properties["laneNodePid"]}"))
+                    list.add(TwoItemAdapterItem(title = "最高限速", text = "${data.properties["maxSpeed"]}km/h"))
+                    list.add(TwoItemAdapterItem(title = "最低限速", text = "${data.properties["minSpeed"]}km/h"))
+                }
+                //立交
+                DataCodeEnum.OMDB_ZLEVEL.code -> {
+                    list.add(TwoItemAdapterItem(title = "linkPid", text = "${data.linkPid}"))
+                    list.add(TwoItemAdapterItem(title = "立交号码", text = "${data.properties["zlevelId"]}"))
+                    list.add(TwoItemAdapterItem(title = "要素号码", text = "${data.properties["featurePid"]}"))
+                    list.add(
+                        TwoItemAdapterItem(
+                            title = "要素类型", text = when (data.properties["featureType"]) {
+                                "1" -> "HAD_LINK"
+                                "2" -> "RW_LINK"
+                                else -> ""
+                            }
+                        )
+                    )
+                    list.add(TwoItemAdapterItem(title = "形状点号", text = "${data.properties["shpSeqNum"]}"))
+                    list.add(TwoItemAdapterItem(title = "起终点标识", text = "${data.properties["startEnd"]}"))
+                    list.add(TwoItemAdapterItem(title = "高度层次", text = "${data.properties["zlevel"]}"))
+                }
+                //车道类型
+                DataCodeEnum.OMDB_LANE_TYPE_ACCESS.code -> {
+                    list.add(TwoItemAdapterItem(title = "车道中心线ID", text = "${data.properties["laneLinkPid"]}"))
+
+                    list.add(TwoItemAdapterItem(title = "车道类型", text = getLaneType(data)))
                 }
             }
             adapter.data = list
@@ -1130,6 +1186,45 @@ class SignUtil {
             return list
         }
 
+        /**
+         * 车道类型
+         */
+
+        private fun getLaneType(data: RenderEntity): String {
+            val stringBuffer = StringBuffer()
+            val dependent = data.properties["laneType"]
+            dependent?.let {
+                val dependentInt = it.toInt()
+                for (i in 31 downTo 0) {
+                    val bit = (dependentInt shr i) and 1
+                    if (bit == 1) {
+                        when (i) {
+                            0 -> stringBuffer.append("常规车道 ")
+                            1 -> stringBuffer.append("复合车道 ")
+                            2 -> stringBuffer.append("加速车道 ")
+                            3 -> stringBuffer.append("减速车道 ")
+                            4 -> stringBuffer.append("满载车道 ")
+                            6 -> stringBuffer.append("慢车道 ")
+                            8 -> stringBuffer.append("路肩车道 ")
+                            10 -> stringBuffer.append("管制车道 ")
+                            13 -> stringBuffer.append("可行使车道 ")
+                            14 -> stringBuffer.append("可行使路肩车道 ")
+                            17 -> stringBuffer.append("紧急停车道 ")
+                            18 -> stringBuffer.append("公交车道 ")
+                            19 -> stringBuffer.append("自行车道 ")
+                            20 -> stringBuffer.append("转向车道 ")
+                            21 -> stringBuffer.append("潮汐车道 ")
+                            23 -> stringBuffer.append("避险车道 ")
+                            24 -> stringBuffer.append("可变车道 ")
+                            25 -> stringBuffer.append("停车车道 ")
+                            26 -> stringBuffer.append("其他 ")
+                            28 -> stringBuffer.append("自动驾驶专用道 ")
+                        }
+                    }
+                }
+            }
+            return stringBuffer.toString()
+        }
 
         /**
          * 条件点限速文字
@@ -1852,6 +1947,10 @@ class SignUtil {
          */
         fun getTrafficSignMoreInfo(renderEntity: RenderEntity): List<TwoItemAdapterItem> {
             val list = mutableListOf<TwoItemAdapterItem>()
+
+            list.add(TwoItemAdapterItem(title = "对象号码", text = "${renderEntity.properties["objectPid"]}"))
+
+
             val trafsignShape = when (renderEntity.properties["trafsignShape"]) {
                 "1" -> "不规则形状"
                 "2" -> "长方形"
@@ -1870,6 +1969,8 @@ class SignUtil {
                     )
                 )
             }
+
+            list.add(TwoItemAdapterItem("类型", "${renderEntity.properties["signType"]}"))
 
             val color = when (renderEntity.properties["color"]) {
                 "0" -> "未验证"
@@ -1890,9 +1991,10 @@ class SignUtil {
             )
             list.add(
                 TwoItemAdapterItem(
-                    title = "正北夹角", text = "${renderEntity.properties["heading"]}"
+                    title = "朝向", text = "${renderEntity.properties["heading"]}"
                 )
             )
+            list.add(TwoItemAdapterItem("对象高", "${renderEntity.properties["signType"]}"))
             return list
         }
 

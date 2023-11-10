@@ -371,37 +371,37 @@ class MainViewModel @Inject constructor(
         MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
         socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
 
-        viewModelScope.launch(Dispatchers.IO) {
-
-            naviTestFlow().collect { point ->
-                if (naviEngineStatus == 1) {
-                    naviEngineNew.let {
-//                        naviMutex.lock()
-                        if (testRealm == null)
-                            testRealm = realmOperateHelper.getSelectTaskRealmInstance()
-                        if (currentTaskBean != null) {
-                            naviEngineNew.bindingRoute(
-                                taskBean = currentTaskBean!!,
-                                geoPoint = point,
-                                realm = testRealm!!
-                            )
-                        }
-//                        it.bindingRoute(null, point)
-//                        naviMutex.unlock()
-                    }
-                }
-            }
-        }
+//        viewModelScope.launch(Dispatchers.IO) {
+//
+//            naviTestFlow().collect { point ->
+//                if (naviEngineStatus == 1) {
+//                    naviEngineNew.let {
+////                        naviMutex.lock()
+////                        if (testRealm == null)
+////                            testRealm = realmOperateHelper.getSelectTaskRealmInstance()
+//                        if (currentTaskBean != null) {
+//                            naviEngineNew.bindingRoute(
+//                                taskBean = currentTaskBean!!,
+//                                geoPoint = point,
+////                                realm = testRealm!!
+//                            )
+//                        }
+////                        it.bindingRoute(null, point)
+////                        naviMutex.unlock()
+//                    }
+//                }
+//            }
+//        }
     }
 
 
-    fun naviTestFlow(): Flow<GeoPoint> = flow {
-
-        while (true) {
-            emit(mapController.mMapView.vtmMap.mapPosition.geoPoint)
-            delay(5000)
-        }
-    }
+//    fun naviTestFlow(): Flow<GeoPoint> = flow {
+//
+//        while (true) {
+//            emit(mapController.mMapView.vtmMap.mapPosition.geoPoint)
+//            delay(2000)
+//        }
+//    }
 
     /**
      * 获取当前任务
@@ -1069,7 +1069,7 @@ class MainViewModel @Inject constructor(
         mapPosition.setBearing(0f) // 锁定角度，自动将地图旋转到正北方向
         mapController.mMapView.vtmMap.mapPosition = mapPosition
         mapController.locationLayerHandler.animateToCurrentPosition()
-        naviEngineStatus = 1
+//        naviEngineStatus = 1
     }
 
     /**
