@@ -1,1 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="296" height="296" viewBox="0 0 296 296"><defs><style>.a{opacity:0;isolation:isolate;}.b{fill:#545e6c;opacity:0.999;}.c{fill:rgba(255,255,255,0.12);stroke:#f7ad5d;}.d{fill:rgba(255,255,255,0.11);stroke:rgba(255,255,255,0.67);opacity:0.459;}.e{stroke:rgba(0,0,0,0);stroke-miterlimit:10;fill:url(#a);}.f{stroke:none;}.g{fill:none;}</style><linearGradient id="a" x1="0.5" y1="0.267" x2="0.5" y2="0.712" gradientUnits="objectBoundingBox"><stop offset="0" stop-color="#ca4916"/><stop offset="1" stop-color="#f7ad5d"/></linearGradient></defs><g transform="translate(-243 -404)"><g transform="translate(1762 -801) rotate(90)"><g class="a" transform="translate(1205 1231)"><rect class="b" width="296" height="296" transform="translate(0 -8)"/></g><g transform="translate(1250 1231)"><g class="c" transform="translate(13 50)"><circle class="f" cx="90" cy="90" r="90"/><circle class="g" cx="90" cy="90" r="89.5"/></g><g class="d" transform="translate(35 72)"><circle class="f" cx="68" cy="68" r="68"/><circle class="g" cx="68" cy="68" r="67.5"/></g><path class="e" d="M18.942,57.189V36.331H6.056A6,6,0,0,1,.535,32.946a5.356,5.356,0,0,1,.753-5.814L21.849,2.2a6.269,6.269,0,0,1,9.537,0L51.947,27.132a5.356,5.356,0,0,1,.753,5.814,6,6,0,0,1-5.521,3.386H34.293V57.1c-2.29-.125-4.628-.189-6.947-.189-2.8,0-5.622.093-8.4.277Z" transform="translate(76.383 -6.188)"/></g></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="56"
+    height="56" viewBox="0 0 56 56">
+    <defs>
+        <style>
+            .a{opacity:0;isolation:isolate;}.b{fill:#545e6c;opacity:0.999;}.c{fill:rgba(255,255,255,0.12);stroke:#f7ad5d;}.d{fill:rgba(255,255,255,0.11);stroke:rgba(255,255,255,0.67);opacity:0.459;}.e{stroke:rgba(0,0,0,0);stroke-miterlimit:10;fill:url(#a);}.f{stroke:none;}.g{fill:none;}
+        </style>
+        <linearGradient id="a" x1="0.5" y1="0.267" x2="0.5" y2="0.712"
+            gradientUnits="objectBoundingBox">
+            <stop offset="0" stop-color="#ca4916" />
+            <stop offset="1" stop-color="#f7ad5d" />
+        </linearGradient>
+    </defs>
+    <g transform="translate(-243 -404)">
+        <g transform="translate(298.797 404) rotate(90)">
+            <g class="a">
+                <rect class="b" width="56" height="56" transform="translate(0 -0.203)" />
+            </g>
+            <g transform="translate(11.16 0.341)">
+                <g class="c" transform="translate(-0.16 10.455)">
+                    <circle class="f" cx="17" cy="17" r="17" />
+                    <circle class="g" cx="17" cy="17" r="16.5" />
+                </g>
+                <g class="d" transform="translate(3.84 14.455)">
+                    <circle class="f" cx="13" cy="13" r="13" />
+                    <circle class="g" cx="13" cy="13" r="12.5" />
+                </g>
+                <path class="e"
+                    d="M3.571,10.78h0V6.849H1.142A1.131,1.131,0,0,1,.1,6.21a1.01,1.01,0,0,1,.142-1.1L4.119.415a1.182,1.182,0,0,1,1.8,0l3.876,4.7a1.01,1.01,0,0,1,.142,1.1,1.131,1.131,0,0,1-1.041.638H6.464v3.915c-.432-.024-.872-.036-1.31-.036-.527,0-1.06.018-1.584.052Z"
+                    transform="translate(11.721 0)" />
+            </g>
+        </g>
+    </g>
+</svg>

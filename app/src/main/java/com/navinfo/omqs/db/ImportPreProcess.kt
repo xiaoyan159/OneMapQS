@@ -814,6 +814,21 @@ class ImportPreProcess {
     }
 
     /**
+     * 几何方向排序
+     * */
+    fun sortGeometry(renderEntity: RenderEntity) {
+        // 路口数据的其他点位，是保存在nodeList对应的数组下
+/*        if (renderEntity.properties.containsKey("linkPid")) {
+            val linkList = renderEntity.properties["linkPid"]?.split(",")
+            //几何较少时需要判断是否要计算判断长短边
+            if(linkList!=null&&linkList.size<3){
+
+            }
+        }*/
+    }
+
+
+    /**
      * 生成默认路口数据的参考数据
      * */
     fun generateIntersectionDynamic(renderEntity: RenderEntity) {

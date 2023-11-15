@@ -1581,7 +1581,7 @@ public class GeometryTools {
      * @param list
      * @return
      */
-    public static List<RenderEntity> groupByDistance(String code,List<RenderEntity> list, double disance) {
+    public static synchronized List<RenderEntity> groupByDistance(String code, List<RenderEntity> list, double disance) {
 
         if (list == null || disance <= 0) {
             return null;
@@ -1589,51 +1589,61 @@ public class GeometryTools {
 
         List<RenderEntity> listReslut = new ArrayList<>();
 
-        java.util.Map<String, RenderEntity> calcMap = new HashMap<>();
+        java.util.Map<String, String> calcMap = new HashMap<>();
 
-        int count = 0;
+        Log.e("qj", listReslut.size() + "==判断开始==" + list.size() + "===" + calcMap.size());
 
         //遍历开始
         for (RenderEntity renderEntity : list) {
 
-            if(!TextUtils.isEmpty(code)&&!renderEntity.getCode().equals(code)){
-                listReslut.add(renderEntity);
-                calcMap.put(renderEntity.getId(),renderEntity);
-                continue;
-            }
+            int count = 0;
 
+            Log.e("qj", listReslut.size() + "==判断0000");
+
+            //计算过的不在进行遍历
             if (!calcMap.containsKey(renderEntity.getId())) {
 
                 //跟要素遍历对比，如果统一个点直接标记计算并记录在内，已经计算过不在二次计算
                 for (RenderEntity renderEntityTemp : list) {
 
-                    if (!calcMap.containsKey(renderEntity.getId())) {
-                        if (renderEntity.getId().equals(renderEntityTemp.getId())) {
-                            listReslut.add(renderEntityTemp);
-                            count++;
-                            Log.e("qj", "====计算间距" + count);
-                            calcMap.put(renderEntityTemp.getId(), renderEntityTemp);
+                    if (!calcMap.containsKey(renderEntityTemp.getId())) {
+
+                        //非当前code不参与运算
+                        if (!TextUtils.isEmpty(code) && !renderEntityTemp.getCode().equals(code)) {
+                            listReslut.add(renderEntity);
+                            calcMap.put(renderEntityTemp.getId(), renderEntityTemp.getCode());
+                            Log.e("qj", listReslut.size() + "==判断1111");
                         } else {
                             GeoPoint geoPoint = createGeoPoint(renderEntity.getGeometry());
                             GeoPoint geoPoint1 = createGeoPoint(renderEntityTemp.getGeometry());
                             double dis = getDistance(geoPoint.getLatitude(), geoPoint.getLongitude(), geoPoint1.getLatitude(), geoPoint1.getLongitude());
-                            Log.e("qj", "====计算间距" + dis);
                             if (geoPoint != null && geoPoint1 != null && dis <= disance) {
-                                //只取第一个坐标
-                                renderEntityTemp.setGeometry(renderEntity.getGeometry());
-                                //renderEntity.setProperties(renderEntity.getProperties());
-                                calcMap.put(renderEntityTemp.getId(), renderEntityTemp);
-                                listReslut.add(renderEntityTemp);
+                                count++;
+                                //只保留一条
+                                if (count == 1) {
+                                    renderEntityTemp.getProperties().put("src", "assets:omdb/appendix/1105_00101_0.svg");
+                                    listReslut.add(renderEntityTemp);
+                                    Log.e("qj", listReslut.size() + "==判断3333");
+                                }
+                                calcMap.put(renderEntityTemp.getId(), renderEntityTemp.getCode());
+                                Log.e("qj", "====计算间距" + dis);
                             }
 
                         }
                     }
                 }
-
+                //增加同点位聚合个数统计
+                if (listReslut.size() > 0) {
+                    if (count > 1) {
+                        listReslut.get(listReslut.size() - 1).getProperties().put("name", count + "");
+                    } else {
+                        listReslut.get(listReslut.size() - 1).getProperties().put("name", "");
+                    }
+                }
             }
         }
 
-        Log.e("qj", listReslut.size()+"==判断后=="+list.size()+"==="+calcMap.size());
+        Log.e("qj", listReslut.size() + "==判断结束==" + list.size() + "===" + calcMap.size());
 
         return listReslut;
     }

@@ -719,9 +719,9 @@ class MainViewModel @Inject constructor(
      */
     private suspend fun captureItem(point: GeoPoint) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            var buffer = 8.0
+            var buffer = 10.0
             if (mapController.mMapView.mapLevel >= 18) {
-                buffer = 2.0
+                buffer = 2.2
             }
             val itemList = realmOperateHelper.queryElement(
                 GeometryTools.createPoint(

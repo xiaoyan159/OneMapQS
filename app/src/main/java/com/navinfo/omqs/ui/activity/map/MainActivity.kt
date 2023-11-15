@@ -819,12 +819,22 @@ class MainActivity : BaseActivity() {
      * zoomOut
      */
     fun zoomOutOnclick(view: View) {
-        val result = mutableListOf<RenderEntity>()
+/*        val result = mutableListOf<RenderEntity>()
         for (i in 0 until 10) {
             var renderEntity: RenderEntity = RenderEntity()
+            renderEntity.code = "3005"
             renderEntity.geometry = "POINT(116.2694${i}13016946 40.0844${i}5791644373 0)"
             result.add(renderEntity)
         }
+        var renderEntity: RenderEntity = RenderEntity()
+        renderEntity.code = "3006"
+        renderEntity.geometry = "POINT(116.269413016946 40.08445791644373 0)"
+        result.add(renderEntity)
+
+        var renderEntity1: RenderEntity = RenderEntity()
+        renderEntity1.code = "3007"
+        renderEntity1.geometry = "POINT(116.269413016946 40.08445791644373 0)"
+        result.add(renderEntity1)
         //计算后
         var index = 0
         Log.e("qj","====计算开始")
@@ -836,7 +846,7 @@ class MainActivity : BaseActivity() {
                 }
             }
             lastRender = it
-        }
+        }*/
         Log.e("qj","====计算结束")
         mapController.animationHandler.zoomOut()
     }
