@@ -1940,12 +1940,12 @@
         <!--普通交限-->
         <m v="OMDB_RESTRICTION">
             <m k="angle">
-                <symbol repeat="false" repeat-start="0" rotate="false" symbol-width="20"
-                    src="assets:omdb/icon_4006_0.svg"></symbol>
+                <symbol repeat="false" repeat-start="0" rotate="false"
+                    src="assets:omdb/icon_4006_0.svg" symbol-width="24" ></symbol>
             </m>
             <m k="type" v="angle">
-                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true" symbol-width="44"
-                    src="assets:omdb/icon_arrow_right_2.svg" ></symbol>
+                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true" symbol-width="24"
+                    src="assets:omdb/icon_arrow_right.svg" ></symbol>
             </m>
             <m k="type" v="s_2_e">
                 <line use="s2e" />
@@ -1957,11 +1957,11 @@
             <m k="eleceyeId">
                 <caption dy="-12" fill="#ffffff" k="name" priority="0" size="11" symbol-width="36"
                     stroke="#000000" stroke-width="1.0" bg-fill="#F98F03"></caption>
-                <symbol repeat="false" src="assets:omdb/4010/icon_electroniceye_4010.svg" symbol-width="18"></symbol>
+                <symbol repeat="false" src="assets:omdb/4010/icon_electroniceye_4010.svg" symbol-width="24"></symbol>
             </m>
             <m k="type" v="angle">
-                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true" symbol-width="46"
-                    src="assets:omdb/icon_arrow_right_2.svg" ></symbol>
+                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
+                    src="assets:omdb/icon_arrow_right.svg" symbol-width="24"></symbol>
             </m>
             <m k="type" v="s_2_e">
                 <line use="s2e" />
