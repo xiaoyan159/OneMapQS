@@ -631,30 +631,40 @@ class ImportPreProcess {
                 val listResult = mutableListOf<ReferenceEntity>()
 
                 for (i in 0 until laneInfoDirectArray.length()) {
-                    // 根据后续的数据生成辅助表数据
-                    val referenceEntity = ReferenceEntity()
-//                    referenceEntity.renderEntityId = renderEntity.id
-                    referenceEntity.name = "${renderEntity.name}参考方向"
-                    referenceEntity.table = renderEntity.table
-                    referenceEntity.enable = renderEntity.enable
-                    referenceEntity.code = renderEntity.code
-                    referenceEntity.taskId = renderEntity.taskId
-                    referenceEntity.zoomMin = renderEntity.zoomMin
-                    referenceEntity.zoomMax = renderEntity.zoomMax
-                    // 与原数据使用相同的geometry
-                    referenceEntity.geometry = renderEntity.geometry
-                    referenceEntity.properties["qi_table"] = renderEntity.table
-                    referenceEntity.properties["currentDirect"] =
+                    val currentDirect =
                         laneInfoDirectArray[i].toString().split(",").distinct().joinToString("_")
-                    referenceEntity.properties["currentType"] =
+                    val currentType =
                         laneInfoTypeArray[i].toString()
                     val type =
-                        if (referenceEntity.properties["currentType"] == "0") "normal" else if (referenceEntity.properties["currentType"] == "1") "extend" else "bus"
-                    referenceEntity.properties["symbol"] =
-                        "assets:omdb/4601/${type}/1301_${referenceEntity.properties["currentDirect"]}.svg"
-                    Log.d("unpackingLaneInfo", referenceEntity.properties["symbol"].toString())
-                    referenceEntity.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(referenceEntity.properties))
-                    renderEntity.referenceEntitys?.add(referenceEntity)
+                        if (currentType == "0") "normal" else if (currentType == "1") "extend" else "bus"
+                    val symbol =
+                        "assets:omdb/4601/${type}/1301_${currentDirect}.svg"
+                    renderEntity.properties["src"] = if(renderEntity.properties["src"].isNullOrEmpty()) symbol else "${renderEntity.properties["src"]}|${symbol}"
+
+//                    // 根据后续的数据生成辅助表数据
+//                    val referenceEntity = ReferenceEntity()
+////                    referenceEntity.renderEntityId = renderEntity.id
+//                    referenceEntity.name = "${renderEntity.name}参考方向"
+//                    referenceEntity.table = renderEntity.table
+//                    referenceEntity.enable = renderEntity.enable
+//                    referenceEntity.code = renderEntity.code
+//                    referenceEntity.taskId = renderEntity.taskId
+//                    referenceEntity.zoomMin = renderEntity.zoomMin
+//                    referenceEntity.zoomMax = renderEntity.zoomMax
+//                    // 与原数据使用相同的geometry
+//                    referenceEntity.geometry = renderEntity.geometry
+//                    referenceEntity.properties["qi_table"] = renderEntity.table
+//                    referenceEntity.properties["currentDirect"] =
+//                        laneInfoDirectArray[i].toString().split(",").distinct().joinToString("_")
+//                    referenceEntity.properties["currentType"] =
+//                        laneInfoTypeArray[i].toString()
+//                    val type =
+//                        if (referenceEntity.properties["currentType"] == "0") "normal" else if (referenceEntity.properties["currentType"] == "1") "extend" else "bus"
+//                    referenceEntity.properties["symbol"] =
+//                        "assets:omdb/4601/${type}/1301_${referenceEntity.properties["currentDirect"]}.svg"
+//                    Log.d("unpackingLaneInfo", referenceEntity.properties["symbol"].toString())
+//                    referenceEntity.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(referenceEntity.properties))
+//                    renderEntity.referenceEntitys?.add(referenceEntity)
                    //listResult.add(referenceEntity)
                 }
                 //insertData(listResult)
@@ -1079,22 +1089,22 @@ class ImportPreProcess {
             // 解析accessCharacteristic，判断是否存在指定属性
             val accessCharacteristic = renderEntity.properties["accessCharacteristic"].toString().toInt()
             var str = ""
-            if (accessCharacteristic.and(4)>0) {
+            if (accessCharacteristic.and(0b100)>0) {
                 str += "公"
             }
-            if (accessCharacteristic.and(8)>0) {
+            if (accessCharacteristic.and(0b1000)>0) {
                 if (str.isNotEmpty()) {
                     str += "|"
                 }
-                str += "多"
+                str += "HOV"
             }
-            if (accessCharacteristic.and(64)>0) {
+            if (accessCharacteristic.and(0b1000000)>0) {
                 if (str.isNotEmpty()) {
                     str += "|"
                 }
                 str += "行"
             }
-            if (accessCharacteristic.and(128)>0) {
+            if (accessCharacteristic.and(0b10000000)>0) {
                 if (str.isNotEmpty()) {
                     str += "|"
                 }

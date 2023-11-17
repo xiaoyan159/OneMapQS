@@ -1,7 +1,6 @@
 package com.navinfo.collect.library.map.source;
 
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -11,21 +10,17 @@ import com.navinfo.collect.library.utils.GeometryTools;
 import com.navinfo.collect.library.utils.MapParamUtils;
 
 import org.locationtech.jts.geom.Polygon;
-import org.oscim.core.MapPosition;
 import org.oscim.layers.tile.MapTile;
-import org.oscim.map.Map;
 import org.oscim.map.Viewport;
 import org.oscim.tiling.ITileDataSink;
 import org.oscim.tiling.ITileDataSource;
 import org.oscim.tiling.QueryResult;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import io.realm.RealmQuery;
 
 public class OMDBTileDataSource implements ITileDataSource {
@@ -129,7 +124,7 @@ public class OMDBTileDataSource implements ITileDataSource {
                 realmQuery.endGroup();
             }
             long time = System.currentTimeMillis();
-            List<RenderEntity> listResult = realmQuery.findAll();
+            List<RenderEntity> listResult = realm.copyFromRealm(realmQuery.findAll());
             long newTime = System.currentTimeMillis() - time;
 
 //            Log.e("jingo", "当前OMDBTileDataSource " + Thread.currentThread().hashCode() + " 当前realm " + realm.hashCode() + " 查询耗时" + newTime + " 条数" + listResult.size());

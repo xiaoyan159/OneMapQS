@@ -283,7 +283,7 @@
         "table": "OMDB_TRAFFIC_SIGN",
         "code": 3005,
         "name": "交通标牌",
-        "zoomMin": 18,
+        "zoomMin": 17,
         "zoomMax": 20,
         "is3D": true,
         "catch": true,
@@ -592,6 +592,12 @@
         "zoomMin": 15,
         "zoomMax": 17,
         "transformer": [
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "translateBack()"
+          },
           {
             "k": "geometry",
             "v": "~",
