@@ -137,8 +137,13 @@ public class OMDBTileDataSource implements ITileDataSource {
                         /*过滤数据，只有最小x（屏幕的最小x或数据的最小x会被渲染，跨Tile的其他数据不再重复渲染）*/
 //                        .filter((RenderEntity renderEntity) -> MercatorProjection.longitudeToTileX(viewport.fromScreenPoint(0,0).getLongitude(), (byte) Constant.DATA_ZOOM) == currentTileX || renderEntity.getTileX().stream().min(Integer::compare).get() == currentTileX)
                         .collect(Collectors.toList());
-                mThreadLocalDecoders.get().decode(tile.zoomLevel, tile, mapDataSink, listResult);
+
+                List<RenderEntity> list = GeometryTools.groupByDistance("3005", listResult, 5.0);
+
+                mThreadLocalDecoders.get().decode(tile.zoomLevel, tile, mapDataSink, list);
+
                 mapDataSink.completed(QueryResult.SUCCESS);
+
             } else {
                 mapDataSink.completed(QueryResult.SUCCESS);
             }

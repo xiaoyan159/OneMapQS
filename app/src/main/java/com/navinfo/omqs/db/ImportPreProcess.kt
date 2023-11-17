@@ -125,8 +125,7 @@ class ImportPreProcess {
         ) * Math.sin(radian)
 
         // 计算偏移后的点
-        val coord =
-            Coordinate(point.getX() + dy, point.getY() - dx)
+        val coord = Coordinate(point.getX() + dy, point.getY() - dx)
 
         // 记录偏移后的点位或线数据，如果数据为线时，记录的偏移后数据为最后一个点右移后，方向与线的最后两个点平行同向的单位向量
         if (Geometry.TYPENAME_POINT == geometry?.geometryType) {
@@ -193,12 +192,11 @@ class ImportPreProcess {
         ) * Math.sin(radian)
 
         // 计算偏移后的点
-        val coord =
-            Coordinate(point.getX() - dx, point.getY() - dy)
+        val coord = Coordinate(point.getX() - dx, point.getY() - dy)
 
         // 将这个点记录在数据中
-        val geometryTranslate: Geometry =
-            GeometryTools.createGeometry(doubleArrayOf(coord.x, coord.y))
+        val geometryTranslate: Geometry = GeometryTools.createGeometry(doubleArrayOf(coord.x, coord.y))
+
         renderEntity.geometry = geometryTranslate.toString()
     }
 
@@ -669,6 +667,15 @@ class ImportPreProcess {
                 }
                 //insertData(listResult)
             }
+            //将主表线转化为单个点，按点要素实现捕捉
+            if (Geometry.TYPENAME_LINESTRING == renderEntity.wkt?.geometryType) {
+                var coordinates = renderEntity.wkt?.coordinates
+                if(coordinates!=null){
+                    val p1: Coordinate = coordinates[0]
+                    renderEntity.geometry = GeometryTools.createGeometry(GeoPoint(p1.y,p1.x)).toString()
+                }
+            }
+
         }
     }
 
@@ -1228,7 +1235,7 @@ class ImportPreProcess {
 
     private fun createZLevelReference(renderEntity: RenderEntity): ReferenceEntity {
         val zLevelReference = ReferenceEntity()
-//        zLevelReference.renderEntityId = renderEntity.id
+        //zLevelReference.renderEntityId = renderEntity.id
         zLevelReference.name = "${renderEntity.name}参考点"
         zLevelReference.code = renderEntity.code
         zLevelReference.table = renderEntity.table
