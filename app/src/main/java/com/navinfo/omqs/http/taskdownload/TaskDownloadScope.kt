@@ -125,10 +125,13 @@ class TaskDownloadScope(
                         it.errMsg = taskBean.errMsg
                         //赋值时间，用于查询过滤
                         it.operationTime = taskBean.operationTime
+                        Log.e("jingo","文件下载1，状态 ${it.status}")
                         r.copyToRealmOrUpdate(it)
                         taskBean = realm.copyFromRealm(it)
+                        Log.e("jingo","文件下载2，状态 ${taskBean.status}")
                     }
                 }
+                realm.refresh()
                 realm.close()
             }
         }
@@ -165,7 +168,7 @@ class TaskDownloadScope(
                     this,
                     object : MultiPathsCallback<String> {
                         override fun onProgress(value: Int) {
-                            Log.e("jingo", "安装====$value")
+//                            Log.e("jingo", "安装====$value")
                         }
 
                         override fun onError(t: Throwable) {
@@ -189,10 +192,13 @@ class TaskDownloadScope(
                                     it.errMsg = taskBean.errMsg
                                     //赋值时间，用于查询过滤
                                     it.operationTime = taskBean.operationTime
+                                    Log.e("jingo","文件下载安装1，状态 ${it.status}")
                                     r.copyToRealmOrUpdate(it)
                                     taskBean = realm.copyFromRealm(it)
+                                    Log.e("jingo","文件下载安装2，状态 ${taskBean.status}")
                                 }
                             }
+                            realm.refresh()
                             realm.close()
                         }
 

@@ -43,6 +43,17 @@
         android:textSize="13sp" />
 
     <ImageView
+        android:id="@+id/task_navi_icon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignTop="@id/task_mesh"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginRight="6dp"
+        android:visibility="gone"
+        android:background="@drawable/navi_start_icon" />
+
+    <ImageView
         android:id="@+id/task_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -54,10 +65,41 @@
         android:id="@+id/task_badge"
         android:layout_width="8dp"
         android:layout_height="8dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="4dp"
-        android:visibility="gone"
         android:layout_alignTop="@id/task_edit"
         android:layout_alignRight="@id/task_edit"
-        android:background="@drawable/shape_oval_red_bg" />
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="4dp"
+        android:background="@drawable/shape_oval_red_bg"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/navi_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/task_mesh"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/navi_route_set_start_link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="设置为起点link" />
+
+        <Button
+            android:id="@+id/navi_route_set_end_link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="设置为终点link" />
+
+        <Button
+            android:id="@+id/navi_route_set_skip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="不参与路径计算" />
+    </LinearLayout>
 </RelativeLayout>

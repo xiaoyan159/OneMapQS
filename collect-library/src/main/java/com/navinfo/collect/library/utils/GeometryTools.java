@@ -1531,7 +1531,6 @@ public class GeometryTools {
             Geometry buffer = BufferOp.bufferOp(lineString1, distLeft, parameters1);
             Geometry buffer2 = BufferOp.bufferOp(lineString1, -distRight, parameters1);
             String bufferWkt = buffer.union(buffer2).toString();
-            Log.e("qj", bufferWkt);
             return bufferWkt;
         }
         return "";
@@ -1611,13 +1610,13 @@ public class GeometryTools {
                         if (renderEntity.getId().equals(renderEntityTemp.getId())) {
                             listReslut.add(renderEntityTemp);
                             count++;
-                            Log.e("qj", "====计算间距" + count);
+//                            Log.e("qj", "====计算间距" + count);
                             calcMap.put(renderEntityTemp.getId(), renderEntityTemp);
                         } else {
                             GeoPoint geoPoint = createGeoPoint(renderEntity.getGeometry());
                             GeoPoint geoPoint1 = createGeoPoint(renderEntityTemp.getGeometry());
                             double dis = getDistance(geoPoint.getLatitude(), geoPoint.getLongitude(), geoPoint1.getLatitude(), geoPoint1.getLongitude());
-                            Log.e("qj", "====计算间距" + dis);
+//                            Log.e("qj", "====计算间距" + dis);
                             if (geoPoint != null && geoPoint1 != null && dis <= disance) {
                                 //只取第一个坐标
                                 renderEntityTemp.setGeometry(renderEntity.getGeometry());
@@ -1633,7 +1632,7 @@ public class GeometryTools {
             }
         }
 
-        Log.e("qj", listReslut.size()+"==判断后=="+list.size()+"==="+calcMap.size());
+//        Log.e("qj", listReslut.size()+"==判断后=="+list.size()+"==="+calcMap.size());
 
         return listReslut;
     }

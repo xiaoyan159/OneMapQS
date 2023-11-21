@@ -271,6 +271,7 @@ class LoginViewModel @Inject constructor(
      */
     private suspend fun getTaskList(context: Context) {
         loginStatus.postValue(LoginStatus.LOGIN_STATUS_NET_GET_TASK_LIST)
+//        loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
         when (val result = networkService.getTaskList(Constant.USER_ID)) {
             is NetResult.Success -> {
                 if (result.data != null) {

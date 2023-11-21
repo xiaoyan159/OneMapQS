@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import com.navinfo.collect.library.R
@@ -12,6 +13,7 @@ import com.navinfo.collect.library.data.entity.NoteBean
 import com.navinfo.collect.library.data.entity.QsRecordBean
 import com.navinfo.collect.library.map.BaseClickListener
 import com.navinfo.collect.library.map.NIMapView
+import com.navinfo.collect.library.map.OnGeoPointClickListener
 import com.navinfo.collect.library.map.cluster.ClusterMarkerItem
 import com.navinfo.collect.library.map.cluster.ClusterMarkerRenderer
 import com.navinfo.collect.library.map.layers.MyItemizedLayer
@@ -37,7 +39,7 @@ import java.util.*
 /**
  * marker 操作
  */
-class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
+class MarkHandler(val context: AppCompatActivity, mapView: NIMapView) :
     BaseHandler(context, mapView) {
 
     /**
@@ -72,6 +74,8 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
      *  画布
      */
     private val canvas: org.oscim.backend.canvas.Canvas = CanvasAdapter.newCanvas()
+
+    private var mStartEndMarkerLayer: ItemizedLayer? = null
 
     /**
      * 默认marker图层
@@ -994,6 +998,68 @@ class MarkHandler(context: AppCompatActivity, mapView: NIMapView) :
         }
 
         return -1
+    }
+
+    fun removeNaviMarkerLayer() {
+        if (mStartEndMarkerLayer != null) {
+            removeLayer(mStartEndMarkerLayer!!)
+            mStartEndMarkerLayer = null
+        }
+    }
+
+
+    /**
+     * 显示选择起点 终点
+     */
+    fun showNaviStartOrEndLayer(sNodePoint: GeoPoint, eNodePoint: GeoPoint, sNodeId: String, eNodeId: String, bStart: Boolean) {
+        removeNaviMarkerLayer()
+        if (mStartEndMarkerLayer == null) {
+            val mDefaultBitmap = if(bStart) {
+                AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.drawable.navi_set_start_point))
+            }else{
+                AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.drawable.navi_set_end_point))
+            }
+//            mDefaultBitmap.scaleTo(150, 150)
+            val markerSymbol = MarkerSymbol(
+                mDefaultBitmap,
+                MarkerSymbol.HotspotPlace.BOTTOM_CENTER
+            )
+            mStartEndMarkerLayer = ItemizedLayer(
+                mMapView.vtmMap,
+                markerSymbol,
+            )
+            addLayer(mStartEndMarkerLayer!!, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
+            mStartEndMarkerLayer!!.setOnItemGestureListener(object : OnItemGestureListener<MarkerInterface> {
+                override fun onItemSingleTapUp(index: Int, item: MarkerInterface): Boolean {
+                    val tag = mMapView.listenerTagList.last()
+                    val listenerList = mMapView.listenerList[tag]
+                    if (listenerList != null) {
+                        for (listener in listenerList) {
+                            if (listener is OnGeoPointClickListener) {
+                                listener.onMapClick(tag, item.point, (item as MarkerItem).title)
+                                return true
+                            }
+                        }
+                    }
+                    return true
+                }
+
+                override fun onItemLongPress(index: Int, item: MarkerInterface): Boolean {
+                    return true
+                }
+            })
+        } else {
+            mStartEndMarkerLayer!!.removeAllItems()
+        }
+        mStartEndMarkerLayer!!.addItem(MarkerItem(sNodeId, "", sNodePoint))
+        mStartEndMarkerLayer!!.addItem(MarkerItem(eNodeId, "", eNodePoint))
+    }
+
+    fun clearNaviStartPoint() {
+        if (mStartEndMarkerLayer != null) {
+            removeLayer(mStartEndMarkerLayer!!)
+            mStartEndMarkerLayer = null
+        }
     }
 }
 

@@ -162,7 +162,7 @@ class OfflineMapDownloadScope(
                     withContext(Dispatchers.Main) {
                         downloadManager.mapController.layerManagerHandler.loadBaseMap()
                     }
-                }catch (e:Throwable){
+                } catch (e: Throwable) {
                     Log.e("jingo", "下载离线地图 load map ${e.message}")
                 }
 

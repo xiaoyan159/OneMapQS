@@ -232,7 +232,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                     OnComplete->{
                                         processIndex ++
                                         callback.onResult("$processIndex|$tableNum")
-                                        Log.e("jingo", "安装==$processIndex===$tableNum")
+//                                        Log.e("jingo", "安装==$processIndex===$tableNum")
                                         if(tableNum-processIndex==listDependOnEntry.size){
                                             for ((currentEntry, importConfig) in listDependOnEntry) {
                                                 processIndex++
@@ -315,7 +315,7 @@ class ImportOMDBHelper @AssistedInject constructor(
         val cancellable= importData(f,unZipFiles,currentEntry,task,importConfig,hashMap,isEmit,object :MultiPathsCallback<String>{
             override fun onProgress(value: Int) {
                 trySendBlocking(OnProgress(value))
-                Log.e("jingo","=====$value")
+//                Log.e("jingo","=====$value")
             }
 
             override fun onError(t: Throwable) {
@@ -379,12 +379,12 @@ class ImportOMDBHelper @AssistedInject constructor(
                     }
                     newTime = System.currentTimeMillis()
 
-                    if (elementIndex % 50 == 0) {
-                        Log.e(
-                            "jingo",
-                            "安装数据 ${currentConfig.table}  $elementIndex ${listRenderEntity.size} ${newTime - time}"
-                        )
-                    }
+//                    if (elementIndex % 50 == 0) {
+//                        Log.e(
+//                            "jingo",
+//                            "安装数据 ${currentConfig.table}  $elementIndex ${listRenderEntity.size} ${newTime - time}"
+//                        )
+//                    }
 
                     time = newTime
 
@@ -805,10 +805,10 @@ class ImportOMDBHelper @AssistedInject constructor(
                     }
 
                     if (listRenderEntity.size > 20000) {
-                        Log.e(
-                            "jingo",
-                            "安装数据 ${currentConfig.table}  $elementIndex ${listRenderEntity.size}"
-                        )
+//                        Log.e(
+//                            "jingo",
+//                            "安装数据 ${currentConfig.table}  $elementIndex ${listRenderEntity.size}"
+//                        )
                         if (isEmit) {
                             f.send(listRenderEntity)
                             delay(20)
@@ -852,7 +852,7 @@ class ImportOMDBHelper @AssistedInject constructor(
             throw e
         }
 
-        Log.e("jingo", "完成 ${currentConfig.table}")
+//        Log.e("jingo", "完成 ${currentConfig.table}")
 
         callback?.onComplete()
 

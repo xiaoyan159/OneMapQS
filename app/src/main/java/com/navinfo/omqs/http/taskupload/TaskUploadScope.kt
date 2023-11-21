@@ -95,6 +95,7 @@ class TaskUploadScope(
                             it.errMsg = taskBean.errMsg
                             //赋值时间，用于查询过滤
                             it.operationTime = taskBean.operationTime
+                            Log.e("jingo","数据安装状态 ${it.status}")
                             r.copyToRealmOrUpdate(it)
                             taskBean = realm.copyFromRealm(it)
                         }
