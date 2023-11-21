@@ -40,6 +40,24 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
         layer
     }
 
+    /**
+     * 高亮线图层，同时只高亮一条线，如要素本身线型
+     */
+    private val mDataGeometryPathLayer: PathLayer by lazy {
+        //高亮线绘制线 样式
+        val defaultLineStyle = Style.builder()
+            .stippleColor(context.resources.getColor(R.color.teal_200))
+            .strokeWidth(5f)
+            .fillColor(context.resources.getColor(R.color.draw_line_blue2_color))
+            .fillAlpha(0.3f)
+            .strokeColor(context.resources.getColor(R.color.draw_line_blue2_color))
+            .fixed(true).build()
+
+        val layer = PathLayer(mMapView.vtmMap, defaultLineStyle)
+        addLayer(layer, NIMapView.LAYER_GROUPS.OPERATE_LINE)
+        layer
+    }
+
 
     /**
      * 路口高亮
@@ -139,6 +157,42 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
         }
     }
 
+    /**
+     * 高亮一条线
+     */
+    fun showElementLine(list:List<GeoPoint>) {
+        try {
+            mDataGeometryPathLayer.clearPath()
+            mDataGeometryPathLayer.setPoints(list)
+            mDataGeometryPathLayer.isEnabled = true
+        } catch (e: Exception) {
+            Toast.makeText(mContext, "高亮路线失败 ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
+
+    /**
+     * 高亮一条线
+     */
+    fun showElementLine(geometry: String) {
+        try {
+            mDataGeometryPathLayer.clearPath()
+            mDataGeometryPathLayer.setPoints(GeometryTools.getGeoPoints(geometry))
+            mDataGeometryPathLayer.isEnabled = true
+        } catch (e: Exception) {
+            Toast.makeText(mContext, "高亮路线失败 ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * 取消高亮线
+     */
+    fun removeElementLine() {
+        mDataGeometryPathLayer.clearPath()
+        mDataGeometryPathLayer.isEnabled = false
+    }
 
     /**
      * 取消高亮线
@@ -146,6 +200,14 @@ class LineHandler(context: AppCompatActivity, mapView: NIMapView) : BaseHandler(
     fun removeLine() {
         mDefaultPathLayer.clearPath()
         mDefaultPathLayer.isEnabled = false
+    }
+
+    /**
+     * 取消高亮线
+     */
+    fun removeAllLine() {
+        removeLine()
+        removeElementLine()
     }
 
     /**

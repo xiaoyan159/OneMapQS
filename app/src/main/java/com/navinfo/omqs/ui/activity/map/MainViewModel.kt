@@ -1340,9 +1340,9 @@ class MainViewModel @Inject constructor(
             )
         }
 
-        if (data.wkt != null) {
+/*        if (data.wkt != null) {
             mapController.markerHandle.removeMarker("moreInfo")
-            mapController.lineHandler.removeLine()
+            mapController.lineHandler.removeAllLine()
             when (data.wkt!!.geometryType) {
                 Geometry.TYPENAME_POINT -> {
                     val geoPoint = GeometryTools.createGeoPoint(data.wkt!!.toText())
@@ -1350,10 +1350,10 @@ class MainViewModel @Inject constructor(
                 }
 
                 Geometry.TYPENAME_LINESTRING -> {
-                    mapController.lineHandler.showLine(data.wkt!!.toText())
+                    mapController.lineHandler.showSubLine(data.wkt!!.toText())
                 }
             }
-        }
+        }*/
     }
 
     fun sendServerCommand(

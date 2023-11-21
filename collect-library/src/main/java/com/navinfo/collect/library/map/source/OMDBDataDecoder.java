@@ -75,11 +75,10 @@ public class OMDBDataDecoder extends TileDecoder {
         listResult.stream().iterator().forEachRemaining(new Consumer<RenderEntity>() {
             @Override
             public void accept(RenderEntity renderEntity) {
-
                 if (!(mapLevel < renderEntity.getZoomMin() || mapLevel > renderEntity.getZoomMax())) {
                     if (renderEntity.getCode().equals(DataCodeEnum.OMDB_TRAFFIC_SIGN.getCode())) {
                         list.add(renderEntity);
-                    }else if (renderEntity.getCode().equals(DataCodeEnum.OMDB_TRAFFICLIGHT.getCode())) {
+                    } else if (renderEntity.getCode().equals(DataCodeEnum.OMDB_TRAFFICLIGHT.getCode())) {
                         traffList.add(renderEntity);
                     } else {
                         Map<String, Object> properties = new HashMap<>(renderEntity.getProperties().size());
@@ -93,8 +92,8 @@ public class OMDBDataDecoder extends TileDecoder {
         });
         //增加交通标牌聚合显示
         List<RenderEntity> list1 = GeometryTools.groupByDistance(DataCodeEnum.OMDB_TRAFFIC_SIGN.getCode(), list, 5.0);
-        if(list1!=null&&list1.size()>0){
-            Log.e("qj","聚合交通标牌转换开始"+list.size());
+        if (list1 != null && list1.size() > 0) {
+            Log.e("qj", "聚合交通标牌转换开始" + list.size());
             list1.stream().iterator().forEachRemaining(new Consumer<RenderEntity>() {
                 @Override
                 public void accept(RenderEntity renderEntity) {
@@ -103,12 +102,12 @@ public class OMDBDataDecoder extends TileDecoder {
                     parseGeometry(renderEntity.getTable(), renderEntity.getWkt(), properties);
                 }
             });
-            Log.e("qj","聚合交通标牌转换结束"+list1.size());
+            Log.e("qj", "聚合交通标牌转换结束" + list1.size());
         }
         //增加交通标牌聚合显示
         List<RenderEntity> list2 = GeometryTools.groupByDistance(DataCodeEnum.OMDB_TRAFFICLIGHT.getCode(), traffList, 5.0);
-        if(list2!=null&&list2.size()>0){
-            Log.e("qj","聚合红绿灯转换开始"+traffList.size());
+        if (list2 != null && list2.size() > 0) {
+            Log.e("qj", "聚合红绿灯转换开始" + traffList.size());
             list2.stream().iterator().forEachRemaining(new Consumer<RenderEntity>() {
                 @Override
                 public void accept(RenderEntity renderEntity) {
@@ -117,7 +116,7 @@ public class OMDBDataDecoder extends TileDecoder {
                     parseGeometry(renderEntity.getTable(), renderEntity.getWkt(), properties);
                 }
             });
-            Log.e("qj","聚合红绿灯转换结束"+list2.size());
+            Log.e("qj", "聚合红绿灯转换结束" + list2.size());
         }
         return true;
     }

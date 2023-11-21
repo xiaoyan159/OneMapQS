@@ -1615,24 +1615,29 @@
                     src="assets:omdb/icon_4023_0.svg" symbol-height="56" symbol-width="56"></symbol>
             </m>
         </m>
+
         <!-- 道路边界类型 -->
         <m v="OMDB_RDBOUND_BOUNDARYTYPE">
             <outline-layer id="boundaryType" stroke="#8e44ad" width="0.1" />
             <!--护栏-->
             <m k="boundaryType" v="4">
-                <line stroke="#FFBC6E" use="boundaryType" width="0.1"/>
-                <symbol repeat-gap="12" repeat="true" repeat-start="0" src="assets:omdb/icon_2013_4.svg" symbol-width="16" symbol-height="46"></symbol>
+                <symbol repeat="true" repeat-gap="12" gland="true" repeat-start="0.01" src="assets:omdb/icon_2013_4.svg" symbol-width="16" symbol-height="36"></symbol>
             </m>
             <!--路牙-->
             <m k="boundaryType" v="3">
-                <symbol repeat="true" repeat-gap="10" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="16" symbol-height="10"></symbol>
+                <symbol repeat="true" repeat-gap="12" gland="true" repeat-start="0.01" src="assets:omdb/icon_2013_3.svg" symbol-width="16" symbol-height="10"></symbol>
             </m>
-            <m k="boundaryType" v="2|6">
-                <line stroke="#ffffff" use="boundaryType" width="0.1"/>
+            <!--墙-->
+            <m k="boundaryType" v="5">
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_3.svg" symbol-width="24" symbol-height="12"></symbol>
             </m>
-            <m k="boundaryType" v="8">
-                <line stroke="#FFBC6E" use="boundaryType" width="0.1"/>
-                <symbol repeat-gap="12" repeat="true" repeat-start="0" src="assets:omdb/icon_2083_8.svg" symbol-width="24" symbol-height="32"></symbol>
+            <!--铺设路面边缘-->
+            <m k="boundaryType" v="6">
+                <line stroke="#8a8a8a" use="boundaryType"/>
+            </m>
+            <!--杆状障碍物-->
+            <m k="boundaryType" v="pole">
+                <symbol src="assets:omdb/icon_pole_barrier.svg" gland="true"></symbol>
             </m>
         </m>
 
@@ -1643,14 +1648,25 @@
 
             <!--护栏-->
             <m k="boundaryType" v="4">
-                <line stroke="#FFBC6E" use="boundaryType" width="0.1"/>
-                <symbol repeat-gap="12" repeat="true" repeat-start="0" src="assets:omdb/icon_2013_4.svg" symbol-width="16" symbol-height="46"></symbol>
+                <symbol repeat="true" repeat-gap="12" gland="true" repeat-start="0.01" src="assets:omdb/icon_2013_4.svg" symbol-width="16" symbol-height="36"></symbol>
             </m>
             <!--路牙-->
             <m k="boundaryType" v="3">
-                <symbol repeat="true" repeat-gap="10" repeat-start="0" src="assets:omdb/icon_2013_3.svg" symbol-width="16" symbol-height="10"></symbol>
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_3.svg" symbol-width="16" symbol-height="10"></symbol>
             </m>
-
+            <!--墙-->
+            <m k="boundaryType" v="5">
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_3.svg" symbol-width="24" symbol-height="12"></symbol>
+            </m>
+            <!--铺设路面边缘-->
+            <m k="boundaryType" v="6">
+                <line stroke="#8a8a8a" use="boundaryType"/>
+            </m>
+            <!--杆状障碍物-->
+            <m k="boundaryType" v="pole">
+                <line stroke="#ffffff" use="boundaryType"/>
+                <symbol src="assets:omdb/icon_pole_barrier.svg" gland="true"></symbol>
+            </m>
             <m k="boundaryType" v="2">
                 <!--标线-->
                 <m k="markMaterial" v="2|3">
@@ -1894,14 +1910,19 @@
             <m k="speedFlag" v="0">
                 <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4002_0.svg" symbol-height="38"
-                    symbol-width="20"></symbol>
+                <symbol src="assets:omdb/icon_4002_0.svg" symbol-width="24"></symbol>
             </m>
             <m k="speedFlag" v="1">
                 <caption fill="#000000" k="maxSpeed" priority="0" size="10" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4002_1.svg" symbol-height="38"
-                    symbol-width="20"></symbol>
+                <symbol src="assets:omdb/icon_4002_1.svg" symbol-width="24"></symbol>
+            </m>
+            <m k="type" v="angle">
+                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true" symbol-width="24"
+                    src="assets:omdb/icon_arrow_right.svg" ></symbol>
+            </m>
+            <m k="type" v="s_2_e">
+                <line use="s2e" />
             </m>
         </m>
 
@@ -1910,14 +1931,19 @@
             <m k="speedFlag" v="0">
                 <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4003_0.svg" symbol-height="38"
-                    symbol-width="20"></symbol>
+                <symbol src="assets:omdb/icon_4003_0.svg" symbol-width="24"></symbol>
             </m>
             <m k="speedFlag" v="1">
                 <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4003_1.svg" symbol-height="38"
-                    symbol-width="20"></symbol>
+                <symbol src="assets:omdb/icon_4003_1.svg" symbol-width="24"></symbol>
+            </m>
+            <m k="type" v="angle">
+                <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true" symbol-width="24"
+                    src="assets:omdb/icon_arrow_right.svg" ></symbol>
+            </m>
+            <m k="type" v="s_2_e">
+                <line use="s2e" />
             </m>
         </m>
 

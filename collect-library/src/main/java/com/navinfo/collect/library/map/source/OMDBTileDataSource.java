@@ -127,7 +127,6 @@ public class OMDBTileDataSource implements ITileDataSource {
                 for (String type : Constant.HAD_LAYER_INVISIABLE_ARRAY) {
                     realmQuery.notEqualTo("table", type);
                 }
-                realmQuery.notEqualTo("table", "OMDB_TRAFFIC_SIGN");
                 realmQuery.endGroup();
             }
             long time = System.currentTimeMillis();

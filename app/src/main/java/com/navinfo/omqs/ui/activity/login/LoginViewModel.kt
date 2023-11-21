@@ -87,9 +87,16 @@ class LoginViewModel @Inject constructor(
     var sharedPreferences: SharedPreferences? = null
 
     init {
-        loginUser.value = LoginUserBean(userCode = "lixiaoming00427", passWord = "123456")
     }
 
+
+    fun lastLoginUserInfo(context: Context){
+        sharedPreferences =
+            context.getSharedPreferences("USER_SHAREDPREFERENCES", Context.MODE_PRIVATE)
+        val userNameCache = sharedPreferences?.getString("userName", "lixiaoming00427")
+        val passwordCache = sharedPreferences?.getString("passWord", "123456")
+        loginUser.value = LoginUserBean(userCode = "$userNameCache", passWord = "$passwordCache")
+    }
 
     /**
      * 处理注册按钮

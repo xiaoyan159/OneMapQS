@@ -181,7 +181,7 @@ class RealmOperateHelper() {
             var nearLast: Double = 99999.99
             for (link in realmList) {
                 if (polygon.intersects(GeometryTools.createGeometry(link.geometry))) {
-                    val near = point.distance(GeometryTools.createGeoPoint(link.geometry))
+                    val near = GeometryTools.createGeometry(link.geometry).distance(GeometryTools.createGeometry(point))
                     if (near < nearLast) {
                         nearLast = near
                         linkBean = link
@@ -302,6 +302,7 @@ class RealmOperateHelper() {
         // 将获取到的数据和查询的polygon做相交，只返回相交的数据
         val queryResult = realmList?.stream()?.filter {
             if (Constant.MapCatchLine) {
+                Log.e("qj",it.code+"捕捉要素编码"+it.enable+"==="+it.catchEnable)
                 polygon.intersects(it.wkt) && it.wkt?.geometryType?.uppercase()
                     .equals("LINESTRING") || it.wkt?.geometryType?.uppercase().equals("POLYGON")
             } else {

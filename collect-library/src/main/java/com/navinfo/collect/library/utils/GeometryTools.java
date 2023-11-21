@@ -35,7 +35,7 @@ import java.util.List;
  * @author qj 几何工具类
  */
 public class GeometryTools {
-
+    private final static String TAG = "GeometryTools";
     static final double PI = 3.14159216;
     private static volatile GeometryTools mInstance;
     static double earthRadiusMeters = 6371000.0;
@@ -1646,5 +1646,90 @@ public class GeometryTools {
         Log.e("qj", listReslut.size() + "==判断结束==" + list.size() + "===" + calcMap.size());
 
         return listReslut;
+    }
+
+    /**
+     * 线几何按距离等分点
+     */
+    public static synchronized List<GeoPoint> getLineToDengGeoPints(Geometry lineGeometry, double dengDisance) {
+        List<GeoPoint> geoPointList = new ArrayList<>();
+        //获取线几何点
+        List<GeoPoint> list = getGeoPoints(lineGeometry);
+
+        if(list!=null&&list.size()>=2) {
+
+            for (int i = 0; i < list.size() - 1; i++) {
+
+                GeoPoint geoPoint1 = list.get(i);
+
+                GeoPoint geoPoint2 = list.get(i + 1);
+
+                double disance = getDistance(geoPoint1.getLatitude(), geoPoint1.getLongitude(), geoPoint2.getLatitude(), geoPoint2.getLongitude());
+
+                //只有第一个点进行添加，后面数据过滤掉
+                if(i==0){
+                    geoPointList.add(geoPoint1);
+                }
+
+                geoPointList.add(geoPoint2);
+
+                if (disance > dengDisance) {
+                    //向上取整
+                    int num = (int) Math.ceil(disance / dengDisance);
+
+                    //计算等分数据
+                    List<GeoPoint> dengList = getDengGeoPoint(geoPoint1, geoPoint2, num);
+
+                    if (dengList != null && dengList.size() > 0) {
+
+                        geoPointList.addAll(dengList);
+                    }
+                }
+            }
+        }
+        return geoPointList;
+    }
+
+
+    /**
+     * 计算两点之间等距的经纬度
+     */
+    private static List<GeoPoint> getDengGeoPoint(GeoPoint geoPoint1, GeoPoint geoPoint2, int number) {
+
+        double aaa, bbb, ccc = 0, ddd = 0;
+
+        List<GeoPoint> geoPointList = new ArrayList<>();
+
+        for (int i = 1; i < number + 1; i++) {
+            if (geoPoint1.getLongitude() > geoPoint2.getLongitude() && geoPoint1.getLatitude() > geoPoint2.getLatitude()) {
+                aaa = (geoPoint1.getLongitude() - geoPoint2.getLongitude()) / (number + 1);
+                ccc = geoPoint2.getLongitude() + aaa * (i);
+                bbb = (geoPoint1.getLatitude() - geoPoint2.getLatitude()) / (number + 1);
+                ddd = bbb * (i) + geoPoint2.getLatitude();
+                Log.e(TAG, "getLatLng:a " + ddd + "   " + ccc);
+            } else if (geoPoint1.getLongitude() < geoPoint2.getLongitude() && geoPoint1.getLatitude() < geoPoint2.getLatitude()) {
+                aaa = (geoPoint2.getLongitude() - geoPoint1.getLongitude()) / (number + 1);
+                ccc = geoPoint1.getLongitude() + aaa * (i);
+                bbb = (geoPoint2.getLatitude() - geoPoint1.getLatitude()) / (number + 1);
+                ddd = geoPoint1.getLatitude() + bbb * i;
+                Log.e(TAG, "getLatLng:b " + ddd + "   " + ccc);
+            } else if (geoPoint1.getLongitude() > geoPoint2.getLongitude() && geoPoint1.getLatitude() < geoPoint2.getLatitude()) {
+                aaa = (geoPoint1.getLongitude() - geoPoint2.getLongitude()) / (number + 1);
+                ccc = geoPoint2.getLongitude() + aaa * (number + 1 - i);
+                bbb = (geoPoint2.getLatitude() - geoPoint1.getLatitude()) / (number + 1);
+                ddd = geoPoint1.getLatitude() + bbb * i;
+                Log.e(TAG, "getLatLng:c " + ddd + "   " + ccc);
+            } else if (geoPoint1.getLongitude() < geoPoint2.getLongitude() && geoPoint1.getLatitude() > geoPoint2.getLatitude()) {
+                aaa = (geoPoint2.getLongitude() - geoPoint1.getLongitude()) / (number + 1);
+                ccc = geoPoint1.getLongitude() + aaa * (i);
+                bbb = (geoPoint1.getLatitude() - geoPoint2.getLatitude()) / (number + 1);
+                ddd = geoPoint1.getLatitude() - bbb * i;
+                Log.e(TAG, "getLatLng:d " + ddd + "   " + ccc);
+            }
+
+            geoPointList.add(new GeoPoint(ddd, ccc));
+        }
+
+        return geoPointList;
     }
 }
