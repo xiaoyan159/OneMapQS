@@ -1555,8 +1555,10 @@
 
         <!-- 车信 -->
         <m v="OMDB_LANEINFO" >
-            <symbol repeat="false" repeat-start="0" repeat-gap="2000"
-                src="@src" symbol-height="24" degree="90"></symbol>
+            <m k="symbol" v="true">
+                <symbol repeat="false" repeat-start="0" repeat-gap="2000"
+                    src="@img-src" symbol-height="24" degree="90"></symbol>
+            </m>
         </m>
         <!-- 杆状物 -->
         <m v="OMDB_POLE">

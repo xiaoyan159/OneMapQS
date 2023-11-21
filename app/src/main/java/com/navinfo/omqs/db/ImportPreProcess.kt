@@ -626,8 +626,19 @@ class ImportPreProcess {
                 // 分别获取两个数组中的数据，取第一个作为主数据，另外两个作为辅助渲染数据
                 val laneInfoDirectArray = JSONArray(laneinfoGroup[0].toString())
                 val laneInfoTypeArray = JSONArray(laneinfoGroup[1].toString())
-                val listResult = mutableListOf<ReferenceEntity>()
 
+                val referenceEntity = ReferenceEntity()
+                referenceEntity.name = "${renderEntity.name}参考方向"
+                referenceEntity.table = renderEntity.table
+                referenceEntity.enable = renderEntity.enable
+                referenceEntity.code = renderEntity.code
+                referenceEntity.taskId = renderEntity.taskId
+                referenceEntity.zoomMin = renderEntity.zoomMin
+                referenceEntity.zoomMax = renderEntity.zoomMax
+                // 与原数据使用相同的geometry
+                referenceEntity.geometry = renderEntity.geometry
+                referenceEntity.properties["qi_table"] = renderEntity.table
+                referenceEntity.properties["symbol"] = "true"
                 for (i in 0 until laneInfoDirectArray.length()) {
                     val currentDirect =
                         laneInfoDirectArray[i].toString().split(",").distinct().joinToString("_")
@@ -637,7 +648,7 @@ class ImportPreProcess {
                         if (currentType == "0") "normal" else if (currentType == "1") "extend" else "bus"
                     val symbol =
                         "assets:omdb/4601/${type}/1301_${currentDirect}.svg"
-                    renderEntity.properties["src"] = if(renderEntity.properties["src"].isNullOrEmpty()) symbol else "${renderEntity.properties["src"]}|${symbol}"
+                    referenceEntity.properties["img-src"] = if(referenceEntity.properties["img-src"].isNullOrEmpty()) symbol else "${referenceEntity.properties["img-src"]}|${symbol}"
 
 //                    // 根据后续的数据生成辅助表数据
 //                    val referenceEntity = ReferenceEntity()
@@ -665,6 +676,8 @@ class ImportPreProcess {
 //                    renderEntity.referenceEntitys?.add(referenceEntity)
                    //listResult.add(referenceEntity)
                 }
+                referenceEntity.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(referenceEntity.properties))
+                renderEntity.referenceEntitys?.add(referenceEntity)
                 //insertData(listResult)
             }
             //将主表线转化为单个点，按点要素实现捕捉
