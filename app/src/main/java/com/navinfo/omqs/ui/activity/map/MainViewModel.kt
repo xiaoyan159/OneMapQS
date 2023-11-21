@@ -743,9 +743,9 @@ class MainViewModel @Inject constructor(
      */
     private suspend fun captureItem(point: GeoPoint) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            var buffer = 8.0
+            var buffer = 10.0
             if (mapController.mMapView.mapLevel >= 18) {
-                buffer = 2.0
+                buffer = 2.2
             }
             val itemList = realmOperateHelper.queryElement(
                 GeometryTools.createPoint(
@@ -1364,9 +1364,9 @@ class MainViewModel @Inject constructor(
             )
         }
 
-        if (data.wkt != null) {
+/*        if (data.wkt != null) {
             mapController.markerHandle.removeMarker("moreInfo")
-            mapController.lineHandler.removeLine()
+            mapController.lineHandler.removeAllLine()
             when (data.wkt!!.geometryType) {
                 Geometry.TYPENAME_POINT -> {
                     val geoPoint = GeometryTools.createGeoPoint(data.wkt!!.toText())
@@ -1374,10 +1374,10 @@ class MainViewModel @Inject constructor(
                 }
 
                 Geometry.TYPENAME_LINESTRING -> {
-                    mapController.lineHandler.showLine(data.wkt!!.toText())
+                    mapController.lineHandler.showSubLine(data.wkt!!.toText())
                 }
             }
-        }
+        }*/
     }
 
     fun sendServerCommand(

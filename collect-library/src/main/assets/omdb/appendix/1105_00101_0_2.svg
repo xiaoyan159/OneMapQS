@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="b" xmlns="http://www.w3.org/2000/svg" width="64" height="124.8"
+    xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 124.8">
+    <defs>
+        <linearGradient id="f" x1="29.3" y1="31.1" x2="34.8" y2="31.1"
+            gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#989898" />
+            <stop offset="0" stop-color="#a3a3a3" />
+            <stop offset=".1" stop-color="#c4c5c5" />
+            <stop offset=".2" stop-color="#d8d9d9" />
+            <stop offset=".3" stop-color="#e0e1e1" />
+            <stop offset=".4" stop-color="#dbdcdc" />
+            <stop offset=".5" stop-color="#cccece" />
+            <stop offset=".6" stop-color="#b5b6b7" />
+            <stop offset=".7" stop-color="#949697" />
+            <stop offset=".8" stop-color="#6a6c6f" />
+            <stop offset=".8" stop-color="#3f4246" />
+            <stop offset="1" stop-color="#404247" />
+            <stop offset="1" stop-color="#43434a" />
+        </linearGradient>
+        <linearGradient id="g" x1="1.3" y1="14.1" x2="62.5" y2="14.1"
+            gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#afbacb" />
+            <stop offset=".1" stop-color="#c1ccda" />
+            <stop offset=".4" stop-color="#d9e6f0" />
+            <stop offset=".5" stop-color="#e3f0f8" />
+            <stop offset=".6" stop-color="#dde9f2" />
+            <stop offset=".8" stop-color="#ccd8e4" />
+            <stop offset="1" stop-color="#b1bbcc" />
+            <stop offset="1" stop-color="#aeb8c9" />
+        </linearGradient>
+    </defs>
+    <g id="c">
+        <rect y="0" width="64" height="124.7" style="fill:#535a60; opacity:0; stroke-width:0px;" />
+        <ellipse id="d" cx="31.9" cy="61.4" rx="14.4" ry="3.7"
+            style="fill:#262d34; isolation:isolate; opacity:.2; stroke-width:0px;" />
+        <ellipse id="e" cx="31.9" cy="61.4" rx="7.5" ry="3"
+            style="fill:#535a60; stroke-width:0px;" />
+        <path
+            d="m29.8,0h4.1c.5,0,.9.4.9.9v58.6c0,1.4-1.1,2.5-2.5,2.5h-1c-1.4,0-2.5-1.1-2.5-2.5V1c0-.5.4-.9.9-.9Z"
+            style="fill:url(#f); stroke-width:0px;" />
+        <rect x="1.3" y=".4" width="61.1" height="27.3" rx="4.6" ry="4.6"
+            style="fill:url(#g); stroke:#8b9fae; stroke-miterlimit:10; stroke-width:.9px;" />
+        <path
+            d="m6.4,2.6h51c2,0,3.7,1.7,3.7,3.7v17.2c0,2-1.7,3.7-3.7,3.7H6.4c-2,0-3.7-1.7-3.7-3.7V6.3c0-2,1.7-3.7,3.7-3.7Z"
+            style="fill:#fad950; stroke-width:0px;" />
+        <path
+            d="m57.4,3.5c1.5,0,2.8,1.2,2.8,2.8v17.2c0,1.5-1.2,2.8-2.8,2.8H6.4c-1.5,0-2.8-1.2-2.8-2.8V6.3c0-1.5,1.2-2.8,2.8-2.8h51m0-1.9H6.4C3.8,1.7,1.8,3.7,1.8,6.3v17.2c0,2.6,2.1,4.6,4.6,4.6h51c2.6,0,4.6-2.1,4.6-4.6V6.3c0-2.6-2.1-4.6-4.6-4.6h0Z"
+            style="fill:#0a0a0a; stroke-width:0px;" />
+        <path
+            d="m17.4,15.9c-.3-.5-.7-1-1-1.4v6.9h-1.5v-6.6c-.5,1.1-1.1,2.2-1.6,3.1l-1-1.3c.8-1.2,1.9-3.2,2.5-4.9h-1.7v-1.5h1.8v-2.8h1.5v2.8h1.5v1.5h-1.5v1.4l.2-.2c.5.5,1.3,1.5,1.7,2.1l-1,1Zm3.2-.8c-.5,1.6-1.4,3.8-2.2,5.2l-1.4-.8c.8-1.4,1.7-3.5,2.2-5l1.4.6Zm2.3-1.4v6.1c0,1.3-.5,1.5-1.8,1.7h-.8c0,0-.5-1.5-.5-1.5h.8c.7-.1.8-.2.8-.8v-5.4h-3.4v-1.6h8.6v1.6h-3.7Zm2.9-3.9h-7.2v-1.6h7.2v1.6Zm-1.1,4.8c.5,1.2,1.7,3.7,2.1,5l-1.4.7c-.4-1.2-1.5-3.8-2-5.1l1.3-.6Z"
+            style="fill:#1e1e1e; stroke-width:0px;" />
+        <path
+            d="m38.7,14.8h2.5v6.5h-1.3v-5h-1.2c-.1,2.3-.5,3.7-1.2,5.3l-1.4-.7c.9-2.2,1.3-3.2,1.3-7v-6h1.4v3.9h1.1v-4.2h1.3v4.2h1v1.5h-3.3v1.5Zm11.5,4.1h-3.2v2.5h-1.5v-2.5h-4v-1.4h1.3l-.4-.5c.7-.5,1.3-.8,1.7-1.3h-1.9v-7h2.2c.2-.6.5-1.3.6-1.7l1.5.4c-.1.3-.3.8-.5,1.3h3.2v7h-3.7c-.4.7-1,1.3-1.7,1.9h1.5v-1.5h1.5v1.5h3.2v1.4Zm-6.6-8.9v1.5h1.6v-1.5h-1.6Zm1.3,4.3c.1-.4.2-.9.2-1.5h-1.5v1.5h1.3Zm3.1,0v-1.5h-1.6c0,.5-.1,1-.2,1.5h1.8Zm0-4.3h-1.5v1.5h1.5v-1.5Z"
+            style="fill:#1e1e1e; stroke-width:0px;" />
+    </g>
+</svg>

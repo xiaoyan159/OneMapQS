@@ -118,9 +118,10 @@ public class OMDBTileDataSource implements ITileDataSource {
             } else {
                 sql += " and enable>=0";
             }
+
             realmQuery.rawPredicate(sql);
 
-//             筛选不显示的数据
+            //筛选不显示的数据
             if (Constant.HAD_LAYER_INVISIABLE_ARRAY != null && Constant.HAD_LAYER_INVISIABLE_ARRAY.length > 0) {
                 realmQuery.beginGroup();
                 for (String type : Constant.HAD_LAYER_INVISIABLE_ARRAY) {
@@ -143,10 +144,7 @@ public class OMDBTileDataSource implements ITileDataSource {
 //                        .filter((RenderEntity renderEntity) -> MercatorProjection.longitudeToTileX(viewport.fromScreenPoint(0,0).getLongitude(), (byte) Constant.DATA_ZOOM) == currentTileX || renderEntity.getTileX().stream().min(Integer::compare).get() == currentTileX)
                         .collect(Collectors.toList());
 
-                List<RenderEntity> list = GeometryTools.groupByDistance("3005", listResult, 5.0);
-
-                mThreadLocalDecoders.get().decode(tile.zoomLevel, tile, mapDataSink, list);
-
+                mThreadLocalDecoders.get().decode(tile.zoomLevel, tile, mapDataSink, listResult);
                 mapDataSink.completed(QueryResult.SUCCESS);
 
             } else {

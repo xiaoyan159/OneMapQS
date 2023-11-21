@@ -97,6 +97,26 @@ class MarkHandler(val context: AppCompatActivity, mapView: NIMapView) :
         layer
     }
 
+    /**
+     * 默认marker图层
+     */
+    private val mDataMarkerLayer: ItemizedLayer by lazy {
+        //新增marker图标样式
+        val mDefaultBitmap =
+            AndroidBitmap(BitmapFactory.decodeResource(context.resources, R.mipmap.icon_path_maker))
+        mDefaultBitmap.scaleTo(150, 150)
+        val markerSymbol = MarkerSymbol(
+            mDefaultBitmap,
+            MarkerSymbol.HotspotPlace.CENTER
+        )
+        val layer = ItemizedLayer(
+            mapView.vtmMap,
+            markerSymbol,
+        )
+        addLayer(layer, NIMapView.LAYER_GROUPS.OPERATE_MARKER)
+        layer
+    }
+
     private val niLocationBitmap: Bitmap by lazy {
         AndroidBitmap(
             BitmapFactory.decodeResource(

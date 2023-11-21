@@ -35,7 +35,7 @@ import java.util.List;
  * @author qj 几何工具类
  */
 public class GeometryTools {
-
+    private final static String TAG = "GeometryTools";
     static final double PI = 3.14159216;
     private static volatile GeometryTools mInstance;
     static double earthRadiusMeters = 6371000.0;
@@ -1531,6 +1531,7 @@ public class GeometryTools {
             Geometry buffer = BufferOp.bufferOp(lineString1, distLeft, parameters1);
             Geometry buffer2 = BufferOp.bufferOp(lineString1, -distRight, parameters1);
             String bufferWkt = buffer.union(buffer2).toString();
+            Log.e("qj", bufferWkt);
             return bufferWkt;
         }
         return "";
@@ -1580,7 +1581,7 @@ public class GeometryTools {
      * @param list
      * @return
      */
-    public static List<RenderEntity> groupByDistance(String code,List<RenderEntity> list, double disance) {
+    public static synchronized List<RenderEntity> groupByDistance(String code, List<RenderEntity> list, double disance) {
 
         if (list == null || disance <= 0) {
             return null;
@@ -1588,52 +1589,147 @@ public class GeometryTools {
 
         List<RenderEntity> listReslut = new ArrayList<>();
 
-        java.util.Map<String, RenderEntity> calcMap = new HashMap<>();
+        java.util.Map<String, String> calcMap = new HashMap<>();
 
-        int count = 0;
+        Log.e("qj", listReslut.size() + "==判断开始==" + list.size() + "===" + calcMap.size());
 
         //遍历开始
         for (RenderEntity renderEntity : list) {
 
-            if(!TextUtils.isEmpty(code)&&!renderEntity.getCode().equals(code)){
-                listReslut.add(renderEntity);
-                calcMap.put(renderEntity.getId(),renderEntity);
-                continue;
-            }
+            int count = 0;
 
+            Log.e("qj", listReslut.size() + "==判断0000");
+
+            //计算过的不在进行遍历
             if (!calcMap.containsKey(renderEntity.getId())) {
 
                 //跟要素遍历对比，如果统一个点直接标记计算并记录在内，已经计算过不在二次计算
                 for (RenderEntity renderEntityTemp : list) {
 
-                    if (!calcMap.containsKey(renderEntity.getId())) {
-                        if (renderEntity.getId().equals(renderEntityTemp.getId())) {
-                            listReslut.add(renderEntityTemp);
-                            count++;
-//                            Log.e("qj", "====计算间距" + count);
-                            calcMap.put(renderEntityTemp.getId(), renderEntityTemp);
+                    if (!calcMap.containsKey(renderEntityTemp.getId())) {
+
+                        //非当前code不参与运算
+                        if (!TextUtils.isEmpty(code) && !renderEntityTemp.getCode().equals(code)) {
+                            listReslut.add(renderEntity);
+                            calcMap.put(renderEntityTemp.getId(), renderEntityTemp.getCode());
+                            Log.e("qj", listReslut.size() + "==判断1111");
                         } else {
                             GeoPoint geoPoint = createGeoPoint(renderEntity.getGeometry());
                             GeoPoint geoPoint1 = createGeoPoint(renderEntityTemp.getGeometry());
                             double dis = getDistance(geoPoint.getLatitude(), geoPoint.getLongitude(), geoPoint1.getLatitude(), geoPoint1.getLongitude());
-//                            Log.e("qj", "====计算间距" + dis);
                             if (geoPoint != null && geoPoint1 != null && dis <= disance) {
-                                //只取第一个坐标
-                                renderEntityTemp.setGeometry(renderEntity.getGeometry());
-                                //renderEntity.setProperties(renderEntity.getProperties());
-                                calcMap.put(renderEntityTemp.getId(), renderEntityTemp);
-                                listReslut.add(renderEntityTemp);
+                                count++;
+                                //只保留一条
+                                if (count == 1) {
+                                    renderEntityTemp.getProperties().put("src", "assets:omdb/appendix/1105_00101_0.svg");
+                                    listReslut.add(renderEntityTemp);
+                                    Log.e("qj", listReslut.size() + "==判断3333");
+                                }
+                                calcMap.put(renderEntityTemp.getId(), renderEntityTemp.getCode());
+                                Log.e("qj", "====计算间距" + dis);
                             }
 
                         }
                     }
                 }
-
+                //增加同点位聚合个数统计
+                if (listReslut.size() > 0) {
+                    if (count > 1) {
+                        listReslut.get(listReslut.size() - 1).getProperties().put("name", count + "");
+                    } else {
+                        listReslut.get(listReslut.size() - 1).getProperties().put("name", "");
+                    }
+                }
             }
         }
 
-//        Log.e("qj", listReslut.size()+"==判断后=="+list.size()+"==="+calcMap.size());
+        Log.e("qj", listReslut.size() + "==判断结束==" + list.size() + "===" + calcMap.size());
 
         return listReslut;
+    }
+
+    /**
+     * 线几何按距离等分点
+     */
+    public static synchronized List<GeoPoint> getLineToDengGeoPints(Geometry lineGeometry, double dengDisance) {
+        List<GeoPoint> geoPointList = new ArrayList<>();
+        //获取线几何点
+        List<GeoPoint> list = getGeoPoints(lineGeometry);
+
+        if(list!=null&&list.size()>=2) {
+
+            for (int i = 0; i < list.size() - 1; i++) {
+
+                GeoPoint geoPoint1 = list.get(i);
+
+                GeoPoint geoPoint2 = list.get(i + 1);
+
+                double disance = getDistance(geoPoint1.getLatitude(), geoPoint1.getLongitude(), geoPoint2.getLatitude(), geoPoint2.getLongitude());
+
+                //只有第一个点进行添加，后面数据过滤掉
+                if(i==0){
+                    geoPointList.add(geoPoint1);
+                }
+
+                geoPointList.add(geoPoint2);
+
+                if (disance > dengDisance) {
+                    //向上取整
+                    int num = (int) Math.ceil(disance / dengDisance);
+
+                    //计算等分数据
+                    List<GeoPoint> dengList = getDengGeoPoint(geoPoint1, geoPoint2, num);
+
+                    if (dengList != null && dengList.size() > 0) {
+
+                        geoPointList.addAll(dengList);
+                    }
+                }
+            }
+        }
+        return geoPointList;
+    }
+
+
+    /**
+     * 计算两点之间等距的经纬度
+     */
+    private static List<GeoPoint> getDengGeoPoint(GeoPoint geoPoint1, GeoPoint geoPoint2, int number) {
+
+        double aaa, bbb, ccc = 0, ddd = 0;
+
+        List<GeoPoint> geoPointList = new ArrayList<>();
+
+        for (int i = 1; i < number + 1; i++) {
+            if (geoPoint1.getLongitude() > geoPoint2.getLongitude() && geoPoint1.getLatitude() > geoPoint2.getLatitude()) {
+                aaa = (geoPoint1.getLongitude() - geoPoint2.getLongitude()) / (number + 1);
+                ccc = geoPoint2.getLongitude() + aaa * (i);
+                bbb = (geoPoint1.getLatitude() - geoPoint2.getLatitude()) / (number + 1);
+                ddd = bbb * (i) + geoPoint2.getLatitude();
+                Log.e(TAG, "getLatLng:a " + ddd + "   " + ccc);
+            } else if (geoPoint1.getLongitude() < geoPoint2.getLongitude() && geoPoint1.getLatitude() < geoPoint2.getLatitude()) {
+                aaa = (geoPoint2.getLongitude() - geoPoint1.getLongitude()) / (number + 1);
+                ccc = geoPoint1.getLongitude() + aaa * (i);
+                bbb = (geoPoint2.getLatitude() - geoPoint1.getLatitude()) / (number + 1);
+                ddd = geoPoint1.getLatitude() + bbb * i;
+                Log.e(TAG, "getLatLng:b " + ddd + "   " + ccc);
+            } else if (geoPoint1.getLongitude() > geoPoint2.getLongitude() && geoPoint1.getLatitude() < geoPoint2.getLatitude()) {
+                aaa = (geoPoint1.getLongitude() - geoPoint2.getLongitude()) / (number + 1);
+                ccc = geoPoint2.getLongitude() + aaa * (number + 1 - i);
+                bbb = (geoPoint2.getLatitude() - geoPoint1.getLatitude()) / (number + 1);
+                ddd = geoPoint1.getLatitude() + bbb * i;
+                Log.e(TAG, "getLatLng:c " + ddd + "   " + ccc);
+            } else if (geoPoint1.getLongitude() < geoPoint2.getLongitude() && geoPoint1.getLatitude() > geoPoint2.getLatitude()) {
+                aaa = (geoPoint2.getLongitude() - geoPoint1.getLongitude()) / (number + 1);
+                ccc = geoPoint1.getLongitude() + aaa * (i);
+                bbb = (geoPoint1.getLatitude() - geoPoint2.getLatitude()) / (number + 1);
+                ddd = geoPoint1.getLatitude() - bbb * i;
+                Log.e(TAG, "getLatLng:d " + ddd + "   " + ccc);
+            }
+
+            geoPointList.add(new GeoPoint(ddd, ccc));
+        }
+
+        return geoPointList;
     }
 }

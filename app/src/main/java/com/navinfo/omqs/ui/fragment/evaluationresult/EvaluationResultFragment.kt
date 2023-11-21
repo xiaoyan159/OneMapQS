@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
@@ -75,6 +76,7 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //// 设置 RecyclerView 的固定大小，避免在滚动时重新计算视图大小和布局，提高性能
@@ -178,6 +180,8 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
             try {
                 signBean = it.getParcelable("SignBean")
                 autoSave = it.getBoolean("AutoSave")
+                //高亮数据几何
+                signBean?.let { it1 -> viewModel.show(it1.renderEntity) }
             } catch (_: java.lang.Exception) {
             }
         }

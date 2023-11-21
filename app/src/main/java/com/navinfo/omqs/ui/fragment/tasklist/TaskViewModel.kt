@@ -630,7 +630,7 @@ class TaskViewModel @Inject constructor(
 
     override fun onCleared() {
         mapController.mMapView.removeOnNIMapClickListener(TAG)
-        mapController.lineHandler.removeLine()
+        mapController.lineHandler.removeAllLine()
         mapController.markerHandle.removeNaviMarkerLayer()
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         super.onCleared()

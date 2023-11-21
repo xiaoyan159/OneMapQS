@@ -95,7 +95,6 @@ class ImportPreProcess {
             ) != null
         ) {
             // 带有angle字段的数据，也有可能是线，需要判断是否需要根据指定字段判断数据是否为逆向
-
             var angle = renderEntity?.properties?.get("angle")?.toDouble()!!
             // angle角度为与正北方向的顺时针夹角，将其转换为与X轴正方向的逆时针夹角，即为正东方向的夹角
             angle = ((450 - angle) % 360)
@@ -226,7 +225,6 @@ class ImportPreProcess {
 
         // 将这个起终点的线记录在数据中
         val startEndReference = ReferenceEntity()
-//        startEndReference.renderEntityId = renderEntity.id
         startEndReference.name = "${renderEntity.name}参考线"
         startEndReference.table = renderEntity.table
         startEndReference.code = renderEntity.code
@@ -239,11 +237,8 @@ class ImportPreProcess {
             GeometryTools.createLineString(arrayOf<Coordinate>(pointStart, pointEnd)).toString()
         startEndReference.properties["qi_table"] = renderEntity.table
         startEndReference.properties["type"] = "s_2_e"
-        val listResult = mutableListOf<ReferenceEntity>()
         startEndReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(startEndReference.properties))
-        renderEntity.referenceEntitys?.add(startEndReference)
-        //listResult.add(startEndReference)
-        //insertData(listResult)
+        renderEntity.referenceEntitys.add(startEndReference)
     }
 
     /**
@@ -306,7 +301,7 @@ class ImportPreProcess {
             endReference.properties["qi_table"] = renderEntity.table
             endReference.properties["type"] = "e${if (renderEntity.properties["laneType"]!!.toInt() and (0b1000)>0) "_dec" else "_acc"}"
             endReference.properties["geometry"] = endReference.geometry
-            renderEntity.referenceEntitys?.add(endReference)
+            renderEntity.referenceEntitys.add(endReference)
             //listResult.add(endReference)
             //insertData(listResult)
         }
@@ -325,7 +320,6 @@ class ImportPreProcess {
 
         // 将这个起终点的线记录在数据中
         val startReference = ReferenceEntity()
-//        startReference.renderEntityId = renderEntity.id
         startReference.name = "${renderEntity.name}参考点"
         startReference.code = renderEntity.code
         startReference.table = renderEntity.table
@@ -363,7 +357,6 @@ class ImportPreProcess {
         Log.e("qj", "generateS2EReferencePoint===1")
 
         val endReference = ReferenceEntity()
-//        endReference.renderEntityId = renderEntity.id
         endReference.name = "${renderEntity.name}参考点"
         endReference.code = renderEntity.code
         endReference.table = renderEntity.table
@@ -393,10 +386,8 @@ class ImportPreProcess {
         }
         endReference.properties["geometry"] = endReference.geometry
         endReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(endReference.properties))
-        renderEntity.referenceEntitys?.add(endReference)
-        //listResult.add(endReference)
+        renderEntity.referenceEntitys.add(endReference)
         Log.e("qj", "generateS2EReferencePoint===4")
-        //insertData(listResult)
     }
 
     /**
@@ -407,6 +398,7 @@ class ImportPreProcess {
         direction: String = "",
         distance: String = ""
     ) {
+        Log.e("qj", "generateDirectReferenceLine===0==${renderEntity.code}")
         // 根据数据或angle计算方向对应的角度和偏移量
         val geometry = renderEntity.wkt
         var isReverse = false // 是否为逆向
@@ -473,13 +465,11 @@ class ImportPreProcess {
                 geometry?.coordinate?.y!!
             ) * Math.sin(radian)
         }
-        val listResult = mutableListOf<ReferenceEntity>()
 
         for (pointStart in pointStartArray) {
             val coorEnd = Coordinate(pointStart.getX() + dx, pointStart.getY() + dy, pointStart.z)
 
             val angleReference = ReferenceEntity()
-//            angleReference.renderEntityId = renderEntity.id
             angleReference.name = "${renderEntity.name}参考方向"
             angleReference.table = renderEntity.table
             angleReference.code = renderEntity.code
@@ -493,10 +483,9 @@ class ImportPreProcess {
             angleReference.properties["qi_table"] = renderEntity.table
             angleReference.properties["type"] = "angle"
             angleReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(angleReference.properties))
-            renderEntity.referenceEntitys?.add(angleReference)
-            //listResult.add(angleReference)
+            renderEntity.referenceEntitys.add(angleReference)
         }
-        //insertData(listResult)
+        Log.e("qj", "generateDirectReferenceLine===1")
     }
 
     fun addAngleFromGeometry(renderEntity: RenderEntity): String {
@@ -574,6 +563,8 @@ class ImportPreProcess {
                                         renderEntityTemp.zoomMax = renderEntity.zoomMax
                                         renderEntityTemp.enable = renderEntity.enable
                                         renderEntityTemp.taskId = renderEntity.taskId
+                                        renderEntityTemp.linkPid = renderEntity.linkPid
+                                        renderEntity.linkRelation = renderEntity.linkRelation
                                         renderEntityTemp.catchEnable = renderEntity.catchEnable
                                         var dis = -lateralOffset.toDouble() / 100000000
                                         //最小值取10厘米，否正渲染太近无法显示
@@ -607,6 +598,37 @@ class ImportPreProcess {
                     if (listResult.size > 0) {
                         insertData(listResult)
                     }
+                }else if(boundaryType.toInt() == 9){//根据线型平分为点数据，用于渲染3D标
+                    dengfenLineString(renderEntity)
+                }
+            }
+        }
+    }
+
+    fun dengfenLineString(renderEntity: RenderEntity){
+        if (renderEntity.code == DataCodeEnum.OMDB_LANE_MARK_BOUNDARYTYPE.code||renderEntity.code == DataCodeEnum.OMDB_RDBOUND_BOUNDARYTYPE.code){
+            val boundaryType = renderEntity.properties["boundaryType"]
+            if (boundaryType != null) {
+                if(boundaryType.toInt()==9){
+                    Log.e("qj","杆状物转换开始")
+                    val geopointList = GeometryTools.getLineToDengGeoPints(renderEntity.wkt,5.0)
+                    geopointList.forEach{
+                        val referenceEntity = ReferenceEntity()
+                        referenceEntity.name = "${renderEntity.name}线转点坐标"
+                        referenceEntity.table = renderEntity.table
+                        referenceEntity.code = renderEntity.code
+                        referenceEntity.geometry = GeometryTools.createGeometry(it).toString()
+                        Log.e("jingo", "几何转换结束")
+                        referenceEntity.properties["qi_table"] = renderEntity.table
+                        referenceEntity.properties["boundaryType"] = "pole"
+                        referenceEntity.zoomMin = renderEntity.zoomMin
+                        referenceEntity.zoomMax = renderEntity.zoomMax
+                        referenceEntity.taskId = renderEntity.taskId
+                        referenceEntity.enable = renderEntity.enable
+                        referenceEntity.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(referenceEntity.properties))
+                        renderEntity.referenceEntitys.add(referenceEntity)
+                    }
+                    Log.e("qj","杆状物转换结束")
                 }
             }
         }
@@ -652,11 +674,9 @@ class ImportPreProcess {
                         "assets:omdb/4601/${type}/1301_${referenceEntity.properties["currentDirect"]}.svg"
                     Log.d("unpackingLaneInfo", referenceEntity.properties["symbol"].toString())
                     referenceEntity.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(referenceEntity.properties))
-                    renderEntity.referenceEntitys?.add(referenceEntity)
+                    renderEntity.referenceEntitys.add(referenceEntity)
                     Log.e("qj", "车信===插入车信箭头")
-                    //listResult.add(referenceEntity)
                 }
-                //insertData(listResult)
             }
             //将主表线转化为单个点，按点要素实现捕捉
             if (Geometry.TYPENAME_LINESTRING == renderEntity.wkt?.geometryType) {
@@ -774,7 +794,7 @@ class ImportPreProcess {
         angleReference.enable = renderEntity.enable
         val listResult = mutableListOf<ReferenceEntity>()
         angleReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(angleReference.properties))
-        renderEntity.referenceEntitys?.add(angleReference)
+        renderEntity.referenceEntitys.add(angleReference)
         //listResult.add(angleReference)
         //insertData(listResult)
     }
@@ -806,12 +826,27 @@ class ImportPreProcess {
                 intersectionReference.properties["qi_table"] = renderEntity.table
                 intersectionReference.properties["type"] = "node"
                 intersectionReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(intersectionReference.properties))
-                renderEntity.referenceEntitys?.add(intersectionReference)
+                renderEntity.referenceEntitys.add(intersectionReference)
                 //listResult.add(intersectionReference)
             }
             //insertData(listResult)
         }
     }
+
+    /**
+     * 几何方向排序
+     * */
+    fun sortGeometry(renderEntity: RenderEntity) {
+        // 路口数据的其他点位，是保存在nodeList对应的数组下
+/*        if (renderEntity.properties.containsKey("linkPid")) {
+            val linkList = renderEntity.properties["linkPid"]?.split(",")
+            //几何较少时需要判断是否要计算判断长短边
+            if(linkList!=null&&linkList.size<3){
+
+            }
+        }*/
+    }
+
 
     /**
      * 生成默认路口数据的参考数据
@@ -977,7 +1012,7 @@ class ImportPreProcess {
             val code = renderEntity.properties[codeName]
             dynamicSrcReference.properties["src"] = "${prefix}${code}${suffix}"
             dynamicSrcReference.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(dynamicSrcReference.properties))
-            renderEntity.referenceEntitys?.add(dynamicSrcReference)
+            renderEntity.referenceEntitys.add(dynamicSrcReference)
             //listResult.add(dynamicSrcReference)
         }
         //insertData(listResult)

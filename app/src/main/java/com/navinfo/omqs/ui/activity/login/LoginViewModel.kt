@@ -8,16 +8,8 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
-import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.ResourceUtils
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.navinfo.collect.library.data.entity.LinkRelation
-import com.navinfo.collect.library.data.entity.RenderEntity
 import com.navinfo.collect.library.data.entity.TaskBean
-import com.navinfo.collect.library.utils.GeometryTools
 import com.navinfo.omqs.Constant
 import com.navinfo.omqs.bean.LoginUserBean
 import com.navinfo.omqs.bean.SysUserBean
@@ -94,12 +86,17 @@ class LoginViewModel @Inject constructor(
 
     var sharedPreferences: SharedPreferences? = null
 
-    var dataIndex = 0
-
     init {
-        loginUser.value = LoginUserBean(userCode = "haofuyue00213", passWord = "123456")
     }
 
+
+    fun lastLoginUserInfo(context: Context){
+        sharedPreferences =
+            context.getSharedPreferences("USER_SHAREDPREFERENCES", Context.MODE_PRIVATE)
+        val userNameCache = sharedPreferences?.getString("userName", "lixiaoming00427")
+        val passwordCache = sharedPreferences?.getString("passWord", "123456")
+        loginUser.value = LoginUserBean(userCode = "$userNameCache", passWord = "$passwordCache")
+    }
 
     /**
      * 处理注册按钮
@@ -270,131 +267,97 @@ class LoginViewModel @Inject constructor(
      * 获取任务列表
      */
     private suspend fun getTaskList(context: Context) {
-        loginStatus.postValue(LoginStatus.LOGIN_STATUS_NET_GET_TASK_LIST)
-//        loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
-        when (val result = networkService.getTaskList(Constant.USER_ID)) {
-            is NetResult.Success -> {
-                if (result.data != null) {
-                    val realm = Realm.getDefaultInstance()
-                    realm.executeTransaction {
-                        result.data.obj?.let { list ->
-                            for (index in list.indices) {
-                                var  inSertData = true
-                                val task = list[index]
-                                val item = realm.where(TaskBean::class.java).equalTo(
-                                    "id", task.id
-                                ).findFirst()
-                                if (item != null) {
-                                    task.fileSize = item.fileSize
-                                    task.status = item.status
-                                    task.currentSize = item.currentSize
-                                    //增加mesh==null兼容性处理
-                                    for (hadLink in item.hadLinkDvoList) {
-                                        if(hadLink.mesh==null){
-                                            hadLink.mesh = ""
+
+        //每天主动请求一次，其他情况列表内自己手动请求
+        val questToday = sharedPreferences?.getBoolean(DateTimeUtil.getYYYYMMDDDate()+"getTaskList",false)
+
+        if(!questToday!!){
+            loginStatus.postValue(LoginStatus.LOGIN_STATUS_NET_GET_TASK_LIST)
+            Log.e("qj","获取任务请求开始==")
+            when (val result = networkService.getTaskList(Constant.USER_ID)) {
+                is NetResult.Success -> {
+                    if (result.data != null) {
+                        Log.e("qj","获取任务返回成功==")
+                        val realm = Realm.getDefaultInstance()
+                        realm.executeTransaction {
+                            result.data.obj?.let { list ->
+                                for (index in list.indices) {
+                                    var  inSertData = true
+                                    val task = list[index]
+                                    val item = realm.where(TaskBean::class.java).equalTo(
+                                        "id", task.id
+                                    ).findFirst()
+                                    if (item != null) {
+                                        task.fileSize = item.fileSize
+                                        task.status = item.status
+                                        task.currentSize = item.currentSize
+                                        //增加mesh==null兼容性处理
+                                        for (hadLink in item.hadLinkDvoList) {
+                                            if(hadLink.mesh==null){
+                                                hadLink.mesh = ""
+                                            }
                                         }
-                                    }
-                                    task.hadLinkDvoList = item.hadLinkDvoList
-                                    task.syncStatus = item.syncStatus
-                                    //已上传后不在更新操作时间
-                                    if (task.syncStatus != FileManager.Companion.FileUploadStatus.DONE) {
+                                        task.hadLinkDvoList = item.hadLinkDvoList
+                                        task.syncStatus = item.syncStatus
+                                        //已上传后不在更新操作时间
+                                        if (task.syncStatus != FileManager.Companion.FileUploadStatus.DONE) {
+                                            //赋值时间，用于查询过滤
+                                            task.operationTime = DateTimeUtil.getNowDate().time
+                                        }else{
+                                            continue
+                                        }
+                                    } else {
+                                        for (hadLink in task.hadLinkDvoList) {
+                                            if(hadLink.geometry==null){
+                                                inSertData = false
+                                            }else if(hadLink.mesh==null){
+                                                hadLink.mesh = ""
+                                            }else{
+                                                hadLink.taskId = task.id
+                                            }
+                                            Log.e("qj","mesh==${hadLink.mesh}")
+                                        }
                                         //赋值时间，用于查询过滤
                                         task.operationTime = DateTimeUtil.getNowDate().time
-                                    }else{
-                                        continue
                                     }
-                                } else {
-                                    for (hadLink in task.hadLinkDvoList) {
-                                        if(hadLink.geometry==null){
-                                            inSertData = false
-                                        }else if(hadLink.mesh==null){
-                                            hadLink.mesh = ""
-                                        }else{
-                                            hadLink.taskId = task.id
-                                        }
-                                        Log.e("qj","mesh==${hadLink.mesh}")
+                                    Log.e("qj","task==${task.id}")
+                                    if(inSertData){
+                                        realm.copyToRealmOrUpdate(task)
                                     }
-                                    //赋值时间，用于查询过滤
-                                    task.operationTime = DateTimeUtil.getNowDate().time
-                                }
-                                Log.e("qj","task==${task.id}")
-                                if(inSertData){
-                                    realm.copyToRealmOrUpdate(task)
                                 }
                             }
+
                         }
-
-                    }
-                    realm.close()
-                }
-                //测试代码
-/*                viewModelScope.launch(Dispatchers.IO) {
-
-
-                    val userTaskFolder = File(Constant.USER_DATA_PATH + "/4")
-                    if (!userTaskFolder.exists()) userTaskFolder.mkdirs()
-                    val password = "encryp".encodeToByteArray().copyInto(ByteArray(64))
-                    val config = RealmConfiguration.Builder()
-                        .directory(userTaskFolder)
-                        .name("OMQS.realm")
-                        .encryptionKey(password)
-                        .allowQueriesOnUiThread(true)
-                        .schemaVersion(2)
-                        .build()
-
-                    var realm = Realm.getInstance(config)
-                    var time = System.currentTimeMillis()
-                    Log.e("qj", "test===开始安装")
-                    Realm.compactRealm(config)
-                    realm.beginTransaction()
-
-                    val txtFile = File(Constant.USER_DATA_PATH + "/OMDB_LANE_MARK_BOUNDARYTYPE")
-                    // 将list数据转换为map
-                    var gson = Gson();
-                    val type = object : TypeToken<RenderEntity>() {}.type
-                    val list = FileIOUtils.readFile2List(txtFile, "UTF-8")
-                    val count = 12
-                    if (list != null) {
-                        for (i in 0 until count) {
-                            for ((index, line) in list.withIndex()) {
-                                if (line == null || line.trim() == "") {
-                                    continue
-                                }
-                                val renderEntity = gson.fromJson<RenderEntity>(line, type)
-                                realm.insert(renderEntity)
-                            }
-                        }
-                        Log.e("qj", "test===总数===${list.size*count}")
+                        realm.close()
+                        //增加当天请求过标识
+                        sharedPreferences?.edit()
+                            ?.putBoolean(DateTimeUtil.getYYYYMMDDDate()+"getTaskList",true)
+                        Log.e("qj","获取任务结束==")
                     }
 
-                    Log.e("qj", "test===提交===${System.currentTimeMillis() - time}")
-                    realm.commitTransaction()
-                    Log.e("qj", "test===提交===${System.currentTimeMillis() - time}")
-                    realm.close()
-
-                    Log.e("qj", "test===结束===${System.currentTimeMillis() - time}")
-                }*/
-
-                loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
-            }
-
-            is NetResult.Error<*> -> {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)
-                        .show()
+                    loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
                 }
-                loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
-            }
 
-            is NetResult.Failure<*> -> {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
-                        .show()
+                is NetResult.Error<*> -> {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "${result.exception.message}", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
                 }
-                loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
-            }
 
-            is NetResult.Loading -> {}
+                is NetResult.Failure<*> -> {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
+                }
+
+                is NetResult.Loading -> {}
+            }
+        }else{
+            loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
         }
     }
 

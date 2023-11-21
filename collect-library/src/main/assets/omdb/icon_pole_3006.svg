@@ -1,1 +1,47 @@
-<?xml version="1.0" encoding="UTF-8"?><svg id="b" xmlns="http://www.w3.org/2000/svg" width="124.7" height="124.7" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 124.7 124.7"><defs><style>.m{fill:url(#f);}.n,.o{fill:#535a60;}.p{fill:#262d34;isolation:isolate;opacity:.2;}.q{fill:url(#j);filter:url(#k);}.r{fill:url(#g);filter:url(#h);}.o{opacity:0;}</style><linearGradient id="f" x1="58.7" y1="31" x2="66.4" y2="31" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#989898"/><stop offset="0" stop-color="#a3a3a3"/><stop offset=".1" stop-color="#c4c5c5"/><stop offset=".2" stop-color="#d8d9d9"/><stop offset=".3" stop-color="#e0e1e1"/><stop offset=".4" stop-color="#dbdcdc"/><stop offset=".5" stop-color="#cccece"/><stop offset=".6" stop-color="#b5b6b7"/><stop offset=".7" stop-color="#949697"/><stop offset=".8" stop-color="#6a6c6f"/><stop offset=".8" stop-color="#3f4246"/><stop offset="1" stop-color="#404247"/><stop offset="1" stop-color="#43434a"/></linearGradient><linearGradient id="g" x1="776.5" y1="39.3" x2="788.4" y2="39.3" gradientTransform="translate(-720)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#11627b"/><stop offset=".1" stop-color="#0b788d"/><stop offset=".3" stop-color="#00a4b1"/><stop offset=".4" stop-color="#039aa9"/><stop offset=".5" stop-color="#068b9d"/><stop offset=".8" stop-color="#11627b"/></linearGradient><filter id="h" filterUnits="userSpaceOnUse"><feOffset dx="0" dy="1"/><feGaussianBlur result="i" stdDeviation=".3"/><feFlood flood-color="#000" flood-opacity=".2"/><feComposite in2="i" operator="in"/><feComposite in="SourceGraphic"/></filter><linearGradient id="j" x1="-396.1" y1="15.6" x2="-408" y2="15.6" gradientTransform="translate(-339.8) rotate(-180) scale(1 -1)" xlink:href="#g"/><filter id="k" filterUnits="userSpaceOnUse"><feOffset dx="0" dy="1"/><feGaussianBlur result="l" stdDeviation=".3"/><feFlood flood-color="#000" flood-opacity=".2"/><feComposite in2="l" operator="in"/><feComposite in="SourceGraphic"/></filter></defs><g id="c"><g><rect class="o" y="0" width="124.7" height="124.7"/><g><ellipse id="d" class="p" cx="62.4" cy="61.3" rx="14.4" ry="3.7"/><ellipse id="e" class="n" cx="62.4" cy="61.3" rx="7.5" ry="3"/><path class="m" d="M59.4,0h6C66.1,0,66.6,.6,66.6,1.3V58.7c0,1.9-1.5,3.4-3.4,3.4h-1.8c-1.9,0-3.4-1.5-3.4-3.4V1.3C58.1,.6,58.7,0,59.4,0Z"/></g><path class="r" d="M68.4,46.8s-1.1,.7-5.8,.7-6.2-.7-6.2-.7v-14.7s.7-1,6.2-1,5.8,1,5.8,1v14.7Z"/><path class="q" d="M56.3,23.2s1.1,.7,5.8,.7,6.2-.7,6.2-.7V8.4s-.7-1-6.2-1-5.8,1-5.8,1v14.7Z"/></g></g></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="b" xmlns="http://www.w3.org/2000/svg" width="28.8" height="124.7"
+    xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 28.8 124.7">
+    <defs>
+        <linearGradient id="f" x1="10.7" y1="94.9" x2="18.4" y2="94.9"
+            gradientTransform="translate(0 126) scale(1 -1)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#989898" />
+            <stop offset="0" stop-color="#a3a3a3" />
+            <stop offset="0" stop-color="#c4c5c5" />
+            <stop offset=".2" stop-color="#d8d9d9" />
+            <stop offset=".3" stop-color="#e0e1e1" />
+            <stop offset=".4" stop-color="#dbdcdc" />
+            <stop offset=".5" stop-color="#cccece" />
+            <stop offset=".6" stop-color="#b5b6b7" />
+            <stop offset=".7" stop-color="#949697" />
+            <stop offset=".8" stop-color="#6a6c6f" />
+            <stop offset=".8" stop-color="#3f4246" />
+            <stop offset="1" stop-color="#404247" />
+            <stop offset="1" stop-color="#43434a" />
+        </linearGradient>
+        <linearGradient id="g" x1="728.5" y1="86.7" x2="740.4" y2="86.7"
+            gradientTransform="translate(-720 126) scale(1 -1)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#11627b" />
+            <stop offset="0" stop-color="#0b788d" />
+            <stop offset=".3" stop-color="#00a4b1" />
+            <stop offset=".4" stop-color="#039aa9" />
+            <stop offset=".5" stop-color="#068b9d" />
+            <stop offset=".8" stop-color="#11627b" />
+        </linearGradient>
+        <linearGradient id="h" x1="-356.1" y1="110.3" x2="-368" y2="110.3"
+            gradientTransform="translate(-347.8 126) rotate(-180)" xlink:href="#g" />
+    </defs>
+    <g id="c">
+        <rect width="28.8" height="124.7" style="fill:rgba(83,90,96,0); stroke-width:0px;" />
+        <ellipse id="d" cx="14.4" cy="61.3" rx="14.4" ry="3.7"
+            style="fill:#262d34; isolation:isolate; opacity:.2; stroke-width:0px;" />
+        <ellipse id="e" cx="14.4" cy="61.3" rx="7.5" ry="3"
+            style="fill:#535a60; stroke-width:0px;" />
+        <path
+            d="m11.4,0h6c.7,0,1.2.6,1.2,1.3v57.4c0,1.9-1.5,3.4-3.4,3.4h-1.8c-1.9,0-3.4-1.5-3.4-3.4V1.3c.1-.7.7-1.3,1.4-1.3Z"
+            style="fill:url(#f); stroke-width:0px;" />
+        <path d="m20.4,46.8s-1.1.7-5.8.7-6.2-.7-6.2-.7v-14.7s.7-1,6.2-1,5.8,1,5.8,1v14.7Z"
+            style="fill:url(#g); stroke-width:0px;" />
+        <path d="m8.3,23.2s1.1.7,5.8.7,6.2-.7,6.2-.7v-14.8s-.7-1-6.2-1-5.8,1-5.8,1v14.7h0Z"
+            style="fill:url(#h); stroke-width:0px;" />
+    </g>
+</svg>
