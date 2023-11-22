@@ -139,7 +139,7 @@ class EvaluationResultViewModel @Inject constructor(
 
     init {
         mapController.mMapView.addOnNIMapClickListener(TAG, object : OnGeoPointClickListener {
-            override fun onMapClick(tag: String, point: GeoPoint) {
+            override fun onMapClick(tag: String, point: GeoPoint,other:String) {
                 if (tag == TAG) {
                     liveDataQsRecordBean.value!!.geometry =
                         GeometryTools.createGeometry(point).toText()

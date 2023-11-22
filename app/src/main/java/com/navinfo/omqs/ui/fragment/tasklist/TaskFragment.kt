@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -16,6 +17,8 @@ import com.google.android.material.tabs.TabLayout
 import com.navinfo.collect.library.data.entity.HadLinkDvoBean
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentTaskBinding
+import com.navinfo.omqs.db.RealmOperateHelper
+import com.navinfo.omqs.ui.activity.map.MainViewModel
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
 import com.yanzhenjie.recyclerview.SwipeMenuBridge
@@ -24,6 +27,7 @@ import com.yanzhenjie.recyclerview.SwipeMenuItem
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.videolan.vlc.Util
+import javax.inject.Inject
 
 /**
  * 当前任务的道路列表
@@ -37,9 +41,14 @@ class TaskFragment : BaseFragment() {
      * 和[TaskManagerFragment],[TaskListFragment],[TaskFragment]共用同一个viewModel
      */
     private val viewModel by shareViewModels<TaskViewModel>("Task")
+    private val mainViewModel by activityViewModels<MainViewModel>()
+
+    @Inject
+    lateinit var realmOperateHelper: RealmOperateHelper
+
     private val binding get() = _binding!!
     private val adapter: TaskAdapter by lazy {
-        TaskAdapter(object : TaskAdapterCallback {
+        TaskAdapter(realmOperateHelper, lifecycleScope, object : TaskAdapterCallback {
             override fun itemOnClick(bean: HadLinkDvoBean) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     viewModel.showCurrentLink(bean)
@@ -51,7 +60,19 @@ class TaskFragment : BaseFragment() {
             }
 
             override fun scrollPosition(position: Int) {
-               binding.taskRecyclerview.scrollToPosition(position)
+                binding.taskRecyclerview.scrollToPosition(position)
+            }
+
+            override fun setNaviStart(position: Int, bean: HadLinkDvoBean) {
+                viewModel.setNaviStartOrEnd(bean,true)
+            }
+
+            override fun setNaviEnd(position: Int, bean: HadLinkDvoBean) {
+                viewModel.setNaviStartOrEnd(bean,false)
+            }
+
+            override fun setNavSkipLink(position: Int, bean: HadLinkDvoBean) {
+                viewModel.setSkipLink(bean)
             }
         })
     }
@@ -76,11 +97,11 @@ class TaskFragment : BaseFragment() {
             binding.taskAddLink.isSelected = it
         }
 
-        viewModel.liveDataAddLinkDialog.observe(viewLifecycleOwner){
-            viewModel.addTaskLink(requireContext(),it)
+        viewModel.liveDataAddLinkDialog.observe(viewLifecycleOwner) {
+            viewModel.addTaskLink(requireContext(), it)
         }
         viewModel.liveDataUpdateTask.observe(viewLifecycleOwner) {
-
+            adapter.setTaskBean(it)
         }
 
         //注意：使用滑动菜单不能开启滑动删除，否则只有滑动删除没有滑动菜单
@@ -132,8 +153,8 @@ class TaskFragment : BaseFragment() {
             }
 
         })
-        viewModel.liveDataSelectLink.observe(viewLifecycleOwner){
-            adapter.setSelectTag(it)
+        viewModel.liveDataSelectLink.observe(viewLifecycleOwner) {
+            adapter.setSelectTag(it.linkPid)
         }
     }
 
@@ -152,7 +173,7 @@ class TaskFragment : BaseFragment() {
             requireContext()
         ).setTitle("标记原因").setView(view)
         var editText = view.findViewById<EditText>(R.id.dialog_edittext)
-        view.findViewById<TabLayout>(R.id.search_tab_layout).visibility=View.GONE
+        view.findViewById<TabLayout>(R.id.search_tab_layout).visibility = View.GONE
         editText.setText(bean.reason)
         inputDialog.setNegativeButton("取消") { dialog, _ ->
             dialog.dismiss()

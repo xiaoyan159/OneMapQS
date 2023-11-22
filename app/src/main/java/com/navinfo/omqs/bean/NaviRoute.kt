@@ -23,7 +23,13 @@ data class NaviRoute(
     var startIndexInPath: Int = -1,
     //当前link在整段路径中的终点
     var endIndexIntPath: Int = -1,
-    var itemList: MutableList<NaviRouteItem>? = null
+    var itemList: MutableList<NaviRouteItem>? = null,
+    //种别
+    var kind: String = "",
+    //除导航退出线外的其他拓扑link
+    var otherTopologyLinks: MutableList<String> = mutableListOf(),
+    //线限速
+    var speedLimit: String = "0"
 ) {
     var pointList: MutableList<GeoPoint> = mutableListOf()
         get() {
@@ -39,5 +45,7 @@ data class NaviRouteItem(
     var index: Int,
     val data: RenderEntity,
     val linkId: String,
-    var distance: Int = -1
+    var distance: Int = -1,
+    var voiceText: String = "",
+    var isVoicePlayed: Boolean = false
 )

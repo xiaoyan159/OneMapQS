@@ -109,4 +109,8 @@ class SpeakMode(private val context: Context) : TextToSpeech.OnInitListener {
         stopSpeech()
         mTextToSpeech.shutdown()
     }
+
+    fun isSpeaking():Boolean{
+        return mTextToSpeech.isSpeaking
+    }
 }

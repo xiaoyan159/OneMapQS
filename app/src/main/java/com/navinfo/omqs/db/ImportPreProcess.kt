@@ -782,10 +782,10 @@ class ImportPreProcess {
         angleReference.name = "${renderEntity.name}车道中线面"
         angleReference.table = renderEntity.table
         angleReference.code = renderEntity.code
-        Log.e("jingo", "几何转换开始")
+//        Log.e("jingo", "几何转换开始")
         //angleReference.geometry = renderEntity.geometry
         angleReference.geometry = GeometryTools.computeLine(0.000035,0.000035,renderEntity.geometry)
-        Log.e("jingo", "几何转换结束")
+//        Log.e("jingo", "几何转换结束")
         angleReference.properties["qi_table"] = renderEntity.table
         angleReference.properties["widthProperties"] = "3"
         angleReference.zoomMin = renderEntity.zoomMin
@@ -1261,6 +1261,7 @@ class ImportPreProcess {
 
     private fun createZLevelReference(renderEntity: RenderEntity): ReferenceEntity {
         val zLevelReference = ReferenceEntity()
+//        zLevelReference.renderEntityId = renderEntity.id
         //zLevelReference.renderEntityId = renderEntity.id
         zLevelReference.name = "${renderEntity.name}参考点"
         zLevelReference.code = renderEntity.code

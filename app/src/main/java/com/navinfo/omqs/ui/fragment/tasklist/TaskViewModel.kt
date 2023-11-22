@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navinfo.collect.library.data.dao.impl.TraceDataBase
 import com.navinfo.collect.library.data.entity.*
+import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.OnGeoPointClickListener
 import com.navinfo.collect.library.utils.GeometryTools
@@ -120,12 +121,12 @@ class TaskViewModel @Inject constructor(
     /**
      * 点击地图选中的link
      */
-    val liveDataSelectLink = MutableLiveData<String>()
+    val liveDataSelectLink = MutableLiveData<HadLinkDvoBean>()
 
     /**
      * 当前选中的任务
      */
-    var currentSelectTaskBean: TaskBean? = null
+//    var currentSelectTaskBean: TaskBean? = null
 
     /**
      * 任务列表查询协程
@@ -133,6 +134,17 @@ class TaskViewModel @Inject constructor(
     private var filterTaskListJob: Job? = null
 
     private var filterTaskJob: Job? = null
+
+    /**
+     * 是否正在选择导航起点
+     */
+    private var isSelectNaviStartPoint = false
+
+    /**
+     * 是否正在选择导航终点
+     */
+    private var isSelectNaviEndPoint = false
+
 
     /**
      * 是否开启了道路选择
@@ -148,12 +160,14 @@ class TaskViewModel @Inject constructor(
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         mapController.mMapView.addOnNIMapClickListener(TAG, object : OnGeoPointClickListener {
             @RequiresApi(Build.VERSION_CODES.N)
-            override fun onMapClick(tag: String, point: GeoPoint) {
+            override fun onMapClick(tag: String, point: GeoPoint, other: String) {
                 if (tag == TAG) {
-                    if (liveDataSelectNewLink.value == true) {
+                    if ((isSelectNaviStartPoint || isSelectNaviEndPoint) && other.isNotEmpty()) {
+                        updateTaskNavInfo(other)
+                    } else if (liveDataSelectNewLink.value == true) {
                         viewModelScope.launch(Dispatchers.Default) {
                             val realm = realmOperateHelper.getSelectTaskRealmInstance()
-                            if (currentSelectTaskBean == null) {
+                            if (liveDataUpdateTask.value == null) {
                                 liveDataToastMessage.postValue("还没有开启任何任务")
                             } else {
                                 val links = realmOperateHelper.queryLink(
@@ -162,7 +176,7 @@ class TaskViewModel @Inject constructor(
                                 )
                                 if (links.isNotEmpty()) {
                                     val l = links[0]
-                                    for (link in currentSelectTaskBean!!.hadLinkDvoList) {
+                                    for (link in liveDataUpdateTask.value!!.hadLinkDvoList) {
                                         if (link.linkPid == l.linkPid) {
                                             return@launch
                                         }
@@ -181,13 +195,17 @@ class TaskViewModel @Inject constructor(
                             )
                             if (links.isNotEmpty()) {
                                 val l = links[0]
-                                for (link in currentSelectTaskBean!!.hadLinkDvoList) {
-                                    if (link.linkPid == l.linkPid) {
-                                        liveDataSelectLink.postValue(link.linkPid)
-                                        mapController.lineHandler.showLine(link.geometry)
-                                        break
+                                liveDataUpdateTask.value?.let { value->
+                                    for (link in value.hadLinkDvoList) {
+                                        if (link.linkPid == l.linkPid) {
+
+                                            liveDataSelectLink.postValue(link)
+                                            mapController.lineHandler.showLine(link.geometry)
+                                            break
+                                        }
                                     }
                                 }
+
                             }
                             realm.close()
                         }
@@ -312,10 +330,10 @@ class TaskViewModel @Inject constructor(
         if (id > -1) {
             for (item in taskList) {
                 if (item.id == id) {
-                    currentSelectTaskBean = item
-                    liveDataTaskLinks.postValue(currentSelectTaskBean!!.hadLinkDvoList)
+                    liveDataUpdateTask.postValue(item)
+                    liveDataTaskLinks.postValue(item.hadLinkDvoList)
                     withContext(Dispatchers.Main) {
-                        showTaskLinks(currentSelectTaskBean!!)
+                        showTaskLinks(liveDataUpdateTask.value!!)
                     }
                     break
                 }
@@ -331,14 +349,14 @@ class TaskViewModel @Inject constructor(
 
         sharedPreferences.edit().putInt(Constant.SELECT_TASK_ID, taskBean.id).apply()
 
-        currentSelectTaskBean = taskBean
+        liveDataUpdateTask.value = taskBean
 
         liveDataTaskLinks.value = taskBean.hadLinkDvoList
 
         liveDataLoadTask.postValue(TaskLoadStatus.TASK_LOAD_STATUS_BEGIN)
 
         showTaskLinks(taskBean)
-
+        mapController.lineHandler.removeLine()
         //重新加载轨迹
         viewModelScope.launch(Dispatchers.IO) {
             Constant.TRACE_COUNT = 0
@@ -347,13 +365,13 @@ class TaskViewModel @Inject constructor(
             ).niLocationDao.findToTaskIdAll(taskBean.id.toString())
             list!!.forEach {
 
-                Constant.TRACE_COUNT ++
+                Constant.TRACE_COUNT++
 
-                if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_MORE_TIME==0){
+                if (Constant.TRACE_COUNT % Constant.TRACE_COUNT_MORE_TIME == 0) {
                     mapController.markerHandle.addNiLocationMarkerItemRough(it)
                 }
 
-                if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_TIME==0){
+                if (Constant.TRACE_COUNT % Constant.TRACE_COUNT_TIME == 0) {
                     mapController.markerHandle.addNiLocationMarkerItemSimple(it)
                 }
 
@@ -361,7 +379,7 @@ class TaskViewModel @Inject constructor(
 
             }
             liveDataLoadTask.postValue(TaskLoadStatus.TASK_LOAD_STATUS_FISISH)
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
                 MapParamUtils.setTaskId(taskBean.id)
                 Constant.currentSelectTaskFolder = File(Constant.USER_DATA_PATH + "/${taskBean.id}")
                 Constant.currentSelectTaskConfig =
@@ -427,24 +445,193 @@ class TaskViewModel @Inject constructor(
      * 高亮当前选中的link
      */
     fun showCurrentLink(link: HadLinkDvoBean) {
+        isSelectNaviStartPoint = false
+        isSelectNaviEndPoint = false
+        liveDataSelectLink.value = link
+        mapController.markerHandle.removeNaviMarkerLayer()
         mapController.lineHandler.showLine(link.geometry)
 //        mapController.lineHandler.omdbTaskLinkLayer.showSelectLine(link)
         val geometry = GeometryTools.createGeometry(link.geometry)
         if (geometry != null) {
             val envelope = geometry.envelopeInternal
             mapController.animationHandler.animateToBox(
-                maxX = envelope.maxX,
-                maxY = envelope.maxY,
-                minX = envelope.minX,
-                minY = envelope.minY
+                maxX = envelope.maxX + 0.0005,
+                maxY = envelope.maxY + 0.0005,
+                minX = envelope.minX - 0.0005,
+                minY = envelope.minY - 0.0005
             )
         }
+    }
 
+    /**
+     *
+     */
+    fun setSkipLink(bean: HadLinkDvoBean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val realm = realmOperateHelper.getRealmDefaultInstance()
+            realm.executeTransaction{
+                realm.copyToRealmOrUpdate(bean)
+            }
+            realm.close()
+        }
+    }
+
+    /**
+     * 设置导航路径起始link
+     */
+    fun setNaviStartOrEnd(bean: HadLinkDvoBean, bStart: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val realm = realmOperateHelper.getSelectTaskRealmInstance()
+
+            val resDir = realm.where(RenderEntity::class.java)
+                .equalTo("linkPid", bean.linkPid)
+                .equalTo("table", DataCodeEnum.OMDB_LINK_DIRECT.name).findFirst()
+            if (resDir == null) {
+                realm.close()
+                liveDataToastMessage.postValue("link属性数据缺失,请先下载数据")
+                return@launch
+            }
+            val direct = resDir.properties["direct"]
+            val resRd = realm.where(RenderEntity::class.java)
+                .equalTo("linkPid", bean.linkPid)
+                .equalTo("table", DataCodeEnum.OMDB_RD_LINK.name).findFirst()
+
+            var sNodeId: String? = null
+            var eNodeId: String? = null
+            resRd?.let { rd ->
+                sNodeId = rd.linkRelation!!.sNodeId
+                eNodeId = rd.linkRelation!!.eNodeId
+            }
+            realm.close()
+            if (sNodeId == null || eNodeId == null) {
+                liveDataToastMessage.postValue("link属性数据缺失,请先下载数据")
+                return@launch
+            }
+            when (direct) {
+                "2" -> {
+                    liveDataUpdateTask.value?.let { taskBean ->
+                        if (taskBean.navInfo == null)
+                            taskBean.navInfo = NavInfo(taskBean.id)
+                        taskBean.navInfo?.let { navInfo ->
+                            if (bStart) {
+                                navInfo.naviStartLinkId = bean.linkPid
+                                navInfo.naviStartNode = sNodeId!!
+                                if (navInfo.naviEndLinkId == bean.linkPid) {
+                                    navInfo.naviEndLinkId = ""
+                                    navInfo.naviEndNode = ""
+                                }
+                            } else {
+                                navInfo.naviEndLinkId = bean.linkPid
+                                navInfo.naviEndNode = eNodeId!!
+                                if (navInfo.naviStartLinkId == bean.linkPid) {
+                                    navInfo.naviStartLinkId = ""
+                                    navInfo.naviStartNode = ""
+                                }
+                            }
+                            val realm = realmOperateHelper.getRealmDefaultInstance()
+                            realm.executeTransaction {
+                                it.copyToRealmOrUpdate(taskBean)
+                            }
+                            realm.close()
+                            liveDataUpdateTask.postValue(taskBean)
+                        }
+                    }
+                }
+                "3" -> {
+                    liveDataUpdateTask.value?.let { taskBean ->
+                        if (taskBean.navInfo == null)
+                            taskBean.navInfo = NavInfo(taskBean.id)
+                        taskBean.navInfo?.let { navInfo ->
+                            if (bStart) {
+                                navInfo.naviStartLinkId = bean.linkPid
+                                navInfo.naviStartNode = eNodeId!!
+                                if (navInfo.naviEndLinkId == bean.linkPid) {
+                                    navInfo.naviEndLinkId = ""
+                                    navInfo.naviEndNode = ""
+                                }
+                            } else {
+                                navInfo.naviEndLinkId = bean.linkPid
+                                navInfo.naviEndNode = sNodeId!!
+                                if (navInfo.naviStartLinkId == bean.linkPid) {
+                                    navInfo.naviStartLinkId = ""
+                                    navInfo.naviStartNode = ""
+                                }
+                            }
+                            val realm = realmOperateHelper.getRealmDefaultInstance()
+                            realm.executeTransaction {
+                                it.copyToRealmOrUpdate(taskBean)
+                            }
+                            realm.close()
+                            liveDataUpdateTask.postValue(taskBean)
+                        }
+                    }
+                }
+                else -> {
+                    liveDataToastMessage.postValue("当前link为双方向道路，不能自动确定起终点，请选择")
+                    val list = GeometryTools.getGeoPoints(bean.geometry)
+                    withContext(Dispatchers.Main) {
+                        if (bStart) {
+                            isSelectNaviStartPoint = true
+                            isSelectNaviEndPoint = false
+                        } else {
+                            isSelectNaviStartPoint = false
+                            isSelectNaviEndPoint = true
+                        }
+                        mapController.markerHandle.showNaviStartOrEndLayer(list.first(), list.last(), sNodeId!!, eNodeId!!, bStart)
+                    }
+                }
+            }
+        }
+    }
+
+
+    /**
+     *更新导航配置信息
+     */
+    fun updateTaskNavInfo(nodeId: String) {
+        liveDataSelectLink.value?.let { linkBean ->
+            liveDataUpdateTask.value?.let { taskBean ->
+                viewModelScope.launch(Dispatchers.IO) {
+                    if (taskBean.navInfo == null)
+                        taskBean.navInfo = NavInfo(taskBean.id)
+                    taskBean.navInfo?.let { navInfo ->
+                        if (isSelectNaviStartPoint) {
+                            navInfo.naviStartLinkId = linkBean.linkPid
+                            navInfo.naviStartNode = nodeId
+                            if (navInfo.naviEndLinkId == linkBean.linkPid) {
+                                navInfo.naviEndLinkId = ""
+                                navInfo.naviEndNode = ""
+                            }
+                        } else if (isSelectNaviEndPoint) {
+                            navInfo.naviEndLinkId = linkBean.linkPid
+                            navInfo.naviEndNode = nodeId
+                            if (navInfo.naviStartLinkId == linkBean.linkPid) {
+                                navInfo.naviStartLinkId = ""
+                                navInfo.naviStartNode = ""
+                            }
+                        }
+                        val realm = realmOperateHelper.getRealmDefaultInstance()
+                        realm.executeTransaction {
+                            it.copyToRealmOrUpdate(taskBean)
+                        }
+                        realm.close()
+                        liveDataUpdateTask.postValue(taskBean)
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        mapController.markerHandle.removeNaviMarkerLayer()
+                    }
+                    isSelectNaviEndPoint = false
+                    isSelectNaviStartPoint = false
+                }
+            }
+        }
     }
 
     override fun onCleared() {
         mapController.mMapView.removeOnNIMapClickListener(TAG)
         mapController.lineHandler.removeAllLine()
+        mapController.markerHandle.removeNaviMarkerLayer()
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         super.onCleared()
     }
@@ -454,7 +641,7 @@ class TaskViewModel @Inject constructor(
      */
     suspend fun saveLinkReason(bean: HadLinkDvoBean, text: String) {
         withContext(Dispatchers.IO) {
-            currentSelectTaskBean?.let {
+            liveDataUpdateTask.value?.let {
                 for (item in it.hadLinkDvoList) {
                     if (item.linkPid == bean.linkPid) {
                         item.reason = text
@@ -489,13 +676,13 @@ class TaskViewModel @Inject constructor(
      * 筛选link
      */
     fun filterTask(pidKey: String) {
-        if (currentSelectTaskBean == null) return
+        if (liveDataUpdateTask.value == null) return
 
         if (filterTaskJob != null) filterTaskJob!!.cancel()
         filterTaskJob = viewModelScope.launch(Dispatchers.Default) {
             delay(500)
             val list = mutableListOf<HadLinkDvoBean>()
-            for (item in currentSelectTaskBean!!.hadLinkDvoList) {
+            for (item in liveDataUpdateTask.value!!.hadLinkDvoList) {
                 if (item.linkPid.contains(pidKey)) list.add(item)
             }
             liveDataTaskLinks.postValue(list)
@@ -547,7 +734,7 @@ class TaskViewModel @Inject constructor(
                 realm.close()
                 liveDataCloseTask.postValue(TaskDelStatus.TASK_DEL_STATUS_SUCCESS)
                 withContext(Dispatchers.Main) {
-                    if (taskBean.id == currentSelectTaskBean?.id ?: 0) {
+                    if (taskBean.id == liveDataUpdateTask.value?.id ?: 0) {
                         mapController.layerManagerHandler.updateOMDBVectorTileLayer()
                     } else {
                         setSelectTaskBean(taskBean)
@@ -717,18 +904,18 @@ class TaskViewModel @Inject constructor(
             dialog.dismiss()
             viewModelScope.launch(Dispatchers.IO) {
                 val hadLinkDvoBean = HadLinkDvoBean(
-                    taskId = currentSelectTaskBean!!.id,
+                    taskId = liveDataUpdateTask.value!!.id,
                     linkPid = data.linkPid,
                     geometry = data.geometry,
                     linkStatus = 2
                 )
-                currentSelectTaskBean!!.hadLinkDvoList.add(
+                liveDataUpdateTask.value!!.hadLinkDvoList.add(
                     hadLinkDvoBean
                 )
                 val realm = realmOperateHelper.getRealmDefaultInstance()
                 realm.executeTransaction { r ->
                     r.copyToRealmOrUpdate(hadLinkDvoBean)
-                    r.copyToRealmOrUpdate(currentSelectTaskBean!!)
+                    r.copyToRealmOrUpdate(liveDataUpdateTask.value!!)
                 }
                 //根据Link数据查询对应数据上要素，对要素进行显示重置
                 data.linkPid.let {
@@ -742,7 +929,7 @@ class TaskViewModel @Inject constructor(
                             }
                         }
                 }
-                liveDataTaskLinks.postValue(currentSelectTaskBean!!.hadLinkDvoList)
+                liveDataTaskLinks.postValue(liveDataUpdateTask.value!!.hadLinkDvoList)
                 mapController.lineHandler.addTaskLink(hadLinkDvoBean)
                 mapController.layerManagerHandler.updateOMDBVectorTileLayer()
                 mapController.mMapView.vtmMap.updateMap(true)
@@ -804,9 +991,9 @@ class TaskViewModel @Inject constructor(
                     }
 
                     realm.executeTransaction {
-                        for (link in currentSelectTaskBean!!.hadLinkDvoList) {
+                        for (link in liveDataUpdateTask.value!!.hadLinkDvoList) {
                             if (link.linkPid == hadLinkDvoBean.linkPid) {
-                                currentSelectTaskBean!!.hadLinkDvoList.remove(link)
+                                liveDataUpdateTask.value!!.hadLinkDvoList.remove(link)
                                 break
                             }
                         }
@@ -823,9 +1010,9 @@ class TaskViewModel @Inject constructor(
                             markers.deleteAllFromRealm()
                         }
 
-                        realm.copyToRealmOrUpdate(currentSelectTaskBean)
+                        realm.copyToRealmOrUpdate(liveDataUpdateTask.value)
                         mapController.lineHandler.removeTaskLink(hadLinkDvoBean.linkPid)
-                        liveDataTaskLinks.postValue(currentSelectTaskBean!!.hadLinkDvoList)
+                        liveDataTaskLinks.postValue(liveDataUpdateTask.value!!.hadLinkDvoList)
                     }
                     realm.close()
                 }
@@ -838,4 +1025,6 @@ class TaskViewModel @Inject constructor(
             mDialog.show()
         }
     }
+
+
 }

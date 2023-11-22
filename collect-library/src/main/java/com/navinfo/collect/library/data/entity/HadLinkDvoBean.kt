@@ -1,7 +1,5 @@
 package com.navinfo.collect.library.data.entity
 
-import com.navinfo.collect.library.utils.GeometryTools
-import com.navinfo.collect.library.utils.GeometryToolsKt
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
@@ -45,4 +43,10 @@ open class HadLinkDvoBean @JvmOverloads constructor(
      * 长度（米）
      */
     var length: Double = 0.000,
+
+    /**
+     * 这条link是不是参与到路径计算中
+     */
+    var isNavi: Boolean = true
+
 ) : RealmObject()
