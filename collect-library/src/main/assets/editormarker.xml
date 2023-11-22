@@ -1987,7 +1987,7 @@
             </m>
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
-                    src="assets:omdb/icon_arrow_right.svg" symbol-width="24"></symbol>
+                    src="assets:omdb/icon_arrow_right.svg" symbol-width="24" ></symbol>
             </m>
             <m k="type" v="s_2_e">
                 <line use="s2e" />
