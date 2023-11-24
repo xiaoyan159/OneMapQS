@@ -325,13 +325,13 @@ class TaskListAdapter(
                 if (binding.taskProgressText.visibility != View.VISIBLE) binding.taskProgressText.visibility =
                     View.VISIBLE
                 binding.taskDownloadBtn.setText("安装中")
-                Log.e("jingo", "更新进度条 ${taskBean.message}")
+//                Log.e("jingo", "更新进度条 ${taskBean.message}")
                 val split = taskBean.message.split("/")
                 if (split.size == 2) {
                     try {
                         val index = split[0].toInt()
                         val count = split[1].toInt()
-                        Log.e("jingo", "更新进度条 $index====$count")
+//                        Log.e("jingo", "更新进度条 $index====$count")
                         binding.taskProgressText.text = "${index * 100 / count}%"
                     } catch (e: Exception) {
                         Log.e("jingo", "更新进度条 $e")

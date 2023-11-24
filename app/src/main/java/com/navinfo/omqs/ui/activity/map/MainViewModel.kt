@@ -51,9 +51,7 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmSet
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import org.locationtech.jts.geom.Geometry
 import org.oscim.core.GeoPoint
@@ -184,6 +182,9 @@ class MainViewModel @Inject constructor(
     //状态
     val liveIndoorToolsCommand: MutableLiveData<IndoorToolsCommand> = MutableLiveData()
 
+    //播报语音流
+    private var voiceFlow = MutableSharedFlow<String>()
+
     /**
      * 是不是线选择模式
      */
@@ -257,7 +258,7 @@ class MainViewModel @Inject constructor(
     //导航信息
     private var naviEngine: NaviEngine? = null
 
-    private var naviEngineNew: NaviEngineNew = NaviEngineNew(realmOperateHelper)
+//    private var naviEngineNew: NaviEngineNew = NaviEngineNew(realmOperateHelper)
 
     // 0:不导航 1：导航 2：暂停
     private var naviEngineStatus = 0
@@ -290,10 +291,10 @@ class MainViewModel @Inject constructor(
         mapController.mMapView.addOnNIMapClickListener(TAG,
             //处理地图点击操作
             object : OnGeoPointClickListener {
-                override fun onMapClick(tag: String, point: GeoPoint) {
+                override fun onMapClick(tag: String, point: GeoPoint, other: String) {
                     if (tag == TAG) {
                         //数据安装时不允许操作数据
-                        if(Constant.INSTALL_DATA){
+                        if (Constant.INSTALL_DATA) {
                             return
                         }
                         if (bMeasuringTool) {
@@ -370,38 +371,32 @@ class MainViewModel @Inject constructor(
                 .schemaVersion(2).build()
         MapParamUtils.setTaskConfig(Constant.currentSelectTaskConfig)
         socketServer = SocketServer(mapController, traceDataBase, sharedPreferences)
-
-        viewModelScope.launch(Dispatchers.IO) {
-
-            naviTestFlow().collect { point ->
-                if (naviEngineStatus == 1) {
-                    naviEngineNew.let {
-//                        naviMutex.lock()
-                        if (testRealm == null)
-                            testRealm = realmOperateHelper.getSelectTaskRealmInstance()
-                        if (currentTaskBean != null) {
-                            naviEngineNew.bindingRoute(
-                                taskBean = currentTaskBean!!,
-                                geoPoint = point,
-                                realm = testRealm!!
-                            )
-                        }
-//                        it.bindingRoute(null, point)
-//                        naviMutex.unlock()
-                    }
-                }
+//模拟定位，取屏幕中心点
+//        viewModelScope.launch(Dispatchers.IO) {
+//
+//            naviTestFlow().collect { point ->
+//                if (naviEngineStatus == 1) {
+//                    naviMutex.lock()
+//                    naviEngine?.bindingRoute(null, point)
+//                    naviMutex.unlock()
+//                }
+//            }
+//        }
+        viewModelScope.launch(Dispatchers.Main) {
+            voiceFlow.collect {
+                speakMode?.speakText(it)
             }
         }
     }
 
 
-    fun naviTestFlow(): Flow<GeoPoint> = flow {
-
-        while (true) {
-            emit(mapController.mMapView.vtmMap.mapPosition.geoPoint)
-            delay(5000)
-        }
-    }
+//    fun naviTestFlow(): Flow<GeoPoint> = flow {
+//
+//        while (true) {
+//            emit(mapController.mMapView.vtmMap.mapPosition.geoPoint)
+//            delay(1000)
+//        }
+//    }
 
     /**
      * 获取当前任务
@@ -412,6 +407,7 @@ class MainViewModel @Inject constructor(
         val res = realm.where(TaskBean::class.java).equalTo("id", id).findFirst()
         if (res != null) {
             currentTaskBean = realm.copyFromRealm(res)
+            Log.e("jingo", "获取任务 状态 ${currentTaskBean!!.status}")
         }
         realm.close()
     }
@@ -424,6 +420,23 @@ class MainViewModel @Inject constructor(
             naviMutex.lock()
             getTaskBean()
             if (currentTaskBean != null && currentTaskBean!!.status == FileManager.Companion.FileDownloadStatus.DONE) {
+                if (currentTaskBean!!.navInfo == null) {
+                    liveDataMessage.postValue("还没有设置路径的起终点，请先设置")
+                    naviMutex.unlock()
+                    return@launch
+                } else {
+                    currentTaskBean!!.navInfo?.let {
+                        if (it.naviStartLinkId.isEmpty() || it.naviStartNode.isEmpty()) {
+                            liveDataMessage.postValue("还没有设置路径的起点，请先设置")
+                            naviMutex.unlock()
+                            return@launch
+                        } else if (it.naviEndLinkId.isEmpty() || it.naviEndNode.isEmpty()) {
+                            liveDataMessage.postValue("还没有设置路径的终点，请先设置")
+                            naviMutex.unlock()
+                            return@launch
+                        }
+                    }
+                }
                 val naviOption = NaviOption(
                     deviationCount = sharedPreferences.getInt(
                         Constant.NAVI_DEVIATION_COUNT,
@@ -443,21 +456,19 @@ class MainViewModel @Inject constructor(
                     naviOption = naviOption,
                     callback = object : OnNaviEngineCallbackListener {
 
-                        override fun planningPathStatus(
-                            status: NaviStatus, linkdId: String?,
-                            geometry: String?
-                        ) {
-                            when (status) {
+                        override suspend fun planningPathStatus(code: NaviStatus, message: String, linkId: String?, geometry: String?) {
+                            Log.e("jingo", "路径计算 ${currentTaskBean!!.id} $code $message $linkId,$geometry")
+                            when (code) {
                                 NaviStatus.NAVI_STATUS_PATH_PLANNING -> naviEngineStatus = 0
-                                NaviStatus.NAVI_STATUS_PATH_ERROR_NODE -> naviEngineStatus = 0
-                                NaviStatus.NAVI_STATUS_PATH_ERROR_DIRECTION -> naviEngineStatus = 0
-                                NaviStatus.NAVI_STATUS_PATH_ERROR_BLOCKED -> naviEngineStatus = 0
                                 NaviStatus.NAVI_STATUS_PATH_SUCCESS -> naviEngineStatus = 1
-                                NaviStatus.NAVI_STATUS_DISTANCE_OFF -> {
-                                }
+                                NaviStatus.NAVI_STATUS_DISTANCE_OFF -> {}
                                 NaviStatus.NAVI_STATUS_DIRECTION_OFF -> {}
+                                NaviStatus.NAVI_STATUS_DATA_ERROR, NaviStatus.NAVI_STATUS_PATH_ERROR_BLOCKED, NaviStatus.NAVI_STATUS_NO_START_OR_END -> {
+                                    naviEngineStatus = 0
+                                    liveDataMessage.postValue("$message:$linkId")
+                                }
                             }
-                            liveDataNaviStatus.postValue(status)
+                            liveDataNaviStatus.postValue(code)
                             if (geometry != null) {
                                 viewModelScope.launch(Dispatchers.Main) {
 
@@ -469,7 +480,6 @@ class MainViewModel @Inject constructor(
                                         envelope.minX,
                                         envelope.minY
                                     )
-
                                     mapController.lineHandler.showLine(geometry)
                                 }
                             }
@@ -495,6 +505,20 @@ class MainViewModel @Inject constructor(
                                 captureTopSign(route)
                             }
                             liveDataSignList.postValue(signList)
+                        }
+
+                        override suspend fun voicePlay(text: String): Boolean {
+                            speakMode?.let {
+                                if (it.isSpeaking()) {
+                                    return false
+                                } else {
+                                    withContext(Dispatchers.Main) {
+                                        it.speakText(text)
+                                    }
+                                    return true
+                                }
+                            }
+                            return false
                         }
                     })
                 naviEngine!!.planningPath(currentTaskBean!!)
@@ -587,14 +611,14 @@ class MainViewModel @Inject constructor(
             for (location in list) {
                 Constant.TRACE_COUNT++
 
-                if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_MORE_TIME==0){
+                if (Constant.TRACE_COUNT % Constant.TRACE_COUNT_MORE_TIME == 0) {
                     mapController.markerHandle.addNiLocationMarkerItemRough(location)
-                    Log.e("qj","${Constant.TRACE_COUNT}===轨迹")
+                    Log.e("qj", "${Constant.TRACE_COUNT}===轨迹")
                 }
 
-                if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_TIME==0){
+                if (Constant.TRACE_COUNT % Constant.TRACE_COUNT_TIME == 0) {
                     mapController.markerHandle.addNiLocationMarkerItemSimple(location)
-                    Log.e("qj","${Constant.TRACE_COUNT}===轨迹")
+                    Log.e("qj", "${Constant.TRACE_COUNT}===轨迹")
                 }
 
                 mapController.markerHandle.addNiLocationMarkerItem(location)
@@ -607,7 +631,7 @@ class MainViewModel @Inject constructor(
      * 初始化定位信息
      */
     private fun initLocation() {
-        var gson = Gson();
+        val gson = Gson();
 
         //用于定位点存储到数据库
         viewModelScope.launch(Dispatchers.Default) {
@@ -663,21 +687,21 @@ class MainViewModel @Inject constructor(
                     }
                     //室内整理工具时不能进行轨迹存储，判断轨迹间隔要超过6并小于60米
                     if (Constant.INDOOR_IP.isEmpty() && (disance == 0.0 || (disance > 6.0 && disance < 60))) {
-                        Log.e("jingo", "轨迹插入开始")
-                        CMLog.writeLogtoFile(MainViewModel::class.java.name,"insertTrace","开始")
+//                        Log.e("jingo", "轨迹插入开始")
+                        CMLog.writeLogtoFile(MainViewModel::class.java.name, "insertTrace", "开始")
                         traceDataBase.niLocationDao.insert(location)
                         mapController.markerHandle.addNiLocationMarkerItem(location)
 
-                        if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_TIME==0){
+                        if (Constant.TRACE_COUNT % Constant.TRACE_COUNT_TIME == 0) {
                             mapController.markerHandle.addNiLocationMarkerItemSimple(location)
                         }
-                        if(Constant.TRACE_COUNT%Constant.TRACE_COUNT_MORE_TIME==0){
+                        if (Constant.TRACE_COUNT % Constant.TRACE_COUNT_MORE_TIME == 0) {
                             mapController.markerHandle.addNiLocationMarkerItemRough(location)
                         }
                         mapController.mMapView.vtmMap.updateMap(true)
                         lastNiLocaion = location
-                        CMLog.writeLogtoFile(MainViewModel::class.java.name,"insertTrace",gson.toJson(location))
-                        Log.e("jingo", "轨迹插入结束")
+                        CMLog.writeLogtoFile(MainViewModel::class.java.name, "insertTrace", gson.toJson(location))
+//                        Log.e("jingo", "轨迹插入结束")
                     }
                 }
             }
@@ -836,10 +860,10 @@ class MainViewModel @Inject constructor(
                     liveDataTopSignList.postValue(topSignList.distinctBy { it.name }
                         .sortedBy { it.index })
 
-                    val speechText = SignUtil.getRoadSpeechText(topSignList)
-                    withContext(Dispatchers.Main) {
-                        speakMode?.speakText(speechText)
-                    }
+//                    val speechText = SignUtil.getRoadSpeechText(topSignList)
+//                    withContext(Dispatchers.Main) {
+//                        speakMode?.speakText(speechText)
+//                    }
                     linkIdCache = route.linkId ?: ""
                     realm.close()
                 }
@@ -854,7 +878,7 @@ class MainViewModel @Inject constructor(
      */
     private suspend fun captureLink(point: GeoPoint) {
 
-        if (captureLinkState||Constant.INSTALL_DATA) {
+        if (captureLinkState || Constant.INSTALL_DATA) {
             return
         }
 
@@ -1037,10 +1061,10 @@ class MainViewModel @Inject constructor(
                             .sortedBy { it.index })
 
                         liveDataSignList.postValue(signList.sortedBy { it.distance })
-                        val speechText = SignUtil.getRoadSpeechText(topSignList)
-                        withContext(Dispatchers.Main) {
-                            speakMode?.speakText(speechText)
-                        }
+//                        val speechText = SignUtil.getRoadSpeechText(topSignList)
+//                        withContext(Dispatchers.Main) {
+//                            speakMode?.speakText(speechText)
+//                        }
                         linkIdCache = linkId ?: ""
                     }
                 } else {
@@ -1069,7 +1093,7 @@ class MainViewModel @Inject constructor(
         mapPosition.setBearing(0f) // 锁定角度，自动将地图旋转到正北方向
         mapController.mMapView.vtmMap.mapPosition = mapPosition
         mapController.locationLayerHandler.animateToCurrentPosition()
-        naviEngineStatus = 1
+//        naviEngineStatus = 1
     }
 
     /**

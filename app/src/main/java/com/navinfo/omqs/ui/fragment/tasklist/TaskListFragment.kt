@@ -136,7 +136,7 @@ class TaskListFragment : BaseFragment() {
 
         viewModel.liveDataTaskList.observe(viewLifecycleOwner) {
             loadFinish()
-            adapter.initSelectTask(it, viewModel.currentSelectTaskBean?.id)
+            adapter.initSelectTask(it, viewModel.liveDataUpdateTask.value?.id)
             var position = adapter.getSelectTaskPosition()
             if(position<0){
                 position = 0
