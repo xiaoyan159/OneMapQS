@@ -830,15 +830,13 @@ class ImportPreProcess {
                     0,1,2->{
                         if (medianWidth != null) {
                             angleReference.geometry =
-                                GeometryTools.computeLine(medianWidth/100000000, 0.0, renderEntity.geometry)
-                            Log.e("qj","width==${medianWidth/100000000}")
+                                GeometryTools.computeLine(0.000012, 0.0, renderEntity.geometry)
                         }
                     }
                     3->{
                         if (medianWidth != null) {
                             angleReference.geometry =
-                                GeometryTools.computeLine(0.0, medianWidth/100000000, renderEntity.geometry)
-                            Log.e("qj","width==${medianWidth/100000000}")
+                                GeometryTools.computeLine(0.0, 0.000012, renderEntity.geometry)
                         }
                     }
                 }

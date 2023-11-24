@@ -1651,7 +1651,7 @@
             </m>
             <!--墙-->
             <m k="boundaryType" v="5">
-                <line stroke="#495462" use="boundaryType" width="0.2"/>
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_5.svg" symbol-width="16" symbol-height="10"></symbol>
             </m>
             <!--铺设路面边缘-->
             <m k="boundaryType" v="6">
@@ -1678,7 +1678,7 @@
             </m>
             <!--墙-->
             <m k="boundaryType" v="5">
-                <line stroke="#495462" use="boundaryType" width="0.2"/>
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_5.svg" symbol-width="16" symbol-height="10"></symbol>
             </m>
             <!--铺设路面边缘-->
             <m k="boundaryType" v="6">
