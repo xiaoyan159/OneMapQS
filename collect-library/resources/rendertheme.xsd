@@ -245,6 +245,7 @@
         <xs:attribute name="id" default="0" type="xs:string" use="optional"/>
         <xs:attribute name="use" default="0" type="xs:string" use="optional"/>
 
+        <!-- 使用动态图标时，以@符号开头，建议动态tag的key使用较长(大于4位)的字符串 -->
         <xs:attribute name="src" type="tns:src" use="optional"/>
         <xs:attribute name="symbol-width" type="xs:positiveInteger" use="optional"/>
         <xs:attribute name="symbol-height" type="xs:positiveInteger" use="optional"/>
@@ -262,6 +263,10 @@
         <xs:attribute name="degree" default="0" type="xs:float" use="optional"/>
         <!-- 图标在y轴方向上的偏移量 -->
         <xs:attribute name="dy" default="0" type="xs:float" use="optional"/>
+        <!-- symbol的背景图片，常用来绘制立标 -->
+        <xs:attribute name="background" type="tns:src" use="optional"/>
+        <!-- symbol的内容图片的占用区域，必须为4个数字组成，英文逗号分隔的字符串，值为左，右，上，下的百分比 -->
+        <xs:attribute name="content-rect" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="extrusion">

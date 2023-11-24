@@ -358,10 +358,11 @@
         "table": "OMDB_TRAFFIC_SIGN",
         "code": 3005,
         "name": "交通标牌",
-        "zoomMin": 18,
+        "zoomMin": 17,
         "zoomMax": 20,
         "is3D": true,
         "catch": true,
+        "checkLinkId": false,
         "transformer": [
           {
             "k": "geometry",
@@ -474,6 +475,12 @@
             "v": "~",
             "klib": "geometry",
             "vlib": "generateDirectReferenceLine()"
+          },
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "createSpeedLimitText()"
           }
         ]
       },
@@ -490,6 +497,12 @@
             "v": "0|",
             "klib": "maxSpeed",
             "vlib": "限"
+          },
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "createSpeedLimitText()"
           }
         ]
       },
@@ -518,6 +531,12 @@
             "v": "3",
             "klib": "ref",
             "vlib": "上"
+          },
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "createSpeedLimitText()"
           }
         ]
       },
@@ -693,6 +712,7 @@
         "name": "车信",
         "catch": true,
         "isDependOnOtherTable": false,
+        "checkLinkId": false,
         "zoomMin": 15,
         "zoomMax": 17,
         "transformer": [

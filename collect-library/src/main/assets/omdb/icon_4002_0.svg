@@ -1,1 +1,37 @@
+<<<<<<< HEAD
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="b" xmlns="http://www.w3.org/2000/svg" width="70" height="94"
+    xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 70 94">
+    <defs>
+        <style>
+            .h{stroke:#db4646;stroke-width:2.1px;}.h,.i{fill:none;}.j{fill:#a74d4b;opacity:.7;}.j,.i,.k,.l,.m,.n{stroke-width:0px;}.j,.k{isolation:isolate;}.i{opacity:0;}.k{fill:#ff5f4c;opacity:.3;}.l{fill:#fff;}.m{fill:url(#f);}.n{fill:url(#g);}
+        </style>
+        <radialGradient id="f" cx="263.2" cy="286.8" fx="263.2" fy="286.8" r=".9"
+            gradientTransform="translate(-9405.4 -24647.8) rotate(38.2) scale(75.3 47.3) skewX(7.6)"
+            gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#ff9287" />
+            <stop offset=".8" stop-color="#ff5f4c" />
+            <stop offset="1" stop-color="#ff5f4c" />
+        </radialGradient>
+        <radialGradient id="g" cx="259.6" cy="284" fx="259.6" fy="284" r=".4"
+            gradientTransform="translate(-14219.7 -15164.5) scale(54.9 53.6)"
+            gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#e75545" />
+            <stop offset=".8" stop-color="#c4483b" />
+            <stop offset="1" stop-color="#983b31" />
+        </radialGradient>
+    </defs>
+    <g id="c">
+        <rect class="i" width="70" height="94" />
+        <ellipse id="d" class="k" cx="35.8" cy="84.1" rx="14.4" ry="3.7" />
+        <ellipse id="e" class="j" cx="35.8" cy="84.1" rx="7.5" ry="3" />
+        <path class="m"
+            d="m26.8,71.1l-1.1-1.1c-9.6-4.2-15.6-13.5-15.4-23.6,0-14.1,11.2-25.5,25-25.5s25,11.4,25,25.5-6.5,19.8-15.6,23.6c-.3.3-.6.6-.9,1-3.4,3.9-6.2,8.3-8.3,13,0,0-3.6-7.9-8.9-13h.1Z" />
+        <ellipse class="n" cx="35.1" cy="45.5" rx="19.8" ry="19.3" />
+        <ellipse class="l" cx="35.3" cy="45.3" rx="20.1" ry="19.6" />
+        <ellipse class="h" cx="35.3" cy="45.3" rx="19" ry="18.6" />
+    </g>
+</svg>
+=======
 <?xml version="1.0" encoding="UTF-8"?><svg id="b" xmlns="http://www.w3.org/2000/svg" width="70" height="94" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 70 94"><defs><style>.h{stroke:#db4646;stroke-width:2.1px;}.h,.i{fill:none;}.j{fill:#a74d4b;opacity:.7;}.j,.i,.k,.l,.m,.n{stroke-width:0px;}.j,.k{isolation:isolate;}.i{opacity:0;}.k{fill:#ff5f4c;opacity:.3;}.l{fill:#fff;}.m{fill:url(#f);}.n{fill:url(#g);}</style><radialGradient id="f" cx="263.2" cy="286.8" fx="263.2" fy="286.8" r=".9" gradientTransform="translate(-9405.4 -24647.8) rotate(38.2) scale(75.3 47.3) skewX(7.6)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ff9287"/><stop offset=".8" stop-color="#ff5f4c"/><stop offset="1" stop-color="#ff5f4c"/></radialGradient><radialGradient id="g" cx="259.6" cy="284" fx="259.6" fy="284" r=".4" gradientTransform="translate(-14219.7 -15164.5) scale(54.9 53.6)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#e75545"/><stop offset=".8" stop-color="#c4483b"/><stop offset="1" stop-color="#983b31"/></radialGradient></defs><g id="c"><rect class="i" width="70" height="94"/><ellipse id="d" class="k" cx="35.8" cy="84.1" rx="14.4" ry="3.7"/><ellipse id="e" class="j" cx="35.8" cy="84.1" rx="7.5" ry="3"/><path class="m" d="m26.8,71.1l-1.1-1.1c-9.6-4.2-15.6-13.5-15.4-23.6,0-14.1,11.2-25.5,25-25.5s25,11.4,25,25.5-6.5,19.8-15.6,23.6c-.3.3-.6.6-.9,1-3.4,3.9-6.2,8.3-8.3,13,0,0-3.6-7.9-8.9-13h.1Z"/><ellipse class="n" cx="35.1" cy="45.5" rx="19.8" ry="19.3"/><ellipse class="l" cx="35.3" cy="45.3" rx="20.1" ry="19.6"/><ellipse class="h" cx="35.3" cy="45.3" rx="19" ry="18.6"/></g></svg>
+>>>>>>> 231d7c429d62e54c11acce062a03219ecc511632

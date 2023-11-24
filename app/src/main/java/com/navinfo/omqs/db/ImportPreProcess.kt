@@ -656,36 +656,43 @@ class ImportPreProcess {
                 // 分别获取两个数组中的数据，取第一个作为主数据，另外两个作为辅助渲染数据
                 val laneInfoDirectArray = JSONArray(laneinfoGroup[0].toString())
                 val laneInfoTypeArray = JSONArray(laneinfoGroup[1].toString())
-                val listResult = mutableListOf<ReferenceEntity>()
 
+                val referenceEntity = ReferenceEntity()
+                referenceEntity.name = "${renderEntity.name}参考方向"
+                referenceEntity.table = renderEntity.table
+                referenceEntity.enable = renderEntity.enable
+                referenceEntity.code = renderEntity.code
+                referenceEntity.taskId = renderEntity.taskId
+                referenceEntity.zoomMin = renderEntity.zoomMin
+                referenceEntity.zoomMax = renderEntity.zoomMax
+                // 与原数据使用相同的geometry
+                referenceEntity.geometry = GeometryTools.createGeometry(renderEntity.geometry).toString()
+                referenceEntity.properties["qi_table"] = renderEntity.table
+                referenceEntity.properties["symbol"] = "true"
                 for (i in 0 until laneInfoDirectArray.length()) {
-                    // 根据后续的数据生成辅助表数据
-                    val referenceEntity = ReferenceEntity()
-//                    referenceEntity.renderEntityId = renderEntity.id
-                    referenceEntity.name = "${renderEntity.name}参考方向"
-                    referenceEntity.table = renderEntity.table
-                    referenceEntity.enable = renderEntity.enable
-                    referenceEntity.code = renderEntity.code
-                    referenceEntity.taskId = renderEntity.taskId
-                    referenceEntity.zoomMin = renderEntity.zoomMin
-                    referenceEntity.zoomMax = renderEntity.zoomMax
-                    // 与原数据使用相同的geometry
-                    referenceEntity.geometry = renderEntity.geometry
-                    referenceEntity.properties["qi_table"] = renderEntity.table
-                    referenceEntity.properties["currentDirect"] =
+                    val currentDirect =
                         laneInfoDirectArray[i].toString().split(",").distinct().joinToString("_")
-                    referenceEntity.properties["currentType"] =
+                    val currentType =
                         laneInfoTypeArray[i].toString()
                     val type =
-                        if (referenceEntity.properties["currentType"] == "0") "normal" else if (referenceEntity.properties["currentType"] == "1") "extend" else "bus"
-                    referenceEntity.properties["symbol"] =
-                        "assets:omdb/4601/${type}/1301_${referenceEntity.properties["currentDirect"]}.svg"
-                    Log.d("unpackingLaneInfo", referenceEntity.properties["symbol"].toString())
-                    referenceEntity.propertiesDb =
-                        DeflaterUtil.zipString(JSON.toJSONString(referenceEntity.properties))
-                    renderEntity.referenceEntitys.add(referenceEntity)
-                    Log.e("qj", "车信===插入车信箭头")
+                        if (currentType == "0") "normal" else if (currentType == "1") "extend" else "bus"
+                    val symbol =
+                        "assets:omdb/4601/${type}/1301_${currentDirect}.svg"
+                    referenceEntity.properties["img-src"] = if(referenceEntity.properties["img-src"].isNullOrEmpty()) symbol else "${referenceEntity.properties["img-src"]}|${symbol}"
+
+                   //listResult.add(referenceEntity)
+//                        if (referenceEntity.properties["currentType"] == "0") "normal" else if (referenceEntity.properties["currentType"] == "1") "extend" else "bus"
+//                    referenceEntity.properties["symbol"] =
+//                        "assets:omdb/4601/${type}/1301_${referenceEntity.properties["currentDirect"]}.svg"
+//                    Log.d("unpackingLaneInfo", referenceEntity.properties["symbol"].toString())
+//                    referenceEntity.propertiesDb =
+//                        DeflaterUtil.zipString(JSON.toJSONString(referenceEntity.properties))
+//                    renderEntity.referenceEntitys.add(referenceEntity)
+//                    Log.e("qj", "车信===插入车信箭头")
                 }
+                referenceEntity.propertiesDb = DeflaterUtil.zipString(JSON.toJSONString(referenceEntity.properties))
+                renderEntity.referenceEntitys?.add(referenceEntity)
+                //insertData(listResult)
             }
             //将主表线转化为单个点，按点要素实现捕捉
             if (Geometry.TYPENAME_LINESTRING == renderEntity.wkt?.geometryType) {
@@ -1182,22 +1189,22 @@ class ImportPreProcess {
             val accessCharacteristic =
                 renderEntity.properties["accessCharacteristic"].toString().toInt()
             var str = ""
-            if (accessCharacteristic.and(4) > 0) {
+            if (accessCharacteristic.and(0b100)>0) {
                 str += "公"
             }
-            if (accessCharacteristic.and(8) > 0) {
+            if (accessCharacteristic.and(0b1000)>0) {
                 if (str.isNotEmpty()) {
                     str += "|"
                 }
-                str += "多"
+                str += "HOV"
             }
-            if (accessCharacteristic.and(64) > 0) {
+            if (accessCharacteristic.and(0b1000000)>0) {
                 if (str.isNotEmpty()) {
                     str += "|"
                 }
                 str += "行"
             }
-            if (accessCharacteristic.and(128) > 0) {
+            if (accessCharacteristic.and(0b10000000)>0) {
                 if (str.isNotEmpty()) {
                     str += "|"
                 }
@@ -1356,5 +1363,14 @@ class ImportPreProcess {
 
         zLevelReference.properties["qi_table"] = renderEntity.table
         return zLevelReference
+    }
+
+    /**
+     * 创建限速的文字动态数据，生成动态symbol
+     * */
+    fun createSpeedLimitText(renderEntity: RenderEntity) {
+        if (renderEntity.properties.containsKey("maxSpeed")) {
+            renderEntity.properties["text-src"] = "@text:${renderEntity.properties["maxSpeed"]}"
+        }
     }
 }
