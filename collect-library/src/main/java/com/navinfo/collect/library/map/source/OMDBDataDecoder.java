@@ -29,6 +29,7 @@ import org.oscim.tiling.source.mvt.TileDecoder;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,19 +70,54 @@ public class OMDBDataDecoder extends TileDecoder {
         mTileX = tile.tileX / mTileScale;
         mTileY = tile.tileY / mTileScale;
         mTileScale *= Tile.SIZE;
+        List<RenderEntity> list = new ArrayList<>();
+        List<RenderEntity> traffList = new ArrayList<>();
         listResult.stream().iterator().forEachRemaining(new Consumer<RenderEntity>() {
             @Override
             public void accept(RenderEntity renderEntity) {
-
                 if (!(mapLevel < renderEntity.getZoomMin() || mapLevel > renderEntity.getZoomMax())) {
-                    Map<String, Object> properties = new HashMap<>(renderEntity.getProperties().size());
-                    properties.putAll(renderEntity.getProperties());
-                    parseGeometry(renderEntity.getTable(), renderEntity.getWkt(), properties);
+                    if (renderEntity.getCode().equals(DataCodeEnum.OMDB_TRAFFIC_SIGN.getCode())) {
+                        list.add(renderEntity);
+                    } else if (renderEntity.getCode().equals(DataCodeEnum.OMDB_TRAFFICLIGHT.getCode())) {
+                        traffList.add(renderEntity);
+                    } else {
+                        Map<String, Object> properties = new HashMap<>(renderEntity.getProperties().size());
+                        properties.putAll(renderEntity.getProperties());
+                        parseGeometry(renderEntity.getTable(), renderEntity.getWkt(), properties);
+                    }
                 } else {
 //                    Log.e("qj","render"+renderEntity.name+"=="+renderEntity.getZoomMin()+"==="+renderEntity.getZoomMax()+"==="+renderEntity.getEnable());
                 }
             }
         });
+        //增加交通标牌聚合显示
+        List<RenderEntity> list1 = GeometryTools.groupByDistance(DataCodeEnum.OMDB_TRAFFIC_SIGN.getCode(), list, 5.0);
+        if (list1 != null && list1.size() > 0) {
+            Log.e("qj", "聚合交通标牌转换开始" + list.size());
+            list1.stream().iterator().forEachRemaining(new Consumer<RenderEntity>() {
+                @Override
+                public void accept(RenderEntity renderEntity) {
+                    Map<String, Object> properties = new HashMap<>(renderEntity.getProperties().size());
+                    properties.putAll(renderEntity.getProperties());
+                    parseGeometry(renderEntity.getTable(), renderEntity.getWkt(), properties);
+                }
+            });
+            Log.e("qj", "聚合交通标牌转换结束" + list1.size());
+        }
+        //增加交通标牌聚合显示
+        List<RenderEntity> list2 = GeometryTools.groupByDistance(DataCodeEnum.OMDB_TRAFFICLIGHT.getCode(), traffList, 5.0);
+        if (list2 != null && list2.size() > 0) {
+            Log.e("qj", "聚合红绿灯转换开始" + traffList.size());
+            list2.stream().iterator().forEachRemaining(new Consumer<RenderEntity>() {
+                @Override
+                public void accept(RenderEntity renderEntity) {
+                    Map<String, Object> properties = new HashMap<>(renderEntity.getProperties().size());
+                    properties.putAll(renderEntity.getProperties());
+                    parseGeometry(renderEntity.getTable(), renderEntity.getWkt(), properties);
+                }
+            });
+            Log.e("qj", "聚合红绿灯转换结束" + list2.size());
+        }
         return true;
     }
 

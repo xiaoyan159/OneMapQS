@@ -455,7 +455,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 val boundaryType = renderEntity.properties["boundaryType"]
                                 if (boundaryType != null) {
                                     when (boundaryType.toInt()) {
-                                        0, 1, 6, 8, 9 -> {
+                                        0, 1, 7, 8 -> {
                                             renderEntity.enable = 0
                                             line = bufferedReader.readLine()
                                             continue
@@ -468,7 +468,7 @@ class ImportOMDBHelper @AssistedInject constructor(
                                 val boundaryType = renderEntity.properties["boundaryType"]
                                 if (boundaryType != null) {
                                     when (boundaryType.toInt()) {
-                                        0, 1, 3, 4, 5, 7, 9 -> {
+                                        0, 1, 2, 7, 8 -> {
                                             renderEntity.enable = 0
                                             line = bufferedReader.readLine()
                                             continue
@@ -770,8 +770,8 @@ class ImportOMDBHelper @AssistedInject constructor(
                             renderEntity.properties.remove("linkPid")
                         }
 
-                        //去掉暂用控件较大的字段多余属性字段
-                        if (renderEntity.properties.containsKey("shapeList")) {
+                        //去掉暂用控件较大的字段多余属性字段,保留道路名用于展示详情
+                        if (renderEntity.code!=DataCodeEnum.OMDB_LINK_NAME.code&&renderEntity.properties.containsKey("shapeList")) {
                             renderEntity.properties.remove("shapeList")
                         }
 

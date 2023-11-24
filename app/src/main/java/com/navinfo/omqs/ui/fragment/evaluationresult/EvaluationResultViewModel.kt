@@ -45,7 +45,9 @@ import io.realm.RealmList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.locationtech.jts.geom.Geometry
 import org.oscim.core.GeoPoint
+import org.oscim.core.GeometryBuffer.GeometryType
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
@@ -72,6 +74,8 @@ class EvaluationResultViewModel @Inject constructor(
     var liveDataLanInfoChange = MutableLiveData<String>()
 
     private val TAG = "点选marker"
+
+    private val ELEMENT_MARKER = "elementMarker"
 
     /**
      * 操作结束，销毁页面
@@ -155,8 +159,10 @@ class EvaluationResultViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         mapController.mMapView.removeOnNIMapClickListener(TAG)
+        //移除要素marker
+        mapController.markerHandle.removeMarker(ELEMENT_MARKER)
         mapController.markerHandle.removeMarker()
-        mapController.lineHandler.removeLine()
+        mapController.lineHandler.removeAllLine()
     }
 
 
@@ -204,7 +210,7 @@ class EvaluationResultViewModel @Inject constructor(
                 }
             } else {
                 liveDataQsRecordBean.value?.run {
-                    elementId = bean.renderEntity.code
+                    elementId = bean.renderEntity.id
                     linkId = bean.linkId
                     if (linkId.isNotEmpty()) {
                         viewModelScope.launch {
@@ -495,6 +501,7 @@ class EvaluationResultViewModel @Inject constructor(
      * 根据数据id，查询数据
      */
 
+    @RequiresApi(Build.VERSION_CODES.N)
     fun initData(id: String) {
         Log.e("jingo", "捕捉到的要素 id = $id")
         viewModelScope.launch(Dispatchers.Main) {
@@ -545,14 +552,21 @@ class EvaluationResultViewModel @Inject constructor(
                     // 显示语音数据到界面
                     getChatMsgEntityList()
                     realm.close()
-                    if (it.elementId == DataCodeEnum.OMDB_LANEINFO.code) {
+                    //增加要素高亮
+                    if(it.elementId!=null){
                         val realm2 = realmOperateHelper.getSelectTaskRealmInstance()
-                        val r = realm2.where(RenderEntity::class.java)
-                            .equalTo("table", DataCodeEnum.OMDB_LANEINFO.name)
-                            .equalTo("linkPid", it.linkId).findFirst()
-                        if (r != null) {
-                            renderEntity = realm2.copyFromRealm(r)
-                            laneInfoList = SignUtil.getLineInfoIcons(renderEntity!!)
+                        val rEntity = realm2.where(RenderEntity::class.java).equalTo("id",it.elementId).findFirst()
+                        if(rEntity!=null){
+                            show(rEntity!!)
+                        }
+                        if (it.classCode == DataCodeEnum.OMDB_LANEINFO.code) {
+                            val r = realm2.where(RenderEntity::class.java)
+                                .equalTo("table", DataCodeEnum.OMDB_LANEINFO.name)
+                                .equalTo("linkPid", it.linkId).findFirst()
+                            if (r != null) {
+                                renderEntity = realm2.copyFromRealm(r)
+                                laneInfoList = SignUtil.getLineInfoIcons(renderEntity!!)
+                            }
                         }
                         realm2.close()
                     }
@@ -561,8 +575,27 @@ class EvaluationResultViewModel @Inject constructor(
                 liveDataToastMessage.postValue("数据读取失败")
                 realm.close()
             }
+        }
+    }
 
-
+    fun show(renderEntity: RenderEntity) {
+        if (renderEntity != null) {
+            if (renderEntity.wkt != null) {
+                mapController.markerHandle.removeMarker(ELEMENT_MARKER)
+                mapController.lineHandler.removeElementLine()
+                when (renderEntity.wkt!!.geometryType) {
+                    Geometry.TYPENAME_POINT -> {
+                        val geoPoint = GeometryTools.createGeoPoint(renderEntity.wkt!!.toText())
+                        mapController.markerHandle.addMarker(geoPoint, ELEMENT_MARKER)
+                    }
+                    Geometry.TYPENAME_LINESTRING -> {
+                        mapController.lineHandler.showElementLine(renderEntity.wkt!!.toText())
+                    }
+                    Geometry.TYPENAME_POLYGON -> {
+                        mapController.lineHandler.showElementLine(renderEntity.wkt!!.toText())
+                    }
+                }
+            }
         }
     }
 

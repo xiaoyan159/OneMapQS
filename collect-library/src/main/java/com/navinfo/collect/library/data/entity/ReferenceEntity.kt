@@ -24,7 +24,6 @@ import java.util.*
 open class ReferenceEntity() : RealmObject(), Parcelable {
     @PrimaryKey
     var id: String = UUID.randomUUID().toString() // id
-    @Ignore
     lateinit var name: String //要素名
     lateinit var table: String //要素表名
     var propertiesDb: String = ""

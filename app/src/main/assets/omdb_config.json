@@ -65,8 +65,8 @@
         "table": "OMDB_LINK_NAME",
         "code": 2011,
         "name": "道路名",
-        "zoomMin": 15,
-        "zoomMax": 17,
+        "zoomMin": 18,
+        "zoomMax": 20,
         "checkLinkId": false,
         "transformer": [
           {
@@ -110,14 +110,54 @@
         "code": 2019,
         "name": "常规线限速",
         "zoomMin": 15,
-        "zoomMax": 17
+        "zoomMax": 17,
+        "transformer": [
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "translateRight()"
+          },
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "generateS2EReferenceLine()"
+          },
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "generateDirectReferenceLine()"
+          }
+        ]
       },
       "2020": {
         "table": "OMDB_LINK_SPEEDLIMIT_COND",
         "code": 2020,
         "name": "条件线限速",
         "zoomMin": 15,
-        "zoomMax": 17
+        "zoomMax": 17,
+        "transformer": [
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "translateRight()"
+          },
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "generateS2EReferenceLine()"
+          },
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "generateDirectReferenceLine()"
+          }
+        ]
       },
       "2021": {
         "table": "OMDB_LINK_SPEEDLIMIT_VAR",
@@ -134,7 +174,15 @@
         "filterData": true,
         "zoomMin": 18,
         "zoomMax": 20,
-        "catch": true
+        "catch": true,
+        "transformer": [
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "dengfenLineString()"
+          }
+        ]
       },
       "2090": {
         "table": "OMDB_LANE_CONSTRUCTION",
@@ -388,6 +436,24 @@
             "v": "~",
             "klib": "geometry",
             "vlib": "translateRight()"
+          },
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "generateS2EReferenceLine()"
+          },
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "generateDirectReferenceLine()"
+          },
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "createSpeedLimitText()"
           }
         ]
       },
@@ -404,6 +470,12 @@
             "v": "0|",
             "klib": "maxSpeed",
             "vlib": "限"
+          },
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "createSpeedLimitText()"
           }
         ]
       },
@@ -432,6 +504,12 @@
             "v": "3",
             "klib": "ref",
             "vlib": "上"
+          },
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "createSpeedLimitText()"
           }
         ]
       },
@@ -589,15 +667,10 @@
         "name": "车信",
         "catch": true,
         "isDependOnOtherTable": false,
+        "checkLinkId": false,
         "zoomMin": 15,
         "zoomMax": 17,
         "transformer": [
-          {
-            "k": "geometry",
-            "v": "~",
-            "klib": "geometry",
-            "vlib": "translateBack()"
-          },
           {
             "k": "geometry",
             "v": "~",

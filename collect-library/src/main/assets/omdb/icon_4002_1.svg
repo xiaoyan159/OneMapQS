@@ -1,1 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="136" height="136" viewBox="0 0 136 136"><defs><style>.a,.h,.j{fill:none;}.a{opacity:0;}.b{fill:#4d4d4d;opacity:0.304;}.c{fill:#363333;opacity:0.708;}.d{fill:url(#a);}.e{fill:url(#b);}.f,.g{fill:#fff;stroke-width:3px;}.f{stroke:#db4646;}.g,.h{stroke:#2f2f2f;}.h{stroke-linecap:round;stroke-width:2px;}.i{stroke:none;}</style><radialGradient id="a" cx="0.21" cy="0.134" r="1.274" gradientTransform="matrix(0.849, 0.529, -0.307, 0.493, 0.073, -0.043)" gradientUnits="objectBoundingBox"><stop offset="0" stop-color="#b5b4b4"/><stop offset="0.697" stop-color="#6e6c6c"/><stop offset="1" stop-color="#2f2f2f"/></radialGradient><radialGradient id="b" cx="0.5" cy="0.5" r="0.5" gradientUnits="objectBoundingBox"><stop offset="0" stop-color="#e75545"/><stop offset="0.793" stop-color="#c4483b"/><stop offset="1" stop-color="#983b31"/></radialGradient></defs><g transform="translate(-832 -256)"><g transform="translate(-124 -140)"><rect class="a" width="136" height="136" transform="translate(956 396)"/><g transform="translate(989.164 429.346)"><g transform="translate(10.653 81.66)"><ellipse class="b" cx="24.183" cy="8.497" rx="24.183" ry="8.497"/><ellipse class="c" cx="8.497" cy="3.268" rx="8.497" ry="3.268" transform="translate(15.687 5.229)"/></g><g transform="translate(0 0)"><path class="d" d="M22.956,71.538q-.792-.8-1.543-1.533A36.466,36.466,0,0,1,0,36.4C0,16.3,15.6,0,34.837,0S69.673,16.3,69.673,36.4c0,15.235-8.954,28.283-21.664,33.711q-.588.673-1.219,1.424A73.582,73.582,0,0,0,35.337,90.157S30.335,78.981,22.956,71.538Z" transform="translate(0 0)"/><circle class="e" cx="27.451" cy="27.451" r="27.451" transform="translate(7.029 7.568)"/></g></g><g transform="translate(10174 7640)"><g class="f" transform="translate(-9178 -7204)"><circle class="i" cx="28" cy="28" r="28"/><circle class="j" cx="28" cy="28" r="26.5"/></g></g><g transform="translate(573 -37)"><g transform="translate(423 473)"><g class="g"><circle class="i" cx="28" cy="28" r="28"/><circle class="j" cx="28" cy="28" r="26.5"/></g></g><g transform="translate(427.138 478.332)"><line class="h" y1="34.047" x2="33.845" transform="translate(0 0)"/><line class="h" y1="36.376" x2="36.552" transform="translate(4.81 4.168)"/><path class="h" d="M0,35.11,18.688,16.458,35.178,0" transform="translate(11.84 11.226)"/></g></g></g></g></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="b" xmlns="http://www.w3.org/2000/svg" width="70" height="94"
+    xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 70 94">
+    <defs>
+        <style>
+            .h{stroke:#db4646;}.h,.i{stroke-width:2.1px;}.h,.i,.j,.k{fill:none;}.i,.k{stroke:#2f2f2f;}.l{fill:#363333;opacity:.7;}.l,.m{isolation:isolate;}.l,.m,.j,.n,.o,.p{stroke-width:0px;}.m{fill:#262d34;opacity:.2;}.j{opacity:0;}.k{stroke-linecap:round;stroke-width:1.4px;}.n{fill:#fff;}.o{fill:url(#f);}.p{fill:url(#g);}
+        </style>
+        <radialGradient id="f" cx="-356.5" cy="276.3" fx="-356.5" fy="276.3" r="1.3"
+            gradientTransform="translate(19417.3 3353.6) rotate(38.1) scale(54 33.9) skewX(7.5)"
+            gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#b5b4b4" />
+            <stop offset=".7" stop-color="#6e6c6c" />
+            <stop offset="1" stop-color="#2f2f2f" />
+        </radialGradient>
+        <radialGradient id="g" cx="-355.3" cy="282.7" fx="-355.3" fy="282.7" r=".5"
+            gradientTransform="translate(14044.3 -10803.9) scale(39.4 38.4)"
+            gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#e75545" />
+            <stop offset=".8" stop-color="#c4483b" />
+            <stop offset="1" stop-color="#983b31" />
+        </radialGradient>
+    </defs>
+    <g id="c">
+        <rect class="j" width="70" height="94" />
+        <ellipse id="d" class="m" cx="35" cy="83.3" rx="14.4" ry="3.7" />
+        <ellipse id="e" class="l" cx="35" cy="83.3" rx="7.5" ry="3" />
+        <path class="o"
+            d="m26.5,71l-1.1-1c-9.6-4.2-15.6-13.4-15.4-23.6,0-14.1,11.2-25.5,25-25.5s25,11.4,25,25.5-6.5,19.8-15.6,23.6c-.3.3-.6.6-.9,1-3.4,3.9-6.2,8.3-8.3,13,0,0-3.6-7.8-8.9-13h.1Z" />
+        <ellipse class="p" cx="34.8" cy="45.4" rx="19.8" ry="19.2" />
+        <ellipse class="n" cx="35" cy="45.2" rx="20.1" ry="19.6" />
+        <ellipse class="h" cx="35" cy="45.2" rx="19" ry="18.5" />
+        <ellipse class="n" cx="35" cy="45.2" rx="20.1" ry="19.6" />
+        <ellipse class="i" cx="35" cy="45.2" rx="19" ry="18.5" />
+        <line class="k" x1="17.9" y1="53.1" x2="42.2" y2="29.3" />
+        <line class="k" x1="21.4" y1="57.7" x2="47.6" y2="32.2" />
+        <path class="k" d="m26.4,61.7l13.4-13.1,11.9-11.5" />
+    </g>
+</svg>

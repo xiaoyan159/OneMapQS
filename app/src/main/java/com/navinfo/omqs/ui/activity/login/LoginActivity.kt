@@ -127,6 +127,7 @@ class LoginActivity : CheckPermissionsActivity() {
     private fun initView() {
         //登录校验，初始化成功
         viewModel.loginStatus.observe(this, loginObserve)
+        viewModel.lastLoginUserInfo(this)
     }
 
     /**

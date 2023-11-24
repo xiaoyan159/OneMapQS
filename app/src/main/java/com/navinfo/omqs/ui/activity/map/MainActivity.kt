@@ -22,8 +22,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.blankj.utilcode.util.ClipboardUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
-import com.navinfo.collect.library.data.entity.RenderEntity
-import com.navinfo.collect.library.enums.DataCodeEnum
 import com.navinfo.collect.library.map.NIMapController
 import com.navinfo.collect.library.map.handler.MeasureLayerHandler
 import com.navinfo.collect.library.utils.DeflaterUtil
@@ -688,7 +686,7 @@ class MainActivity : BaseActivity() {
                 index = p0.position
                 editText.text = null
                 //清理已绘制线
-                mapController.lineHandler.removeLine()
+                mapController.lineHandler.removeAllLine()
                 mapController.markerHandle.removeMarker("location")
                 when (p0.position) {
                     0 -> editText.hint = "请输入LinkPid例如：12345678"
@@ -819,25 +817,15 @@ class MainActivity : BaseActivity() {
      * zoomOut
      */
     fun zoomOutOnclick(view: View) {
-        val result = mutableListOf<RenderEntity>()
-        for (i in 0 until 10) {
-            var renderEntity: RenderEntity = RenderEntity()
-            renderEntity.geometry = "POINT(116.2694${i}13016946 40.0844${i}5791644373 0)"
-            result.add(renderEntity)
+        val lineString =
+            "LINESTRING(115.92708317758513 40.42230758745775 0, 115.9272990153405 40.422317981061205 0, 115.92750895192124 40.42232797132084 0, 115.9277199918031 40.422337964543026 0)"
+        val geometry = GeometryTools.createGeometry(lineString)
+        //定位
+        mapController.animationHandler.animationByLatLon(geometry.centroid.y,geometry.centroid.x,500)
+        GeometryTools.getLineToDengGeoPints(geometry, 5.0)?.forEach {
+            mapController.markerHandle.addMarker(it, it.toString())
         }
-        //计算后
-        var index = 0
-        Log.e("qj","====计算开始")
-        var lastRender:RenderEntity = RenderEntity()
-        GeometryTools.groupByDistance(DataCodeEnum.OMDB_TRAFFIC_SIGN.code,result, 5.0)?.forEach {
-            if(lastRender!=null&&lastRender.geometry!=null&& lastRender.geometry != ""){
-                if(it.geometry!=lastRender.geometry){
-                    Log.e("qj","${index++}====计算后"+it.geometry)
-                }
-            }
-            lastRender = it
-        }
-        Log.e("qj","====计算结束")
+        mapController.lineHandler.showLine(geometry.toString())
         mapController.animationHandler.zoomOut()
     }
 
