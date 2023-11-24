@@ -91,7 +91,7 @@ public class OMDBDataDecoder extends TileDecoder {
             }
         });
         //增加交通标牌聚合显示
-        List<RenderEntity> list1 = GeometryTools.groupByDistance(DataCodeEnum.OMDB_TRAFFIC_SIGN.getCode(), list, 5.0);
+        List<RenderEntity> list1 = GeometryTools.groupByDistance(DataCodeEnum.OMDB_TRAFFIC_SIGN.getCode(), list, 3.0);
         if (list1 != null && list1.size() > 0) {
             Log.e("qj", "聚合交通标牌转换开始" + list.size());
             list1.stream().iterator().forEachRemaining(new Consumer<RenderEntity>() {
@@ -105,7 +105,7 @@ public class OMDBDataDecoder extends TileDecoder {
             Log.e("qj", "聚合交通标牌转换结束" + list1.size());
         }
         //增加交通标牌聚合显示
-        List<RenderEntity> list2 = GeometryTools.groupByDistance(DataCodeEnum.OMDB_TRAFFICLIGHT.getCode(), traffList, 5.0);
+        List<RenderEntity> list2 = GeometryTools.groupByDistance(DataCodeEnum.OMDB_TRAFFICLIGHT.getCode(), traffList, 2.0);
         if (list2 != null && list2.size() > 0) {
             Log.e("qj", "聚合红绿灯转换开始" + traffList.size());
             list2.stream().iterator().forEachRemaining(new Consumer<RenderEntity>() {

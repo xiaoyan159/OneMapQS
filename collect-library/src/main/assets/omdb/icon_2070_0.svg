@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="b" xmlns="http://www.w3.org/2000/svg" width="107.5" height="107.5"
+    xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 107.5 107.5">
+    <defs>
+        <style>
+            .bz,.ca{fill:none;}.bz,.cb,.cc,.cd,.ce,.cf,.cg,.ch,.ci,.cj,.ck,.cl,.cm,.cn,.co,.cp,.cq,.cr,.cs,.ct,.cu,.cv,.cw,.cx,.cy,.cz,.da,.db,.dc,.dd,.de,.df,.dg,.dh,.di,.dj,.dk,.dl,.dm,.dn,.do,.dp,.dq,.dr,.ds,.dt,.du,.dv,.dw,.dx,.dy,.dz,.ea,.eb,.ec,.ed,.ee,.ef,.eg,.eh,.ei,.ej,.ek,.el,.em,.en,.eo,.ep,.eq,.er,.es,.et,.eu,.ev,.ew{stroke-width:0px;}.ca{opacity:0;stroke:#00a4b1;stroke-miterlimit:10;stroke-width:.2px;}.cb{fill:url(#ah);}.cc{fill:url(#ag);}.cd{fill:url(#aa);}.ce{fill:url(#ao);}.cf{fill:url(#af);}.cg{fill:url(#ae);}.ch{fill:url(#ab);}.ci{fill:url(#aj);}.cj{fill:url(#ap);}.ck{fill:url(#ai);}.cl{fill:url(#ad);}.cm{fill:url(#an);}.cn{fill:url(#am);}.co{fill:url(#ac);}.cp{fill:url(#at);}.cq{fill:url(#as);}.cr{fill:url(#bi);}.cs{fill:url(#bd);}.ct{fill:url(#bg);}.cu{fill:url(#bj);}.cv{fill:url(#be);}.cw{fill:url(#bf);}.cx{fill:url(#bo);}.cy{fill:url(#bm);}.cz{fill:url(#bh);}.da{fill:url(#bn);}.db{fill:url(#ba);}.dc{fill:url(#bb);}.dd{fill:url(#bk);}.de{fill:url(#bc);}.df{fill:url(#bx);}.dg{fill:url(#bq);}.dh{fill:url(#br);}.di{fill:url(#bs);}.dj{fill:url(#by);}.dk{fill:url(#bt);}.dl{fill:url(#bl);}.dm{fill:url(#bw);}.dn{fill:url(#bp);}.do{fill:url(#bu);}.dp{fill:url(#bv);}.dq{fill:url(#ar);}.dr{fill:url(#ay);}.ds{fill:url(#az);}.dt{fill:url(#aw);}.du{fill:url(#aq);}.dv{fill:url(#ax);}.dw{fill:url(#ak);}.dx{fill:url(#al);}.dy{fill:url(#au);}.dz{fill:url(#av);}.ea{fill:url(#v);}.eb{fill:url(#e);}.ec{fill:url(#y);}.ed{fill:url(#z);}.ee{fill:url(#x);}.ef{fill:url(#w);}.eg{fill:url(#u);}.eh{fill:url(#t);}.ei{fill:url(#f);}.ej{fill:url(#d);}.ek{fill:url(#s);}.el{fill:url(#j);}.em{fill:url(#q);}.en{fill:url(#r);}.eo{fill:url(#i);}.ep{fill:url(#h);}.eq{fill:url(#m);}.er{fill:url(#g);}.es{fill:url(#o);}.et{fill:url(#p);}.eu{fill:url(#k);}.ev{fill:url(#n);}.ew{fill:url(#l);}
+        </style>
+        <linearGradient id="d" x1="13.7" y1="53.7" x2="15" y2="53.7" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#221714" />
+            <stop offset="0" stop-color="#372d2a" />
+            <stop offset="0" stop-color="#655d5b" />
+            <stop offset=".1" stop-color="#8e8987" />
+            <stop offset=".2" stop-color="#b1adac" />
+            <stop offset=".2" stop-color="#cdcbca" />
+            <stop offset=".3" stop-color="#e3e2e1" />
+            <stop offset=".3" stop-color="#f2f2f2" />
+            <stop offset=".4" stop-color="#fcfbfb" />
+            <stop offset=".5" stop-color="#fff" />
+            <stop offset=".7" stop-color="#fcfcfc" />
+            <stop offset=".7" stop-color="#f5f5f5" />
+            <stop offset=".8" stop-color="#e9e8e8" />
+            <stop offset=".8" stop-color="#d8d7d6" />
+            <stop offset=".9" stop-color="#c2bfbe" />
+            <stop offset=".9" stop-color="#a6a2a1" />
+            <stop offset=".9" stop-color="#85807e" />
+            <stop offset="1" stop-color="#605a57" />
+            <stop offset="1" stop-color="#39312e" />
+            <stop offset="1" stop-color="#443d3a" />
+            <stop offset="1" stop-color="#64605e" />
+            <stop offset="1" stop-color="#7e7b7a" />
+            <stop offset="1" stop-color="#908f8e" />
+            <stop offset="1" stop-color="#9b9b9a" />
+            <stop offset="1" stop-color="#9f9f9f" />
+        </linearGradient>
+        <linearGradient id="e" x1="3.7" x2="5.1" xlink:href="#d" />
+        <linearGradient id="f" x1="270.6" y1="-352.3" x2="272" y2="-352.3"
+            gradientTransform="translate(-266.3 383.8)" xlink:href="#d" />
+        <linearGradient id="g" x1="390.7" y1="-1286.3" x2="392.1" y2="-1286.3"
+            gradientTransform="translate(-385.2 816.6) scale(1 .6)" xlink:href="#d" />
+        <linearGradient id="h" x1="189.8" y1="-2181.7" x2="191.1" y2="-2181.7"
+            gradientTransform="translate(-182.5 1363.7) scale(1 .6)" xlink:href="#d" />
+        <linearGradient id="i" x1="-1617.7" y1="317" x2="-1616.3" y2="317"
+            gradientTransform="translate(1630.8 348.6) scale(1 -1)" xlink:href="#d" />
+        <linearGradient id="j" x1="-887.7" y1="1342.2" x2="-886.4" y2="1342.2"
+            gradientTransform="translate(899.5 850.8) scale(1 -.6)" xlink:href="#d" />
+        <linearGradient id="k" x1="-261.1" y1="1004.8" x2="-259.8" y2="1004.8"
+            gradientTransform="translate(271.3 643.5) scale(1 -.6)" xlink:href="#d" />
+        <linearGradient id="l" x1="-18.7" y1="1876.8" x2="-17.3" y2="1876.8"
+            gradientTransform="translate(27.4 695.4) scale(1 -.4)" xlink:href="#d" />
+        <linearGradient id="m" x1="28.5" x2="29.9" xlink:href="#d" />
+        <linearGradient id="n" x1="18.6" x2="19.9" xlink:href="#d" />
+        <linearGradient id="o" x1="284.7" y1="-357.1" x2="286" y2="-357.1"
+            gradientTransform="translate(-265.5 388.7)" xlink:href="#d" />
+        <linearGradient id="p" x1="399.8" y1="-1305.6" x2="401.1" y2="-1305.6"
+            gradientTransform="translate(-379.3 828.4) scale(1 .6)" xlink:href="#d" />
+        <linearGradient id="q" x1="193.2" y1="-2205.3" x2="194.6" y2="-2205.3"
+            gradientTransform="translate(-171.1 1378.2) scale(1 .6)" xlink:href="#d" />
+        <linearGradient id="r" x1="-1631.6" y1="322.1" x2="-1630.3" y2="322.1"
+            gradientTransform="translate(1659.6 353.6) scale(1 -1)" xlink:href="#d" />
+        <linearGradient id="s" x1="-897.2" y1="1360.9" x2="-895.8" y2="1360.9"
+            gradientTransform="translate(923.8 862.2) scale(1 -.6)" xlink:href="#d" />
+        <linearGradient id="t" x1="-264.3" y1="1028.5" x2="-263" y2="1028.5"
+            gradientTransform="translate(289.3 658) scale(1 -.6)" xlink:href="#d" />
+        <linearGradient id="u" x1="-18.7" y1="1918.6" x2="-17.3" y2="1918.6"
+            gradientTransform="translate(42.2 710.2) scale(1 -.4)" xlink:href="#d" />
+        <linearGradient id="v" x1="-1912" y1="127.5" x2="-1908.5" y2="127.5"
+            gradientTransform="translate(1927.1 -85.1)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#888" />
+            <stop offset="0" stop-color="#888" />
+            <stop offset="0" stop-color="#acacac" />
+            <stop offset=".1" stop-color="#cacaca" />
+            <stop offset=".2" stop-color="#e1e1e1" />
+            <stop offset=".3" stop-color="#f2f2f2" />
+            <stop offset=".4" stop-color="#fbfbfb" />
+            <stop offset=".5" stop-color="#fff" />
+            <stop offset=".7" stop-color="#fcfcfc" />
+            <stop offset=".8" stop-color="#f5f5f5" />
+            <stop offset=".9" stop-color="#e8e8e8" />
+            <stop offset=".9" stop-color="#d6d6d7" />
+            <stop offset="1" stop-color="#bfbfc0" />
+            <stop offset="1" stop-color="#b4b4b5" />
+        </linearGradient>
+        <linearGradient id="w" x1="43.3" y1="53.7" x2="44.7" y2="53.7" xlink:href="#d" />
+        <linearGradient id="x" x1="33.4" y1="53.7" x2="34.8" y2="53.7" xlink:href="#d" />
+        <linearGradient id="y" x1="298.7" y1="-362" x2="300" y2="-362"
+            gradientTransform="translate(-264.7 393.6)" xlink:href="#d" />
+        <linearGradient id="z" x1="408.8" y1="-1324.8" x2="410.1" y2="-1324.8"
+            gradientTransform="translate(-373.5 840.2) scale(1 .6)" xlink:href="#d" />
+        <linearGradient id="aa" x1="196.7" y1="-2228.8" x2="198" y2="-2228.8"
+            gradientTransform="translate(-159.8 1392.6) scale(1 .6)" xlink:href="#d" />
+        <linearGradient id="ab" x1="-1645.6" y1="327.1" x2="-1644.2" y2="327.1"
+            gradientTransform="translate(1688.3 358.7) scale(1 -1)" xlink:href="#d" />
+        <linearGradient id="ac" x1="-906.6" y1="1379.6" x2="-905.2" y2="1379.6"
+            gradientTransform="translate(948.1 873.7) scale(1 -.6)" xlink:href="#d" />
+        <linearGradient id="ad" x1="-267.6" y1="1052.1" x2="-266.2" y2="1052.1"
+            gradientTransform="translate(307.4 672.5) scale(1 -.6)" xlink:href="#d" />
+        <linearGradient id="ae" x1="-18.7" y1="1960.3" x2="-17.3" y2="1960.3"
+            gradientTransform="translate(57 725) scale(1 -.4)" xlink:href="#d" />
+        <linearGradient id="af" y1="142.3" y2="142.3" gradientTransform="translate(1941.9 -99.9)"
+            xlink:href="#v" />
+        <linearGradient id="ag" x1="58.1" y1="53.7" x2="59.5" y2="53.7" xlink:href="#d" />
+        <linearGradient id="ah" x1="48.2" y1="53.7" x2="49.6" y2="53.7" xlink:href="#d" />
+        <linearGradient id="ai" x1="312.7" y1="-366.9" x2="314" y2="-366.9"
+            gradientTransform="translate(-263.9 398.4)" xlink:href="#d" />
+        <linearGradient id="aj" x1="417.7" y1="-1344.1" x2="419.1" y2="-1344.1"
+            gradientTransform="translate(-367.7 852) scale(1 .6)" xlink:href="#d" />
+        <linearGradient id="ak" x1="200.1" y1="-2252.4" x2="201.5" y2="-2252.4"
+            gradientTransform="translate(-148.4 1407) scale(1 .6)" xlink:href="#d" />
+        <linearGradient id="al" x1="-1659.5" y1="332.2" x2="-1658.1" y2="332.2"
+            gradientTransform="translate(1717.1 363.7) scale(1 -1)" xlink:href="#d" />
+        <linearGradient id="am" x1="-916.1" y1="1398.2" x2="-914.7" y2="1398.2"
+            gradientTransform="translate(972.3 885.1) scale(1 -.6)" xlink:href="#d" />
+        <linearGradient id="an" x1="-270.8" y1="1075.8" x2="-269.4" y2="1075.8"
+            gradientTransform="translate(325.4 686.9) scale(1 -.6)" xlink:href="#d" />
+        <linearGradient id="ao" x1="-18.7" y1="2002" x2="-17.3" y2="2002"
+            gradientTransform="translate(71.8 739.9) scale(1 -.4)" xlink:href="#d" />
+        <linearGradient id="ap" y1="157.1" y2="157.1" gradientTransform="translate(1956.7 -114.7)"
+            xlink:href="#v" />
+        <linearGradient id="aq" x1="73" y1="53.7" x2="74.4" y2="53.7" xlink:href="#d" />
+        <linearGradient id="ar" x1="63.1" y1="53.7" x2="64.4" y2="53.7" xlink:href="#d" />
+        <linearGradient id="as" x1="326.7" y1="-371.7" x2="328.1" y2="-371.7"
+            gradientTransform="translate(-263.1 403.3)" xlink:href="#d" />
+        <linearGradient id="at" x1="426.8" y1="-1363.4" x2="428.1" y2="-1363.4"
+            gradientTransform="translate(-361.9 863.8) scale(1 .6)" xlink:href="#d" />
+        <linearGradient id="au" x1="203.6" y1="-2276" x2="205" y2="-2276"
+            gradientTransform="translate(-137 1421.5) scale(1 .6)" xlink:href="#d" />
+        <linearGradient id="av" x1="-1673.5" y1="337.2" x2="-1672.1" y2="337.2"
+            gradientTransform="translate(1745.9 368.8) scale(1 -1)" xlink:href="#d" />
+        <linearGradient id="aw" x1="-925.5" y1="1417" x2="-924.2" y2="1417"
+            gradientTransform="translate(996.7 896.5) scale(1 -.6)" xlink:href="#d" />
+        <linearGradient id="ax" x1="-274" y1="1099.5" x2="-272.7" y2="1099.5"
+            gradientTransform="translate(343.5 701.5) scale(1 -.6)" xlink:href="#d" />
+        <linearGradient id="ay" x1="-18.7" y1="2043.8" x2="-17.3" y2="2043.8"
+            gradientTransform="translate(86.7 754.7) scale(1 -.4)" xlink:href="#d" />
+        <linearGradient id="az" y1="172" y2="172" gradientTransform="translate(1971.6 -129.6)"
+            xlink:href="#v" />
+        <linearGradient id="ba" x1="87.8" y1="53.8" x2="89.2" y2="53.8" xlink:href="#d" />
+        <linearGradient id="bb" x1="77.9" y1="53.8" x2="79.3" y2="53.8" xlink:href="#d" />
+        <linearGradient id="bc" x1="340.7" y1="-376.6" x2="342.1" y2="-376.6"
+            gradientTransform="translate(-262.3 408.1)" xlink:href="#d" />
+        <linearGradient id="bd" x1="435.8" y1="-1382.6" x2="437.1" y2="-1382.6"
+            gradientTransform="translate(-356 875.6) scale(1 .6)" xlink:href="#d" />
+        <linearGradient id="be" x1="207" y1="-2299.6" x2="208.4" y2="-2299.6"
+            gradientTransform="translate(-125.6 1435.9) scale(1 .6)" xlink:href="#d" />
+        <linearGradient id="bf" x1="-1687.4" y1="342.3" x2="-1686" y2="342.3"
+            gradientTransform="translate(1774.7 373.8) scale(1 -1)" xlink:href="#d" />
+        <linearGradient id="bg" x1="-935" y1="1435.6" x2="-933.6" y2="1435.6"
+            gradientTransform="translate(1020.9 908) scale(1 -.6)" xlink:href="#d" />
+        <linearGradient id="bh" x1="-277.2" y1="1123.1" x2="-275.9" y2="1123.1"
+            gradientTransform="translate(361.6 715.9) scale(1 -.6)" xlink:href="#d" />
+        <linearGradient id="bi" x1="-18.6" y1="2085.5" x2="-17.3" y2="2085.5"
+            gradientTransform="translate(101.5 769.6) scale(1 -.4)" xlink:href="#d" />
+        <linearGradient id="bj" y1="186.8" y2="186.8" gradientTransform="translate(1986.4 -144.4)"
+            xlink:href="#v" />
+        <linearGradient id="bk" x1="102.7" y1="53.8" x2="104" y2="53.8" xlink:href="#d" />
+        <linearGradient id="bl" x1="92.7" y1="53.8" x2="94.1" y2="53.8" xlink:href="#d" />
+        <linearGradient id="bm" x1="354.7" y1="-381.4" x2="356.1" y2="-381.4"
+            gradientTransform="translate(-261.4 413)" xlink:href="#d" />
+        <linearGradient id="bn" x1="444.8" y1="-1401.9" x2="446.1" y2="-1401.9"
+            gradientTransform="translate(-350.2 887.4) scale(1 .6)" xlink:href="#d" />
+        <linearGradient id="bo" x1="210.5" y1="-2323.1" x2="211.9" y2="-2323.1"
+            gradientTransform="translate(-114.3 1450.3) scale(1 .6)" xlink:href="#d" />
+        <linearGradient id="bp" x1="-1701.3" y1="347.3" x2="-1700" y2="347.3"
+            gradientTransform="translate(1803.4 378.9) scale(1 -1)" xlink:href="#d" />
+        <linearGradient id="bq" x1="-944.4" y1="1454.3" x2="-943" y2="1454.3"
+            gradientTransform="translate(1045.2 919.4) scale(1 -.6)" xlink:href="#d" />
+        <linearGradient id="br" x1="-280.5" y1="1146.8" x2="-279.1" y2="1146.8"
+            gradientTransform="translate(379.6 730.4) scale(1 -.6)" xlink:href="#d" />
+        <linearGradient id="bs" x1="-18.6" y1="2127.2" x2="-17.3" y2="2127.2"
+            gradientTransform="translate(116.3 784.4) scale(1 -.4)" xlink:href="#d" />
+        <linearGradient id="bt" y1="201.6" y2="201.6" gradientTransform="translate(2001.2 -159.2)"
+            xlink:href="#v" />
+        <linearGradient id="bu" x1="-709.6" y1="357.9" x2="-704.2" y2="357.9"
+            gradientTransform="translate(760.8 -286)" xlink:href="#d" />
+        <linearGradient id="bv" y1="215.5" y2="215.5" gradientTransform="translate(2015.2 -173.1)"
+            xlink:href="#v" />
+        <linearGradient id="bw" y1="113.5" y2="113.5" gradientTransform="translate(1913.1 -71.1)"
+            xlink:href="#v" />
+        <linearGradient id="bx" x1="-1014.3" y1="-422" x2="-1009.5" y2="-422"
+            gradientTransform="translate(1043.7 496.6)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#979797" />
+            <stop offset="0" stop-color="#a1a1a1" />
+            <stop offset=".1" stop-color="#c3c3c3" />
+            <stop offset=".2" stop-color="#d7d7d7" />
+            <stop offset=".3" stop-color="#dfdfdf" />
+            <stop offset=".4" stop-color="#dadada" />
+            <stop offset=".5" stop-color="#cbcccc" />
+            <stop offset=".6" stop-color="#b4b4b6" />
+            <stop offset=".7" stop-color="#939496" />
+            <stop offset=".8" stop-color="#696b6e" />
+            <stop offset=".8" stop-color="#3e4146" />
+            <stop offset="1" stop-color="#3f4147" />
+            <stop offset="1" stop-color="#424249" />
+        </linearGradient>
+        <linearGradient id="by" x1="-1058.7" x2="-1053.9"
+            gradientTransform="translate(1132.6 496.6)" xlink:href="#bx" />
+    </defs>
+    <g id="c">
+        <path class="ej"
+            d="m13.9,32.8h.9c.1,0,.2.1.2.2v41.5c0,0,0,.1-.1.1h-1.2s0,0,0,0v-41.6c0-.1.1-.2.2-.2Z" />
+        <path class="eb"
+            d="m4,32.8h.9c.1,0,.2.1.2.2v41.5c0,0,0,.1-.1.1h-1.2s0,0,0,0v-41.6c0-.1.1-.2.2-.2Z" />
+        <rect class="ei" x="4.3" y="29.7" width="1.4" height="3.7"
+            transform="translate(10.6 .1) rotate(19.1)" />
+        <rect class="er" x="5.6" y="28.4" width="1.4" height="2.2"
+            transform="translate(25.9 6.6) rotate(52.6)" />
+        <rect class="ep" x="7.3" y="27.5" width="1.4" height="2.2"
+            transform="translate(33.9 14.3) rotate(76.5)" />
+        <rect class="eo" x="13.1" y="29.7" width="1.4" height="3.7"
+            transform="translate(37.5 56.5) rotate(160.1)" />
+        <rect class="el" x="11.8" y="28.3" width="1.4" height="2.2"
+            transform="translate(43.1 38.6) rotate(129.6)" />
+        <rect class="eu" x="10.2" y="27.5" width="1.4" height="2.2"
+            transform="translate(41.1 24.3) rotate(102.6)" />
+        <rect class="ew" x="8.7" y="27.8" width="1.4" height="1.2"
+            transform="translate(37.8 19) rotate(90)" />
+        <path class="eq"
+            d="m28.7,32.8h.9c.1,0,.2.1.2.2v41.5c0,0,0,.1-.1.1h-1.2s0,0,0,0v-41.6c0-.1.1-.2.2-.2Z" />
+        <path class="ev"
+            d="m18.8,32.8h.9c.1,0,.2.1.2.2v41.5c0,0,0,.1-.1.1h-1.2s0,0,0,0v-41.6c0-.1.1-.2.2-.2Z" />
+        <rect class="es" x="19.1" y="29.7" width="1.4" height="3.7"
+            transform="translate(11.4 -4.8) rotate(19.1)" />
+        <rect class="et" x="20.4" y="28.4" width="1.4" height="2.2"
+            transform="translate(31.7 -5.2) rotate(52.6)" />
+        <rect class="em" x="22.1" y="27.5" width="1.4" height="2.2"
+            transform="translate(45.3 -.2) rotate(76.5)" />
+        <rect class="en" x="27.9" y="29.7" width="1.4" height="3.7"
+            transform="translate(66.2 51.5) rotate(160.1)" />
+        <rect class="ek" x="26.6" y="28.3" width="1.4" height="2.2"
+            transform="translate(67.4 27.1) rotate(129.6)" />
+        <rect class="eh" x="25" y="27.5" width="1.4" height="2.2"
+            transform="translate(59.2 9.8) rotate(102.6)" />
+        <rect class="eg" x="23.5" y="27.8" width="1.4" height="1.2"
+            transform="translate(52.6 4.2) rotate(90)" />
+        <rect class="ea" x="15" y="40.6" width="3.5" height="3.5"
+            transform="translate(-25.6 59.2) rotate(-90)" />
+        <path class="ef"
+            d="m43.6,32.8h.9c.1,0,.2.1.2.2v41.5c0,0,0,.1-.1.1h-1.2s0,0,0,0v-41.6c0-.1.1-.2.2-.2Z" />
+        <path class="ee"
+            d="m33.6,32.8h.9c.1,0,.2.1.2.2v41.5c0,0,0,.1-.1.1h-1.2s0,0,0,0v-41.6c0-.1.1-.2.2-.2Z" />
+        <rect class="ec" x="34" y="29.7" width="1.4" height="3.7"
+            transform="translate(12.3 -9.6) rotate(19.1)" />
+        <rect class="ed" x="35.2" y="28.4" width="1.4" height="2.2"
+            transform="translate(37.5 -17) rotate(52.6)" />
+        <rect class="cd" x="36.9" y="27.5" width="1.4" height="2.2"
+            transform="translate(56.7 -14.6) rotate(76.5)" />
+        <rect class="ch" x="42.7" y="29.7" width="1.4" height="3.7"
+            transform="translate(95 46.4) rotate(160.1)" />
+        <rect class="co" x="41.5" y="28.3" width="1.4" height="2.2"
+            transform="translate(91.7 15.7) rotate(129.6)" />
+        <rect class="cl" x="39.8" y="27.5" width="1.4" height="2.2"
+            transform="translate(77.2 -4.7) rotate(102.6)" />
+        <rect class="cg" x="38.4" y="27.8" width="1.4" height="1.2"
+            transform="translate(67.4 -10.6) rotate(90)" />
+        <rect class="cf" x="29.9" y="40.6" width="3.5" height="3.5"
+            transform="translate(-10.8 74) rotate(-90)" />
+        <path class="cc"
+            d="m58.4,32.8h.9c.1,0,.2.1.2.2v41.5c0,0,0,.1-.1.1h-1.2s0,0,0,0v-41.6c0-.1.1-.2.2-.2Z" />
+        <path class="cb"
+            d="m48.4,32.8h.9c.1,0,.2.1.2.2v41.5c0,0,0,.1-.1.1h-1.2s0,0,0,0v-41.6c0-.1.1-.2.2-.2Z" />
+        <rect class="ck" x="48.8" y="29.7" width="1.4" height="3.7"
+            transform="translate(13.1 -14.5) rotate(19.1)" />
+        <rect class="ci" x="50" y="28.4" width="1.4" height="2.2"
+            transform="translate(43.4 -28.7) rotate(52.6)" />
+        <rect class="dw" x="51.7" y="27.5" width="1.4" height="2.2"
+            transform="translate(68.1 -29) rotate(76.5)" />
+        <rect class="dx" x="57.6" y="29.7" width="1.4" height="3.7"
+            transform="translate(123.8 41.4) rotate(160.1)" />
+        <rect class="cn" x="56.3" y="28.3" width="1.4" height="2.2"
+            transform="translate(116 4.3) rotate(129.6)" />
+        <rect class="cm" x="54.6" y="27.5" width="1.4" height="2.2"
+            transform="translate(95.3 -19.1) rotate(102.6)" />
+        <rect class="ce" x="53.2" y="27.8" width="1.4" height="1.2"
+            transform="translate(82.3 -25.5) rotate(90)" />
+        <rect class="cj" x="44.7" y="40.6" width="3.5" height="3.5"
+            transform="translate(4.1 88.9) rotate(-90)" />
+        <path class="du"
+            d="m73.2,32.8h.9c.1,0,.2.1.2.2v41.5c0,0,0,.1-.1.1h-1.2s0,0,0,0v-41.6c0-.1.1-.2.2-.2Z" />
+        <path class="dq"
+            d="m63.3,32.8h.9c.1,0,.2.1.2.2v41.5c0,0,0,.1-.1.1h-1.2s0,0,0,0v-41.6c0-.1.1-.2.2-.2Z" />
+        <rect class="cq" x="63.6" y="29.7" width="1.4" height="3.7"
+            transform="translate(13.9 -19.3) rotate(19.1)" />
+        <rect class="cp" x="64.9" y="28.4" width="1.4" height="2.2"
+            transform="translate(49.2 -40.5) rotate(52.6)" />
+        <rect class="dy" x="66.6" y="27.5" width="1.4" height="2.2"
+            transform="translate(79.5 -43.4) rotate(76.5)" />
+        <rect class="dz" x="72.4" y="29.7" width="1.4" height="3.7"
+            transform="translate(152.6 36.3) rotate(160.1)" />
+        <rect class="dt" x="71.1" y="28.3" width="1.4" height="2.2"
+            transform="translate(140.3 -7.2) rotate(129.6)" />
+        <rect class="dv" x="69.5" y="27.5" width="1.4" height="2.2"
+            transform="translate(113.4 -33.6) rotate(102.6)" />
+        <rect class="dr" x="68" y="27.8" width="1.4" height="1.2"
+            transform="translate(97.1 -40.3) rotate(90)" />
+        <rect class="ds" x="59.5" y="40.6" width="3.5" height="3.5"
+            transform="translate(18.9 103.7) rotate(-90)" />
+        <path class="db"
+            d="m88.1,32.8h.9c.1,0,.2.1.2.2v41.5c0,0,0,.1-.1.1h-1.2s0,0,0,0v-41.6c0-.1.1-.2.2-.2Z" />
+        <path class="dc"
+            d="m78.1,32.8h.9c.1,0,.2.1.2.2v41.5c0,0,0,.1-.1.1h-1.2s0,0,0,0v-41.6c0-.1.1-.2.2-.2Z" />
+        <rect class="de" x="78.5" y="29.7" width="1.4" height="3.7"
+            transform="translate(14.7 -24.2) rotate(19.1)" />
+        <rect class="cs" x="79.7" y="28.4" width="1.4" height="2.2"
+            transform="translate(55.1 -52.3) rotate(52.6)" />
+        <rect class="cv" x="81.4" y="27.5" width="1.4" height="2.2"
+            transform="translate(90.9 -57.8) rotate(76.5)" />
+        <rect class="cw" x="87.2" y="29.7" width="1.4" height="3.7"
+            transform="translate(181.4 31.3) rotate(160.1)" />
+        <rect class="ct" x="86" y="28.3" width="1.4" height="2.2"
+            transform="translate(164.6 -18.6) rotate(129.6)" />
+        <rect class="cz" x="84.3" y="27.5" width="1.4" height="2.2"
+            transform="translate(131.4 -48.1) rotate(102.6)" />
+        <rect class="cr" x="82.9" y="27.8" width="1.4" height="1.2"
+            transform="translate(111.9 -55.1) rotate(90)" />
+        <rect class="cu" x="74.4" y="40.6" width="3.5" height="3.5"
+            transform="translate(33.7 118.5) rotate(-90)" />
+        <path class="dd"
+            d="m102.9,32.8h.9c.1,0,.2.1.2.2v41.5c0,0,0,.1-.1.1h-1.2s0,0,0,0v-41.6c0-.1.1-.2.2-.2Z" />
+        <path class="dl"
+            d="m92.9,32.8h.9c.1,0,.2.1.2.2v41.5c0,0,0,.1-.1.1h-1.2s0,0,0,0v-41.6c0-.1.1-.2.2-.2Z" />
+        <rect class="cy" x="93.3" y="29.7" width="1.4" height="3.7"
+            transform="translate(15.5 -29) rotate(19.1)" />
+        <rect class="da" x="94.5" y="28.4" width="1.4" height="2.2"
+            transform="translate(60.9 -64.1) rotate(52.6)" />
+        <rect class="cx" x="96.2" y="27.5" width="1.4" height="2.2"
+            transform="translate(102.2 -72.3) rotate(76.5)" />
+        <rect class="dn" x="102.1" y="29.7" width="1.4" height="3.7"
+            transform="translate(210.1 26.2) rotate(160.1)" />
+        <rect class="dg" x="100.8" y="28.3" width="1.4" height="2.2"
+            transform="translate(188.8 -30) rotate(129.6)" />
+        <rect class="dh" x="99.1" y="27.5" width="1.4" height="2.2"
+            transform="translate(149.5 -62.6) rotate(102.6)" />
+        <rect class="di" x="97.7" y="27.8" width="1.4" height="1.2"
+            transform="translate(126.8 -70) rotate(90)" />
+        <rect class="dk" x="89.2" y="40.6" width="3.5" height="3.5"
+            transform="translate(48.6 133.4) rotate(-90)" />
+        <path class="do" d="m51.3,20h5.2c0,0,.1,0,.1.1v103.7h-5.4V20.2c0,0,0-.1.1-.1Z"
+            transform="translate(-18.1 125.8) rotate(-90)" />
+        <rect class="dp" x="103.1" y="41.5" width="3.5" height="1.8"
+            transform="translate(62.5 147.3) rotate(-90)" />
+        <rect class="dm" x="1.1" y="41.5" width="3.5" height="1.8"
+            transform="translate(-39.5 45.2) rotate(-90)" />
+        <path class="df"
+            d="m30.1,69.2h3.1c.6,0,1.1.5,1.1,1.1v8.8c0,.5-.4,1-1,1h-3.4c-.5,0-.9-.4-.9-.9v-8.8c0-.6.5-1.1,1.1-1.1Z"
+            transform="translate(63.3 149.3) rotate(180)" />
+        <path class="dj"
+            d="m74.6,69.2h3.1c.6,0,1.1.5,1.1,1.1v8.8c0,.5-.4,1-1,1h-3.4c-.5,0-.9-.4-.9-.9v-8.8c0-.6.5-1.1,1.1-1.1Z"
+            transform="translate(152.2 149.3) rotate(180)" />
+        <line class="ca" x1="2" y1="53.7" x2="105.8" y2="53.7" />
+        <line class="ca" x1="53.9" y1="102.6" x2="53.9" y2="4.9" />
+        <rect class="bz" width="107.5" height="107.5" />
+    </g>
+</svg>
