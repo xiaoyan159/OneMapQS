@@ -362,7 +362,7 @@
         "zoomMax": 20,
         "is3D": true,
         "catch": true,
-        "checkLinkId": false,
+        "checkLinkId": true,
         "transformer": [
           {
             "k": "geometry",
@@ -712,7 +712,7 @@
         "name": "车信",
         "catch": true,
         "isDependOnOtherTable": false,
-        "checkLinkId": false,
+        "checkLinkId": true,
         "zoomMin": 15,
         "zoomMax": 17,
         "transformer": [

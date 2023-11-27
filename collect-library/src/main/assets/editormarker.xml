@@ -1653,7 +1653,7 @@
             </m>
             <!--墙-->
             <m k="boundaryType" v="5">
-                <line stroke="#495462" use="boundaryType" width="0.2"/>
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_5.svg" symbol-width="16" symbol-height="10"></symbol>
             </m>
             <!--铺设路面边缘-->
             <m k="boundaryType" v="6">
@@ -1680,7 +1680,7 @@
             </m>
             <!--墙-->
             <m k="boundaryType" v="5">
-                <line stroke="#495462" use="boundaryType" width="0.2"/>
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_5.svg" symbol-width="16" symbol-height="10"></symbol>
             </m>
             <!--铺设路面边缘-->
             <m k="boundaryType" v="6">
@@ -1939,12 +1939,12 @@
             <m k="speedFlag" v="0">
 <!--                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"-->
 <!--                    stroke-width="1.0"></caption>-->
-                <symbol background="assets:omdb/icon_4002_0.png" symbol-width="24" content-rect="20,80,20,60" src="@text-src"></symbol>
+                <symbol background="assets:omdb/icon_4002_0.png" symbol-width="24" content-rect="20,80,32,80" src="@text-src"></symbol>
             </m>
             <m k="speedFlag" v="1">
 <!--                <caption fill="#000000" k="maxSpeed" priority="0" size="10" stroke="#ffffff"-->
 <!--                    stroke-width="1.0"></caption>-->
-                <symbol background="assets:omdb/icon_4002_1.png" symbol-width="24" content-rect="20,80,20,60" src="@text-src"></symbol>
+                <symbol background="assets:omdb/icon_4002_1.png" symbol-width="24" content-rect="20,80,32,80" src="@text-src"></symbol>
             </m>
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true" symbol-width="24"
