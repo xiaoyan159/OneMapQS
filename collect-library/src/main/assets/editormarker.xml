@@ -1866,7 +1866,7 @@
         </m>
 
         <!-- 全封闭 -->
-        <m v="OMDB_CON_ACESS">
+        <m v="OMDB_CON_ACCESS">
             <line use="road_morphology" />
         </m>
 
