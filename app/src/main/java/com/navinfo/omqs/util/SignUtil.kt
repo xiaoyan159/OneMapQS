@@ -24,6 +24,9 @@ import org.locationtech.jts.geom.Point
 import org.oscim.core.GeoPoint
 import java.lang.reflect.Field
 
+/*
+* 要素详情解析类及左侧提前显示内容解析说明
+* */
 class SignUtil {
     companion object {
 
@@ -795,6 +798,23 @@ class SignUtil {
                     list.add(TwoItemAdapterItem(title = "车道中心线ID", text = "${data.properties["laneLinkPid"]}"))
 
                     list.add(TwoItemAdapterItem(title = "车道类型", text = getLaneType(data)))
+                }
+                //设施分离
+                DataCodeEnum.OMDB_LINK_SEPARATION.code -> {
+                    list.add(TwoItemAdapterItem(title = "设施分离", text = when (data.properties["separation"]) {
+                        "1" -> "坚固护栏"
+                        "2" -> "非坚固护栏"
+                        else -> ""
+                    }))
+                }
+                //中央隔离带
+                DataCodeEnum.OMDB_LINK_MEDIAN.code -> {
+                    list.add(TwoItemAdapterItem(title = "设施分离", text = when (data.properties["medianSurface"]) {
+                        "0" -> "未铺设"
+                        "1" -> "铺设"
+                        "2" -> "混合"
+                        else -> ""
+                    }))
                 }
             }
             adapter.data = list
