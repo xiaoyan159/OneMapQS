@@ -793,6 +793,23 @@ class SignUtil {
                     list.add(TwoItemAdapterItem(title = "起终点标识", text = "${data.properties["startEnd"]}"))
                     list.add(TwoItemAdapterItem(title = "高度层次", text = "${data.properties["zlevel"]}"))
                 }
+                //道路边界类型
+                DataCodeEnum.OMDB_RDBOUND_BOUNDARYTYPE.code -> {
+                    list.add(TwoItemAdapterItem(title = "道路边界线ID", text = "${data.properties["roadBoundaryLinkPid"]}"))
+                    list.add(TwoItemAdapterItem(title = "道路边界类型", text = when (data.properties["boundaryType"]?.toInt()) {
+                        0 -> "不应用"
+                        1 -> "无标线无可区分边界"
+                        2 -> "标线"
+                        3 -> "路牙"
+                        4 -> "护栏"
+                        5 -> "墙"
+                        6 -> "铺设路面边缘"
+                        7 -> "虚拟三角岛"
+                        8 -> "障碍物"
+                        9 -> "杆状障碍物"
+                        else -> ""
+                    }))
+                }
                 //车道类型
                 DataCodeEnum.OMDB_LANE_TYPE_ACCESS.code -> {
                     list.add(TwoItemAdapterItem(title = "车道中心线ID", text = "${data.properties["laneLinkPid"]}"))
