@@ -1373,4 +1373,16 @@ class ImportPreProcess {
             renderEntity.properties["text-src"] = "@text:${renderEntity.properties["maxSpeed"]}"
         }
     }
+
+    /**
+     * 多线转单线
+     * */
+    fun generateMulToLine(renderEntity: RenderEntity) {
+        val translateGeometry = renderEntity.wkt
+        if (translateGeometry != null) {
+            if (translateGeometry.geometryType == Geometry.TYPENAME_MULTILINESTRING) { // 如果是多线，只取第一条线
+                renderEntity.geometry =  renderEntity.wkt!!.getGeometryN(0).toString()
+            }
+        }
+    }
 }

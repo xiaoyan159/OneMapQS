@@ -816,6 +816,48 @@ class SignUtil {
                         else -> ""
                     }))
                 }
+                //路牙
+                DataCodeEnum.OMDB_OBJECT_CURB.code -> {
+                    list.add(TwoItemAdapterItem(title = "是否符合高精地图", text = when (data.properties["compliant"]) {
+                        "0" -> "否"
+                        "1" -> "是"
+                        else -> ""
+                    }))
+                }
+                //平行墙
+                DataCodeEnum.OMDB_OBJECT_WALL.code -> {
+                    list.add(TwoItemAdapterItem(title = "类型", text = when (data.properties["type"]) {
+                        "1" -> "隧道墙"
+                        "3" -> "其他墙"
+                        else -> ""
+                    }))
+                }
+                //警示区
+                DataCodeEnum.OMDB_OBJECT_WARNING_AREA.code -> {
+                    list.add(TwoItemAdapterItem(title = "颜色", text = when (data.properties["color"]) {
+                        "0" -> "未验证"
+                        "1" -> "白色"
+                        "2" -> "黄色"
+                        "3" -> "红色"
+                        else -> ""
+                    }))
+                    list.add(TwoItemAdapterItem(title = "材质", text = when (data.properties["material"]) {
+                        "1" -> "有突起的材质"
+                        "2" -> "喷漆材质"
+                        else -> ""
+                    }))
+                }
+                //护栏
+                DataCodeEnum.OMDB_OBJECT_BARRIER.code -> {
+                    list.add(TwoItemAdapterItem(title = "护栏类型", text = when (data.properties["barrierType"]) {
+                        "0" -> "护栏"
+                        "1" -> "新泽西护栏"
+                        "2" -> "安全护栏"
+                        "3" -> "围栏"
+                        "4" -> "其他护栏"
+                        else -> ""
+                    }))
+                }
             }
             adapter.data = list
             return adapter
