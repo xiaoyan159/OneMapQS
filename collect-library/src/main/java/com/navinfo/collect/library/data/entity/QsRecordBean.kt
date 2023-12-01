@@ -93,8 +93,11 @@ open class QsRecordBean @JvmOverloads constructor(
      * 显示坐标
      */
     var guideGeometry: String = "",
-
-    ) : RealmObject() {
+    /**
+     * 备份数据
+     */
+    var remarks: String = "",
+) : RealmObject() {
 
     fun copy(): QsRecordBean {
         val qs = QsRecordBean(
@@ -115,6 +118,7 @@ open class QsRecordBean @JvmOverloads constructor(
             t_lifecycle = t_lifecycle,
             t_status = t_status,
             attachmentBeanList = attachmentBeanList,
+            remarks = remarks,
         )
         qs.geometry = geometry
         return qs

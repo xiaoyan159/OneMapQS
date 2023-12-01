@@ -10,6 +10,7 @@ import android.widget.AdapterView
 import android.widget.ImageView
 import com.navinfo.omqs.R
 import com.navinfo.omqs.databinding.FragmentLineInfoEditBinding
+import com.navinfo.omqs.ui.activity.map.LaneInfoItem
 import com.navinfo.omqs.ui.fragment.BaseFragment
 import com.navinfo.omqs.ui.other.shareViewModels
 
@@ -37,7 +38,10 @@ class LaneInfoEditFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initLaneInfo()
+        viewModel.laneInfoList.observe(viewLifecycleOwner){
+            initLaneInfo(it)
+            viewModel.laneInfoList.removeObservers(viewLifecycleOwner)
+        }
         initFLowLayout()
 
         binding.laneInfoBackspace.setOnClickListener {
@@ -271,61 +275,59 @@ class LaneInfoEditFragment : BaseFragment() {
     /**
      * 初始化车道信息
      */
-    private fun initLaneInfo() {
-        if (viewModel.laneInfoList != null) {
-            val container = binding.laneInfoTopContainer
-            container.removeAllViews()
-            val lineViewS = View(context)
-            lineViewS.layoutParams = ViewGroup.LayoutParams(24, 110)
-            lineViewS.background =
-                requireContext().getDrawable(R.drawable.shape_vertical_dashed_line)
-            container.addView(lineViewS, lineViewS.layoutParams)
-            for (i in viewModel.laneInfoList!!.indices) {
-                val laneInfo = viewModel.laneInfoList!![i]
-                val imageView = ImageView(context)
-                val drawable = requireContext().getDrawable(laneInfo.id)
-                val color = when (laneInfo.type) {
-                    1 -> requireContext().resources.getColor(R.color.lane_info_1)
-                    2 -> requireContext().resources.getColor(R.color.lane_info_2)
-                    else -> requireContext().resources.getColor(R.color.white)
-                }
-                // 创建 PorterDuffColorFilter 对象
-                val colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
-                // 将 PorterDuffColorFilter 设置给 Drawable
-                drawable!!.colorFilter = colorFilter
-                // 将 Drawable 设置给 ImageView
-                imageView.scaleType = ImageView.ScaleType.FIT_XY
-                imageView.setColorFilter(color, PorterDuff.Mode.SRC_IN)
-                imageView.setImageDrawable(drawable)
-                // 将 ImageView 的颜色设置为红色
-                imageView.layoutParams = ViewGroup.LayoutParams(45, 100)
-                container.addView(imageView, imageView.layoutParams)
-                if (i < viewModel.laneInfoList!!.size - 1) {
-                    val lineView = View(context)
-                    lineView.layoutParams = ViewGroup.LayoutParams(24, 110)
-                    lineView.background =
-                        requireContext().getDrawable(R.drawable.shape_vertical_dashed_line)
-                    container.addView(lineView, lineView.layoutParams)
-                }
-                imageView.tag = i
-                imageView.setOnClickListener {
-                    selectView = if (selectView == it) {
+    private fun initLaneInfo(list:MutableList<LaneInfoItem>) {
+        val container = binding.laneInfoTopContainer
+        container.removeAllViews()
+        val lineViewS = View(context)
+        lineViewS.layoutParams = ViewGroup.LayoutParams(24, 110)
+        lineViewS.background =
+            requireContext().getDrawable(R.drawable.shape_vertical_dashed_line)
+        container.addView(lineViewS, lineViewS.layoutParams)
+        for (i in list.indices) {
+            val laneInfo = list[i]
+            val imageView = ImageView(context)
+            val drawable = requireContext().getDrawable(laneInfo.id)
+            val color = when (laneInfo.type) {
+                1 -> requireContext().resources.getColor(R.color.lane_info_1)
+                2 -> requireContext().resources.getColor(R.color.lane_info_2)
+                else -> requireContext().resources.getColor(R.color.white)
+            }
+            // 创建 PorterDuffColorFilter 对象
+            val colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
+            // 将 PorterDuffColorFilter 设置给 Drawable
+            drawable!!.colorFilter = colorFilter
+            // 将 Drawable 设置给 ImageView
+            imageView.scaleType = ImageView.ScaleType.FIT_XY
+            imageView.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+            imageView.setImageDrawable(drawable)
+            // 将 ImageView 的颜色设置为红色
+            imageView.layoutParams = ViewGroup.LayoutParams(45, 100)
+            container.addView(imageView, imageView.layoutParams)
+            if (i < list.size - 1) {
+                val lineView = View(context)
+                lineView.layoutParams = ViewGroup.LayoutParams(24, 110)
+                lineView.background =
+                    requireContext().getDrawable(R.drawable.shape_vertical_dashed_line)
+                container.addView(lineView, lineView.layoutParams)
+            }
+            imageView.tag = i
+            imageView.setOnClickListener {
+                selectView = if (selectView == it) {
+                    selectView!!.setBackgroundColor(requireContext().resources.getColor(R.color.gray))
+                    null
+                } else {
+                    if (selectView != null) {
                         selectView!!.setBackgroundColor(requireContext().resources.getColor(R.color.gray))
-                        null
-                    } else {
-                        if (selectView != null) {
-                            selectView!!.setBackgroundColor(requireContext().resources.getColor(R.color.gray))
-                        }
-                        imageView.setBackgroundColor(requireContext().resources.getColor(R.color.lane_info_0))
-                        it as ImageView
                     }
+                    imageView.setBackgroundColor(requireContext().resources.getColor(R.color.lane_info_0))
+                    it as ImageView
                 }
             }
-            val lineViewE = View(context)
-            lineViewE.layoutParams = ViewGroup.LayoutParams(24, 110)
-            lineViewE.background =
-                requireContext().getDrawable(R.drawable.shape_vertical_dashed_line)
-            container.addView(lineViewE, lineViewE.layoutParams)
         }
+        val lineViewE = View(context)
+        lineViewE.layoutParams = ViewGroup.LayoutParams(24, 110)
+        lineViewE.background =
+            requireContext().getDrawable(R.drawable.shape_vertical_dashed_line)
+        container.addView(lineViewE, lineViewE.layoutParams)
     }
 }

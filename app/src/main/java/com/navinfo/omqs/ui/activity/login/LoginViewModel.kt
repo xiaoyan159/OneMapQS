@@ -127,10 +127,10 @@ class LoginViewModel @Inject constructor(
             if (userNameCache == userName && passwordCache == password) {
                 viewModelScope.launch(Dispatchers.IO) {
                     createUserFolder(context, userCodeCache, userRealName)
-                    getOfflineCityList(context)
+//                    getOfflineCityList(context)
 //                    loginStatus.postValue(LoginStatus.LOGIN_STATUS_SUCCESS)
                 }
-                return
+//                return
             }
         }
         //不指定IO，会在主线程里运行
