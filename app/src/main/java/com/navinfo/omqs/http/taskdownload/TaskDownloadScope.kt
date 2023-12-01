@@ -177,6 +177,8 @@ class TaskDownloadScope(
                         override fun onComplete() {
                             taskBean.status = FileDownloadStatus.DONE
                             downloadData.postValue(taskBean)
+                            //移除当前任务，进行下一个任务下载逻辑
+                            downloadManager.launchNext(taskBean.id)
                             //任务与当前一致，需要更新渲染图层
                             if (MapParamUtils.getTaskId() == taskBean.id) {
                                 downloadManager.mapController.layerManagerHandler.updateOMDBVectorTileLayer()

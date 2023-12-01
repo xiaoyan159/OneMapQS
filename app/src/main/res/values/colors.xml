@@ -4,7 +4,6 @@
     <color name="lane_info_0" comment="车信普通道路">#FF2271FF</color>
     <color name="lane_info_1" comment="车信附加道路">#FF00C800</color>
     <color name="lane_info_2" comment="车信公交道路">#FFFFB400</color>
-
     <color name="white" comment="主要按钮，背景等颜色">#FFFFFF</color> <!--白色 -->
     <color name="button_press_color" comment="默认的按钮按下去时的背景颜色">#F1EBEB</color>
     <color name="default_button_blue_color" comment="蓝色到紫色的渐变开始颜色">#4954ED</color>
@@ -12,7 +11,6 @@
     <color name="default_blue_text_color" comment="蓝色字体的默认颜色">#2631DD</color>
     <color name="input_edit_hint_color" comment="输入框hint文字，icon的颜色">#C1C0C8</color>
     <color name="high_item_color" comment="选中高亮的颜色">#FFF5F7FE</color>
-
     <color name="line_gray" comment="轻度灰色，一般用于下划线，不可点击按钮的边框">#dadade</color>
     <color name="bg_left_pannel" comment="左侧弹出框背景颜色">#f4f4fc</color>
     <color name="colorPrimary">#6c14c4</color>

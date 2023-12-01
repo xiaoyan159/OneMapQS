@@ -1555,8 +1555,10 @@
 
         <!-- 车信 -->
         <m v="OMDB_LANEINFO" >
-            <symbol repeat="false" repeat-start="0" repeat-gap="2000"
-                src="@symbol" symbol-height="24" degree="90"></symbol>
+            <m k="symbol" v="true">
+                <symbol repeat="false" repeat-start="0" repeat-gap="2000"
+                    src="@img-src" symbol-height="24" degree="90"></symbol>
+            </m>
         </m>
 
         <!-- 交通标牌 -->
@@ -1616,12 +1618,34 @@
             </m>
         </m>
 
+        <!-- 中央隔离带 -->
+        <m v="OMDB_LINK_MEDIAN">
+            <m k="medianSurface" v="0">
+                <area use="obj-area" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_0.svg"></area>
+            </m>
+            <m k="medianSurface" v="1">
+                <area use="obj-area" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_1.svg"></area>
+            </m>
+            <m k="medianSurface" v="2">
+                <area use="obj-area" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_2.svg"></area>
+            </m>
+            <m k="medianSurface" v="3">
+                <area use="obj-area" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_0.svg"></area>
+            </m>
+            <m k="medianSurface" v="4">
+                <area use="obj-area" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_1.svg"></area>
+            </m>
+            <m k="medianSurface" v="5">
+                <area use="obj-area" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_2.svg"></area>
+            </m>
+        </m>
+
         <!-- 道路边界类型 -->
         <m v="OMDB_RDBOUND_BOUNDARYTYPE">
             <outline-layer id="boundaryType" stroke="#8e44ad" width="0.1" />
             <!--护栏-->
             <m k="boundaryType" v="4">
-                <symbol repeat="true" repeat-gap="12" gland="true" repeat-start="0.01" src="assets:omdb/icon_2013_4.svg" symbol-width="16" symbol-height="36"></symbol>
+                <symbol repeat="true" repeat-gap="36" gland="true" repeat-start="5" src="assets:omdb/icon_2013_4.svg" symbol-width="56" symbol-height="56"></symbol>
             </m>
             <!--路牙-->
             <m k="boundaryType" v="3">
@@ -1629,7 +1653,7 @@
             </m>
             <!--墙-->
             <m k="boundaryType" v="5">
-                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_3.svg" symbol-width="24" symbol-height="12"></symbol>
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_5.svg" symbol-width="16" symbol-height="10"></symbol>
             </m>
             <!--铺设路面边缘-->
             <m k="boundaryType" v="6">
@@ -1648,7 +1672,7 @@
 
             <!--护栏-->
             <m k="boundaryType" v="4">
-                <symbol repeat="true" repeat-gap="12" gland="true" repeat-start="0.01" src="assets:omdb/icon_2013_4.svg" symbol-width="16" symbol-height="36"></symbol>
+                <symbol repeat="true" repeat-gap="36" gland="true" repeat-start="5" src="assets:omdb/icon_2013_4.svg" symbol-width="56" symbol-height="56"></symbol>
             </m>
             <!--路牙-->
             <m k="boundaryType" v="3">
@@ -1656,7 +1680,7 @@
             </m>
             <!--墙-->
             <m k="boundaryType" v="5">
-                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_3.svg" symbol-width="24" symbol-height="12"></symbol>
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_5.svg" symbol-width="16" symbol-height="10"></symbol>
             </m>
             <!--铺设路面边缘-->
             <m k="boundaryType" v="6">
@@ -1761,6 +1785,58 @@
             </m>
         </m>
 
+        <!-- 路牙 -->
+        <m v="OMDB_OBJECT_CURB">
+            <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_3.svg" symbol-width="16" symbol-height="10"></symbol>
+        </m>
+
+        <!-- 护栏 -->
+        <m v="OMDB_OBJECT_BARRIER">
+          <symbol repeat="true" repeat-gap="36" gland="true" repeat-start="5" src="assets:omdb/icon_2013_4.svg" symbol-width="56" symbol-height="56"></symbol>
+        </m>
+
+        <!-- 平行墙 -->
+        <m v="OMDB_OBJECT_WALL">
+            <m k="type" v="-|1">
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_3010_0.svg" symbol-width="16" symbol-height="10"></symbol>
+            </m>
+            <m k="type" v="1">
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_3010_1.svg" symbol-width="16" symbol-height="10"></symbol>
+            </m>
+        </m>
+
+        <!-- 警示区 -->
+        <m v="OMDB_OBJECT_WARNING_AREA">
+            <m k="material" v="1">
+                <m k="color" v="0">
+                    <area use="obj-area" stroke="#FF00C800" stroke-width="1" src="assets:omdb/icon_3007_0.svg"></area>
+                </m>
+                <m k="color" v="1">
+                    <area use="obj-area" stroke="#FF00C800" stroke-width="1" src="assets:omdb/icon_3007_1.svg"></area>
+                </m>
+                <m k="color" v="2">
+                    <area use="obj-area" stroke="#FF00C800" stroke-width="1" src="assets:omdb/icon_3007_2.svg"></area>
+                </m>
+                <m k="color" v="3">
+                    <area use="obj-area" stroke="#FF00C800" stroke-width="1" src="assets:omdb/icon_3007_3.svg"></area>
+                </m>
+            </m>
+            <m k="material" v="2">
+                <m k="color" v="0">
+                    <area use="obj-area" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_3007_0.svg"></area>
+                </m>
+                <m k="color" v="1">
+                    <area use="obj-area" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_3007_1.svg"></area>
+                </m>
+                <m k="color" v="2">
+                    <area use="obj-area" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_3007_2.svg"></area>
+                </m>
+                <m k="color" v="3">
+                    <area use="obj-area" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_3007_3.svg"></area>
+                </m>
+            </m>
+        </m>
+
         <!-- 道路属性 -->
         <m v="OMDB_LINK_ATTRIBUTE">
 
@@ -1795,7 +1871,7 @@
         </m>
 
         <!-- 全封闭 -->
-        <m v="OMDB_CON_ACESS">
+        <m v="OMDB_CON_ACCESS">
             <line use="road_morphology" />
         </m>
 
@@ -1882,6 +1958,11 @@
             </m>
         </m>
 
+        <!-- 设施分离 -->
+        <m v="OMDB_LINK_SEPARATION">
+            <symbol repeat="true" repeat-gap="18" gland="true" repeat-start="0" src="assets:omdb/icon_2070_0.svg" symbol-width="32" symbol-height="32"></symbol>
+        </m>
+
         <!-- 停止位置 -->
         <m v="OMDB_OBJECT_STOPLOCATION">
 
@@ -1908,18 +1989,18 @@
         <!--常规点限速-->
         <m v="OMDB_SPEEDLIMIT">
             <m k="speedFlag" v="0">
-                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
-                    stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4002_0.svg" symbol-width="24"></symbol>
+<!--                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"-->
+<!--                    stroke-width="1.0"></caption>-->
+                <symbol background="assets:omdb/icon_4002_0.png" symbol-width="24" content-rect="20,80,32,80" src="@text-src"></symbol>
             </m>
             <m k="speedFlag" v="1">
-                <caption fill="#000000" k="maxSpeed" priority="0" size="10" stroke="#ffffff"
-                    stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4002_1.svg" symbol-width="24"></symbol>
+<!--                <caption fill="#000000" k="maxSpeed" priority="0" size="10" stroke="#ffffff"-->
+<!--                    stroke-width="1.0"></caption>-->
+                <symbol background="assets:omdb/icon_4002_1.png" symbol-width="24" content-rect="20,80,32,80" src="@text-src"></symbol>
             </m>
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true" symbol-width="24"
-                    src="assets:omdb/icon_arrow_right.svg" ></symbol>
+                    src="assets:omdb/icon_arrow_right_bottom.svg" ></symbol>
             </m>
             <m k="type" v="s_2_e">
                 <line use="s2e" />
@@ -1929,18 +2010,20 @@
         <!--条件点限速-->
         <m v="OMDB_SPEEDLIMIT_COND">
             <m k="speedFlag" v="0">
-                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
+<!--                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4003_0.svg" symbol-width="24"></symbol>
+                <symbol src="assets:omdb/icon_4003_0.svg" symbol-width="24" symbol-height="48"></symbol>-->
+                <symbol background="assets:omdb/icon_4003_0.png" symbol-width="24" content-rect="20,80,32,80" src="@text-src"></symbol>
             </m>
             <m k="speedFlag" v="1">
-                <caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
+                <!--<caption fill="#000000" k="maxSpeed" priority="0" size="12" stroke="#ffffff"
                     stroke-width="1.0"></caption>
-                <symbol src="assets:omdb/icon_4003_1.svg" symbol-width="24"></symbol>
+                <symbol src="assets:omdb/icon_4003_1.svg" symbol-width="24" symbol-height="48"></symbol>-->
+                <symbol background="assets:omdb/icon_4003_1.png" symbol-width="24" content-rect="20,80,32,80" src="@text-src"></symbol>
             </m>
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true" symbol-width="24"
-                    src="assets:omdb/icon_arrow_right.svg" ></symbol>
+                    src="assets:omdb/icon_arrow_right_bottom.svg" ></symbol>
             </m>
             <m k="type" v="s_2_e">
                 <line use="s2e" />
@@ -1987,7 +2070,7 @@
             </m>
             <m k="type" v="angle">
                 <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
-                    src="assets:omdb/icon_arrow_right.svg" symbol-width="24"></symbol>
+                    src="assets:omdb/icon_arrow_right.svg" symbol-width="24" ></symbol>
             </m>
             <m k="type" v="s_2_e">
                 <line use="s2e" />
@@ -2101,23 +2184,24 @@
         <!-- 车道类型 -->
         <m v="OMDB_LANE_TYPE_ACCESS">
             <m k="bike">
-                <line fix="true" width="3" stroke="#cccccc"></line>
+                <line fix="true" width="3" stroke="#e6e6e6"></line>
+                <symbol repeat-start="0" repeat="true" repeat-gap="128" src="assets:omdb/icon_bike.svg"></symbol>
             </m>
             <m k="type" v="s_acc">
-                <symbol src="assets:omdb/icon_2092_acc_s.svg" symbol-height="32"
-                    symbol-width="32" gland="true"></symbol>
+                <symbol src="assets:omdb/icon_2092_acc_s.svg"
+                    symbol-width="24" gland="true"></symbol>
             </m>
             <m k="type" v="e_acc">
-                <symbol src="assets:omdb/icon_2092_acc_e.svg" symbol-height="32"
-                    symbol-width="32" gland="true"></symbol>
+                <symbol src="assets:omdb/icon_2092_acc_e.svg"
+                    symbol-width="24" gland="true"></symbol>
             </m>
             <m k="type" v="s_dec">
-                <symbol src="assets:omdb/icon_2092_dec_s.svg" symbol-height="32"
-                    symbol-width="32" gland="true"></symbol>
+                <symbol src="assets:omdb/icon_2092_dec_s.svg"
+                    symbol-width="24" gland="true"></symbol>
             </m>
             <m k="type" v="e_dec">
-                <symbol src="assets:omdb/icon_2092_dec_e.svg" symbol-height="32"
-                    symbol-width="32" gland="true"></symbol>
+                <symbol src="assets:omdb/icon_2092_dec_e.svg"
+                    symbol-width="24" gland="true"></symbol>
             </m>
         </m>
 

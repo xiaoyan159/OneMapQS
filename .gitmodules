@@ -1,5 +1,5 @@
 [submodule "vtm"]
 	path = vtm
-	url = git@github.com:xiaoyan159/vtm.git
-	branch = master
+	url = git@gitee.com:navinfo-mobile/vtm.git
+	branch = navinfo
 
