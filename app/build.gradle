@@ -17,7 +17,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.navinfo.omqs"
+//        applicationId "com.navinfo.omqs"
         minSdk 21
         targetSdk 21
         versionCode 1
@@ -26,7 +26,7 @@ android {
         multiDexEnabled true
 
         ndk {
-            abiFilters "armeabi-v7a", "armeabi", "mips"
+            abiFilters "arm64-v8a", "armeabi-v7a", "armeabi", "mips"
         }
     }
 
