@@ -1553,6 +1553,11 @@
             <text use="road" size="16"></text>
         </m>
 
+        <!-- 物理车道数 -->
+        <m v="OMDB_PHY_LANENUM">
+            <text use="road" size="10" ></text>
+        </m>
+
         <!-- 车信 -->
         <m v="OMDB_LANEINFO" >
             <m k="symbol" v="true">
@@ -1621,22 +1626,22 @@
         <!-- 中央隔离带 -->
         <m v="OMDB_LINK_MEDIAN">
             <m k="medianSurface" v="0">
-                <area use="obj-area" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_0.svg"></area>
+                <area use="obj-area" hasDirect="true" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_0.svg"></area>
             </m>
             <m k="medianSurface" v="1">
-                <area use="obj-area" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_1.svg"></area>
+                <area use="obj-area" hasDirect="true" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_1.svg"></area>
             </m>
             <m k="medianSurface" v="2">
-                <area use="obj-area" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_2.svg"></area>
+                <area use="obj-area" hasDirect="true" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_2.svg"></area>
             </m>
             <m k="medianSurface" v="3">
-                <area use="obj-area" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_0.svg"></area>
+                <area use="obj-area" hasDirect="true" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_0.svg"></area>
             </m>
             <m k="medianSurface" v="4">
-                <area use="obj-area" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_1.svg"></area>
+                <area use="obj-area" hasDirect="true" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_1.svg"></area>
             </m>
             <m k="medianSurface" v="5">
-                <area use="obj-area" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_2.svg"></area>
+                <area use="obj-area" hasDirect="true" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_2.svg"></area>
             </m>
         </m>
 
@@ -2171,7 +2176,7 @@
         <!-- zLevel -->
         <m v="OMDB_ZLEVEL">
             <m k="type" v="zlevelLine">
-                <line stroke="#59feb8" width="0.2" />
+                <line stroke="#59feb8" width="0.5" />
             </m>
             <m k="type" v="zlevelName">
                 <caption k="name" fill="#000000" stroke="#f1fe59" size="12" priority="0" ></caption>

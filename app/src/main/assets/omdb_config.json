@@ -65,8 +65,8 @@
         "table": "OMDB_LINK_NAME",
         "code": 2011,
         "name": "道路名",
-        "zoomMin": 18,
-        "zoomMax": 20,
+        "zoomMin": 15,
+        "zoomMax": 17,
         "checkLinkId": false,
         "transformer": [
           {
@@ -246,7 +246,18 @@
       "2097": {
         "table": "OMDB_PHY_LANENUM",
         "code": 2097,
-        "name": "物理车道数"
+        "name": "物理车道数",
+        "zoomMin": 15,
+        "zoomMax": 18,
+        "catch": true,
+        "transformer": [
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "generatePhyName()"
+          }
+        ]
       },
       "2201": {
         "table": "OMDB_BRIDGE",

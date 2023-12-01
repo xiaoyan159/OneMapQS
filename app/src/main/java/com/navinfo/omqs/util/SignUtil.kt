@@ -108,10 +108,10 @@ class SignUtil {
                     }
                 }
                 //物理车道数OMDB_PHY_LANENUM
-                DataCodeEnum.OMDB_LANE_NUM.code,
+/*                DataCodeEnum.OMDB_LANE_NUM.code,
                 DataCodeEnum.OMDB_PHY_LANENUM.code -> {
                     "${data.properties["laneS2e"]}|${data.properties["laneE2s"]}"
-                }
+                }*/
 
                 //常规点限速,条件点限速
                 DataCodeEnum.OMDB_SPEEDLIMIT.code, DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> getSpeedLimitMaxText(data)
@@ -304,7 +304,7 @@ class SignUtil {
                             title = "逆方向车道数", text = "${data.properties["laneE2s"]}"
                         )
                     )
-                    var str = when (data.properties["laneClass"]) {
+/*                    var str = when (data.properties["laneClass"]) {
                         "0" -> "未赋值"
                         "1" -> "一条车道"
                         "2" -> "两或三条"
@@ -317,7 +317,7 @@ class SignUtil {
                         TwoItemAdapterItem(
                             title = "车道数等级", text = str
                         )
-                    )
+                    )*/
                 }
                 //路口
                 DataCodeEnum.OMDB_INTERSECTION.code -> {
@@ -1928,7 +1928,7 @@ class SignUtil {
          */
         fun getRoadInfoIndex(element: RenderEntity): Int {
             return when (element.code) {
-                DataCodeEnum.OMDB_PHY_LANENUM.code,//物理车道数
+                //DataCodeEnum.OMDB_PHY_LANENUM.code,//物理车道数
                 DataCodeEnum.OMDB_LANE_NUM.code -> 0
                 DataCodeEnum.OMDB_RD_LINK_KIND.code -> 1
                 DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code -> 2

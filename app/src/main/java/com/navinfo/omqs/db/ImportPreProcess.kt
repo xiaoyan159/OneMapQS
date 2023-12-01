@@ -740,6 +740,15 @@ class ImportPreProcess {
         }
     }
 
+    /**
+     * 生成默认物理车道数据
+     * */
+    fun generatePhyName(renderEntity: RenderEntity) {
+        // 物理车道数
+        if (renderEntity.properties.containsKey("laneS2e")&&renderEntity.properties.containsKey("laneE2s")) {
+            renderEntity.properties["name"] = "${renderEntity.properties["laneS2e"]}|${renderEntity.properties["laneE2s"]}"
+        }
+    }
 
     /**
      * 生成默认道路名数据
@@ -1224,6 +1233,8 @@ class ImportPreProcess {
         if (renderEntity.properties.containsKey("maxSpeed") && renderEntity.properties.containsKey("minSpeed")) {
             renderEntity.properties["ref"] =
                 "${renderEntity.properties["maxSpeed"]}|${renderEntity.properties["minSpeed"]}"
+            renderEntity.propertiesDb =
+                DeflaterUtil.zipString(JSON.toJSONString(renderEntity.properties))
         }
     }
 
@@ -1243,13 +1254,11 @@ class ImportPreProcess {
                 val linkGeometry =
                     GeometryTools.createGeometry(zLevelObject.optString("linkGeometry"))
                 val coordinates = linkGeometry!!.coordinates
-                val referenceEntityList = mutableListOf<ReferenceEntity>()
                 // 判断当前数据的startEnd，如果是0则向前和向后都绘制线，如果是1（起点）则只绘制前两个点组成的线，如果是2（终点）则只绘制后两个点组成的线
                 if (startEnd == 0 || startEnd == 1) { // 处理向后的线
                     val zLevelReference = createZLevelReference(renderEntity)
                     zLevelReference.properties["type"] = "zlevelLine"
-//                    zLevelReference.properties["name"] = zLevel.toString()
-                    // 根据shpSeqNum获取对应的点位
+                    zLevelReference.propertiesDb =  DeflaterUtil.zipString(JSON.toJSONString(zLevelReference.properties))
                     if (shpSeqNum < coordinates.size - 1) {
                         val currentCoordinate = coordinates[shpSeqNum]
                         var nextCoordinate = coordinates[shpSeqNum + 1]
@@ -1279,26 +1288,25 @@ class ImportPreProcess {
                                 ), GeoPoint(nextCoordinate.y, nextCoordinate.x)
                             )
                         ).toString()
-
-                        referenceEntityList.add(zLevelReference)
-
+                        renderEntity.referenceEntitys.add(zLevelReference)
                         val zLevelNameReference = createZLevelReference(renderEntity)
                         zLevelNameReference.properties["type"] = "zlevelName"
                         zLevelNameReference.properties["name"] = zLevel.toString()
+                        zLevelNameReference.propertiesDb =  DeflaterUtil.zipString(JSON.toJSONString(zLevelNameReference.properties))
                         zLevelNameReference.geometry = GeometryTools.createGeometry(
                             GeoPoint(
                                 nextCoordinate.y,
                                 nextCoordinate.x
                             )
                         ).toString()
-                        referenceEntityList.add(zLevelNameReference)
+                        renderEntity.referenceEntitys.add(zLevelNameReference)
                     }
                 }
 
                 if (startEnd == 0 || startEnd == 2) { // 处理向前的线
                     val zLevelReference = createZLevelReference(renderEntity)
                     zLevelReference.properties["type"] = "zlevelLine"
-//                    zLevelReference.properties["name"] = zLevel.toString()
+                    zLevelReference.propertiesDb =  DeflaterUtil.zipString(JSON.toJSONString(zLevelReference.properties))
                     // 根据shpSeqNum获取对应的点位
                     if (shpSeqNum < coordinates.size && shpSeqNum > 0) {
                         val currentCoordinate = coordinates[shpSeqNum]
@@ -1320,7 +1328,6 @@ class ImportPreProcess {
                         // 计算偏移后的点
                         preCoordinate =
                             Coordinate(currentCoordinate.getX() + dx, currentCoordinate.getY() + dy)
-//                        }
                         zLevelReference.geometry = GeometryTools.createLineString(
                             arrayListOf(
                                 GeoPoint(
@@ -1329,19 +1336,17 @@ class ImportPreProcess {
                                 ), GeoPoint(preCoordinate.y, preCoordinate.x)
                             )
                         ).toString()
-                        referenceEntityList.add(zLevelReference)
-
+                        renderEntity.referenceEntitys.add(zLevelReference)
                         val zLevelNameReference = createZLevelReference(renderEntity)
                         zLevelNameReference.properties["type"] = "zlevelName"
                         zLevelNameReference.properties["name"] = zLevel.toString()
+                        zLevelNameReference.propertiesDb =  DeflaterUtil.zipString(JSON.toJSONString(zLevelNameReference.properties))
                         zLevelNameReference.geometry =
                             GeometryTools.createGeometry(GeoPoint(preCoordinate.y, preCoordinate.x))
                                 .toString()
-                        referenceEntityList.add(zLevelNameReference)
+                        renderEntity.referenceEntitys.add(zLevelNameReference)
                     }
                 }
-
-                insertData(referenceEntityList)
                 // 移除zlevelList，减小原始数据大小
                 renderEntity.properties.remove("zlevelList")
             }
