@@ -286,10 +286,10 @@ class ImportPreProcess {
             startReference.properties["type"] =
                 "s${if (renderEntity.properties["laneType"]!!.toInt() and (0b1000) > 0) "_dec" else "_acc"}"
             startReference.properties["geometry"] = startReference.geometry
-            listResult.add(startReference)
+            startReference.propertiesDb =  DeflaterUtil.zipString(JSON.toJSONString(startReference.properties))
+            renderEntity.referenceEntitys.add(startReference)
 
             val endReference = ReferenceEntity()
-//            endReference.renderEntityId = renderEntity.id
             endReference.name = "${renderEntity.name}参考点"
             endReference.code = renderEntity.code
             endReference.table = renderEntity.table
@@ -305,9 +305,8 @@ class ImportPreProcess {
             endReference.properties["type"] =
                 "e${if (renderEntity.properties["laneType"]!!.toInt() and (0b1000) > 0) "_dec" else "_acc"}"
             endReference.properties["geometry"] = endReference.geometry
+            endReference.propertiesDb =  DeflaterUtil.zipString(JSON.toJSONString(endReference.properties))
             renderEntity.referenceEntitys.add(endReference)
-            //listResult.add(endReference)
-            //insertData(listResult)
         }
     }
 

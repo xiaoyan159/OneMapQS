@@ -85,7 +85,7 @@ class SignUtil {
                 }
                 //全封闭
                 DataCodeEnum.OMDB_CON_ACCESS.code -> {
-                    if (data.properties["conAccess"] === "1") "全封闭" else ""
+                    if (data.properties["conAccess"] == "1") "全封闭" else ""
                 }
                 //匝道
                 DataCodeEnum.OMDB_RAMP_1.code,

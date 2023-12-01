@@ -1797,7 +1797,12 @@
 
         <!-- 平行墙 -->
         <m v="OMDB_OBJECT_WALL">
-            <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_5.svg" symbol-width="16" symbol-height="10"></symbol>
+            <m k="type" v="-|1">
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_3010_0.svg" symbol-width="16" symbol-height="10"></symbol>
+            </m>
+            <m k="type" v="1">
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_3010_1.svg" symbol-width="16" symbol-height="10"></symbol>
+            </m>
         </m>
 
         <!-- 警示区 -->
@@ -2179,23 +2184,24 @@
         <!-- 车道类型 -->
         <m v="OMDB_LANE_TYPE_ACCESS">
             <m k="bike">
-                <line fix="true" width="3" stroke="#cccccc"></line>
+                <line fix="true" width="3" stroke="#e6e6e6"></line>
+                <symbol repeat-start="0" repeat="true" repeat-gap="128" src="assets:omdb/icon_bike.svg"></symbol>
             </m>
             <m k="type" v="s_acc">
-                <symbol src="assets:omdb/icon_2092_acc_s.svg" symbol-height="26"
-                    symbol-width="26" gland="true"></symbol>
+                <symbol src="assets:omdb/icon_2092_acc_s.svg"
+                    symbol-width="24" gland="true"></symbol>
             </m>
             <m k="type" v="e_acc">
-                <symbol src="assets:omdb/icon_2092_acc_e.svg" symbol-height="26"
-                    symbol-width="26" gland="true"></symbol>
+                <symbol src="assets:omdb/icon_2092_acc_e.svg"
+                    symbol-width="24" gland="true"></symbol>
             </m>
             <m k="type" v="s_dec">
-                <symbol src="assets:omdb/icon_2092_dec_s.svg" symbol-height="26"
-                    symbol-width="26" gland="true"></symbol>
+                <symbol src="assets:omdb/icon_2092_dec_s.svg"
+                    symbol-width="24" gland="true"></symbol>
             </m>
             <m k="type" v="e_dec">
-                <symbol src="assets:omdb/icon_2092_dec_e.svg" symbol-height="26"
-                    symbol-width="26" gland="true"></symbol>
+                <symbol src="assets:omdb/icon_2092_dec_e.svg"
+                    symbol-width="24" gland="true"></symbol>
             </m>
         </m>
 
