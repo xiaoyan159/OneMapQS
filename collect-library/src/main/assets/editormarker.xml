@@ -1626,22 +1626,22 @@
         <!-- 中央隔离带 -->
         <m v="OMDB_LINK_MEDIAN">
             <m k="medianSurface" v="0">
-                <area use="obj-area" hasDirect="true" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_0.svg"></area>
+                <area use="obj-area" hasDirect="true" stroke="#00ffdd" stroke-width="1" ></area>
             </m>
             <m k="medianSurface" v="1">
-                <area use="obj-area" hasDirect="true" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_1.svg"></area>
+                <area use="obj-area" hasDirect="true" stroke="#00ffdd" stroke-width="1" ></area>
             </m>
             <m k="medianSurface" v="2">
-                <area use="obj-area" hasDirect="true" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_2.svg"></area>
+                <area use="obj-area" hasDirect="true" stroke="#00ffdd" stroke-width="1" ></area>
             </m>
             <m k="medianSurface" v="3">
-                <area use="obj-area" hasDirect="true" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_0.svg"></area>
+                <area use="obj-area" hasDirect="true" stroke="#00ffdd" stroke-width="1" ></area>
             </m>
             <m k="medianSurface" v="4">
-                <area use="obj-area" hasDirect="true" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_1.svg"></area>
+                <area use="obj-area" hasDirect="true" stroke="#00ffdd" stroke-width="1" ></area>
             </m>
             <m k="medianSurface" v="5">
-                <area use="obj-area" hasDirect="true" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_2.svg"></area>
+                <area use="obj-area" hasDirect="true" stroke="#00ffdd" stroke-width="1" ></area>
             </m>
         </m>
 
