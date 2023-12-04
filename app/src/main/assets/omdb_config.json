@@ -614,6 +614,7 @@
         "zoomMin": 18,
         "zoomMax": 20,
         "filterData": true,
+        "checkLinkId": false,
         "catch": true,
         "transformer": [
           {

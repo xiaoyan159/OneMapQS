@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="b" xmlns="http://www.w3.org/2000/svg" width="100" height="100"
+    xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100">
+    <defs>
+        <style>
+            .k{fill:none;}.k,.l,.m,.n,.o,.p,.q,.r{stroke-width:0px;}.l{fill:url(#e);}.m{fill:url(#f);}.n{fill:url(#d);}.o{fill:url(#j);}.p{fill:url(#i);}.q{fill:url(#h);}.r{fill:url(#g);}
+        </style>
+        <linearGradient id="d" x1="88.8" y1="49.9" x2="91" y2="49.9" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#231815" />
+            <stop offset="0" stop-color="#372d2a" />
+            <stop offset="0" stop-color="#655d5b" />
+            <stop offset=".1" stop-color="#8e8987" />
+            <stop offset=".2" stop-color="#b1adac" />
+            <stop offset=".2" stop-color="#cdcbca" />
+            <stop offset=".3" stop-color="#e3e2e1" />
+            <stop offset=".3" stop-color="#f2f2f2" />
+            <stop offset=".4" stop-color="#fcfbfb" />
+            <stop offset=".5" stop-color="#fff" />
+            <stop offset=".7" stop-color="#fcfcfc" />
+            <stop offset=".7" stop-color="#f5f5f5" />
+            <stop offset=".8" stop-color="#e9e8e8" />
+            <stop offset=".8" stop-color="#d8d6d6" />
+            <stop offset=".9" stop-color="#c2bfbe" />
+            <stop offset=".9" stop-color="#a6a2a1" />
+            <stop offset=".9" stop-color="#85807e" />
+            <stop offset="1" stop-color="#605957" />
+            <stop offset="1" stop-color="#3a312f" />
+            <stop offset="1" stop-color="#453d3b" />
+            <stop offset="1" stop-color="#65605f" />
+            <stop offset="1" stop-color="#7f7c7b" />
+            <stop offset="1" stop-color="#91908f" />
+            <stop offset="1" stop-color="#9c9c9b" />
+            <stop offset="1" stop-color="#a0a0a0" />
+        </linearGradient>
+        <linearGradient id="e" x1="68.7" y1="49.9" x2="71" y2="49.9" xlink:href="#d" />
+        <linearGradient id="f" x1="28.6" y1="49.9" x2="30.8" y2="49.9" xlink:href="#d" />
+        <linearGradient id="g" x1="8.5" y1="49.9" x2="10.7" y2="49.9" xlink:href="#d" />
+        <linearGradient id="h" x1="-1250.2" y1="57.9" x2="-1244.5" y2="57.9"
+            gradientTransform="translate(1297.3 -39.3)" xlink:href="#d" />
+        <linearGradient id="i" x1="-1313" y1="57.9" x2="-1307.4" y2="57.9"
+            gradientTransform="translate(1360.2 23.6)" xlink:href="#d" />
+        <linearGradient id="j" x1="-1331.5" y1="-1287.4" x2="-1323.6" y2="-1287.4"
+            gradientTransform="translate(1377.5 1337.4)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#989898" />
+            <stop offset="0" stop-color="#a3a3a3" />
+            <stop offset=".1" stop-color="#c4c5c5" />
+            <stop offset=".2" stop-color="#d8d9d9" />
+            <stop offset=".3" stop-color="#e0e1e1" />
+            <stop offset=".4" stop-color="#dbdcdc" />
+            <stop offset=".5" stop-color="#cccece" />
+            <stop offset=".6" stop-color="#b5b6b7" />
+            <stop offset=".7" stop-color="#949697" />
+            <stop offset=".8" stop-color="#6a6c6f" />
+            <stop offset=".8" stop-color="#3f4246" />
+            <stop offset="1" stop-color="#404247" />
+            <stop offset="1" stop-color="#43434a" />
+        </linearGradient>
+    </defs>
+    <g id="c">
+        <rect class="k" width="100" height="100" />
+        <path class="n"
+            d="m89,18h1.8c.1,0,.2.1.2.2v63.6c0,0,0,.1-.1.1h-2.1s0,0,0,0V18.2c0-.1.1-.2.2-.2Z" />
+        <path class="l"
+            d="m68.9,18h1.8c.1,0,.2.1.2.2v63.6c0,0,0,.1-.1.1h-2.1s0,0,0,0V18.2c0-.1.1-.2.2-.2Z" />
+        <path class="m"
+            d="m28.8,18h1.8c.1,0,.2.1.2.2v63.6c0,0,0,.1-.1.1h-2.1s0,0,0,0V18.2c0-.1.1-.2.2-.2Z" />
+        <path class="r"
+            d="m8.7,18h1.8c.1,0,.2.1.2.2v63.6c0,0,0,.1-.1.1h-2.1s0,0,0,0V18.2c0-.1.1-.2.2-.2Z" />
+        <path class="q"
+            d="m47.4-31.4h5.2c.1,0,.2.1.2.2v99.7c0,0,0,.1-.1.1h-5.4s0,0,0,0V-31.2c0-.1.1-.2.2-.2Z"
+            transform="translate(31.4 68.6) rotate(-90)" />
+        <path class="p"
+            d="m47.4,31.4h5.2c.1,0,.2.1.2.2v99.7c0,0,0,.1-.1.1h-5.4s0,0,0,0V31.7c0-.1.1-.2.2-.2Z"
+            transform="translate(-31.4 131.4) rotate(-90)" />
+        <path class="o"
+            d="m46.5,0h6.5c.6,0,1.1.5,1.1,1.1v98c0,.5-.4,1-1,1h-6.8c-.5,0-.9-.4-.9-.9V1.1c0-.6.5-1.1,1.1-1.1Z"
+            transform="translate(99.5 100) rotate(180)" />
+    </g>
+</svg>

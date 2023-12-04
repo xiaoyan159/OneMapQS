@@ -179,6 +179,13 @@
     <!-- oneway -->
     <style-symbol id="oneway" repeat="true" src="assets:symbols/oneway.svg" />
 
+    <!-- 护栏 -->
+    <style-symbol id="guardrail" gland="true" repeat="true" repeat-gap="10" repeat-start="1" symbol-width="24" symbol-height="14" src="assets:omdb/icon_2013_4_3.svg" />
+    <!-- 路牙 -->
+    <style-symbol id="curb" repeat="true" gland="true" repeat-gap="10" repeat-start="1" src="assets:omdb/icon_2013_3.svg" symbol-width="16" />
+    <!-- 墙 -->
+    <style-symbol id="wall" repeat="true" gland="true" repeat-gap="10" repeat-start="1" src="assets:omdb/icon_2013_5.svg" symbol-width="16" />
+
     <!-- omdb -->
     <style-line id="boundaryType" stipple-width="0.1" width="0.1" />
     <style-line dasharray="1,1" id="s2e" repeat-gap="3" repeat-start="0" stroke="#14582c"
@@ -1623,60 +1630,20 @@
             </m>
         </m>
 
-        <!-- 中央隔离带 -->
-        <m v="OMDB_LINK_MEDIAN">
-            <m k="medianSurface" v="0">
-                <line stroke="#889b86" width="0.5"/>
-<!--
-                <area use="obj-area" hasDirect="true" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_0.svg"></area>
--->
-            </m>
-            <m k="medianSurface" v="1">
-                <line stroke="#45aa04" width="0.5"/>
-<!--
-                <area use="obj-area" hasDirect="true" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_1.svg"></area>
--->
-            </m>
-            <m k="medianSurface" v="2">
-                <line stroke="#134c05" width="0.5"/>
-<!--
-                <area use="obj-area" hasDirect="true" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_2.svg"></area>
--->
-            </m>
-            <m k="medianSurface" v="3">
-                <line stroke="#889b86" width="0.5"/>
-<!--
-                <area use="obj-area" hasDirect="true" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_0.svg"></area>
--->
-            </m>
-            <m k="medianSurface" v="4">
-                <line stroke="#45aa04" width="0.5"/>
-<!--
-                <area use="obj-area" hasDirect="true" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_1.svg"></area>
--->
-            </m>
-            <m k="medianSurface" v="5">
-                <line stroke="#134c05" width="0.5"/>
-<!--
-                <area use="obj-area" hasDirect="true" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_2.svg"></area>
--->
-            </m>
-        </m>
-
         <!-- 道路边界类型 -->
         <m v="OMDB_RDBOUND_BOUNDARYTYPE">
             <outline-layer id="boundaryType" stroke="#8e44ad" width="0.1" />
             <!--护栏-->
             <m k="boundaryType" v="4">
-                <symbol repeat="true" repeat-gap="36" gland="true" repeat-start="5" src="assets:omdb/icon_2013_4.svg" symbol-width="56" symbol-height="56"></symbol>
+                <symbol use="guardrail" ></symbol>
             </m>
             <!--路牙-->
             <m k="boundaryType" v="3">
-                <symbol repeat="true" repeat-gap="12" gland="true" repeat-start="0.01" src="assets:omdb/icon_2013_3.svg" symbol-width="16" symbol-height="10"></symbol>
+                <symbol use="curb" ></symbol>
             </m>
             <!--墙-->
             <m k="boundaryType" v="5">
-                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_5.svg" symbol-width="16" symbol-height="10"></symbol>
+                <symbol use="wall"></symbol>
             </m>
             <!--铺设路面边缘-->
             <m k="boundaryType" v="6">
@@ -1695,15 +1662,15 @@
 
             <!--护栏-->
             <m k="boundaryType" v="4">
-                <symbol repeat="true" repeat-gap="36" gland="true" repeat-start="5" src="assets:omdb/icon_2013_4.svg" symbol-width="56" symbol-height="56"></symbol>
+                <symbol use="guardrail" ></symbol>
             </m>
             <!--路牙-->
             <m k="boundaryType" v="3">
-                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_3.svg" symbol-width="16" symbol-height="10"></symbol>
+                <symbol use="curb" ></symbol>
             </m>
             <!--墙-->
             <m k="boundaryType" v="5">
-                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_5.svg" symbol-width="16" symbol-height="10"></symbol>
+                <symbol use="wall"></symbol>
             </m>
             <!--铺设路面边缘-->
             <m k="boundaryType" v="6">
@@ -1810,21 +1777,61 @@
 
         <!-- 路牙 -->
         <m v="OMDB_OBJECT_CURB">
-            <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_2013_3.svg" symbol-width="16" symbol-height="10"></symbol>
+            <symbol use="curb" ></symbol>
         </m>
 
         <!-- 护栏 -->
         <m v="OMDB_OBJECT_BARRIER">
-          <symbol repeat="true" repeat-gap="36" gland="true" repeat-start="5" src="assets:omdb/icon_2013_4.svg" symbol-width="56" symbol-height="56"></symbol>
+            <symbol use="guardrail" ></symbol>
         </m>
 
         <!-- 平行墙 -->
         <m v="OMDB_OBJECT_WALL">
             <m k="type" v="-|1">
-                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_3010_0.svg" symbol-width="16" symbol-height="10"></symbol>
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="1" src="assets:omdb/icon_3010_0.svg" symbol-width="16" symbol-height="10"></symbol>
             </m>
             <m k="type" v="1">
-                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="0.01" src="assets:omdb/icon_3010_1.svg" symbol-width="16" symbol-height="10"></symbol>
+                <symbol repeat="true" gland="true" repeat-gap="12" repeat-start="1" src="assets:omdb/icon_3010_1.svg" symbol-width="16" symbol-height="10"></symbol>
+            </m>
+        </m>
+
+        <!-- 中央隔离带 -->
+        <m v="OMDB_LINK_MEDIAN">
+            <m k="medianSurface" v="0">
+                <line stroke="#889b86" width="0.6"/>
+                <!--
+                                <area use="obj-area" hasDirect="true" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_0.svg"></area>
+                -->
+            </m>
+            <m k="medianSurface" v="1">
+                <line stroke="#45aa04" width="0.6"/>
+                <!--
+                                <area use="obj-area" hasDirect="true" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_1.svg"></area>
+                -->
+            </m>
+            <m k="medianSurface" v="2">
+                <line stroke="#134c05" width="0.6"/>
+                <!--
+                                <area use="obj-area" hasDirect="true" stroke="#00000000" stroke-width="1" src="assets:omdb/icon_2071_2.svg"></area>
+                -->
+            </m>
+            <m k="medianSurface" v="3">
+                <line stroke="#889b86" width="0.6"/>
+                <!--
+                                <area use="obj-area" hasDirect="true" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_0.svg"></area>
+                -->
+            </m>
+            <m k="medianSurface" v="4">
+                <line stroke="#45aa04" width="0.6"/>
+                <!--
+                                <area use="obj-area" hasDirect="true" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_1.svg"></area>
+                -->
+            </m>
+            <m k="medianSurface" v="5">
+                <line stroke="#134c05" width="0.6"/>
+                <!--
+                                <area use="obj-area" hasDirect="true" stroke="#ffffff" stroke-width="1" src="assets:omdb/icon_2071_2.svg"></area>
+                -->
             </m>
         </m>
 
