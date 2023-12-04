@@ -845,13 +845,13 @@ class ImportPreProcess {
                     0,1,2->{
                         if (medianWidth != null) {
                             angleReference.geometry =
-                                GeometryTools.computeLine(0.000012, 0.0, renderEntity.geometry)
+                                GeometryTools.computeLine(0.000015, 0.0, renderEntity.geometry)
                         }
                     }
                     3->{
                         if (medianWidth != null) {
                             angleReference.geometry =
-                                GeometryTools.computeLine(0.0, 0.000012, renderEntity.geometry)
+                                GeometryTools.computeLine(0.0, 0.000015, renderEntity.geometry)
                         }
                     }
                 }
@@ -859,7 +859,7 @@ class ImportPreProcess {
                 angleReference.table = renderEntity.table
                 angleReference.code = renderEntity.code
                 angleReference.properties["qi_table"] = renderEntity.table
-                angleReference.properties["medianSurface"] = medianSurface.toString()
+                angleReference.properties["medianSurfaceGeometry"] = medianSurface.toString()
                 angleReference.zoomMin = renderEntity.zoomMin
                 angleReference.zoomMax = renderEntity.zoomMax
                 angleReference.taskId = renderEntity.taskId
