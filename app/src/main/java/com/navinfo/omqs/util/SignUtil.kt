@@ -24,6 +24,9 @@ import org.locationtech.jts.geom.Point
 import org.oscim.core.GeoPoint
 import java.lang.reflect.Field
 
+/*
+* 要素详情解析类及左侧提前显示内容解析说明
+* */
 class SignUtil {
     companion object {
 
@@ -82,7 +85,7 @@ class SignUtil {
                 }
                 //全封闭
                 DataCodeEnum.OMDB_CON_ACCESS.code -> {
-                    if (data.properties["conAccess"] === "1") "全封闭" else ""
+                    if (data.properties["conAccess"] == "1") "全封闭" else ""
                 }
                 //匝道
                 DataCodeEnum.OMDB_RAMP_1.code,
@@ -175,9 +178,9 @@ class SignUtil {
 
                 DataCodeEnum.OMDB_LINK_ATTRIBUTE_MAIN_SIDE_ACCESS.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_FORNTAGE.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_SA.code, DataCodeEnum.OMDB_LINK_ATTRIBUTE_PA.code -> "道路属性"
 
-                DataCodeEnum.OMDB_LINK_FORM1_1.code, DataCodeEnum.OMDB_LINK_FORM1_2.code, DataCodeEnum.OMDB_LINK_FORM1_3.code, DataCodeEnum.OMDB_LINK_FORM2_1.code, DataCodeEnum.OMDB_LINK_FORM2_2.code, DataCodeEnum.OMDB_LINK_FORM2_3.code, DataCodeEnum.OMDB_LINK_FORM2_4.code, DataCodeEnum.OMDB_LINK_FORM2_5.code, DataCodeEnum.OMDB_LINK_FORM2_6.code, DataCodeEnum.OMDB_LINK_FORM2_7.code, DataCodeEnum.OMDB_LINK_FORM2_8.code, DataCodeEnum.OMDB_LINK_FORM2_9.code, DataCodeEnum.OMDB_LINK_FORM2_10.code, DataCodeEnum.OMDB_LINK_FORM2_11.code, DataCodeEnum.OMDB_LINK_FORM2_12.code, DataCodeEnum.OMDB_LINK_FORM2_13.code -> "道路形态"
+                DataCodeEnum.OMDB_LINK_FORM1_1.code, DataCodeEnum.OMDB_LINK_FORM1_2.code, DataCodeEnum.OMDB_LINK_FORM1_3.code, DataCodeEnum.OMDB_LINK_FORM2_1.code, DataCodeEnum.OMDB_LINK_FORM2_2.code, DataCodeEnum.OMDB_LINK_FORM2_3.code, DataCodeEnum.OMDB_LINK_FORM2_4.code, DataCodeEnum.OMDB_LINK_FORM2_5.code, DataCodeEnum.OMDB_LINK_FORM2_6.code, DataCodeEnum.OMDB_LINK_FORM2_7.code, DataCodeEnum.OMDB_LINK_FORM2_8.code, DataCodeEnum.OMDB_LINK_FORM2_9.code, DataCodeEnum.OMDB_LINK_FORM2_10.code, DataCodeEnum.OMDB_LINK_FORM2_11.code, DataCodeEnum.OMDB_LINK_FORM2_12.code, DataCodeEnum.OMDB_LINK_FORM2_13.code -> "形态"
 
-                else -> DataCodeEnum.findTableNameByCode(data.code)
+                else -> DataCodeEnum.findTableSubNameByCode(data.code)
             }
         }
 
@@ -790,11 +793,87 @@ class SignUtil {
                     list.add(TwoItemAdapterItem(title = "起终点标识", text = "${data.properties["startEnd"]}"))
                     list.add(TwoItemAdapterItem(title = "高度层次", text = "${data.properties["zlevel"]}"))
                 }
+                //道路边界类型
+                DataCodeEnum.OMDB_RDBOUND_BOUNDARYTYPE.code -> {
+                    list.add(TwoItemAdapterItem(title = "道路边界线ID", text = "${data.properties["roadBoundaryLinkPid"]}"))
+                    list.add(TwoItemAdapterItem(title = "道路边界类型", text = when (data.properties["boundaryType"]?.toInt()) {
+                        0 -> "不应用"
+                        1 -> "无标线无可区分边界"
+                        2 -> "标线"
+                        3 -> "路牙"
+                        4 -> "护栏"
+                        5 -> "墙"
+                        6 -> "铺设路面边缘"
+                        7 -> "虚拟三角岛"
+                        8 -> "障碍物"
+                        9 -> "杆状障碍物"
+                        else -> ""
+                    }))
+                }
                 //车道类型
                 DataCodeEnum.OMDB_LANE_TYPE_ACCESS.code -> {
                     list.add(TwoItemAdapterItem(title = "车道中心线ID", text = "${data.properties["laneLinkPid"]}"))
 
                     list.add(TwoItemAdapterItem(title = "车道类型", text = getLaneType(data)))
+                }
+                //设施分离
+                DataCodeEnum.OMDB_LINK_SEPARATION.code -> {
+                    list.add(TwoItemAdapterItem(title = "设施分离", text = when (data.properties["separation"]) {
+                        "1" -> "坚固护栏"
+                        "2" -> "非坚固护栏"
+                        else -> ""
+                    }))
+                }
+                //中央隔离带
+                DataCodeEnum.OMDB_LINK_MEDIAN.code -> {
+                    list.add(TwoItemAdapterItem(title = "设施分离", text = when (data.properties["medianSurface"]) {
+                        "0" -> "未铺设"
+                        "1" -> "铺设"
+                        "2" -> "混合"
+                        else -> ""
+                    }))
+                }
+                //路牙
+                DataCodeEnum.OMDB_OBJECT_CURB.code -> {
+                    list.add(TwoItemAdapterItem(title = "是否符合高精地图", text = when (data.properties["compliant"]) {
+                        "0" -> "否"
+                        "1" -> "是"
+                        else -> ""
+                    }))
+                }
+                //平行墙
+                DataCodeEnum.OMDB_OBJECT_WALL.code -> {
+                    list.add(TwoItemAdapterItem(title = "类型", text = when (data.properties["type"]) {
+                        "1" -> "隧道墙"
+                        "3" -> "其他墙"
+                        else -> ""
+                    }))
+                }
+                //警示区
+                DataCodeEnum.OMDB_OBJECT_WARNING_AREA.code -> {
+                    list.add(TwoItemAdapterItem(title = "颜色", text = when (data.properties["color"]) {
+                        "0" -> "未验证"
+                        "1" -> "白色"
+                        "2" -> "黄色"
+                        "3" -> "红色"
+                        else -> ""
+                    }))
+                    list.add(TwoItemAdapterItem(title = "材质", text = when (data.properties["material"]) {
+                        "1" -> "有突起的材质"
+                        "2" -> "喷漆材质"
+                        else -> ""
+                    }))
+                }
+                //护栏
+                DataCodeEnum.OMDB_OBJECT_BARRIER.code -> {
+                    list.add(TwoItemAdapterItem(title = "护栏类型", text = when (data.properties["barrierType"]) {
+                        "0" -> "护栏"
+                        "1" -> "新泽西护栏"
+                        "2" -> "安全护栏"
+                        "3" -> "围栏"
+                        "4" -> "其他护栏"
+                        else -> ""
+                    }))
                 }
             }
             adapter.data = list

@@ -390,6 +390,52 @@
           }
         ]
       },
+      "3007": {
+        "table": "OMDB_OBJECT_WARNING_AREA",
+        "code": 3007,
+        "name": "警示区",
+        "checkLinkId": true,
+        "filterData": true,
+        "zoomMin": 18,
+        "catch": true,
+        "zoomMax": 20
+      },
+      "3009": {
+        "table": "OMDB_OBJECT_BARRIER",
+        "code": 3009,
+        "name": "护栏",
+        "checkLinkId": true,
+        "filterData": true,
+        "zoomMin": 18,
+        "catch": true,
+        "zoomMax": 20,
+        "transformer": [
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "generateMulToLine()"
+          }
+        ]
+      },
+      "3010": {
+        "table": "OMDB_OBJECT_WALL",
+        "code": 3010,
+        "name": "平行墙",
+        "checkLinkId": true,
+        "filterData": true,
+        "zoomMin": 18,
+        "catch": true,
+        "zoomMax": 20,
+        "transformer": [
+          {
+            "k": "geometry",
+            "v": "~",
+            "klib": "geometry",
+            "vlib": "generateMulToLine()"
+          }
+        ]
+      },
       "3012": {
         "table": "OMDB_FILL_AREA",
         "code": 3012,
@@ -418,9 +464,19 @@
         "catch": true,
         "zoomMax": 20
       },
-      "3027": {
+      "3019": {
+        "table": "OMDB_OBJECT_CURB",
+        "code": 3019,
+        "name": "路牙",
+        "checkLinkId": true,
+        "filterData": true,
+        "zoomMin": 18,
+        "catch": true,
+        "zoomMax": 20
+      },
+      "3028": {
         "table": "OMDB_OBJECT_REFUGE_ISLAND",
-        "code": 3027,
+        "code": 3028,
         "name": "路口内交通岛",
         "catch": true,
         "checkLinkId": true,

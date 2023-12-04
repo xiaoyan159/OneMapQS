@@ -20,6 +20,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alibaba.fastjson.JSON
 import com.blankj.utilcode.util.ToastUtils
 import com.navinfo.collect.library.data.entity.*
 import com.navinfo.collect.library.enums.DataCodeEnum
@@ -45,6 +46,8 @@ import io.realm.RealmList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
 import org.locationtech.jts.geom.Geometry
 import org.oscim.core.GeoPoint
 import org.oscim.core.GeometryBuffer.GeometryType
@@ -69,7 +72,7 @@ class EvaluationResultViewModel @Inject constructor(
     /**
      * 车信列表
      */
-    var laneInfoList: MutableList<LaneInfoItem>? = null
+    val laneInfoList = MutableLiveData<MutableList<LaneInfoItem>>()
 
     var liveDataLanInfoChange = MutableLiveData<String>()
 
@@ -139,7 +142,7 @@ class EvaluationResultViewModel @Inject constructor(
 
     init {
         mapController.mMapView.addOnNIMapClickListener(TAG, object : OnGeoPointClickListener {
-            override fun onMapClick(tag: String, point: GeoPoint,other:String) {
+            override fun onMapClick(tag: String, point: GeoPoint, other: String) {
                 if (tag == TAG) {
                     liveDataQsRecordBean.value!!.geometry =
                         GeometryTools.createGeometry(point).toText()
@@ -174,7 +177,7 @@ class EvaluationResultViewModel @Inject constructor(
         if (bean != null) {
             renderEntity = bean.renderEntity
             if (renderEntity!!.code == DataCodeEnum.OMDB_LANEINFO.code) {
-                laneInfoList = SignUtil.getLineInfoIcons(renderEntity!!)
+                laneInfoList.postValue(SignUtil.getLineInfoIcons(renderEntity!!))
             }
         }
 
@@ -280,7 +283,7 @@ class EvaluationResultViewModel @Inject constructor(
         if (bean != null) {
             renderEntity = bean.renderEntity
             if (renderEntity!!.code == DataCodeEnum.OMDB_LANEINFO.code) {
-                laneInfoList = SignUtil.getLineInfoIcons(renderEntity!!)
+                laneInfoList.postValue(SignUtil.getLineInfoIcons(renderEntity!!))
             }
         }
 
@@ -454,7 +457,42 @@ class EvaluationResultViewModel @Inject constructor(
                 liveDataToastMessage.postValue("没有绑定到任何link，请选择")
                 return@launch
             }
+            if (liveDataQsRecordBean.value!!.classCode == DataCodeEnum.OMDB_LANEINFO.code)
+                try {
+                    val jsonObject: JSONObject = if (liveDataQsRecordBean.value!!.remarks != "") {
+                        JSONObject(liveDataQsRecordBean.value!!.remarks)
+                    } else {
+                        JSONObject()
+                    }
+                    if (!jsonObject.has("original")) {
+                        renderEntity?.let {
+                            val laneOldList = SignUtil.getLineInfoIcons(it)
+                            val jsonOriginalArray = JSONArray()
+                            for (lane in laneOldList) {
+                                val jsonItem = JSONObject()
+                                jsonItem.put("id", lane.id)
+                                jsonItem.put("type", lane.type)
+                                jsonOriginalArray.put(jsonItem)
+                            }
+                            jsonObject.put("original", jsonOriginalArray)
+                        }
+                    }
+                    laneInfoList.value?.let {
+                        val jsonOriginalArray = JSONArray()
+                        for (lane in it) {
+                            val jsonItem = JSONObject()
+                            jsonItem.put("id", lane.id)
+                            jsonItem.put("type", lane.type)
+                            jsonOriginalArray.put(jsonItem)
+                        }
+                        jsonObject.put("now", jsonOriginalArray)
+                    }
+                    liveDataQsRecordBean.value!!.remarks = jsonObject.toString()
+                } catch (e: Exception) {
 
+                }
+
+            Log.e("jingo", "车信json ${liveDataQsRecordBean.value!!.remarks}")
             val realm = realmOperateHelper.getRealmDefaultInstance()
             liveDataQsRecordBean.value!!.taskId = liveDataTaskBean.value!!.id
             liveDataQsRecordBean.value!!.checkTime = DateTimeUtil.getDataTime()
@@ -504,7 +542,7 @@ class EvaluationResultViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.N)
     fun initData(id: String) {
         Log.e("jingo", "捕捉到的要素 id = $id")
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val realm = realmOperateHelper.getRealmDefaultInstance()
 
@@ -523,16 +561,43 @@ class EvaluationResultViewModel @Inject constructor(
                     }
 
                     liveDataQsRecordBean.postValue(it.copy())
-                    val p = GeometryTools.createGeoPoint(it.geometry)
-                    mapController.markerHandle.addMarker(
-                        GeoPoint(
-                            p.latitude, p.longitude
-                        ), TAG, "", null
-                    )
-                    //定位
-                    val mapPosition = mapController.mMapView.vtmMap.mapPosition
-                    mapPosition.setPosition(p.latitude, p.longitude)
-                    mapController.mMapView.vtmMap.animator().animateTo(300, mapPosition)
+                    var hisNowLanInfo = false
+                    if (it.classCode == DataCodeEnum.OMDB_LANEINFO.code) {
+                        try {
+                            val jsonObject = JSONObject(it.remarks)
+                            if (jsonObject.has("now")) {
+                                val jsonArray = jsonObject.getJSONArray("now")
+                                val list = mutableListOf<LaneInfoItem>()
+                                for (i in 0 until jsonArray.length()) {
+                                    val itemObject = jsonArray[i] as JSONObject
+                                    if (itemObject.has("id") && itemObject.has("type")) {
+                                        list.add(LaneInfoItem(itemObject.getInt("id"), itemObject.getInt("type")))
+                                    }
+                                }
+                                hisNowLanInfo = true
+                                laneInfoList.postValue(list)
+                            }
+
+//                            editLaneInfoProblem()
+                        } catch (e: Exception) {
+
+                        }
+                    }
+
+                    launch(Dispatchers.Main) {
+                        val p = GeometryTools.createGeoPoint(it.geometry)
+                        mapController.markerHandle.addMarker(
+                            GeoPoint(
+                                p.latitude, p.longitude
+                            ), TAG, "", null
+                        )
+
+                        //定位
+                        val mapPosition = mapController.mMapView.vtmMap.mapPosition
+                        mapPosition.setPosition(p.latitude, p.longitude)
+                        mapController.mMapView.vtmMap.animator().animateTo(300, mapPosition)
+                    }
+
                     //获取linkid
                     if (it.linkId.isNotEmpty()) {
                         val link = realmOperateHelper.queryLink(it.linkId)
@@ -548,15 +613,15 @@ class EvaluationResultViewModel @Inject constructor(
                         }
                     }
                     liveDataQsRecordBean.value?.attachmentBeanList = it.attachmentBeanList
-                    liveDataLanInfoChange.value = it.description
+                    liveDataLanInfoChange.postValue(it.description)
                     // 显示语音数据到界面
                     getChatMsgEntityList()
                     realm.close()
                     //增加要素高亮
-                    if(it.elementId!=null){
+                    if (it.elementId != null) {
                         val realm2 = realmOperateHelper.getSelectTaskRealmInstance()
-                        val rEntity = realm2.where(RenderEntity::class.java).equalTo("id",it.elementId).findFirst()
-                        if(rEntity!=null){
+                        val rEntity = realm2.where(RenderEntity::class.java).equalTo("id", it.elementId).findFirst()
+                        if (rEntity != null) {
                             show(rEntity!!)
                         }
                         if (it.classCode == DataCodeEnum.OMDB_LANEINFO.code) {
@@ -565,7 +630,8 @@ class EvaluationResultViewModel @Inject constructor(
                                 .equalTo("linkPid", it.linkId).findFirst()
                             if (r != null) {
                                 renderEntity = realm2.copyFromRealm(r)
-                                laneInfoList = SignUtil.getLineInfoIcons(renderEntity!!)
+                                if (!hisNowLanInfo)
+                                    laneInfoList.postValue(SignUtil.getLineInfoIcons(renderEntity!!))
                             }
                         }
                         realm2.close()
@@ -778,7 +844,10 @@ class EvaluationResultViewModel @Inject constructor(
      * 增加车信
      */
     fun updateLaneInfo(index: Int, id: Int, type: Int) {
-        laneInfoList?.let {
+        if (laneInfoList.value == null) {
+            laneInfoList.value = mutableListOf<LaneInfoItem>()
+        }
+        laneInfoList.value?.let {
             val laneInfoItem = it[index]
             if (laneInfoItem.id != id || laneInfoItem.type != type) {
                 laneInfoItem.id = id
@@ -792,7 +861,10 @@ class EvaluationResultViewModel @Inject constructor(
      * 增加车信
      */
     fun addLaneInfo(id: Int, type: Int): Int {
-        laneInfoList?.let {
+        if (laneInfoList.value == null) {
+            laneInfoList.value = mutableListOf<LaneInfoItem>()
+        }
+        laneInfoList.value?.let {
             it.add(LaneInfoItem(id, type))
             editLaneInfoProblem()
             return it.size
@@ -804,7 +876,10 @@ class EvaluationResultViewModel @Inject constructor(
      * 删除车信
      */
     fun backspaceLaneInfo() {
-        laneInfoList?.let {
+        if (laneInfoList.value == null) {
+            laneInfoList.value = mutableListOf<LaneInfoItem>()
+        }
+        laneInfoList.value?.let {
             if (it.isNotEmpty()) {
                 it.removeLast()
                 editLaneInfoProblem()
@@ -816,20 +891,76 @@ class EvaluationResultViewModel @Inject constructor(
      * 删除车信
      */
     fun removeAllLaneInfo() {
-        laneInfoList?.clear()
+        laneInfoList.value?.clear()
     }
 
     /**
      * 组织车信备注文字
      */
     private fun editLaneInfoProblem() {
-        laneInfoList?.let {
+        if (laneInfoList.value == null) {
+            laneInfoList.value = mutableListOf<LaneInfoItem>()
+        }
+        laneInfoList.value?.let {
             liveDataQsRecordBean.value?.let { bean ->
-                var strBuffer = StringBuffer()
+                val strBuffer = StringBuffer()
                 if (bean.problemType == "遗漏")
-                    strBuffer.append("车信缺失,车道从左到右分别是：")
+                    strBuffer.append("车信缺失\n")
                 else if (bean.problemType == "错误")
-                    strBuffer.append("车信错误,车道从左到右分别是：")
+                    strBuffer.append("车信错误\n")
+
+                renderEntity?.let {
+                    val oldList = SignUtil.getLineInfoIcons(it)
+                    strBuffer.append("原车道:")
+                    for (item in oldList) {
+                        when (item.id) {
+                            R.drawable.laneinfo_1 -> strBuffer.append("[直(1)")
+                            R.drawable.laneinfo_2 -> strBuffer.append("[左(2)")
+                            R.drawable.laneinfo_3 -> strBuffer.append("[右(3)")
+                            R.drawable.laneinfo_5 -> strBuffer.append("[左斜前(5)")
+                            R.drawable.laneinfo_6 -> strBuffer.append("[右斜前(6)")
+                            R.drawable.laneinfo_4 -> strBuffer.append("[调(4)")
+                            R.drawable.laneinfo_7 -> strBuffer.append("[反向调(7)")
+                            R.drawable.laneinfo_1_2 -> strBuffer.append("[左直(1,2)")
+                            R.drawable.laneinfo_1_5 -> strBuffer.append("[左斜前直(1,5)")
+                            R.drawable.laneinfo_2_5 -> strBuffer.append("[左左斜前(2,5)")
+                            R.drawable.laneinfo_2_6 -> strBuffer.append("[左右斜前(2,6)")
+                            R.drawable.laneinfo_1_3 -> strBuffer.append("[直右(1,3)")
+                            R.drawable.laneinfo_1_6 -> strBuffer.append("[右斜前直(1,6)")
+                            R.drawable.laneinfo_3_5 -> strBuffer.append("[左斜前右(3,5)")
+                            R.drawable.laneinfo_3_6 -> strBuffer.append("[右斜前右(3,6)")
+                            R.drawable.laneinfo_2_3 -> strBuffer.append("[左右(2,3)")
+                            R.drawable.laneinfo_5_6 -> strBuffer.append("[左斜前右斜前(5,6)")
+                            R.drawable.laneinfo_1_4 -> strBuffer.append("[直调(1,4)")
+                            R.drawable.laneinfo_4_5 -> strBuffer.append("[调左斜前(4,5)")
+                            R.drawable.laneinfo_2_4 -> strBuffer.append("[左调(2,4)")
+                            R.drawable.laneinfo_3_4 -> strBuffer.append("[右调(3,4)")
+                            R.drawable.laneinfo_4_6 -> strBuffer.append("[调右斜前(4,6)")
+                            R.drawable.laneinfo_1_7 -> strBuffer.append("[直反向调(1,7)")
+                            R.drawable.laneinfo_1_2_3 -> strBuffer.append("[左直右(1,2,3)")
+                            R.drawable.laneinfo_1_2_4 -> strBuffer.append("[调左直(1,2,4)")
+                            R.drawable.laneinfo_1_2_5 -> strBuffer.append("[左左斜前直(1,2,5)")
+                            R.drawable.laneinfo_1_2_6 -> strBuffer.append("[左直右斜前(1,2,6)")
+                            R.drawable.laneinfo_1_3_4 -> strBuffer.append("[调直右(1,3,4)")
+                            R.drawable.laneinfo_1_3_5 -> strBuffer.append("[左斜前直右(1,3,5)")
+                            R.drawable.laneinfo_1_3_6 -> strBuffer.append("[直右斜前右(1,3,6)")
+                            R.drawable.laneinfo_2_3_4 -> strBuffer.append("[调左右(2,3,4)")
+                            R.drawable.laneinfo_0 -> strBuffer.append("[不允许存在(0)")
+                        }
+                        when (item.type) {
+                            1 -> {
+                                strBuffer.append("(附加)]")
+                            }
+                            2 -> {
+                                strBuffer.append("(公交)]")
+                            }
+                            else -> {
+                                strBuffer.append("]")
+                            }
+                        }
+                    }
+                }
+                strBuffer.append("\n现车道:")
                 for (item in it) {
                     when (item.id) {
                         R.drawable.laneinfo_1 -> strBuffer.append("[直(1)")
@@ -865,12 +996,16 @@ class EvaluationResultViewModel @Inject constructor(
                         R.drawable.laneinfo_2_3_4 -> strBuffer.append("[调左右(2,3,4)")
                         R.drawable.laneinfo_0 -> strBuffer.append("[不允许存在(0)")
                     }
-                    if (item.type == 1) {
-                        strBuffer.append("(附加)]")
-                    } else if (item.type == 2) {
-                        strBuffer.append("(公交)]")
-                    } else {
-                        strBuffer.append("]")
+                    when (item.type) {
+                        1 -> {
+                            strBuffer.append("(附加)]")
+                        }
+                        2 -> {
+                            strBuffer.append("(公交)]")
+                        }
+                        else -> {
+                            strBuffer.append("]")
+                        }
                     }
                 }
                 liveDataQsRecordBean.value!!.description = strBuffer.toString()
