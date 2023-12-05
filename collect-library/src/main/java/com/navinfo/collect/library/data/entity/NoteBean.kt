@@ -11,4 +11,16 @@ open class NoteBean @JvmOverloads constructor(
     var description: String = "",
     var taskId :Int = 0,
     var list: RealmList<SketchAttachContent> = RealmList<SketchAttachContent>(),
-) : RealmObject()
+    var attachmentBeanList: RealmList<AttachmentBean> = RealmList<AttachmentBean>(),
+) : RealmObject(){
+    fun copy(): NoteBean {
+        return NoteBean(
+            taskId = taskId,
+            id = id,
+            guideGeometry = guideGeometry,
+            description = description,
+            list = list,
+            attachmentBeanList = attachmentBeanList
+        )
+    }
+}

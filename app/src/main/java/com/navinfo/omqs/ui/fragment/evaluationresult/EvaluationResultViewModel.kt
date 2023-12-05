@@ -140,6 +140,8 @@ class EvaluationResultViewModel @Inject constructor(
 
     var classCodeTemp: String = ""
 
+    var description = ""
+
     init {
         mapController.mMapView.addOnNIMapClickListener(TAG, object : OnGeoPointClickListener {
             override fun onMapClick(tag: String, point: GeoPoint, other: String) {
@@ -457,7 +459,7 @@ class EvaluationResultViewModel @Inject constructor(
                 liveDataToastMessage.postValue("没有绑定到任何link，请选择")
                 return@launch
             }
-            if (liveDataQsRecordBean.value!!.classCode == DataCodeEnum.OMDB_LANEINFO.code)
+            if (liveDataQsRecordBean.value!!.classCode == DataCodeEnum.OMDB_LANEINFO.code){
                 try {
                     val jsonObject: JSONObject = if (liveDataQsRecordBean.value!!.remarks != "") {
                         JSONObject(liveDataQsRecordBean.value!!.remarks)
@@ -488,11 +490,16 @@ class EvaluationResultViewModel @Inject constructor(
                         jsonObject.put("now", jsonOriginalArray)
                     }
                     liveDataQsRecordBean.value!!.remarks = jsonObject.toString()
+                    SignUtil.getLineInfoIcons(renderEntity!!)
+                    Log.e("jingo", "车信json ${liveDataQsRecordBean.value!!.remarks}")
                 } catch (e: Exception) {
 
                 }
+            }else{
+                liveDataQsRecordBean.value!!.description = description
+                liveDataQsRecordBean.value!!.remarks = ""
+            }
 
-            Log.e("jingo", "车信json ${liveDataQsRecordBean.value!!.remarks}")
             val realm = realmOperateHelper.getRealmDefaultInstance()
             liveDataQsRecordBean.value!!.taskId = liveDataTaskBean.value!!.id
             liveDataQsRecordBean.value!!.checkTime = DateTimeUtil.getDataTime()
@@ -582,6 +589,8 @@ class EvaluationResultViewModel @Inject constructor(
                         } catch (e: Exception) {
 
                         }
+                    }else{
+
                     }
 
                     launch(Dispatchers.Main) {
@@ -614,6 +623,8 @@ class EvaluationResultViewModel @Inject constructor(
                     }
                     liveDataQsRecordBean.value?.attachmentBeanList = it.attachmentBeanList
                     liveDataLanInfoChange.postValue(it.description)
+                    description = it.description
+
                     // 显示语音数据到界面
                     getChatMsgEntityList()
                     realm.close()
@@ -808,14 +819,24 @@ class EvaluationResultViewModel @Inject constructor(
             out.close()
             val picList = mutableListOf<String>()
             if (liveDataPictureList.value == null) {
-                picList.add(file.absolutePath)
+                picList.add(file.name)
             } else {
                 picList.addAll(liveDataPictureList.value!!)
-                picList.add(file.absolutePath)
+                picList.add(file.name)
             }
+
+            var attachmentList: RealmList<AttachmentBean> = RealmList()
+            //赋值处理
+            if (liveDataQsRecordBean.value?.attachmentBeanList?.isEmpty() == false) {
+                attachmentList = liveDataQsRecordBean.value?.attachmentBeanList!!
+            }
+            val attachmentBean = AttachmentBean()
+            attachmentBean.name = file.name!!
+            attachmentBean.type = 2
+            attachmentList.add(attachmentBean)
+            liveDataQsRecordBean.value?.attachmentBeanList = attachmentList
             liveDataPictureList.postValue(picList)
         }
-
     }
 
     /**
