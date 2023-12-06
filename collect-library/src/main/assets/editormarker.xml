@@ -184,7 +184,7 @@
     <!-- 路牙 -->
     <style-symbol id="curb" repeat="true" gland="true" repeat-gap="10" repeat-start="1" src="assets:omdb/icon_2013_3.svg" symbol-width="16" />
     <!-- 墙 -->
-    <style-symbol id="wall" repeat="true" gland="true" repeat-gap="10" repeat-start="1" src="assets:omdb/icon_2013_5.svg" symbol-width="16" />
+    <style-symbol id="wall" repeat="true" gland="true" repeat-gap="8" repeat-start="1" src="assets:omdb/icon_2013_5.svg" symbol-width="12" />
 
     <!-- omdb -->
     <style-line id="boundaryType" stipple-width="0.1" width="0.1" />
@@ -1978,7 +1978,22 @@
 
         <!-- 设施分离 -->
         <m v="OMDB_LINK_SEPARATION">
-            <symbol repeat="true" gland="true"  repeat-gap="11" repeat-start="1" symbol-width="18" symbol-height="18" src="assets:omdb/icon_2070_2.svg"/>
+            <m k="direct" v="0|1|2">
+                <m k="side" v="0">
+                    <symbol repeat="true" gland="true"  repeat-gap="11" repeat-start="1" symbol-width="18" symbol-height="18" src="assets:omdb/icon_2070_2.svg"/>
+                </m>
+                <m k="side" v="1">
+                    <symbol repeat="true" degree="180" gland="true"  repeat-gap="11" repeat-start="1" symbol-width="18" symbol-height="18" src="assets:omdb/icon_2070_2.svg"/>
+                </m>
+            </m>
+            <m k="direct" v="3">
+                <m k="side" v="1">
+                    <symbol repeat="true" gland="true"  repeat-gap="11" repeat-start="1" symbol-width="18" symbol-height="18" src="assets:omdb/icon_2070_2.svg"/>
+                </m>
+                <m k="side" v="0">
+                    <symbol repeat="true" degree="180" gland="true"  repeat-gap="11" repeat-start="1" symbol-width="18" symbol-height="18" src="assets:omdb/icon_2070_2.svg"/>
+                </m>
+            </m>
         </m>
 
         <!-- 停止位置 -->
@@ -2050,12 +2065,9 @@
 
         <!--可变点限速-->
         <m v="OMDB_SPEEDLIMIT_VAR" >
-            <caption fill="#ffffff" k="ref" priority="0" size="12" stroke="#ffffff"
-                stroke-width="1.0"></caption>
-            <symbol src="assets:omdb/icon_4004_0.svg" symbol-height="38"
+            <symbol src="assets:omdb/icon_4004_0.png" symbol-height="38"
                 symbol-width="20"></symbol>
         </m>
-
 
         <!--交通灯-->
         <m v="OMDB_TRAFFICLIGHT">
@@ -2186,19 +2198,6 @@
             </m>
         </m>
 
-        <!-- zLevel -->
-        <m v="OMDB_ZLEVEL">
-            <m k="type" v="zlevelLine">
-                <line stroke="#59feb8" width="0.5" />
-            </m>
-            <m k="type" v="zlevelName">
-                <caption k="name" fill="#000000" stroke="#f1fe59" size="12" priority="0" ></caption>
-            </m>
-            <m k="linkPid">
-                <circle radius="3" stroke="#000000" fill="#ffffff"></circle>
-            </m>
-        </m>
-
         <!-- 车道类型 -->
         <m v="OMDB_LANE_TYPE_ACCESS">
             <m k="bike">
@@ -2228,6 +2227,19 @@
             <symbol repeat="false" repeat-gap="2000" repeat-start="0" rotate="true"
                 src="assets:omdb/icon_4005.svg" symbol-height="24" symbol-width="24"></symbol>
             <caption k="ref" priority="0" size="12" fill="#ff0000" stroke="#ffffff" stroke-width="1" dy="-13"></caption>
+        </m>
+
+        <!-- zLevel -->
+        <m v="OMDB_ZLEVEL">
+            <m k="type" v="zlevelLine">
+                <line stroke="#59feb8" width="0.5" />
+            </m>
+            <m k="type" v="zlevelName">
+                <caption k="name" fill="#000000" stroke="#f1fe59" size="12" priority="0" ></caption>
+            </m>
+            <m k="linkPid">
+                <circle radius="3" stroke="#000000" fill="#ffffff"></circle>
+            </m>
         </m>
 
     </m>

@@ -105,6 +105,13 @@ class SignMoreInfoFragment : BaseFragment() {
                 }
                 else -> {
                     val adapter = SignUtil.getMoreInfoAdapter(it.renderEntity)
+                    //增加详情为空不显示业务
+                    if(adapter==null || adapter.data.isEmpty()){
+                        activity?.run {
+                            supportFragmentManager.beginTransaction().remove(this@SignMoreInfoFragment)
+                                .commit()
+                        }
+                    }
                     binding.signInfoRecyclerview.adapter = adapter
                 }
             }

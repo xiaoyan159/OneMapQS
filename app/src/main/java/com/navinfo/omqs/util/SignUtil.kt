@@ -833,16 +833,9 @@ class SignUtil {
                         else -> ""
                     }))
                 }
-                //路牙
-                DataCodeEnum.OMDB_OBJECT_CURB.code -> {
-                    list.add(TwoItemAdapterItem(title = "是否符合高精地图", text = when (data.properties["compliant"]) {
-                        "0" -> "否"
-                        "1" -> "是"
-                        else -> ""
-                    }))
-                }
                 //平行墙
                 DataCodeEnum.OMDB_OBJECT_WALL.code -> {
+                    list.add(TwoItemAdapterItem(title = "对象号码", text = "${data.properties["objectPid"]}"))
                     list.add(TwoItemAdapterItem(title = "类型", text = when (data.properties["type"]) {
                         "1" -> "隧道墙"
                         "3" -> "其他墙"
@@ -851,6 +844,7 @@ class SignUtil {
                 }
                 //警示区
                 DataCodeEnum.OMDB_OBJECT_WARNING_AREA.code -> {
+                    list.add(TwoItemAdapterItem(title = "对象号码", text = "${data.properties["objectPid"]}"))
                     list.add(TwoItemAdapterItem(title = "颜色", text = when (data.properties["color"]) {
                         "0" -> "未验证"
                         "1" -> "白色"

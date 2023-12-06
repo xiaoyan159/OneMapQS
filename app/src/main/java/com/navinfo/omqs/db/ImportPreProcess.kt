@@ -271,7 +271,6 @@ class ImportPreProcess {
 
             // 将这个起终点的线记录在数据中
             val startReference = ReferenceEntity()
-//            startReference.renderEntityId = renderEntity.id
             startReference.name = "${renderEntity.name}参考点"
             startReference.code = renderEntity.code
             startReference.table = renderEntity.table
@@ -285,7 +284,6 @@ class ImportPreProcess {
             startReference.properties["qi_table"] = renderEntity.table
             startReference.properties["type"] =
                 "s${if (renderEntity.properties["laneType"]!!.toInt() and (0b1000) > 0) "_dec" else "_acc"}"
-            startReference.properties["geometry"] = startReference.geometry
             startReference.propertiesDb =  DeflaterUtil.zipString(JSON.toJSONString(startReference.properties))
             renderEntity.referenceEntitys.add(startReference)
 
@@ -304,7 +302,6 @@ class ImportPreProcess {
             endReference.properties["qi_table"] = renderEntity.table
             endReference.properties["type"] =
                 "e${if (renderEntity.properties["laneType"]!!.toInt() and (0b1000) > 0) "_dec" else "_acc"}"
-            endReference.properties["geometry"] = endReference.geometry
             endReference.propertiesDb =  DeflaterUtil.zipString(JSON.toJSONString(endReference.properties))
             renderEntity.referenceEntitys.add(endReference)
         }
@@ -353,7 +350,6 @@ class ImportPreProcess {
 
         Log.e("qj", "generateS2EReferencePoint===${startReference.geometry}")
 
-        startReference.properties["geometry"] = startReference.geometry
         startReference.propertiesDb =
             DeflaterUtil.zipString(JSON.toJSONString(startReference.properties))
         listResult.add(startReference)
@@ -388,7 +384,6 @@ class ImportPreProcess {
             endReference.properties["type"] = "e_2_p"
             Log.e("qj", "generateS2EReferencePoint===e_2_p${renderEntity.name}")
         }
-        endReference.properties["geometry"] = endReference.geometry
         endReference.propertiesDb =
             DeflaterUtil.zipString(JSON.toJSONString(endReference.properties))
         renderEntity.referenceEntitys.add(endReference)
@@ -844,14 +839,24 @@ class ImportPreProcess {
                 when(renderEntity.properties["direct"]?.toInt()){
                     0,1,2->{
                         if (medianWidth != null) {
-                            angleReference.geometry =
-                                GeometryTools.computeLine(0.000015, 0.0, renderEntity.geometry)
+                            if(side=="0"){
+                                angleReference.geometry =
+                                    GeometryTools.computeLine(0.000015, 0.0, renderEntity.geometry)
+                            }else{
+                                angleReference.geometry =
+                                    GeometryTools.computeLine( 0.0, 0.000015,renderEntity.geometry)
+                            }
                         }
                     }
                     3->{
                         if (medianWidth != null) {
-                            angleReference.geometry =
-                                GeometryTools.computeLine(0.0, 0.000015, renderEntity.geometry)
+                            if(side=="0"){
+                                angleReference.geometry =
+                                    GeometryTools.computeLine(0.0, 0.000015, renderEntity.geometry)
+                            }else{
+                                angleReference.geometry =
+                                    GeometryTools.computeLine(0.000015, 0.0, renderEntity.geometry)
+                            }
                         }
                     }
                 }
