@@ -33,7 +33,7 @@ public enum class DataCodeEnum(var tableName: String,var tableSubName: String, v
     OMDB_RAMP_7("高速直连出口匝道高速出入口匝道", "匝道","2037-7"),
     OMDB_MULTI_DIGITIZED("上下线分离", "上下线分离","2040"),
     OMDB_LANE_NUM("车道数", "车道数","2041"),
-    OMDB_PHY_LANENUM("物理车道数", "物理车道数","2097"),
+    OMDB_PHY_LANENUM("物理车道数", "物理车道数","2617"),
     OMDB_VIADUCT("高架", "高架","2043"),
     OMDB_LINK_SEPARATION("设施分离","设施分离", "2070"),
     OMDB_LINK_MEDIAN("中央隔离带", "中央隔离带","2071"),

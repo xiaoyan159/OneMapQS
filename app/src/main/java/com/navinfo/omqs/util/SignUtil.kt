@@ -108,10 +108,10 @@ class SignUtil {
                     }
                 }
                 //物理车道数OMDB_PHY_LANENUM
-                DataCodeEnum.OMDB_LANE_NUM.code,
+/*                DataCodeEnum.OMDB_LANE_NUM.code,
                 DataCodeEnum.OMDB_PHY_LANENUM.code -> {
                     "${data.properties["laneS2e"]}|${data.properties["laneE2s"]}"
-                }
+                }*/
 
                 //常规点限速,条件点限速
                 DataCodeEnum.OMDB_SPEEDLIMIT.code, DataCodeEnum.OMDB_SPEEDLIMIT_COND.code -> getSpeedLimitMaxText(data)
@@ -304,7 +304,7 @@ class SignUtil {
                             title = "逆方向车道数", text = "${data.properties["laneE2s"]}"
                         )
                     )
-                    var str = when (data.properties["laneClass"]) {
+/*                    var str = when (data.properties["laneClass"]) {
                         "0" -> "未赋值"
                         "1" -> "一条车道"
                         "2" -> "两或三条"
@@ -317,7 +317,7 @@ class SignUtil {
                         TwoItemAdapterItem(
                             title = "车道数等级", text = str
                         )
-                    )
+                    )*/
                 }
                 //路口
                 DataCodeEnum.OMDB_INTERSECTION.code -> {
@@ -833,16 +833,9 @@ class SignUtil {
                         else -> ""
                     }))
                 }
-                //路牙
-                DataCodeEnum.OMDB_OBJECT_CURB.code -> {
-                    list.add(TwoItemAdapterItem(title = "是否符合高精地图", text = when (data.properties["compliant"]) {
-                        "0" -> "否"
-                        "1" -> "是"
-                        else -> ""
-                    }))
-                }
                 //平行墙
                 DataCodeEnum.OMDB_OBJECT_WALL.code -> {
+                    list.add(TwoItemAdapterItem(title = "对象号码", text = "${data.properties["objectPid"]}"))
                     list.add(TwoItemAdapterItem(title = "类型", text = when (data.properties["type"]) {
                         "1" -> "隧道墙"
                         "3" -> "其他墙"
@@ -851,6 +844,7 @@ class SignUtil {
                 }
                 //警示区
                 DataCodeEnum.OMDB_OBJECT_WARNING_AREA.code -> {
+                    list.add(TwoItemAdapterItem(title = "对象号码", text = "${data.properties["objectPid"]}"))
                     list.add(TwoItemAdapterItem(title = "颜色", text = when (data.properties["color"]) {
                         "0" -> "未验证"
                         "1" -> "白色"
@@ -1928,7 +1922,7 @@ class SignUtil {
          */
         fun getRoadInfoIndex(element: RenderEntity): Int {
             return when (element.code) {
-                DataCodeEnum.OMDB_PHY_LANENUM.code,//物理车道数
+                //DataCodeEnum.OMDB_PHY_LANENUM.code,//物理车道数
                 DataCodeEnum.OMDB_LANE_NUM.code -> 0
                 DataCodeEnum.OMDB_RD_LINK_KIND.code -> 1
                 DataCodeEnum.OMDB_RD_LINK_FUNCTION_CLASS.code -> 2

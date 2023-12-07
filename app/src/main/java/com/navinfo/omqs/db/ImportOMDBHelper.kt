@@ -194,12 +194,12 @@ class ImportOMDBHelper @AssistedInject constructor(
             tableNum += importConfig.tableMap.size
         }
         //缓存任务link信息，便于下面与数据进行任务link匹配
-        val hashMap: HashMap<Long, HadLinkDvoBean> = HashMap<Long, HadLinkDvoBean>()
+        val hashMap: HashMap<String, HadLinkDvoBean> = HashMap<String, HadLinkDvoBean>()
 
 //                val lineList = arrayOfNulls<LineString>(task.hadLinkDvoList.size)
 //                var index = 0
         task.hadLinkDvoList.forEach {
-            hashMap[it.linkPid.toLong()] = it
+            hashMap[it.linkPid] = it
 //                    lineList[index] = GeometryTools.createGeometry(it.geometry) as LineString
 //                    index++
         }
@@ -310,7 +310,7 @@ class ImportOMDBHelper @AssistedInject constructor(
         currentEntry: MutableMap.MutableEntry<String, TableInfo>,
         task: TaskBean,
         importConfig: ImportConfig,
-        hashMap: HashMap<Long, HadLinkDvoBean>,
+        hashMap: HashMap<String, HadLinkDvoBean>,
         isEmit: Boolean = true) = callbackFlow <Event>{
         val cancellable= importData(f,unZipFiles,currentEntry,task,importConfig,hashMap,isEmit,object :MultiPathsCallback<String>{
             override fun onProgress(value: Int) {
@@ -342,7 +342,7 @@ class ImportOMDBHelper @AssistedInject constructor(
         currentEntry: MutableMap.MutableEntry<String, TableInfo>,
         task: TaskBean,
         importConfig: ImportConfig,
-        hashMap: HashMap<Long, HadLinkDvoBean>,
+        hashMap: HashMap<String, HadLinkDvoBean>,
         isEmit: Boolean = true, callback: MultiPathsCallback<String>?
     ):NonCancellable {
         val resHashMap: HashMap<String, RenderEntity> = HashMap() //define empty hashmap
@@ -379,13 +379,6 @@ class ImportOMDBHelper @AssistedInject constructor(
                     }
                     newTime = System.currentTimeMillis()
 
-//                    if (elementIndex % 50 == 0) {
-//                        Log.e(
-//                            "jingo",
-//                            "安装数据 ${currentConfig.table}  $elementIndex ${listRenderEntity.size} ${newTime - time}"
-//                        )
-//                    }
-
                     time = newTime
 
                     elementIndex += 1
@@ -409,16 +402,25 @@ class ImportOMDBHelper @AssistedInject constructor(
                     renderEntity.zoomMin = map["qi_zoomMin"].toString().toInt()
                     renderEntity.zoomMax = map["qi_zoomMax"].toString().toInt()
 
+                    //缓存当前数据对应的导航linkpid信息，根据与任务对应关系保留任务唯一linkpid
+                    var linkPidList = mutableListOf<String>()
+
                     // 在外层记录当前数据的linkPid
-                    if (map.containsKey("linkPid")) {
-                        renderEntity.linkPid = map["linkPid"].toString().split(",")[0]
+                    if (map.containsKey("linkPid")&& map["linkPid"].toString().split(",").isNotEmpty()) {
+
+                        linkPidList.addAll(map["linkPid"].toString().split(","))
+
                     } else if (map.containsKey("linkList")) {
+
                         val linkList = map["linkList"].toString()
+
                         if (!linkList.isNullOrEmpty() && linkList != "null") {
-                            val list: List<LinkList> = gson.fromJson(
-                                linkList, object : TypeToken<List<LinkList>>() {}.type
-                            )
-                            renderEntity.linkPid = list[0].linkPid
+
+                            val list: List<LinkList> = gson.fromJson(linkList, object : TypeToken<List<LinkList>>() {}.type)
+
+                            list.forEach {
+                                linkPidList.add(it.linkPid)
+                            }
                         }
                     }
 
@@ -514,25 +516,16 @@ class ImportOMDBHelper @AssistedInject constructor(
                     //遍历判断只显示与任务Link相关的任务数据
                     if (currentConfig.checkLinkId) {
 
-                        if (renderEntity.linkPid.isNotEmpty()) {
+                        if (linkPidList.isNotEmpty()) {
 
-                            val currentLinkPid = renderEntity.linkPid
-
-                            if (!currentLinkPid.isNullOrEmpty() && currentLinkPid != "null") {
-
-                                val list = currentLinkPid.split(",")
-
-                                if (list.isNotEmpty()) {
-
-                                    m@ for (linkPid in list) {
-                                        if (hashMap.containsKey(linkPid.toLong())) {
-                                            renderEntity.enable = 1
-                                            break@m
-                                        }
-                                    }
+                            m@ for (linkPid in linkPidList) {
+                                Log.e("jingo", "$linkPid=======linkPid")
+                                if (linkPid!=null&&hashMap.containsKey(linkPid)) {
+                                    renderEntity.enable = 1
+                                    renderEntity.linkPid = linkPid
+                                    break@m
                                 }
                             }
-
                         } else if (renderEntity.code.toInt() == DataCodeEnum.OMDB_INTERSECTION.code.toInt() || renderEntity.code.toInt() == DataCodeEnum.OMDB_LANE_CONSTRUCTION.code.toInt() && renderEntity.properties.containsKey(
                                 "linkList"
                             )
@@ -548,8 +541,9 @@ class ImportOMDBHelper @AssistedInject constructor(
                                     )
 
                                     m@ for (link in list) {
-                                        if (hashMap.containsKey(link.linkPid.toLong())) {
+                                        if (hashMap.containsKey(link.linkPid)) {
                                             renderEntity.enable = 1
+                                            renderEntity.linkPid = link.linkPid
                                             break@m
                                         }
                                     }

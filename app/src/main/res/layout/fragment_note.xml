@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="fragment"
+            type="com.navinfo.omqs.ui.fragment.note.NoteFragment" />
+
+        <variable
+            name="viewModel"
+            type="com.navinfo.omqs.ui.fragment.note.NoteViewModel" />
+    </data>
+
+
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="@dimen/right_fragment_w"
     android:layout_height="match_parent"
     android:background="@drawable/shape_right_fragment_bg"
@@ -222,3 +236,5 @@
         app:layout_constraintLeft_toRightOf="@id/note_camera"
         app:layout_constraintRight_toRightOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

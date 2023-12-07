@@ -6,6 +6,8 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.Toast
@@ -90,6 +92,18 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
 
         }
 
+        binding.evaluationDescription.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.description = s.toString()
+            }
+        })
+
         binding.evaluationVoiceRecyclerview.adapter = adapter
 
         //返回按钮点击
@@ -128,8 +142,6 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
          * 照片view
          */
         binding.evaluationPictureViewpager.adapter = pictureAdapter
-        val list = mutableListOf("1", "2", "3")
-        pictureAdapter.refreshData(list)
 
         //照片左右选择键点击监听
         binding.evaluationPictureLeft.setOnClickListener(this)
@@ -203,6 +215,13 @@ class EvaluationResultFragment : BaseFragment(), View.OnClickListener {
          */
         viewModel.liveDataLanInfoChange.observe(viewLifecycleOwner) {
             binding.evaluationDescription.setText(it)
+        }
+
+        /**
+         * 照片view
+         */
+        viewModel.liveDataPictureList.observe(viewLifecycleOwner){
+            pictureAdapter.refreshData(it)
         }
 
         viewModel.listDataChatMsgEntityList.observe(viewLifecycleOwner) {

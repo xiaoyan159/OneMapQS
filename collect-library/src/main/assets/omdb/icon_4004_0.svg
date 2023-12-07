@@ -1,1 +1,36 @@
-<?xml version="1.0" encoding="UTF-8"?><svg id="b" xmlns="http://www.w3.org/2000/svg" width="70" height="94" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 70 94"><defs><style>.h{fill:#a74d4b;opacity:.7;}.h,.i,.j,.k,.l,.m,.n{stroke-width:0px;}.h,.j{isolation:isolate;}.i{opacity:0;}.i,.o{fill:none;}.j{fill:#ff5f4c;opacity:.3;}.o{stroke:#db4646;stroke-dasharray:0 0 0 0 0 0 6.4 7.1;stroke-linecap:square;stroke-width:2.1px;}.k{fill:#2a23f5;}.l{fill:#fff;}.m{fill:url(#f);}.n{fill:url(#g);}</style><radialGradient id="f" cx="131.4" cy="284.8" fx="131.4" fy="284.8" r="1.3" gradientTransform="translate(-1182.6 -13193.2) rotate(38.1) scale(54 33.9) skewX(7.5)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ff9287"/><stop offset=".8" stop-color="#ff5f4c"/><stop offset="1" stop-color="#ff5f4c"/></radialGradient><radialGradient id="g" cx="128.9" cy="283.6" fx="128.9" fy="283.6" r=".5" gradientTransform="translate(-5048.6 -10839.4) scale(39.4 38.4)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#e75545"/><stop offset=".8" stop-color="#c4483b"/><stop offset="1" stop-color="#983b31"/></radialGradient></defs><g id="c"><ellipse id="d" class="j" cx="35.5" cy="84.1" rx="14.4" ry="3.7"/><ellipse id="e" class="h" cx="35.5" cy="84.1" rx="7.5" ry="3"/><path class="m" d="m26.7,71.1l-1.1-1c-9.6-4.2-15.6-13.4-15.4-23.6,0-14.1,11.2-25.5,25-25.5s25,11.4,25,25.5-6.5,19.8-15.6,23.6c-.3.3-.6.6-.9,1-3.4,3.9-6.2,8.3-8.3,13,0,0-3.6-7.8-8.9-13h.1Z"/><ellipse class="n" cx="35" cy="45.6" rx="19.8" ry="19.2"/><ellipse class="l" cx="35.2" cy="45.3" rx="20.1" ry="19.6"/><ellipse class="k" cx="35.2" cy="45.3" rx="17.2" ry="16.8"/><ellipse class="o" cx="35.2" cy="45.3" rx="18.3" ry="17.8"/><rect class="i" width="70" height="94"/></g></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="b" xmlns="http://www.w3.org/2000/svg" width="70" height="94"
+    xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 70 94">
+    <defs>
+        <style>
+            .h{fill:#a74d4b;opacity:.7;}.h,.i,.j,.k,.l,.m,.n{stroke-width:0px;}.h,.j{isolation:isolate;}.i{opacity:0;}.i,.o{fill:none;}.j{fill:#ff5f4c;opacity:.3;}.o{stroke:#db4646;stroke-dasharray:0
+            0 0 0 0 0 6.4
+            7.1;stroke-linecap:square;stroke-width:2.1px;}.k{fill:#2a23f5;}.l{fill:#fff;}.m{fill:url(#f);}.n{fill:url(#g);}
+        </style>
+        <radialGradient id="f" cx="131.4" cy="284.8" fx="131.4" fy="284.8" r="1.3"
+            gradientTransform="translate(-1182.6 -13193.2) rotate(38.1) scale(54 33.9) skewX(7.5)"
+            gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#ff9287" />
+            <stop offset=".8" stop-color="#ff5f4c" />
+            <stop offset="1" stop-color="#ff5f4c" />
+        </radialGradient>
+        <radialGradient id="g" cx="128.9" cy="283.6" fx="128.9" fy="283.6" r=".5"
+            gradientTransform="translate(-5048.6 -10839.4) scale(39.4 38.4)"
+            gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#e75545" />
+            <stop offset=".8" stop-color="#c4483b" />
+            <stop offset="1" stop-color="#983b31" />
+        </radialGradient>
+    </defs>
+    <g id="c">
+        <ellipse id="d" class="j" cx="35.5" cy="84.1" rx="14.4" ry="3.7" />
+        <ellipse id="e" class="h" cx="35.5" cy="84.1" rx="7.5" ry="3" />
+        <path class="m"
+            d="m26.7,71.1l-1.1-1c-9.6-4.2-15.6-13.4-15.4-23.6,0-14.1,11.2-25.5,25-25.5s25,11.4,25,25.5-6.5,19.8-15.6,23.6c-.3.3-.6.6-.9,1-3.4,3.9-6.2,8.3-8.3,13,0,0-3.6-7.8-8.9-13h.1Z" />
+        <ellipse class="n" cx="35" cy="45.6" rx="19.8" ry="19.2" />
+        <ellipse class="l" cx="35.2" cy="45.3" rx="20.1" ry="19.6" />
+        <ellipse class="k" cx="35.2" cy="45.3" rx="17.2" ry="16.8" />
+        <ellipse class="o" cx="35.2" cy="45.3" rx="18.3" ry="17.8" />
+        <rect class="i" width="70" height="94" />
+    </g>
+</svg>
